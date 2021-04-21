@@ -1,0 +1,181 @@
+library(tidyverse)
+
+#Working directory
+setwd('C:/Users/aslau/Desktop/UiBV21/Master')
+
+#Units to keep in the recipes
+#Recipes from Kolonialen has translated 'pk/pakke/stykk' to 'hp'
+#What is hp?
+units <- c('ts', 'ss', 'l', 'dl', 'g', 'kg', 'hp', 'krm', 'tins', 'cm',
+           'stk', 'glass', 'cup', 'box', 'pinch', 'flaske', 'portion', 'slice',
+           'tassel', 'neve', 'ml', 'bt', 'bunch', 'pack', 'plate', 'pot') %>%
+  #Add whitespace on both sides to only match a unit in a string
+  sapply(., function(x) {paste0('\\s', x, '\\s')})
+
+#Units that show up often without whitespace after
+#units_to_regex <- c('kg', 'pcs', 'dl', 'tbsp')
+
+#Get to know the data
+Norway <- read_csv('./Data/Oppskrifter/Data_Norway.csv')
+Norway <- Norway %>% select(No, `Selected Meals`, `Nr. Of portion`, Ingredients)
+
+#First split ingredients into separate rows
+Norway <- Norway %>%
+
+  #Separate ingredients into separate rows
+  separate_rows(., Ingredients, sep = '\n') %>%
+
+  #Remove some unnecessary characters in the ingredients column, and make sure there is a space between numbers and words ('2 dl', not '2dl)
+  mutate(Ingredients = Ingredients %>%
+           str_replace_all('["()]|possibly', '') %>%
+           str_replace('(?<=\\d)(?=[^\\d\\s\\.-])', ' ') %>%
+           str_replace('–', '-') %>%
+           str_replace('3 ½', '3.5') %>%
+           str_replace('2 ½', '2.5') %>%
+           str_replace('1 ½', '1.5') %>%
+           str_replace('1 ⅘', '1.8') %>%
+           str_replace('1 ⅕', '1.2') %>%
+           str_replace('½', '0.5') %>%
+           str_replace('¼', '0.25') %>%
+           str_replace('¾', '0.75') %>%
+           str_replace('2 -', '2-') %>% #Whitespace in single ingredient row
+           str_squish() %>%
+           str_trim()) %>%
+
+  #Remove rows with no ingredients
+  filter(!Ingredients == '') %>%
+
+  #Reformat all the units in the different recipes to the same name
+  mutate(Ingredients = Ingredients %>%
+           str_replace('kgeggplant', 'kg eggplant') %>%
+           str_replace('pcslamb', 'pcs lamb') %>%
+           str_replace('tbspolive', 'tbsp olive') %>%
+           str_replace('pcsonion', 'pcs onion') %>%
+           str_replace('gminced', 'g minced') %>%
+           str_replace('pcstomato', 'pcs tomato') %>%
+           str_replace('tablespoontomato', 'tablespoon tomato') %>%
+           str_replace('pcsmild', 'pcs mild') %>%
+           str_replace('dlwater', 'dl water') %>%
+           str_replace('dlmeat', 'dl meat') %>%
+           str_replace('dlwhipped', 'dl whipped') %>%
+           str_replace('DLeplemos', 'DL eplemos') %>%
+           str_replace('tablespoonchopped', 'tablespoon chopped') %>%
+           str_replace('tablespoonbutter', 'tablespoon butter') %>%
+           str_replace('tbsphoney', 'tbsp honey') %>%
+           str_replace('tbspsoy', 'tbsp soy') %>%
+           str_replace('piecechicken', 'piece chicken') %>%
+           str_replace('piecelemon', 'piece lemon') %>%
+           str_replace('pcscinnamon', 'pcs cinnamon') %>%
+           str_replace('bacon slices|pieces of bacon|pieces of good sliced bacon', 'slice bacon') %>%
+           str_replace('coat corn, or bread grater from 2sliceof bread', '2 slice of bread') %>%
+           str_replace_all('4sliceloff', '4 slice loff') %>%
+           str_replace('4sliceentrecote', '4 portion entrecote') %>%
+           str_replace('3sliceTINE', '3 slice TINE') %>%
+           str_replace_all('thinsliceof', 'slice of') %>%
+           str_replace('gsliceor', 'g slice of') %>%
+           str_replace('1,000 g|1 000 g', '1000g') %>%
+           str_replace('loff, whole,slicewithout crust', 'slice loff without crust') %>%
+           str_replace('0.5 stk fl tørr hvitvin', '0.5 flaske tørr hvitvin') %>%
+           str_replace('half packet of spaghetti', '0.5 pack spaghetti') %>%
+           str_replace('packs', 'pack') %>%
+           str_replace('stk kilo', 'kg') %>%
+           str_replace('stk ltr', 'l') %>%
+           str_replace('pakke', 'pack') %>%
+           str_replace('portions|servings|serving', 'portion') %>%
+           str_replace('\\sbags\\s|\\sbag\\s', 'pack') %>%
+           str_replace('pinches|pinched|knife-wiped', 'pinch') %>%
+           str_replace('teaspoons|teaspoon|tsp', 'ts') %>%
+           str_replace('\\st\\s', ' ts ') %>%
+           str_replace('tablespoons|tablespoon|tbsp|table spoons|table spoon', 'ss') %>%
+           str_replace('\\stb\\s', ' ss ') %>%
+           str_replace('liter', 'l') %>%
+           str_replace('DL', 'dl') %>%
+           str_replace('boxes', 'box') %>%
+           str_replace('cups', 'cup') %>%
+           str_replace('glasses', 'glass') %>%
+           str_replace('plates', 'plate') %>%
+           str_replace('pieces|piece|pcs', 'stk') %>%
+           str_replace('\\spc\\s', ' stk ') %>%
+           str_replace('\\sgr\\s', ' g ') %>%
+           str_replace('\\sslices\\s', 'slice') %>%
+           str_replace('fists|fist|handfuls|handful', 'neve')) %>%
+  mutate(Ingredients = Ingredients %>%
+              str_replace_all('8sliceof', '8 slice of') %>%
+              str_replace_all('6sliceof', '6 slice of') %>%
+              str_replace_all('5sliceof', '5 slice of') %>%
+              str_replace_all('4sliceof', '4 slice of') %>%
+              str_replace_all('3sliceof', '3 slice of') %>%
+              str_replace_all('2sliceof', '2 slice of') %>%
+              str_replace_all('0.5sliceof', '0.5 slice of') %>%
+              str_replace('kgsliceof', 'kg slice of') %>%
+              str_replace('gsliceor', 'g slice of') %>%
+              str_replace('thinsliceof', 'slice of')) %>%
+
+  #Extract the amounts to their own column
+  mutate(Amounts = case_when(
+    #Extract amounts with units
+    str_detect(Ingredients, paste0(units, collapse = '|')) ~ str_extract(Ingredients, '((\\d+\\.\\d+|\\d+-\\d+|\\d+)\\s\\w+)'),
+    #Extract pure numbers
+    !str_detect(Ingredients, paste0(units, collapse = '|')) & str_detect(Ingredients, '^\\d+') ~ str_extract(Ingredients, '^[^\\s]+')
+  ),
+    #Remove this information from Ïngredients columns
+    Ingredients = case_when(
+      str_detect(Ingredients, paste0(units, collapse = '|')) ~ str_remove(Ingredients, '((\\d+\\.\\d+|\\d+-\\d+|\\d+)\\s\\w+)'),
+      !str_detect(Ingredients, paste0(units, collapse = '|')) & str_detect(Ingredients, '^\\d+') ~ str_remove_all(Ingredients, '^[^\\s]+'),
+      TRUE ~ Ingredients
+  ) %>%
+    #Remove some fill-words
+    str_trim() %>% #Remove leading whitespace
+    str_replace_all('^of ', '') #Remove leading of
+  )
+
+#Fix some translation errors, move such as 'filet', 'tenderloin' to the amount column
+  #Is 'mug' kruspersille? In some cases could also be one pot of herbs
+temp <- Norway %>%
+  #Needs conditional
+  mutate(Ingredients = case_when(
+           str_detect(Ingredients, '\\w+(?=filet)') ~ str_replace(Ingredients, 'filet', ' filet'),
+           str_detect(Ingredients, 'juice') ~ str_replace(Ingredients, 'paste', 'lime'),
+           str_detect(Ingredients, 'hvitløk|garlic') ~ str_replace(Ingredients, 'båter|båt|boats|boat|cloves|clove', 'fedd'),
+           str_detect(`Selected Meals`, 'asta') ~ str_replace(Ingredients, 'Penne|penne|Pens|pens|pen|paste', 'pasta'),
+           str_detect(Ingredients, 'beef|elk|lamb') ~ str_replace(Ingredients, 'thigh', 'leg'),
+           str_detect(`Selected Meals`, 'Smoked salmon with shrimp tatsiki') ~ str_replace(Ingredients, 'Mold', 'Loff'), #At klikk formloff turns into mold.
+           TRUE ~ Ingredients
+  )) %>%
+  mutate(Ingredients = Ingredients %>%
+           str_replace('outer fillet', 'tenderloin') %>%
+           str_replace('broadleaf', 'monkfish') %>%
+           str_replace('glue', 'lime') %>%
+           str_replace('calf text', 'calf steak') %>%
+           str_replace('kfedd', 'k fedd') %>%
+           str_replace('cattle, slices', 'beef') %>%
+           str_replace('(?<!r)aisins', 'raisins') %>%
+           str_replace('earth shocks', 'jordskokk') %>%
+           str_replace('barley pig', 'byggris') %>%
+           str_replace('all kinds of malt|all kinds', 'allspice') %>%
+           str_replace('hijackers', 'kapers') %>%
+           str_replace('corn corn|corn maize|corn starch|corn flour', 'maisennamel') %>% #Translations of maisenna in aperitif and klikk recipes
+           str_replace('whole cloves|whole carnations', 'cloves') %>%
+           str_replace('bookcase ham', 'bogskinke') %>%
+           str_replace('corn flask|corn colbs', 'corn colb') %>%
+           str_replace('lardo or lightly salted bottle', 'bacon') %>% #saltflesk is not exactly the same as bacon, but close
+           str_replace('pork fillet chops', 'pork chops')
+         ) %>%
+
+  #Move to amount column
+  mutate(Amounts = case_when(
+    str_detect(Ingredients, 'fedd') ~ str_replace(Amounts, ' stk| ts', ''), #one ts garlic is about a clove/fedd
+    !str_detect(Amounts, 'g|kg') & str_detect(Ingredients, 'tenderloin') ~ paste0(Amounts, ' tenderloin'),
+    TRUE ~ Amounts)) %>%
+  mutate(Amounts = case_when(str_detect(Ingredients, 'fedd') ~ paste0(Amounts, ' fedd'),
+                             str_detect(Amounts, 'tenderloin') ~ str_replace(Amounts, ' stk ', ' '),
+                                    TRUE ~ Amounts)) %>%
+  #Remove from ingredients column
+  mutate(Ingredients = case_when(
+    str_detect(Ingredients, 'garlic|hvitløk') & str_detect(Amounts, 'fedd') ~ 'Garlic',
+    TRUE ~ Ingredients
+  ))
+
+
+look <- temp %>%
+  filter(!str_detect(Amounts, '[:alpha:]'))
