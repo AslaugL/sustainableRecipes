@@ -644,6 +644,7 @@ checkRefList <- function(df){
   
 }
 
+sharp_ref <- readRDS('sharp_ref.Rds')
 
 temp <- checkRefList(all_weights)
 

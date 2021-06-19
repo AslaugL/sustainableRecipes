@@ -468,7 +468,7 @@ mutate(
       TRUE ~ Amounts) ) %>%
 
   #The 'Half fermented trout' recipe were lacking in the amounts, filled in by this recipe https://oppskrift.klikk.no/forrett-med-rakfisk/3862/
-  #Not part of the 100 recipes in the analyses
+  #Not part of the 100 recipes in the analyses, ignore
   #mutate(
    # `Nr. Of portion` = case_when(
     #  `Selected Meals` == 'Half-fermented trout' ~ 2,
@@ -797,7 +797,7 @@ various$with_reference <- checkRefList(toRef)
 
 saveRDS(various$with_reference, 'with_ref_NOR.Rds')
 
-#various$with_reference <- readRDS('with_ref_NOR.Rds')
+various$with_reference <- readRDS('with_ref_NOR.Rds')
 
 references <- ref %>% mutate_at(c('first_word', 'second_word'), ~tolower(.))
 

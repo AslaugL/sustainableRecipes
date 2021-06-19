@@ -200,6 +200,7 @@ temp <- bind_rows(recipes, .id = 'Country') %>%
       org_ingredients == 'fish cakes, coarse' ~ 'fish cakes coarse',
       str_detect(Ingredients, 'green onion') ~ 'scallion',
       str_detect(Ingredients, 'sweet onion') ~ 'onion',
+      org_ingredients == 'sun-dried tomatoes' ~ 'sun-dried tomatoes',
 
       #Alcohol
       str_detect(Ingredients, 'sherry|madeira') ~ 'fortified and liqueur wines', #These are fortified wines
@@ -713,7 +714,7 @@ test2 <- bind_rows(test) %>%
   mutate(ref = case_when(
 
     #Ingredients not in SHARP
-    str_detect(Ingredients, 'potato soft flatbread|coriander seed|mustard seed|fennel seed|caraway seed|shrimp paste|stock/broth|canned tomato sauce|tomato sauce canned|oyster sauce|pasta sauce|dry onion soup mix|onion powder|mango chutney|corn tortillas|sausage flavored pasta sauce|alfredo-style pasta sauce|tomato beans|curry paste|egg noodle|poultry seasoning|fish sauce|ginger garlic paste|lemongrass|bean dip|duck sauce|liquid smoke flavoring|caper') ~ '',
+    str_detect(Ingredients, 'olive paste tapenade|potato soft flatbread|coriander seed|mustard seed|fennel seed|caraway seed|shrimp paste|stock/broth|canned tomato sauce|tomato sauce canned|oyster sauce|pasta sauce|dry onion soup mix|onion powder|mango chutney|corn tortillas|sausage flavored pasta sauce|alfredo-style pasta sauce|tomato beans|curry paste|egg noodle|poultry seasoning|fish sauce|ginger garlic paste|lemongrass|bean dip|duck sauce|liquid smoke flavoring|caper') ~ '',
     str_detect(Ingredients, 'chili') & str_detect(Ingredients, 'powder|sauce|flake|paste') ~ '',
 
     #Mistakes
@@ -754,6 +755,8 @@ test2 <- bind_rows(test) %>%
     Ingredients == 'salmon roe' ~ 'fish roe',
     Ingredients %in% c('rice noodles', 'dried rice pasta') ~ 'rice noodle',
     Ingredients == 'smoked pollock' ~ 'smoked fish',
+    Ingredients == 'onion pearl' ~ 'onion',
+    str_detect(Ingredients, 'carrot') & !str_detect(Ingredients, 'juice') ~ 'carrot',
     TRUE ~ ref,
   )) %>%
   mutate(ID = case_when(
@@ -794,6 +797,8 @@ test2 <- bind_rows(test) %>%
     Ingredients == 'salmon roe' ~ sharp_ref %>% filter(first_word == 'fish' & second_word == 'roe') %>% select(ID) %>% as.numeric(.),
     Ingredients %in% c('rice noodles', 'dried rice pasta') ~ sharp_ref %>% filter(first_word == 'noodle' & second_word == 'nothing') %>% select(ID) %>% as.numeric(.),
     Ingredients == 'smoked pollock' ~ sharp_ref %>% filter(first_word == 'smoked' & second_word == 'fish') %>% select(ID) %>% as.numeric(.),
+    Ingredients == 'onion pearl' ~ sharp_ref %>% filter(first_word == 'onion' & second_word == 'nothing') %>% select(ID) %>% as.numeric(.),
+    str_detect(Ingredients, 'carrot') & !str_detect(Ingredients, 'juice') ~ sharp_ref %>% filter(first_word == 'carrot' & second_word == 'nothing') %>% select(ID) %>% as.numeric(.),
     ref == '' ~ 0,
     TRUE ~ ID
   ))
@@ -867,7 +872,7 @@ temp2 <- bind_rows(various$translated_norwegian) %>%
   mutate(Country = 'Norway') %>%
 
   select(-c('sharp_ID', 'weight_ID')) %>% unique() #Some duplicates as butter/margarine has been doubled (they have the same weight_ID and was found twice in sharp_ref)
-
+  
 #Add back to test2, first remove the old
 test2 <- anti_join(test2, 
                    temp2 %>% select(`Selected Meals`, org_ingredients) %>% rename(Ingredients = org_ingredients))
