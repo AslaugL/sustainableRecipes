@@ -27,7 +27,7 @@ various <- list(
             'banana', 'brea', 'baguette', 'bok choi', 'broccoli', 
             
             'cabbage', 'cardamom', 'carrot', 'cauliflower', 'Celariac root', 'celery', 'celery stalk',
-            'champignons', 'chicken', 'chicory', 'chili', 'cinnamon', 'clementine', '\\bcloves\\b', 'cod', 
+            'champignons', 'chicken', 'chicory', 'chili', 'ciabatta', 'cinnamon', 'clementine', '\\bcloves\\b', 'cod', 
             'cod fillet', 'crab', 'cream cracker', 'cucumber',
             
             'duck',
@@ -437,7 +437,7 @@ temp <- bind_rows(various$with_reference) %>%
       str_detect(Ingredients, 'watercress') ~ 'watercress',
       TRUE ~ ref),
     ID = case_when(
-      str_detect(Ingredients, 'eggplant') ~ as.numeric(references[str_which(tolower(references$first_word), 'eggplant'),1]),
+      str_detect(Ingredients, 'eggplant') ~ references %>% filter(first_word == 'eggplant' & second_word == 'nothing') %>% select(ID) %>% unique() %>% as.numeric(.),
       str_detect(Ingredients, 'chick pea flour') ~ references %>% filter(first_word == 'chick pea' & second_word == 'flour') %>% select(ID) %>% as.numeric(.),
       Ingredients == 'canned chick peas' ~ references %>% filter(first_word == 'chick pea' & second_word == 'canned') %>% select(ID) %>% as.numeric(.),
       Ingredients %in% c('lemongrass root, chopped', 'sitrongressrot, hakket', '–3 lemongrass, thin slice',

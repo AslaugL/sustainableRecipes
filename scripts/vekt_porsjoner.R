@@ -41,6 +41,11 @@ all_weights <- raw_data %>% rename(
   #Remove some not needed foodgroups
   filter(!str_detect(Foodgroup, regex('prepared|tilberedt|Spedbarnsmat|Baby food|dishes|Retter'))) %>%
   
+  #Rename some ingredients
+  mutate(Ingredients = Ingredients %>%
+           str_replace('Loff, formstekt', 'Loff') %>%
+           str_replace('Bread, white, square-shaped', 'Bread, white')) %>%
+  
   #Create unique IDs for each ingredients
   group_by(Ingredients) %>%
   mutate(ID = cur_group_id()) %>%
@@ -80,9 +85,9 @@ temp <- all_weights %>%
   filter(!str_detect(Ingredients, 'iquid|lytende')) %>%
   #New ID's
   mutate(ID = case_when(
-    str_detect(Ingredients, 'ømme|our') ~ as.integer(607),
-    str_detect(Ingredients, 'crème') ~ as.integer(608),
-    Ingredients %in% c('kesam', 'quark') ~ as.integer(609),
+    str_detect(Ingredients, 'ømme|our') ~ as.integer(807),
+    str_detect(Ingredients, 'crème') ~ as.integer(808),
+    Ingredients %in% c('kesam', 'quark') ~ as.integer(809),
     TRUE ~ ID
   ))
   
@@ -164,6 +169,7 @@ temp <- list(
     c('Break beans', 'stk', '7', 'Assumed twice the weight of a sugar snap pea'),
     c('brødrasp/griljermel/bread crumb', 'dl', '67.6', 'FoodData Central'),
     c('Bread, semi-coarse', 'stk', '700', 'Meny, assortert utvalg'), #Rewrite to keep only Bread, coarse and Loff as bread 
+    c('Bread, white', 'stk', '715', 'Meny, Gammeldags loff'),
     c('Loff, formstekt', 'stk', '700', 'Meny, assortert utvalg'), #Rewrite to keep only Bread, coarse and Loff as bread 
     c('butternut squash', 'stk', '1360.8', 'River cottage every day'),
     c('cardamom pod', 'stk', '0.14', 'thespiceguide.com'),
@@ -184,6 +190,7 @@ temp <- list(
     c('chili paste', 'dl', '101.4', 'FoodData Central'),
     c('chili powder', 'dl', '54.1', 'FoodData Central'),
     c('Chili sauce/chilisaus', 'dl', '111.6', 'FoodData Central'),
+    c('ciabatta', 'stk', '62', 'Eldorado, Steinsovnbakt'),
     c('cinnamon', 'dl', '52.6', 'FoodData Central'),
     c('curry powder', 'dl', '42.6', 'FoodData Central'),
     c('cumin', 'dl', '40.6', 'FoodData Central'),
@@ -260,7 +267,7 @@ temp <- list(
     c('crab', 'stk', '500', 'Meny, portion sizes seafood'),
     c('crab shell', 'stk', '150', 'Meny, Lerøy seafood'),
     c('crab claw', 'portion', '500', 'Meny, portion sizes seafood'),
-    c('kreps', 'portion', '500', 'Meny, portion sizes seafood'),
+    c('kreps/lobster', 'portion', '500', 'Meny, portion sizes seafood'),
     c('Mackerel fillet, in tomato sauce, canned', 'stk', '170', 'Stabburet'),
     c('scampi', 'portion', '500', 'Meny portion size seafood'),
     c('shrimp paste', 'dl', '101.4', 'FoodData Central'),
@@ -395,7 +402,7 @@ temp <- all_weights %>%
   filter(is.na(ID)) %>%
   group_by(Ingredients) %>%
   mutate(ID = cur_group_id()) %>%
-  mutate(ID = ID + 609) %>% #can't use max(ID) from all_weights as it contains NA
+  mutate(ID = ID + 650) %>% #can't use max(ID) from all_weights as it contains NA
   ungroup() %>%
   separate_rows(Ingredients, sep = '/') 
   
@@ -415,14 +422,12 @@ all_weights <- all_weights %>%
 #Ingredients not needed in the final database 
 various$not_needed <- all_weights %>%
   
-  #Whole foodgroups not beeded
+  #Whole foodgroups not needed
   filter(str_detect(Foodgroup,
                     regex('prepared|tilberedt|Spedbarnsmat|Baby food|dishes|Retter|cakes|candy|Desert|Dressing|hjemmelaget|homemade|Grain breakfast cereal|knekkebrød|biscuits|pølser|cold cuts|pålegg|Fish spread|Fish products|snacks|candy|Meat products')) |
            
            #Use raw eggs as the standard for egg-size, bread semi coarse as standard for bread
            ((str_detect(Ingredients, 'egg|Egg') & str_detect(Ingredients, 'store|large|små|small|mellomstore|medium|pan-fried|stekt|rambled'))) |
-           
-           #ID %in% c(50, 51, 319, 466) |
            
            #Ingredients not needed
            ((str_detect(Ingredients, 'aby') & str_detect(Ingredients, 'carrot|gulrot'))) |
@@ -434,14 +439,14 @@ various$not_needed <- all_weights %>%
                              'Almond sticks', 'Swedish almond cake macaroon tea cake', 'Loff, spiral',
                              'cream substitute, vegetable fat', 'whipped cream, canned', 'instant coffee creamer', 'coffee creamer',
                              'kaffemelk', 'krem/topping på boks', 'melkepulver', 'syrnet melk, kulturmelk, kefir', 'cultured milk, kefir milk',
-                             'gammelost', 'traditional norwegian cheese, matured, gammelost', 'gomme', 'traditional norwegian cheese, gomme'
+                             'gammelost', 'traditional norwegian cheese, matured, gammelost', 'gomme', 'traditional norwegian cheese, gomme',
+                             'bread, white, spirally shaped'
                              )) %>%
   
             #Any ingredient of the above that should be kept
-            filter(!Ingredients %in% c('bread, semi-coarse', 'bread, white', 'crisp bread', 'flatbread, hard',
-                                       'smoke-cured ham', 'cured ham', 'spekeskinke', 'boiled ham', 'honning', 'sukker, brunt',
+            filter(!Ingredients %in% c('crisp bread', 'flatbread, hard','smoke-cured ham', 'cured ham', 'spekeskinke', 'boiled ham', 'honning', 'sukker, brunt',
                                        'sukker hvitt', 'anchovies, canned', 'anchovy fillets, canned', 'salmon, smoked, dry salted',
-                                       'mackerel fillet, in tomato sauce, canned', 'cod roe', 'tuna canned', 'ground meat, raw'))
+                                       'mackerel fillet, in tomato sauce, canned', 'cod roe', 'tuna canned', 'ground meat, raw', 'bread, semi-coarse', 'bread, white'))
   
 #Remove the not needed ingredients, add cloves
 all_weights <- all_weights %>%
@@ -450,16 +455,7 @@ all_weights <- all_weights %>%
           unit_enhet = 'stk',
           g = 0.09,
           reference = 'https:\\/\\/forum.norbrygg.no\\/threads\\/traden-for-dumme-sporsmal.23452\\/page-62',
-          ID = 700)
-
-#Save
-saveRDS(all_weights, './porsjoner_vekt_næringsinnhold/all_weights.Rds')
-
-#Use store bought breads and rolls as default
-
-#Change the names so they can be used to query the recipes
-names <- all_weights %>%
-  select(Ingredients, Foodgroup, ID) %>% unique() %>%
+          ID = 700) %>% 
   
   #Change some ingredient names to better fit with the recipes
   mutate(Ingredients = Ingredients %>%
@@ -481,16 +477,22 @@ names <- all_weights %>%
            str_replace('beans', 'bean') %>%
            str_replace('peas', 'pea') %>%
            str_replace('seeds', 'seed')
-         ) %>%
+  ) %>%
   #Conditionals
   mutate(Ingredients = case_when(
     str_detect(Ingredients, 'chop') & str_detect(Foodgroup, 'lamb') ~ paste0('lamb ', Ingredients),
     TRUE ~ Ingredients
-  ))
+  )) %>%
+  #Remove some duplicates (f.ex both storebought and homemade bread)
+  select(-Foodgroup) %>% unique()
+
+#Save
+saveRDS(all_weights, './porsjoner_vekt_næringsinnhold/all_weights.Rds')
+
+#Use store bought breads and rolls as default
 
 #Create query
-ref <- names %>%
-  select(-Foodgroup) %>%
+ref <- all_weights %>% select(-c(g, unit_enhet, reference)) %>% unique() %>% #Only keep names, not units
   mutate(Ingredients = str_replace_all(Ingredients, ',', '')) %>%
   
   #First two words contain the most important information to identify the ingredients

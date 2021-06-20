@@ -155,7 +155,7 @@ various$white_flour_products <- c('tortilla, fin', 'rolls', 'dinner rolls', 'fre
                                   'jalapeno cheddar wraps', 'burrito-size flour tortillas, warmed',
                                   'flour tortillas, or more if needed', 'flour tortillas, warmed', 'flour tortillas',
                                   'bread white', 'white bread', '\\btortilla\\b', 'naan bread', 'breadsticks', 'soft bread cubes',
-                                  'loff')
+                                  'loff', 'ciabatta')
 various$whole_flour_products <- c('whole wheat flour tortillas', 'EARTH GRAINSÂ® Extra Fiber Whole Wheat bread',
                                   'earth grainsâ® extra fiber whole wheat bread', 'crisp bread', 'bread crumb', 'flatbread')
 
