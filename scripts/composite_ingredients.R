@@ -7,8 +7,11 @@ setwd('C:/Users/aslau/Desktop/UiBV21/Master/Data/oppskrifter')
 #Composite ingredient ingredients
 Name = c('condensed cream of mushroom soup', 'condensed cream of chicken soup',
          'condensed cream of celery soup', 'refrigerated buttermilk biscuit dough',
-         'fish cakes coarse')
+         'fish cakes coarse', 'worcestershire sauce', 'fish sauce', 'taco sauce',
+         'oyster sauce', 'hot pepper sauce', 'hoisin sauce', 'pesto', 'pizza sauce',
+         'chunky salsa', 'mango salsa', 'guacamole', 'cranberry sauce')
 Ingredients = c(
+#Concentrated cream of soups
 #From https://onceamonthmeals.com/blog/recipe-roundups/homemade-cream-of-something-soup/
 '2 clove garlic
 0.33 cup onion, diced
@@ -31,7 +34,8 @@ Ingredients = c(
 0.25 cup wheat flour
 1 cup milk
 0.75 cup broth',
-                
+ 
+#Refrigerated buttermilk biscuits               
 #From https://www.finecooking.com/recipe/buttermilk-biscuit-dough
                 '8 ounce wheat flour
 2 tsp baking powder
@@ -40,7 +44,8 @@ Ingredients = c(
 0.5 tsp table salt
 6 tbsp cold unsalted butter
 0.75 cup milk',
-                
+  
+#Fish cakes              
 #From https://www.matprat.no/oppskrifter/familien/grove-fiskekaker-med-karristuede-rotgronnsaker/
                 '600 g haddock
 1 tsp salt
@@ -49,7 +54,142 @@ Ingredients = c(
 1 dl milk
 0.25 tsp pepper
 2 tbsp leek
-2 tbsp butter')
+2 tbsp butter',
+
+#Worcestershire sauce
+#From https://practicalselfreliance.com/homemade-worcestershire-sauce/
+'0.25 cup raisins
+0.25 cup boiling water
+0.5 cup molasses
+0.25 cup tamarind paste
+2 ounce can anchovies
+1 stk onion, coarsely chopped
+2.5 cm of fresh ginger
+6 clove garlic, crushed
+2 cup white vinegar, divided
+2 cardamom pods
+2 tbsp salt
+2 tbsp brown sugar
+1 tbsp red pepper flakes
+1 tbsp dry mustard
+1 tsp whole cloves
+1 tsp black pepper whole
+0.5 tsp ground cinnamon',
+
+#Fish sauce
+#From https://nourishingjoy.com/homemade-fish-sauce/
+'6 clove garlic
+3 tbsp  salt
+6 bay leaf
+2 tsp whole black pepper whole
+1.5 pound small herring
+1.5 cup water, as needed
+1 tsp salt',
+
+#Taco sauce
+#From https://www.kidspot.com.au/kitchen/recipes/homemade-taco-sauce/2onnimeh
+'10 ml olive oil
+1 stk onion, finely chopped
+1 stk sweet pepper, finely chopped
+1 clove garlic, minced
+1 pinch salt
+400 g diced tomatoes
+125 ml Vegetable broth
+20 ml white vinegar
+2 tsp cumin
+2 tsp smokey paprika powder
+1 tsp sugar',
+
+#Oyster sauce
+#From https://www.wikihow.com/Make-Oyster-Sauce
+'0.5 pound shucked oysters with liquid
+1 tbsp water
+1 tsp salt
+2 tbsp light soy sauce
+0.5 tbsp dark soy sauce',
+
+#Hot pepper sauce
+#From https://www.chilipeppermadness.com/recipes/cayenne-pepper-sauce/
+'10 ounce chili peppers
+5 clove garlic
+0.5 cup white wine vinegar
+1 tsp salt',
+
+#Hoisin sauce
+#From https://www.bbcgoodfood.com/recipes/hoisin-sauce
+'4 tbsp soy sauce
+2 tbsp smooth peanut butter
+1 tbsp dark brown sugar
+2 tsp rice wine vinegar
+1 clove garlic, finely crushed
+2 tsp sesame seed oil
+hot sauce, to taste
+0.125 tsp black pepper',
+
+#Pesto
+#From https://www.simplyrecipes.com/recipes/fresh_basil_pesto/
+#Exchanging half of the basil for baby spinach as per options to have greens found in SHARP-ID
+'1 cup fresh basil leaf
+1 cup spinach
+2 ounce Parmesan cheese
+0.5 cup extra virgin olive oil
+0.33 cup pine nuts
+3 clove garlic
+0.25 tsp salt
+0.125 tsp black pepper',
+
+#Pizza sauce
+#From https://www.bbcgoodfood.com/recipes/pizza-sauce
+'2 tbsp olive oil
+1 stk onion, finely chopped
+1 clove garlic crushed
+800 g canned chopped tomatoes
+3 tbsp tomato purée
+1 bay leaf
+2 tbsp dried oregano
+2 tsp brown sugar
+1 bunch basil, finely chopped',
+
+#Chunky salsa
+#From https://www.tine.no/oppskrifter/lunsj-og-smaretter/salater/hjemmelaget-salsa
+'4 stk tomatoes
+1 clove garlic
+2 stk scallion
+1 stk red chili
+0.5 stk red onion
+1 stk lime
+0.5 tsp salt
+2 tbsp olive oil
+1 bunch fresh coriander',
+
+#Mango salsa
+#From https://www.matprat.no/oppskrifter/kos/mangosalsa/
+'1 stk mango
+1 stk red onion
+1 stk tomato
+1 stk red chili
+0.5 bunch coriander
+1 tbsp vegetable oil
+0.5 tsp salt
+0.5 tsp pepper
+1 stk lime',
+
+#Guacamole
+#From https://www.matprat.no/oppskrifter/kos/guacamole1/
+'2 stk avocado
+1.5 tbsp lime juice
+1.5 stk tomato
+1 clove garlic
+0.5 stk red chili
+2 tbsp coriander
+0.5 tsp salt
+0.25 tsp pepper',
+
+#Cranberry sauce
+#From https://www.rhubarbarians.com/how-to-make-jellied-cranberry-sauce/
+'12 ounce fresh cranberry
+1 cup sugar
+1 cup water')
 
 composite_ingredients <- tibble(Name = Name, Ingredients = Ingredients)
 
@@ -145,7 +285,7 @@ composite_ingredients <- composite_ingredients %>%
 
 #Run through volume to weight database
 #Reference volume to weight comparisons for different foods
-ref <- readRDS('../porsjoner_vekt_næringsinnhold/food_weight_ref.Rds')
+reference <- readRDS('../porsjoner_vekt_næringsinnhold/food_weight_ref.Rds')
 
 #Helper functions
 checkRef <- function(ingredient, reference){
@@ -221,12 +361,28 @@ checkRef <- function(ingredient, reference){
 }
 checkRefList <- function(df){
   
-  results <- lapply(df$Ingredients, checkRef, reference = ref)
+  results <- lapply(df$Ingredients, checkRef, reference = reference)
   
 }
 
 #Get ID
 temp <- checkRefList(composite_ingredients) %>% bind_rows() %>% full_join(composite_ingredients) %>% unique()
+
+#Fix errors
+temp <- temp %>%
+  mutate(
+  ref = case_when(
+    Ingredients == 'red pepper flakes' ~ 'chili flake',
+    Ingredients == 'rice wine vinegar' ~ 'vinegar',
+    Ingredients == 'hot sauce, to taste' ~ 'hot sauce',
+    Ingredients == 'lime juice' ~ 'lime juice',
+    TRUE ~ ref),
+  ID = case_when(
+    Ingredients == 'red pepper flakes' ~ reference %>% filter(first_word == 'chili' & second_word == 'flake') %>% select(ID) %>% as.numeric(.),
+    str_detect(Ingredients, 'vinegar') ~ reference %>% filter(first_word == 'vinegar' & second_word == 'nothing') %>% select(ID) %>% as.numeric(.),
+    str_detect(Ingredients, 'spinach') ~ reference %>% filter(first_word == 'spinach' & second_word == 'nothing') %>% select(ID) %>% as.numeric(.),
+    str_detect(Ingredients, 'stock|broth|hot sauce') & !str_detect(Ingredients, 'cube|dice') ~ 0,
+    TRUE ~ ID)) 
 
 #Calculate the weight of each ingredient
 various$weights <- readRDS('../porsjoner_vekt_næringsinnhold/all_weights.Rds')
@@ -265,13 +421,31 @@ various$ingredients_weight <- right_join(weights, temp, by = c('ID', 'unit_enhet
   rename(Ingredients = Ingredients.y) %>% select(-ref)
 
 #Run through SHARP indicators to calculate CO2 and landuse
-ref <- readRDS('../sharp_ref.Rds')
+reference <- readRDS('../sharp_ref.Rds')
 SHARP <- readRDS('../sharp_db.Rds')
 
 various$with_Sharp_ref <- checkRefList(various$ingredients_weight) %>% bind_rows() %>% unique()
 
+#Fix errors
+various$with_Sharp_ref <- various$with_Sharp_ref %>%
+  mutate(
+    ref = case_when(
+      Ingredients == 'red pepper flakes' ~ 'chili flake',
+      Ingredients == 'rice wine vinegar' ~ 'vinegar',
+      Ingredients == 'hot sauce, to taste' ~ 'hot sauce',
+      Ingredients == 'vegetable broth' ~ 'vegetable broth',
+      Ingredients == 'bunch basil, finely chopped' ~ 'basil',
+      TRUE ~ ref),
+    ID = case_when(
+      #Fix the double vinegar entry in SHARP
+      str_detect(Ingredients, 'vinegar') ~ reference %>% filter(first_word == 'vinegar' & second_word == 'nothing') %>% select(ID) %>% filter(ID == min(ID)) %>% as.numeric(.),
+      Ingredients == 'can anchovies' ~ reference %>% filter(first_word == 'anchovy' & second_word == 'canned') %>% select(ID) %>% as.numeric(),
+      str_detect(Ingredients, 'stock|broth|red pepper flakes|basil') & !str_detect(Ingredients, 'cube|dice') ~ 0,
+      TRUE ~ ID)) 
+  
+
 #Final df with co2/landuse pr kg
-final <- inner_join(various$with_Sharp_ref, various$ingredients_weight) %>% inner_join(., SHARP, by ='ID') %>%
+final <- full_join(various$with_Sharp_ref, various$ingredients_weight) %>% left_join(., SHARP, by ='ID') %>%
   select(Name, Ingredients.x, Amounts_kg, `GHGE of 1 kg food as consumed_kgCO2eq`, `Land use of 1 kg food as consumed_m2/yr`) %>%
   
   #CO2/Landuse by each ingredient in the composite ingredient
@@ -296,3 +470,5 @@ final <- inner_join(various$with_Sharp_ref, various$ingredients_weight) %>% inne
 
 #Save
 saveRDS(final, 'composite_ingredients.Rds')
+
+#Recheck the oyster sauce recipe

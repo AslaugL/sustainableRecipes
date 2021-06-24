@@ -294,6 +294,8 @@ temp <- list(
     c('oyster sauce', 'dl', '304.3', 'FoodData Central'),
     c('Walnuts', 'stk', '7', 'Google'),
     c('wine', 'glass', '110', 'vinmonopolet'),
+    c('molasses', 'dl', '142.44', 'FoodData Central'),
+    c('tamarind paste', 'dl', '101.44', 'FoddData Central'),
     
     #MISSING
     c('Einebær/juniper berry', 'stk', '', ''),
