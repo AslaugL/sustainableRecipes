@@ -9,7 +9,8 @@ Name = c('condensed cream of mushroom soup', 'condensed cream of chicken soup',
          'condensed cream of celery soup', 'refrigerated buttermilk biscuit dough',
          'fish cakes coarse', 'worcestershire sauce', 'fish sauce', 'taco sauce',
          'oyster sauce', 'hot pepper sauce', 'hoisin sauce', 'pesto', 'pizza sauce',
-         'chunky salsa', 'mango salsa', 'guacamole', 'cranberry sauce')
+         'chunky salsa', 'mango chutney', 'guacamole', 'cranberry sauce', 'tomato sauce',
+         'potato flatbread', 'duck sauce', 'shrimp paste')
 Ingredients = c(
 #Concentrated cream of soups
 #From https://onceamonthmeals.com/blog/recipe-roundups/homemade-cream-of-something-soup/
@@ -162,17 +163,15 @@ hot sauce, to taste
 2 tbsp olive oil
 1 bunch fresh coriander',
 
-#Mango salsa
-#From https://www.matprat.no/oppskrifter/kos/mangosalsa/
+#Mango chutney
+#From https://www.matprat.no/oppskrifter/gjester/mangochutney/
 '1 stk mango
-1 stk red onion
-1 stk tomato
+1 clove garlic
+1 tsp ginger
 1 stk red chili
-0.5 bunch coriander
-1 tbsp vegetable oil
-0.5 tsp salt
-0.5 tsp pepper
-1 stk lime',
+1 tbsp vinegar
+1 tbsp sugar
+0.5 tsp salt',
 
 #Guacamole
 #From https://www.matprat.no/oppskrifter/kos/guacamole1/
@@ -189,7 +188,54 @@ hot sauce, to taste
 #From https://www.rhubarbarians.com/how-to-make-jellied-cranberry-sauce/
 '12 ounce fresh cranberry
 1 cup sugar
-1 cup water')
+1 cup water',
+
+#Tomato sauce
+#From https://www.simplyrecipes.com/recipes/basic_tomato_sauce/
+'2 tbsp extra virgin olive oil
+0.5 stk onion, finely chopped
+1 stk carrot 
+1 stalk celery
+2 tbsp parsley
+1 clove garlic
+0.5 tsp dried basil
+1.75 pound of tomato
+1 tsp tomato paste
+Salt and freshly ground black pepper to taste',
+
+#Potato flatbread
+#From https://thegardeningfoodie.com/2-ingredient-potato-flatbread/
+'120 g wheat flour
+220 g potato',
+
+#Duck sauce
+#From https://www.thespruceeats.com/chinese-duck-sauce-plum-recipe-1806745
+'1 pound plum
+1 pound apricot 
+1 cup vinegar
+0.75 cup water
+0.25 cup balsamic vinegar
+1 cup cider vinegar
+1 cup brown sugar
+1 cup white granulated sugar
+0.5 cup  lemon juice
+0.25 cup peeled and chopped ginger
+1 stk onion (sliced thin)
+1 chili
+2 clove garlic
+4 tsp salt
+1 tbsp toasted mustard seeds
+1 stk cinnamon stick',
+
+#Shrimp paste
+#From https://www.saveur.com/article/Recipes/Shrimp-Paste/
+'0.5 pound unsalted butter
+1 pound shrimp
+0.5 tsp salt
+0.5 tsp ground black pepper
+0.25 cup sherry
+2 tbsp lemon juice
+0.25 tsp cayenne pepper')
 
 composite_ingredients <- tibble(Name = Name, Ingredients = Ingredients)
 
@@ -418,7 +464,13 @@ various$ingredients_weight <- right_join(weights, temp, by = c('ID', 'unit_enhet
   #Cleanup
   select(Name, Ingredients.y, Amounts_kg, ref, Amounts, unit_enhet) %>%
   unique() %>% #Got some values twice as inner_join got both norwegian and english translated names
-  rename(Ingredients = Ingredients.y) %>% select(-ref)
+  rename(Ingredients = Ingredients.y) %>% select(-ref) %>%
+  
+  #Change some names to fit the SHARP database
+  mutate(Ingredients = Ingredients %>%
+          str_replace('can anchovies', 'anchovy canned') %>%
+          str_replace('cranberry', 'cranberries') %>%
+           str_replace('sherry', 'fortified and liqueur wines'))
 
 #Run through SHARP indicators to calculate CO2 and landuse
 reference <- readRDS('../sharp_ref.Rds')
@@ -439,7 +491,6 @@ various$with_Sharp_ref <- various$with_Sharp_ref %>%
     ID = case_when(
       #Fix the double vinegar entry in SHARP
       str_detect(Ingredients, 'vinegar') ~ reference %>% filter(first_word == 'vinegar' & second_word == 'nothing') %>% select(ID) %>% filter(ID == min(ID)) %>% as.numeric(.),
-      Ingredients == 'can anchovies' ~ reference %>% filter(first_word == 'anchovy' & second_word == 'canned') %>% select(ID) %>% as.numeric(),
       str_detect(Ingredients, 'stock|broth|red pepper flakes|basil') & !str_detect(Ingredients, 'cube|dice') ~ 0,
       TRUE ~ ID)) 
   
@@ -466,7 +517,15 @@ final <- full_join(various$with_Sharp_ref, various$ingredients_weight) %>% left_
   select(-c(Landuse, CO2, weight)) %>%
   
   #Rename columns
-  rename(Ingredients = Name)
+  rename(Ingredients = Name) %>%
+  
+  #Add foodgroup/L1 from sharp
+  mutate(L1 = case_when(
+    str_detect(Ingredients, 'salsa|soup|sauce|chutney|guacamole|pesto|paste') ~ 'Seasoning, sauces and condiments',
+    str_detect(Ingredients, 'fish') ~ 'Fish, seafood, amphibians, reptiles and invertebrates',
+    str_detect(Ingredients, 'dough|bread') ~ 'Grains and grain-based products'
+    
+  ))
 
 #Save
 saveRDS(final, 'composite_ingredients.Rds')

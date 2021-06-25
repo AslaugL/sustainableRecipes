@@ -154,6 +154,7 @@ temp <- list(
     c('sheep head', 'stk', '1100', 'Nortura, Eldhus Smalahove'),
     c('sausage cumberland', 'stk', '56.75', 'Tesco British Cumberland Sausages'),
     c('chicken diced', 'dl', '57.14', 'https://www.eatthismuch.com/food/nutrition/chicken-breast,454/'),
+    c('rabbit', 'stk', '2500', 'http://grillogmat.blogspot.com/2013/04/kanin-med-smak-av-rosmarin-og-lime.html'),
     
     #Bread
     c('Naan bread', 'stk', '130', 'Santa Maria'),
@@ -165,12 +166,14 @@ temp <- list(
     c('baby corn', 'stk', '10', 'BAMA, mais mini'),
     c('bagel', 'stk', '85', 'Meny, Hatting'),
     c('bay leaf', 'stk', '0.2', 'Yahoo Answers'),
-    c('Bean sprout', 'dl', '97.3', 'FoodData Central'),
+    c('Bean sprout', 'neve/dl', '97.3', 'FoodData Central'),
+    c('Beans, green, raw', 'neve/dl', '40', 'FoodData Central'),
+    c('olives, black, in oil, canned', 'neve', '50', 'Same as dl'),
+    c('oliven, svarte, i olje, hermetisk', 'neve', '50', 'Same as dl'),
     c('Break beans', 'stk', '7', 'Assumed twice the weight of a sugar snap pea'),
     c('brødrasp/griljermel/bread crumb', 'dl', '67.6', 'FoodData Central'),
     c('Bread, semi-coarse', 'stk', '700', 'Meny, assortert utvalg'), #Rewrite to keep only Bread, coarse and Loff as bread 
-    c('Bread, white', 'stk', '715', 'Meny, Gammeldags loff'),
-    c('Loff, formstekt', 'stk', '700', 'Meny, assortert utvalg'), #Rewrite to keep only Bread, coarse and Loff as bread 
+    c('Bread, white/Loff, formstekt', 'stk', '715', 'Meny, Gammeldags loff'),
     c('butternut squash', 'stk', '1360.8', 'River cottage every day'),
     c('cardamom pod', 'stk', '0.14', 'thespiceguide.com'),
     c('cardamom', 'dl', '39.2', 'FoodData Central'),
@@ -229,7 +232,7 @@ temp <- list(
     c('pickled pepper', 'dl', '101.4', 'FoodData Central'),
     c('puff pastry', 'stk', '75', 'Meny, Bakeverket'),
     c('ruccola', 'dl/neve', '8.5', 'FoodData Central'),
-    c('Taco sauce', 'dl', '101.4', 'FoodData Central'),
+    c('Taco sauce', 'glass', '230', 'Rema1000 and Old El Paso'),
     c('tandoori spice', 'dl', '106.8', 'FoodData Central'),
     c('Tomatoes, canned', 'box', '400', 'Mutti, Eldorado'),
     c('Tomatoes, canned', 'can', '400', 'Mutti, Eldorado'),
@@ -260,6 +263,9 @@ temp <- list(
     c('allspice', 'dl', '40.58', 'FoodData Central'),
     c('pine nuts', 'neve', '20', 'As other nuts'),
     c('radish', 'bunch', '130', 'Kolonial'),
+    c('grapes, with seeds', 'neve', '70', 'As dl'),
+    c('pea, frozen', 'neve', '60', 'As dl'),
+    c('sugar snap peas', 'dl/neve', '26.95', 'FoodData Central'),
     
     #Seafood
     c('Anchovies, canned', 'box', '55', 'Abba'),
@@ -442,13 +448,14 @@ various$not_needed <- all_weights %>%
                              'cream substitute, vegetable fat', 'whipped cream, canned', 'instant coffee creamer', 'coffee creamer',
                              'kaffemelk', 'krem/topping på boks', 'melkepulver', 'syrnet melk, kulturmelk, kefir', 'cultured milk, kefir milk',
                              'gammelost', 'traditional norwegian cheese, matured, gammelost', 'gomme', 'traditional norwegian cheese, gomme',
-                             'bread, white, spirally shaped'
+                             'bread, white, spirally shaped', 'loff, spiral', 'grapes, without seeds', 'beans, green, frozen'
                              )) %>%
   
             #Any ingredient of the above that should be kept
             filter(!Ingredients %in% c('crisp bread', 'flatbread, hard','smoke-cured ham', 'cured ham', 'spekeskinke', 'boiled ham', 'honning', 'sukker, brunt',
                                        'sukker hvitt', 'anchovies, canned', 'anchovy fillets, canned', 'salmon, smoked, dry salted',
-                                       'mackerel fillet, in tomato sauce, canned', 'cod roe', 'tuna canned', 'ground meat, raw', 'bread, semi-coarse', 'bread, white'))
+                                       'mackerel fillet, in tomato sauce, canned', 'cod roe', 'tuna canned', 'ground meat, raw', 'bread, semi-coarse', 'bread, white',
+                                       'cream cracker', 'salami'))
   
 #Remove the not needed ingredients, add cloves
 all_weights <- all_weights %>%
@@ -473,6 +480,8 @@ all_weights <- all_weights %>%
            str_replace('leaf beet, mangold', 'chard') %>%
            str_replace('aubergine', 'eggplant') %>%
            str_replace('bread, semi-coarse', 'bread') %>%
+           str_replace('cream cracker', 'cracker cream') %>%
+           str_replace('grapes, with seeds', 'grapes') %>%
            
            #Change all plural forms to singular
            str_replace('fillets', 'fillet') %>%
@@ -485,7 +494,7 @@ all_weights <- all_weights %>%
     str_detect(Ingredients, 'chop') & str_detect(Foodgroup, 'lamb') ~ paste0('lamb ', Ingredients),
     TRUE ~ Ingredients
   )) %>%
-  #Remove some duplicates (f.ex both storebought and homemade bread)
+  #Remove some duplicates (f.ex both storebought and homemade bread, or where the english and norwegian name is the same)
   select(-Foodgroup) %>% unique()
 
 #Save
@@ -525,6 +534,7 @@ ref <- all_weights %>% select(-c(g, unit_enhet, reference)) %>% unique() %>% #On
       Ingredients == 'bog blueberries' ~ 'bog blueberries',
       Ingredients == 'cured leg of mutton' ~ 'mutton',
       Ingredients == 'whole-grain pasta' ~ 'pasta',
+      Ingredients == 'grapess' ~ 'grapes',
       TRUE ~ first_word),
     
     second_word = case_when(
@@ -542,7 +552,7 @@ ref <- all_weights %>% select(-c(g, unit_enhet, reference)) %>% unique() %>% #On
       Ingredients == 'quinoa tørr' ~ 'nothing',
       Ingredients == 'sugar snap peas' ~ 'nothing',
       Ingredients == 'mackerel fillet, in tomato sauce, canned' ~ 'tomato',
-      Ingredients %in% c('olives black in oil canned', 'oliven, svarte, i olje, hermetisk') ~ 'nothing',
+      Ingredients %in% c('olives black in oil canned', 'oliven, svarte, i olje, hermetisk') ~ 'black',
       Ingredients == 'black pepper whole' ~ 'whole',
       Ingredients == 'black pepper grounded' ~ 'ground',
       Ingredients == 'chick pea flour' ~ 'flour',
@@ -562,6 +572,7 @@ ref <- all_weights %>% select(-c(g, unit_enhet, reference)) %>% unique() %>% #On
       Ingredients == 'ginger root' ~ 'nothing',
       Ingredients == 'spinach, raw' ~ 'nothing',
       Ingredients == 'mushroom common' ~ 'nothing',
+      Ingredients == 'olives, black, in oil, canned' ~ 'black',
       TRUE ~ second_word
     )
   ) %>%

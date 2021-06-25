@@ -182,7 +182,9 @@ temp <- bind_rows(recipes, .id = 'Country') %>%
            str_replace('garlic salt|celery salt', 'salt') %>% #To avoid them being classified as "garlic" or "celery"
            str_replace('large shrimp, peeled and deveined and butterflied', 'shrimp') %>%
            str_replace('ruccola', 'salad rocket') %>% #What ruccola is called in sharp db
-           str_replace('sea salt', 'salt')
+           str_replace('sea salt', 'salt') %>%
+           str_replace('pasta sauce', 'tomato sauce') %>%
+           str_replace('barbecue', 'barbeque')
          ) %>%
   mutate(
     Ingredients = case_when(
@@ -425,7 +427,8 @@ SHARP <- SHARP %>%
            str_replace('hazelnuts', 'nuts hazel') %>%
            str_replace('maize oil', 'corn oil') %>%
            str_replace('short pastry doughs pate brisee', 'pastry dough') %>%
-           str_replace('tap water', 'water')
+           str_replace('tap water', 'water') %>%
+           str_replace('pasta sauce', 'tomato sauce') #PAsta sauces are tomato sauces
 
          ) %>%
 
@@ -549,6 +552,19 @@ sharp_ref <- SHARP %>%
       Ingredients == 'refrigerated buttermilk biscuit dough' ~ 'refrigerated buttermilk biscuit dough',
       Ingredients == 'fish cakes coarse' ~ 'fish cakes coarse',
       Ingredients == 'vegetables and vegetable products' ~ 'vegetables and vegetable products',
+      Ingredients == 'cranberry sauce' ~ 'cranberry sauce',
+      Ingredients == 'chunky salsa' ~ 'chunky salsa',
+      Ingredients == 'fish sauce' ~ 'fish sauce',
+      Ingredients == 'hoisin sauce' ~ 'hoisin sauce',
+      Ingredients == 'hot pepper sauce' ~ 'hot pepper sauce',
+      Ingredients == 'mango chutney' ~ 'mango chutney',
+      Ingredients == 'oyster sauce' ~ 'oyster sauce',
+      Ingredients == 'pizza sauce' ~ 'pizza sauce',
+      Ingredients == 'taco sauce' ~ 'taco sauce',
+      Ingredients == 'tomato sauce' ~ 'tomato sauce',
+      Ingredients == 'worcestershire sauce' ~ 'worcestershire sauce',
+      Ingredients == 'duck sauce' ~ 'duck sauce',
+      Ingredients == 'shrimp paste' ~ 'shrimp paste',
       TRUE ~ first_word),
 
     second_word = case_when(
@@ -601,6 +617,20 @@ sharp_ref <- SHARP %>%
       Ingredients == 'vegetables and vegetable products' ~ 'nothing',
       Ingredients == 'sunflower seed oil' ~ 'oil',
       Ingredients == 'vegetables, pickled' ~ 'pickled',
+      Ingredients == 'cranberry sauce' ~ 'nothing',
+      Ingredients == 'chunky salsa' ~ 'nothing',
+      Ingredients == 'fish sauce' ~ 'nothing',
+      Ingredients == 'hoisin sauce' ~ 'nothing',
+      Ingredients == 'hot pepper sauce' ~ 'nothing',
+      Ingredients == 'mango chutney' ~ 'nothing',
+      Ingredients == 'oyster sauce' ~ 'nothing',
+      Ingredients == 'pizza sauce' ~ 'nothing',
+      Ingredients == 'taco sauce' ~ 'nothing',
+      Ingredients == 'worcestershire sauce' ~ 'nothing',
+      Ingredients == 'tomato sauce' ~ 'nothing',
+      Ingredients == 'vinegar, wine' ~ 'wine',
+      Ingredients == 'duck sauce' ~ 'nothing',
+      Ingredients == 'shrimp paste' ~ 'nothing',
       TRUE ~ second_word
     )
   ) %>%
@@ -714,7 +744,7 @@ test2 <- bind_rows(test) %>%
   mutate(ref = case_when(
 
     #Ingredients not in SHARP
-    str_detect(Ingredients, 'olive paste tapenade|potato soft flatbread|coriander seed|mustard seed|fennel seed|caraway seed|shrimp paste|stock/broth|canned tomato sauce|tomato sauce canned|oyster sauce|pasta sauce|dry onion soup mix|onion powder|mango chutney|corn tortillas|sausage flavored pasta sauce|alfredo-style pasta sauce|tomato beans|curry paste|egg noodle|poultry seasoning|fish sauce|ginger garlic paste|lemongrass|bean dip|duck sauce|liquid smoke flavoring|caper') ~ '',
+    str_detect(Ingredients, 'olive paste tapenade|coriander seed|mustard seed|fennel seed|caraway seed|stock/broth|dry onion soup mix|onion powder|corn tortillas|tomato beans|curry paste|egg noodle|poultry seasoning|ginger garlic paste|lemongrass|bean dip|liquid smoke flavoring|caper') ~ '',
     str_detect(Ingredients, 'chili') & str_detect(Ingredients, 'powder|sauce|flake|paste') ~ '',
 
     #Mistakes
@@ -757,6 +787,12 @@ test2 <- bind_rows(test) %>%
     Ingredients == 'smoked pollock' ~ 'smoked fish',
     Ingredients == 'onion pearl' ~ 'onion',
     str_detect(Ingredients, 'carrot') & !str_detect(Ingredients, 'juice') ~ 'carrot',
+    str_detect(Ingredients, 'tomato sauce') ~ 'tomato sauce',
+    str_detect(org_ingredients, 'tomato sauce') ~ 'tomato sauce',
+    Ingredients == 'duck sauce' ~ 'duck sauce',
+    Ingredients == 'fish sauce' ~ 'fish sauce',
+    Ingredients == 'oyster sauce' ~ 'oyster sauce',
+    Ingredients == 'mango chutney' ~ 'mango chutney',
     TRUE ~ ref,
   )) %>%
   mutate(ID = case_when(
@@ -799,6 +835,12 @@ test2 <- bind_rows(test) %>%
     Ingredients == 'smoked pollock' ~ sharp_ref %>% filter(first_word == 'smoked' & second_word == 'fish') %>% select(ID) %>% as.numeric(.),
     Ingredients == 'onion pearl' ~ sharp_ref %>% filter(first_word == 'onion' & second_word == 'nothing') %>% select(ID) %>% as.numeric(.),
     str_detect(Ingredients, 'carrot') & !str_detect(Ingredients, 'juice') ~ sharp_ref %>% filter(first_word == 'carrot' & second_word == 'nothing') %>% select(ID) %>% as.numeric(.),
+    str_detect(Ingredients, 'tomato sauce') ~ sharp_ref %>% filter(first_word == 'tomato sauce' & second_word == 'nothing') %>% select(ID) %>% as.numeric(.),
+    str_detect(org_ingredients, 'tomato sauce') ~ sharp_ref %>% filter(first_word == 'tomato sauce' & second_word == 'nothing') %>% select(ID) %>% as.numeric(.),
+    Ingredients == 'duck sauce' ~ sharp_ref %>% filter(first_word == 'duck sauce' & second_word == 'nothing') %>% select(ID) %>% as.numeric(.),
+    Ingredients == 'fish sauce' ~ sharp_ref %>% filter(first_word == 'fish sauce' & second_word == 'nothing') %>% select(ID) %>% as.numeric(.),
+    Ingredients == 'oyster sauce' ~ sharp_ref %>% filter(first_word == 'oyster sauce' & second_word == 'nothing') %>% select(ID) %>% as.numeric(.),
+    Ingredients == 'mango chutney' ~ sharp_ref %>% filter(first_word == 'mango chutney' & second_word == 'nothing') %>% select(ID) %>% as.numeric(.),
     ref == '' ~ 0,
     TRUE ~ ID
   ))
@@ -831,7 +873,7 @@ temp2 <- bind_rows(various$translated_norwegian) %>%
   mutate(ref = case_when(
     
     #Ingredients not in SHARP
-    str_detect(Ingredients, 'nudler, med egg, tørr|potato soft flatbread|coriander seed|mustard seed|fennel seed|caraway seed|shrimp paste|stock/broth|canned tomato sauce|tomato sauce canned|oyster sauce|pasta sauce|dry onion soup mix|onion powder|mango chutney|corn tortillas|sausage flavored pasta sauce|alfredo-style pasta sauce|tomato beans|curry paste|egg noodle|poultry seasoning|fish sauce|ginger garlic paste|lemongrass|bean dip|duck sauce|liquid smoke flavoring|caper') ~ '',
+    str_detect(Ingredients, 'nudler, med egg, tørr|coriander seed|mustard seed|fennel seed|caraway seed|stock/broth|dry onion soup mix|onion powder|corn tortillas|tomato beans|curry paste|egg noodle|poultry seasoning|ginger garlic paste|lemongrass|bean dip|liquid smoke flavoring|caper') ~ '',
     str_detect(Ingredients, 'chili') & str_detect(Ingredients, 'powder|sauce|flake|paste') ~ '',
 
     #Mistakes
@@ -841,7 +883,6 @@ temp2 <- bind_rows(various$translated_norwegian) %>%
     Ingredients == 'oil' ~ 'vegetable oil', #It would typically be some type of vegetable oil
     Ingredients == 'corn starch' ~ '',
     Ingredients == 'coriander seed' ~ '',
-    Ingredients == 'fish sauce' ~ '',
     Ingredients == 'fatty fish, raw' ~ 'salvelinus alpinus',
     org_ingredients == 'margarin' ~ 'margarine',
     org_ingredients == 'smør' ~ 'butter',
@@ -856,7 +897,6 @@ temp2 <- bind_rows(various$translated_norwegian) %>%
     Ingredients == 'oil' ~ sharp_ref %>% filter(first_word == 'oil' & second_word == 'vegetable') %>% select(ID) %>% as.numeric(.),
     Ingredients == 'corn starch' ~ 0,
     Ingredients == 'coriander seed' ~ 0,
-    Ingredients == 'fish sauce' ~ 0,
     Ingredients == 'fatty fish, raw' ~ 0,
     org_ingredients == 'margarin' ~ sharp_ref %>% filter(first_word == 'margarine' & second_word == 'nothing') %>% select(ID) %>% as.numeric(.),
     org_ingredients == 'smør' ~ sharp_ref %>% filter(first_word == 'butter' & second_word == 'nothing') %>% select(ID) %>% as.numeric(.),

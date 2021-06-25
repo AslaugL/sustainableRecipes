@@ -631,7 +631,7 @@ separate(., Amounts, c('Amounts', 'unit_enhet'), sep = ' ') %>%
   mutate(Amounts = case_when(
     unit_enhet == 'cup' ~ Amounts * 2.45,
     unit_enhet == 'l' ~ Amounts * 10,
-    unit_enhet == 'ml' ~ Amounts / 10,
+    unit_enhet == 'ml' ~ Amounts / 100,
     unit_enhet == 'tbsp' ~ Amounts / 6.67,
     unit_enhet == 'tsp' ~ Amounts / 20,
     unit_enhet == 'krm' ~ Amounts / 100,
@@ -801,7 +801,7 @@ various$with_reference <- readRDS('with_ref_NOR.Rds')
 
 references <- ref %>% mutate_at(c('first_word', 'second_word'), ~tolower(.))
 
-#Look through and fix errors, several corn cobs have not been properly translated
+#Look through and fix errors
 temp <- bind_rows(various$with_reference) %>%
   full_join(toRef) %>% unique() %>%
   filter(!is.na(Amounts)) %>%
@@ -852,6 +852,7 @@ temp <- bind_rows(various$with_reference) %>%
       Ingredients == 'shrimp salad' ~ 'shrimp salad',
       Ingredients == 'peas' ~ 'pea',
       str_detect(Ingredients, 'maisstivelse') ~ 'maisstivelse',
+      Ingredients == 'fish soup base' ~ '',
       TRUE ~ ref),
     ID = case_when(
       str_detect(Ingredients, 'eggplant') ~ as.numeric(references[str_which(tolower(references$first_word), 'eggplant'),1]),
@@ -906,6 +907,7 @@ temp <- bind_rows(various$with_reference) %>%
       str_detect(Ingredients, 'naan bread') ~ references %>% filter(first_word == 'naan' & second_word == 'bread') %>% select(ID) %>% as.numeric(.),
       Ingredients %in% c('ginger', 'finely chopped,  ginger', 'ginger,', 'grated  ginger') ~ references %>% filter(first_word == 'ginger' & second_word == 'nothing') %>% select(ID) %>% as.numeric(.),
       str_detect(Ingredients, 'maisstivelse') ~ references %>% filter(first_word == 'maisstivelse' & second_word == 'nothing') %>% select(ID) %>% as.numeric(.),
+      Ingredients == 'fish soup base' ~ 0,
       TRUE ~ ID)) %>%
 
   mutate(unit_enhet = case_when(
@@ -922,14 +924,18 @@ various$to_dl <- c('pepper', 'peanøttsmør', 'olje', 'oil', 'smør', 'butter', 
            'ghee', 'garlic', 'tomato paste')
 
 weights <- various$weights %>%
-  #Set netto as default value pr stk, as SHARP takes edible portion and cooking losses into account when calculating environmental impact
+  #Set brutto as default value pr stk, as SHARP takes edible portion and cooking losses into account when calculating environmental impact
   mutate(
     g = case_when(
       str_detect(Ingredients, regex(paste0(various$to_dl, collapse ='|'), ignore_case = TRUE)) &
         unit_enhet == 'tbsp' ~ g * 6.67,
       TRUE ~ g),
     unit_enhet = case_when(
-      unit_enhet == 'netto' ~ 'stk',
+      unit_enhet == 'brutto' ~ 'stk',
+      
+      #These ingredients doesn't have brutto values, use netto
+      unit_enhet == 'netto' & str_detect(Ingredients, 'tomat|egg yolk|egg white') ~ 'stk',
+      
       str_detect(Ingredients, regex(paste0(various$to_dl, collapse ='|'), ignore_case = TRUE)) &
         unit_enhet == 'tbsp' ~ 'dl',
       unit_enhet %in% c('cm rot', 'cm of root') ~ 'cm',
@@ -950,7 +956,13 @@ final <- right_join(weights, temp, by = c('ID', 'unit_enhet')) %>% #Doing this g
   select(No, `Selected Meals`, Ingredients.y, Amounts_kg, ref, Amounts, unit_enhet, ID) %>% #Keep ID to translate norwegian to english later
   unique() %>% #Got some values twice as inner_join got both norwegian and english translated names
   rename(Ingredients = Ingredients.y,
-         weight_ID = ID) %>% drop_na(Ingredients)
+         weight_ID = ID) %>% drop_na(Ingredients) %>%
+  
+  #Beef stock amounts won't be changed by the regex
+  mutate(Amounts_kg = case_when(
+    Ingredients == 'beef stock' ~ 0.5,
+    TRUE ~ Amounts_kg
+  ))
 
 #Save
 saveRDS(final, './oppskrifter/NOR_clean.Rds')

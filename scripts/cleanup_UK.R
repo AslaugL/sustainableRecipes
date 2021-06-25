@@ -114,7 +114,7 @@ mutate(Ingredients = Ingredients %>%
          str_replace('(?<=\\w|,)slice', ' slice') %>%
          
          #Change units of ingredients
-         str_replace('bacon slice|pieces of bacon|pieces of good sliced bacon', 'slice bacon') %>%
+         str_replace('bacon slice|pieces of bacon|pieces of good sliced bacon|rashers of smoked streaky bacon', 'slice bacon') %>%
          str_replace('tins of canned', 'can') %>%
          str_replace('parts(?! sugar| water)|DL', 'dl') %>%
          str_replace('packs|packet|pakke', 'pack') %>%
@@ -239,7 +239,7 @@ mutate(Ingredients = Ingredients %>%
   mutate(Amounts = case_when(
     unit_enhet == 'cup' ~ Amounts * 2.45,
     unit_enhet == 'l' ~ Amounts * 10,
-    unit_enhet == 'ml' ~ Amounts / 10,
+    unit_enhet == 'ml' ~ Amounts / 100,
     unit_enhet == 'tbsp' ~ Amounts / 6.67,
     unit_enhet == 'tsp' ~ Amounts / 20,
     unit_enhet == 'krm' ~ Amounts / 100,
@@ -268,7 +268,7 @@ mutate(Ingredients = Ingredients %>%
         !str_detect(Ingredients, 'sugar|cheese|sour|flour') ~ 'g',
       TRUE ~ unit_enhet)) %>%
   
-  #Turn grams into kilos
+  #Turn grams into kilos and fix "beef stock" from 
   mutate(
     Amounts = case_when(
       unit_enhet == 'g' ~ Amounts/1000,
@@ -435,6 +435,8 @@ temp <- bind_rows(various$with_reference) %>%
       Ingredients == 'peas' ~ 'pea',
       str_detect(Ingredients, 'cheddar|jarlsberg') & str_detect(Ingredients, 'cheese') ~ 'hard to semi-hard cheese',
       str_detect(Ingredients, 'watercress') ~ 'watercress',
+      Ingredients == 'round lettuce' ~ 'iceberg lettuce',
+      Ingredients == 'black olives' ~ 'olive black',
       TRUE ~ ref),
     ID = case_when(
       str_detect(Ingredients, 'eggplant') ~ references %>% filter(first_word == 'eggplant' & second_word == 'nothing') %>% select(ID) %>% unique() %>% as.numeric(.),
@@ -495,6 +497,8 @@ temp <- bind_rows(various$with_reference) %>%
       Ingredients == 'peas' ~ references %>% filter(first_word == 'pea' & second_word == 'dry') %>% select(ID) %>% as.numeric(.),
       str_detect(Ingredients, 'cheddar|jarlsberg') & str_detect(Ingredients, 'cheese') ~ references %>% filter(first_word == 'hard to semi-hard cheese' & second_word == 'nothing') %>% select(ID) %>% as.numeric(.),
       str_detect(Ingredients, 'watercress') ~ references %>% filter(first_word == 'watercress' & second_word == 'nothing') %>% select(ID) %>% as.numeric(.),
+      Ingredients == 'round lettuce' ~ references %>% filter(first_word == 'iceberg' & second_word == 'lettuce') %>% select(ID) %>% as.numeric(.),
+      Ingredients == 'black olives' ~ references %>% filter(first_word == 'olives' & second_word == 'black') %>% select(ID) %>% as.numeric(.),
       TRUE ~ ID)) %>%
   
   #mutate(Ingredients = Ingredients %>%
@@ -515,14 +519,18 @@ various$to_dl <- c('pepper', 'peanøttsmør', 'olje', 'oil', 'smør', 'butter', 
                    'ghee', 'Garlic')
 
 weights <- various$weights %>%
-  #Set netto as default value pr stk, as SHARP takes edible portion and cooking losses into account when calculating environmental impact
+  #Set brutto as default value pr stk, as SHARP takes edible portion and cooking losses into account when calculating environmental impact
   mutate(
     g = case_when(
       str_detect(Ingredients, regex(paste0(various$to_dl, collapse ='|'), ignore_case = TRUE)) &
         unit_enhet == 'tbsp' ~ g * 6.67,
       TRUE ~ g),
     unit_enhet = case_when(
-      unit_enhet == 'netto' ~ 'stk',
+      unit_enhet == 'brutto' ~ 'stk',
+      
+      #These ingredients doesn't have brutto values, use netto
+      unit_enhet == 'netto' & str_detect(Ingredients, 'tomat|egg yolk|egg white') ~ 'stk',
+      
       str_detect(Ingredients, regex(paste0(various$to_dl, collapse ='|'), ignore_case = TRUE)) &
         unit_enhet == 'tbsp' ~ 'dl',
       unit_enhet %in% c('cm rot', 'cm of root') ~ 'cm',
