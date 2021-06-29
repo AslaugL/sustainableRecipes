@@ -10,7 +10,8 @@ Name = c('condensed cream of mushroom soup', 'condensed cream of chicken soup',
          'fish cakes coarse', 'worcestershire sauce', 'fish sauce', 'taco sauce',
          'oyster sauce', 'hot pepper sauce', 'hoisin sauce', 'pesto', 'pizza sauce',
          'chunky salsa', 'mango chutney', 'guacamole', 'cranberry sauce', 'tomato sauce',
-         'potato flatbread', 'duck sauce', 'shrimp paste')
+         'potato flatbread', 'duck sauce', 'shrimp paste', 'chili sauce sweet',
+         'chili sauce', 'shrimp salad')
 Ingredients = c(
 #Concentrated cream of soups
 #From https://onceamonthmeals.com/blog/recipe-roundups/homemade-cream-of-something-soup/
@@ -235,7 +236,37 @@ Salt and freshly ground black pepper to taste',
 0.5 tsp ground black pepper
 0.25 cup sherry
 2 tbsp lemon juice
-0.25 tsp cayenne pepper')
+0.25 tsp cayenne pepper',
+
+#Chili sauce sweet
+#From
+'3 stk red chili
+1 tsp salt
+2 clove garlic
+1 tbsp vegetable oil
+3 dl pineapple juice
+0.5 dl vinegar
+3 dl sugar
+4 tbsp chili flakes
+2 tbsp corn starch
+4 tbsp water',
+
+#Chili sauce
+#From https://www.tine.no/oppskrifter/sauser-og-dressinger/kalde-sauser-og-dressinger/verdens-sterkeste-chilisaus
+'450 g strong chili
+4 clove garlic
+0.5 dl basil
+2.5 dl vinegar
+1 tsp salt',
+
+#Shrimp salad
+#From https://mills.no/oppskrift/mills/rekesalat/
+'0.5 dl mayonnaise sauce
+0.5 dl sour cream
+1 tbsp dill
+0.5 tsp lemon juice
+0.25 tsp pepper
+500 g shrimp')
 
 composite_ingredients <- tibble(Name = Name, Ingredients = Ingredients)
 
@@ -523,8 +554,8 @@ final <- full_join(various$with_Sharp_ref, various$ingredients_weight) %>% left_
   mutate(L1 = case_when(
     str_detect(Ingredients, 'salsa|soup|sauce|chutney|guacamole|pesto|paste') ~ 'Seasoning, sauces and condiments',
     str_detect(Ingredients, 'fish') ~ 'Fish, seafood, amphibians, reptiles and invertebrates',
-    str_detect(Ingredients, 'dough|bread') ~ 'Grains and grain-based products'
-    
+    str_detect(Ingredients, 'dough|bread') ~ 'Grains and grain-based products',
+    Ingredients == 'shrimp salad' ~ 'Composite dishes'
   ))
 
 #Save

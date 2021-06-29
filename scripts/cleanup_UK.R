@@ -223,6 +223,8 @@ mutate(Ingredients = Ingredients %>%
     Ingredients == 'tube of good tomato purée' ~ '130 g', #Kolonial, Mutti
     Ingredients == 'small bunch of fresh thyme, leaf only' ~ '1 bunch',
     str_detect(Ingredients, 'celery') & str_detect(Ingredients, 'stalk') ~ str_replace(Amounts, 'stk', 'stalk'),
+    Ingredients == 'thick slice of bread' ~ str_replace(Amounts, 'stk', 'slice'),
+    str_detect(Ingredients, 'pea')  ~ str_replace(Amounts, 'neve', 'dl'), #Assume one dl is the same as one handful
     TRUE ~ Amounts
   )) %>%
   #Remove empty Ingredient rows
@@ -268,7 +270,7 @@ mutate(Ingredients = Ingredients %>%
         !str_detect(Ingredients, 'sugar|cheese|sour|flour') ~ 'g',
       TRUE ~ unit_enhet)) %>%
   
-  #Turn grams into kilos and fix "beef stock" from 
+  #Turn grams into kilos 
   mutate(
     Amounts = case_when(
       unit_enhet == 'g' ~ Amounts/1000,
