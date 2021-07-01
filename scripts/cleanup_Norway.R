@@ -81,11 +81,18 @@ raw <- read_xlsx('./oppskrifter/Data_NO_100.xlsx') %>%
   mutate(`Selected Meals` = `Selected Meals` %>%
            str_replace('PinnekjÃ¸tt', 'Pinnekjøtt') %>%
            str_replace('Biff with BearnÃ© saus', 'Biff with Bearné saus') %>%
-           str_replace('sauted reindeer', 'sautéed reindeer') %>%
-           str_replace('Muslim steak curry', 'Muslim steak curry')
+           str_replace('sauted reindeer', 'sautéed reindeer')
          ) %>%
-  
-  inner_join(temp %>% select(No, `Selected Meals`, `Nr. Of portion`, Source), by = c('Selected Meals', 'Source'))
+    
+  #Add muslim steak curry as it won't be matched by the name
+  left_join(temp %>% filter(str_detect(`Selected Meals`, 'steak curry'))) %>%
+  #Add the rest
+  left_join(temp %>% select(No, `Selected Meals`, `Nr. Of portion`, Source), by = c('Selected Meals', 'Source')) %>%
+  #Clean up some columns and remove the Ribbe with 8 portion sizes
+  rename(`Nr. Of portion` = `Nr. Of portion.y`,
+         No = No.y) %>%
+  select(-c(`Nr. Of portion.x`, No.x)) %>%
+  filter(!(`Selected Meals` == 'Christmas Ribbe' & `Nr. Of portion` == 8))
 
 rm(temp)
 rm(raw_list)
@@ -853,6 +860,10 @@ temp <- bind_rows(various$with_reference) %>%
       Ingredients == 'peas' ~ 'pea',
       str_detect(Ingredients, 'maisstivelse') ~ 'maisstivelse',
       Ingredients == 'fish soup base' ~ '',
+      Ingredients == 'oksekjøtt, bog eller lår' ~ 'beef',
+      Ingredients == 'sitrongressrot, hakket' ~ 'lemon grass',
+      Ingredients == 'fiskesaus' ~ 'fish sauce',
+      Ingredients == 'kanelstang' ~ 'cinnamon rod',
       TRUE ~ ref),
     ID = case_when(
       str_detect(Ingredients, 'eggplant') ~ as.numeric(references[str_which(tolower(references$first_word), 'eggplant'),1]),
@@ -908,6 +919,10 @@ temp <- bind_rows(various$with_reference) %>%
       Ingredients %in% c('ginger', 'finely chopped,  ginger', 'ginger,', 'grated  ginger') ~ references %>% filter(first_word == 'ginger' & second_word == 'nothing') %>% select(ID) %>% as.numeric(.),
       str_detect(Ingredients, 'maisstivelse') ~ references %>% filter(first_word == 'maisstivelse' & second_word == 'nothing') %>% select(ID) %>% as.numeric(.),
       Ingredients == 'fish soup base' ~ 0,
+      Ingredients == 'oksekjøtt, bog eller lår' ~ references %>% filter(first_word == 'beef' & second_word == 'nothing') %>% select(ID) %>% as.numeric(.),
+      Ingredients == 'sitrongressrot, hakket' ~ 0,
+      Ingredients == 'fiskesaus' ~ references %>% filter(first_word == 'fish' & second_word == 'sauce') %>% select(ID) %>% as.numeric(.),
+      Ingredients == 'kanelstang' ~ 0,
       TRUE ~ ID)) %>%
 
   mutate(unit_enhet = case_when(

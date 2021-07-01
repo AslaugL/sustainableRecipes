@@ -1089,12 +1089,12 @@ various$not_in_ref <- plot %>%
 various$not_in_ref_counts <- list()
   #Ingredients
   various$not_in_ref_counts$Ingredients <- various$not_in_ref %>%
-    group_by(Ingredients) %>% summarise(value = n()) %>% ungroup() %>%
+    group_by(Ingredients, Country) %>% summarise(value = n()) %>% ungroup() %>%
     #Rename for later plotting functions
     rename(feature = Ingredients)
   #Foodgroups
   various$not_in_ref_counts$Foodgroups <- various$not_in_ref %>%
-    group_by(L1) %>% summarise(value = n()) %>% ungroup() %>%
+    group_by(L1, Country) %>% summarise(value = n()) %>% ungroup() %>%
     #Rename for later plotting functions
     rename(feature = L1)
   
