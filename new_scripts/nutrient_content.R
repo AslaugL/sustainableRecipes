@@ -4,6 +4,8 @@ library(stringi)
 
 #Working directory
 setwd('C:/Users/aslau/Desktop/UiBV21/Master/Data')
+
+#Nutrient content database----
 #List to fill with various items to keep environment clean
 various <- list()
 
@@ -793,7 +795,9 @@ saveRDS(nutrients_to_use, 'nutrients_df.Rds')
                            #Pigeon
                            "A01TA",
                            #Corned beef
-                           "A0B9G"
+                           "A0B9G",
+                           #Div
+                           "A026M"
                            
     )) %>%
     filter(!Ingredients %in% c('bovine and pig, minced meat', 'onion bulbs for fresh consumption',
@@ -898,6 +902,7 @@ saveRDS(nutrients_to_use, 'nutrients_df.Rds')
              str_replace('table grapes', 'grapes') %>%
              str_replace("lamb's lettuces", "lettuce lamb") %>%
              str_replace('barley grain, pearled', 'barley pearl') %>%
+             str_replace('courgettes', 'zucchini') %>% #Name used in recipes
              
              #Meat
              str_replace('beef tallow including processed suet', 'tallow') %>%
@@ -958,6 +963,11 @@ saveRDS(nutrients_to_use, 'nutrients_df.Rds')
       TRUE ~ Ingredients
     )) %>%
     
+    #Change 'and similar' to 'other'
+    mutate(Ingredients = Ingredients %>%
+             str_replace('and similar-', 'other') %>%
+             str_replace('and similar', 'other')) %>%
+    
     #Filter away other unnecessary ingredients
     filter(!(str_detect(Ingredients, 'canned ') |
                str_detect(Ingredients, 'biscuit'))) %>%
@@ -974,10 +984,10 @@ saveRDS(nutrients_to_use, 'nutrients_df.Rds')
            L1 = 'Fish, seafood, amphibians, reptiles and invertebrates')
   SHARP <- full_join(SHARP, various$shellfish)
   #Add composite ingredients
-  #various$composite_ingredients <- readRDS('./oppskrifter/composite_ingredients.Rds')
+  various$composite_ingredients_sharp <- readRDS('./composite_ingredients_sustainability_markers.Rds')
   
   #Add to SHARP
-  #SHARP <- full_join(SHARP, various$composite_ingredients) %>%
+  SHARP <- full_join(SHARP, various$composite_ingredients_sharp)
     #Create a half-and-half row, half milk and half cream
   SHARP <- SHARP %>% 
    add_row(Ingredients = 'half-and-half',
@@ -1001,17 +1011,27 @@ saveRDS(nutrients_to_use, 'nutrients_df.Rds')
                          'beetroots', 'breadcrumbs', 'carrots', 'cauliflowers',
                          'buns', 'chards', 'clams', 'coconuts', 'courgettes', 'crabs',
                          'cucumbers', 'figs', 'grapefruits', 'groupers', 'hazelnuts',
-                         'herrings', 'kales', 'lemons', 'lentils', 'limes', 'lettuces',
+                         'herrings', 'kales', 'lemons', 'limes', 'lettuces',
                          'mandarins', 'melons', 'mussels', 'nectarines', 'olives',
                          'onions', 'oranges', 'oysters', 'papayas', 'peanuts', 'pears',
                          'pistachios', 'plums', 'pumpkins', 'rhubarbs', 'salmons',
                          'shrimps', 'syrups', 'trouts', 'hazelnuts', 'walnuts',
                          'scallops', 'sardines', 'blackcurrants', 'redcurrants',
-                         'leeks', 'shallots', 'shrimps', 'prawns'
+                         'leeks', 'shallots', 'shrimps', 'prawns', 'almonds', 'olives',
+                         'grapes'
       ) ~ str_replace(Ingredients, 's\\b', ''),
+      str_detect(Ingredients, 'nuts') ~ str_replace(Ingredients, 'nuts', 'nut'),
+      str_detect(Ingredients, 'seeds') ~ str_replace(Ingredients, 'seeds', 'seed'),
+      str_detect(Ingredients, 'peppers') ~ str_replace(Ingredients, 'peppers', 'pepper'),
+      str_detect(Ingredients, 'lentils') ~ str_replace(Ingredients, 'lentils', 'lentil'),
+      str_detect(Ingredients, 'lettuces') ~ str_replace(Ingredients, 'lettuces', 'lettuce'),
+      str_detect(Ingredients, 'brussels sprouts') ~ 'brussel sprout',
+      str_detect(Ingredients, 'sardine') ~ 'sardine',
+      
       TRUE ~ Ingredients)) %>%
     
     #First two words contain the most important information to identify the ingredients
+    mutate(Ingredients = str_replace(Ingredients, '_', ' ')) %>% #Composite ingredients has _ between words
     mutate(first_word = str_extract(Ingredients, '^\\w+'),
            temp = str_extract(Ingredients, '^\\w+\\s\\w+')) %>%
     mutate(second_word = str_remove(temp, '^\\w+\\s')) %>%
@@ -1021,7 +1041,6 @@ saveRDS(nutrients_to_use, 'nutrients_df.Rds')
     #Clean up some of them that's not right, always have the most generic name in the first column, then a specification in second column if present
     mutate(
       first_word = case_when(
-        Ingredients == 'lettuces and similar-' ~ 'lettuce',
         Ingredients == 'wheat bread and rolls' ~ 'wheat bread and rolls',
         Ingredients == 'wheat bread and rolls, brown or wholemeal' ~ 'wheat bread and rolls',
         Ingredients == 'boiled egg' ~ 'egg',
@@ -1054,33 +1073,18 @@ saveRDS(nutrients_to_use, 'nutrients_df.Rds')
         Ingredients == 'broad beans dry' ~ 'bean',
         Ingredients == 'vegetable fats and oil' ~ 'oil',
         Ingredients == 'breadcrumb' ~ 'bread',
-        Ingredients == 'fortified and liqueur wines' ~ 'fortified and liqueur wines',
+        Ingredients == 'fortified and liqueur wines' ~ 'fortified wine',
         Ingredients == 'condensed cream of celery soup' ~ 'condensed cream of celery soup',
         Ingredients == 'condensed cream of mushroom soup' ~ 'condensed cream of mushroom soup',
         Ingredients == 'condensed cream of chicken soup' ~ 'condensed cream of chicken soup',
         Ingredients == 'refrigerated buttermilk biscuit dough' ~ 'refrigerated buttermilk biscuit dough',
         Ingredients == 'fish cakes coarse' ~ 'fish cakes coarse',
         Ingredients == 'vegetables and vegetable products' ~ 'vegetables and vegetable products',
-        Ingredients == 'cranberry sauce' ~ 'cranberry sauce',
-        Ingredients == 'chunky salsa' ~ 'chunky salsa',
-        Ingredients == 'fish sauce' ~ 'fish sauce',
-        Ingredients == 'hoisin sauce' ~ 'hoisin sauce',
-        Ingredients == 'hot pepper sauce' ~ 'hot pepper sauce',
-        Ingredients == 'mango chutney' ~ 'mango chutney',
-        Ingredients == 'oyster sauce' ~ 'oyster sauce',
-        Ingredients == 'pizza sauce' ~ 'pizza sauce',
-        Ingredients == 'taco sauce' ~ 'taco sauce',
-        Ingredients == 'tomato sauce' ~ 'tomato sauce',
-        Ingredients == 'worcestershire sauce' ~ 'worcestershire sauce',
-        Ingredients == 'duck sauce' ~ 'duck sauce',
-        Ingredients == 'shrimp paste' ~ 'shrimp paste',
-        Ingredients == 'chili sauce sweet' ~ 'chili sauce',
-        Ingredients == 'chili sauce' ~ 'chili sauce',
         Ingredients == 'shrimp salad' ~ 'shrimp salad',
+        Ingredients == 'watercresses' ~ 'cress',
         TRUE ~ first_word),
       
       second_word = case_when(
-        Ingredients == 'lettuces and similar-' ~ 'similar',
         Ingredients == 'wheat bread and rolls' ~ 'white',
         Ingredients == 'wheat bread and rolls, brown or wholemeal' ~ 'brown',
         Ingredients == 'boiled egg' ~ 'boiled',
@@ -1130,22 +1134,13 @@ saveRDS(nutrients_to_use, 'nutrients_df.Rds')
         Ingredients == 'sunflower seed oil' ~ 'oil',
         Ingredients == 'vegetables, pickled' ~ 'pickled',
         Ingredients == 'cranberry sauce' ~ '\\',
-        Ingredients == 'chunky salsa' ~ '\\',
-        Ingredients == 'fish sauce' ~ '\\',
-        Ingredients == 'hoisin sauce' ~ '\\',
-        Ingredients == 'hot pepper sauce' ~ '\\',
-        Ingredients == 'mango chutney' ~ '\\',
-        Ingredients == 'oyster sauce' ~ '\\',
-        Ingredients == 'pizza sauce' ~ '\\',
-        Ingredients == 'taco sauce' ~ '\\',
-        Ingredients == 'worcestershire sauce' ~ '\\',
-        Ingredients == 'tomato sauce' ~ '\\',
         Ingredients == 'vinegar, wine' ~ 'wine',
-        Ingredients == 'duck sauce' ~ '\\',
-        Ingredients == 'shrimp paste' ~ '\\',
         Ingredients == 'chili sauce sweet' ~ 'sweet',
-        Ingredients == 'chili sauce' ~ '\\',
-        Ingredients == 'shrimp salad' ~ '\\',
+        Ingredients == 'celery stalk' ~ '\\',
+        Ingredients == 'hard cheese' ~ '\\',
+        Ingredients == 'kiwi fruits green red yellow' ~ '\\',
+        Ingredients == 'parnip roots' ~ '\\',
+        Ingredients == 'watercresses' ~ 'water',
         TRUE ~ second_word
       )
     ) %>%
@@ -1155,103 +1150,8 @@ saveRDS(nutrients_to_use, 'nutrients_df.Rds')
     #Remove unnecessary column
     select(-Ingredients) %>% arrange(first_word, second_word)
   #Is the maize flour in SHARP the same as corn starch?
-  
-  
-  
-#Helper functions
-checkRef <- function(ingredient, reference){
-  #Reference is a list of names from a food database
-  
-  #Fill tibble with info
-  results <- tibble(
-    Ingredients = character(),
-    ref = character(),
-    ID = numeric(),
-    loop = character()
-  )
-  
-  
-  #Look for both search terms in ref in Ingredient
-  for(i in 1:nrow(reference)){
-    
-    
-    #Only look for the whole word found in the reference
-    if(str_detect(ingredient, regex(paste0('\\b', reference$second_word[i], '\\b'), ignore_case = TRUE)) &
-       str_detect(ingredient, regex(paste0('\\b', reference$first_word[i], '\\b'), ignore_case = TRUE)) ){
-      
-      print('first loop')
-      results <- results %>%
-        add_row(Ingredients = ingredient,
-                ref = paste0(reference$first_word[i], ', ', reference$second_word[i]),
-                ID = as.numeric(reference$ID[i]),
-                loop = 'first loop')
-      
-      #Break after first hit
-      break
-    }
-  }
-  
-  
-  if(!ingredient %in% results$Ingredients){
-    
-    for(i in 1:nrow(reference)){
-    #Look for the whole word plus extra words after, such as 'peaS'  
-      if(str_detect(ingredient, regex(paste0('\\b', reference$second_word[i], '\\b|\\b', reference$second_word[i], '\\w+'), ignore_case = TRUE)) &
-         str_detect(ingredient, regex(paste0('\\b', reference$first_word[i], '\\b|\\b', reference$first_word[i], '\\w+'), ignore_case = TRUE)) ){
-        
-        print('second loop')
-        results <- results %>%
-          add_row(Ingredients = ingredient,
-                  ref = paste0(reference$first_word[i], ', ', reference$second_word[i]),
-                  ID = as.numeric(reference$ID[i]),
-                  loop = 'second loop')
-        
-        #Break after first hit
-        break
-      }  
-      
-    #Look for foods not identified by both first and second word i ref  
-      else if (str_detect(ingredient, regex(paste0('\\b', reference$first_word[i], '\\b'), ignore_case = TRUE))  &
-          isFALSE(str_detect(ingredient, regex(paste0('\\b', reference$second_word[i], '\\b|\\b', reference$second_word[i], '\\w+'), ignore_case = TRUE)) )){
-        
-        print('third loop')
-        results <- results %>%
-          add_row(Ingredients = ingredient,
-                  ref = reference$first_word[i],
-                  ID = as.numeric(reference$ID[i]),
-                  loop = 'third loop')
-        
-        #Break after first hit
-        break
-        
-      } else if (str_detect(ingredient, regex(paste0('\\b', reference$first_word[i], '\\w+'), ignore_case = TRUE)) &
-                 reference$second_word[i] == '\\') {
-        
-        print('fourth loop')
-        results <- results %>%
-          add_row(Ingredients = ingredient,
-                  ref = reference$first_word[i],
-                  ID = as.numeric(reference$ID[i]),
-                  loop = 'fourth loop')
-        
-        break
-      }
-      
-    }
-    
-    
-  }
-  
-  results 
-  
-}
-checkRefList <- function(df, reference){
-  
-  results <- lapply(df$Ingredients, checkRef, reference = reference) %>%
-    bind_rows()
-  
-}
 
-test <- checkRefList(clean_nutrients %>% select(FoodID, Ingredients) %>% mutate(Ingredients = str_replace(Ingredients, '_', ' ')) %>% drop_na(Ingredients), reference = sustainability_df)
+  #Save
+  saveRDS(sharp_ref, 'sharp_ref.Rds')
 
-
+  

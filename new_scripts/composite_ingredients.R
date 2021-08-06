@@ -107,7 +107,7 @@ Name = c('condensed cream of mushroom soup', 'condensed cream of chicken soup',
          'oyster_sauce', 'hot pepper sauce', 'hoisin_sauce', 'pesto', 'pizza_sauce',
          'chunky_salsa', 'mango_chutney', 'guacamole', 'cranberry_sauce', 'tomato_sauce',
          'potato_flatbread', 'duck_sauce', 'shrimp_paste', 'chili sauce_sweet',
-         'chili sauce', 'shrimp_salad', 'barbeque_sauce', 'omelet', 'adobo_seasoning',
+         'chili_sauce', 'shrimp_salad', 'barbeque_sauce', 'omelet', 'adobo_seasoning',
          'chinese five spice', 'italian seasoning', 'steak seasoning', 'puff pastry',
          'mint_sauce', 'taco spice mix', 'tandoori spice mix', 'shortcrust pastry')
 Ingredients = c(
@@ -368,7 +368,7 @@ Salt and freshly ground black pepper to taste',
 
 #Barbeque sauce
 #From https://addapinch.com/homemade-bbq-sauce-recipe/
-'2 cups ketchup
+'2 cup tomato ketchup
 0.5 cup apple cider vinegar
 0.25 cup packed brown sugar
 2 tbsp honey
@@ -623,7 +623,7 @@ temp <- checkRefList(various$ingredients_weight, references$nutrients)
 
 #Add amounts and fix some errors
 temp2 <- temp %>%
-  inner_join(various$ingredients_weight) %>% 
+  full_join(., composite_ingredients %>% select(Ingredients)) %>% unique() %>%
   mutate(ID = case_when(
     Ingredients %in% c('red chili', 'strong chili', 'chili peppers') ~ fixRefID(references$nutrients, 'chili pepper', 'red'),
     Ingredients == 'mushroom' ~ fixRefID(references$nutrients, 'mushroom'),
@@ -633,9 +633,17 @@ temp2 <- temp %>%
     Ingredients %in% c('rice wine vinegar', 'white wine vinegar', 'apple cider vinegar') ~ fixRefID(references$nutrients, 'vinegar'),
     Ingredients %in% c('vegetable broth', 'broth') ~ fixRefID(references$nutrients, 'water'),
     Ingredients == 'dry mustard' ~ fixRefID(references$nutrients, 'mustard'),
+    Ingredients == 'fresh cranberry' ~ fixRefID(references$sustainability, 'cranberries'),
+    Ingredients == 'plum' ~ fixRefID(references$sustainability, 'plums'),
+    Ingredients == 'apricot' ~ fixRefID(references$sustainability, 'apricots'),
+    Ingredients == 'mayonnaise sauce' ~ fixRefID(references$sustainability, 'mayonnaise'),
+    Ingredients == 'haddock' ~ fixRefID(references$sustainability, 'haddock'),
+    Ingredients == 'star anise pods' ~ fixRefID(references$sustainability, 'anise'),
     
     TRUE ~ ID
-  )) %>% unique()
+  )) %>% unique() %>%
+  
+  inner_join(various$ingredients_weight) 
 
 #Calculate the nutrient content
 various$with_nutrients <- temp2 %>%
@@ -674,23 +682,25 @@ saveRDS(various$with_nutrients, '../composite_ingredients_nutrient_content.Rds')
 temp <- checkRefList(composite_ingredients, references$sustainability)
 
 #Fix errors
-temp2 <- various$with_Sharp_ref %>%
-  mutate(
-    ref = case_when(
-      Ingredients == 'red pepper flakes' ~ 'chili flake',
-      Ingredients == 'rice wine vinegar' ~ 'vinegar',
-      Ingredients == 'vegetable broth' ~ 'vegetable broth',
-      Ingredients == 'bunch basil, finely chopped' ~ 'basil',
-      TRUE ~ ref),
-    ID = case_when(
-      #Fix the double vinegar entry in SHARP
-      str_detect(Ingredients, 'vinegar') ~ reference %>% filter(first_word == 'vinegar' & second_word == 'nothing') %>% select(ID) %>% filter(ID == min(ID)) %>% as.numeric(.),
-      str_detect(Ingredients, 'stock|broth|red pepper flakes|basil') & !str_detect(Ingredients, 'cube|dice') ~ 0,
-      TRUE ~ ID)) 
+temp2 <- temp %>%
+  full_join(., composite_ingredients) %>% unique() %>%
   
+  mutate(ID = case_when(
+    Ingredients %in% c('red chili', 'strong chili', 'chili peppers') ~ fixRefID(references$sustainability, 'chili', 'peppers'),
+    str_detect(Ingredients, 'vinegar') & str_detect(Ingredients, 'wine') ~ fixRefID(references$sustainability, 'vinegar', 'wine'),
+    str_detect(Ingredients, 'vinegar') ~ fixRefID(references$sustainability, 'vinegar'),
+    Ingredients == 'fresh cranberry' ~ fixRefID(references$sustainability, 'cranberries'),
+    Ingredients == 'mango chutney' ~ fixRefID(references$sustainability, 'mango chutney'),
+    
+    #Not in ref
+    Ingredients %in% c('chili flakes', 'chili powder', 'corn starch',
+                       'smoked paprika powder', 'vegetable broth') ~ 0,
+    
+    TRUE ~ ID
+  ))
 
 #Final df with co2/landuse pr kg
-final <- full_join(various$with_Sharp_ref, various$ingredients_weight) %>% left_join(., SHARP, by ='ID') %>%
+final <- full_join(temp2, various$ingredients_weight) %>% left_join(., databases$sustainability, by ='ID') %>%
   select(Name, Ingredients.x, Amounts_kg, `GHGE of 1 kg food as consumed_kgCO2eq`, `Land use of 1 kg food as consumed_m2/yr`) %>%
   
   #CO2/Landuse by each ingredient in the composite ingredient
@@ -715,14 +725,11 @@ final <- full_join(various$with_Sharp_ref, various$ingredients_weight) %>% left_
   
   #Add foodgroup/L1 from sharp
   mutate(L1 = case_when(
-    str_detect(Ingredients, 'salsa|soup|sauce|chutney|guacamole|pesto|paste') ~ 'Seasoning, sauces and condiments',
+    str_detect(Ingredients, 'salsa|soup|sauce|chutney|guacamole|pesto|paste|spice|seasoning') ~ 'Seasoning, sauces and condiments',
     str_detect(Ingredients, 'fish') ~ 'Fish, seafood, amphibians, reptiles and invertebrates',
-    str_detect(Ingredients, 'dough|bread') ~ 'Grains and grain-based products',
-    Ingredients == 'shrimp salad' ~ 'Composite dishes'
+    str_detect(Ingredients, 'dough|bread|pastry') ~ 'Grains and grain-based products',
+    Ingredients == 'shrimp_salad' ~ 'Composite dishes'
   ))
 
 #Save
-saveRDS(final, 'composite_ingredients.Rds')
-
-#Recheck the oyster sauce recipe
-#Tamarind paste can apparently be exchanged by mango chutney
+saveRDS(final, '../composite_ingredients_sustainability_markers.Rds')
