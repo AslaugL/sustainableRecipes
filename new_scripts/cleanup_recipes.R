@@ -3,6 +3,8 @@ library(readxl)
 library(stringi)
 library(thesisToolsOmics)
 
+#Get the nutrient and sustainability information for each recipe per 100g of the recipe
+
 #Working directory
 setwd('C:/Users/aslau/Desktop/UiBV21/Master/Data')
 
@@ -252,6 +254,7 @@ clean <- bind_rows(raw) %>%
          str_replace('2 tbsp tine genuine torn cheese original', '1 tbsp norvegia\n 1 tbsp jarlsberg') %>%
          str_replace('1 hp rema frozen vegetables', '170 g carrot\n165 g broccoli\n165 g baby corn') %>% #Familiefavoritt grovkuttet in the recipe
          str_replace('frozen mixed vegetables', '40.75 g potato\n40.75 g sweet pepper red\n40.75 g green peas\n40.75 g carrot') %>% #Mix of vegetables typically found in the dish
+         str_replace('wok-vegetables', '110 g bean green asparagus\n110 g broccoli\n100 g mango\n85 g onion\n75 g water chestnut\n10 g rapeseed oil') %>% #Thai inspired wok REMA1000
               
          #Refrigerated buttermilk dough
          #From https://www.finecooking.com/recipe/buttermilk-biscuit-dough
@@ -889,6 +892,7 @@ clean <- clean %>%
     str_detect(Ingredients, 'bean') & str_detect(Ingredients, 'horse|broad|fava|brew') ~ 'bean broad',
     str_detect(Ingredients, 'bean') & str_detect(Ingredients, 'tomat') ~ 'bean white tomato',
     str_detect(Ingredients, 'bean') & str_detect(Ingredients, 'can') ~ 'bean canned',
+    (str_detect(Ingredients, 'bread') & str_detect(Ingredients, 'crumb|grate') & str_detect(Ingredients, 'white')) | str_detect(Ingredients, 'grilling flour') & str_detect(Ingredients, 'white') ~ 'bread crumb white',
     (str_detect(Ingredients, 'bread') & str_detect(Ingredients, 'crumb|grate')) | str_detect(Ingredients, 'grilling flour') ~ 'bread crumb',
     str_detect(Ingredients, 'bread') & str_detect(Ingredients, 'stick') ~ 'breadstick',
     str_detect(Ingredients, 'bread') & str_detect(Ingredients, 'crisp') & str_detect(Ingredients, 'coarse') ~ 'crisp bread coarse',
@@ -1379,12 +1383,12 @@ separate(., Amounts, c('Amounts', 'unit'), sep = ' ') %>%
     Amounts = case_when(
       (str_detect(Ingredients, 'water|beer|madeira|marsala|cognac|cider|juice|Juice|broth|kraft|wine|vin|eddik|vinegar|fund|milk|stock|cream|Crème Fraîche|rømme|yogurt|yoghurt|sherry') &
          unit == 'dl') &
-        !str_detect(Ingredients, 'sugar|cheese|sour|flour') ~ Amounts * 100,
+        !str_detect(Ingredients, 'sugar|cheese|flour') ~ Amounts * 100,
       TRUE ~ Amounts),
     unit = case_when(
       (str_detect(Ingredients, 'water|beer|madeira|marsala|cognac|cider|juice|Juice|broth|wine|vin|eddik|vinegar|fund|milk|stock|cream|Crème Fraîche|rømme|yogurt|yoghurt|sherry') &
          unit == 'dl') &
-        !str_detect(Ingredients, 'sugar|cheese|sour|flour') ~ 'g',
+        !str_detect(Ingredients, 'sugar|cheese|flour') ~ 'g',
       TRUE ~ unit)) %>%
   
   #Turn grams into kilos 
@@ -1402,14 +1406,18 @@ various$org_ingredients <- clean %>% select(`Selected Meals`, Ingredients, org_i
 clean <- clean %>%
   
   group_by(`Selected Meals`, Ingredients, Country, Source, unit) %>%
-  summarise(Amounts = sum(Amounts)) %>% ungroup()
+  summarise(Amounts = sum(Amounts, na.rm = TRUE)) %>% ungroup() %>%
+  #Using na.rm gives ingredients with no amounts a '0' value, change back to NA
+  mutate(Amounts = case_when(
+    !is.na(unit) ~ Amounts
+  ))
 
 rm(raw, raw_list_NO)
 various$units <- NULL
 various$stk <- NULL
 various$NO_recipes <- NULL
 
-#Turn cooked procucts into their raw equivalents, using the convertion factors from Helsedirekttortatet Mål Vekt og Porsjonsstørrelser----
+#Turn cooked products into their raw equivalents, using the convertion factors from Helsedirekttortatet Mål Vekt og Porsjonsstørrelser----
 clean <- clean %>%
   
   mutate(
@@ -1421,7 +1429,7 @@ clean <- clean %>%
       Ingredients == 'pork tenderloin cooked' ~ Amounts/0.75,
       Ingredients == 'pasta cooked' ~ Amounts/2.63,
       Ingredients == 'rice cooked' ~ Amounts/2.94,
-      Ingredients == 'beetroot cooked' ~ Amounts/0.95, #parlsey root
+      Ingredients == 'beetroot cooked' ~ Amounts/0.95, #Use values for parlsey root
     
       TRUE ~ Amounts),
     #Remove cooked from ingredient name
@@ -1550,14 +1558,17 @@ various$recipe_weight <- clean %>%
 
 #Impute the mean value of the same ingredient for the missing ingredients----
 #Calculate the mean value of each type of ingredient pr 100g of a recipe first
-temp <- clean %>%
+various$mean_values <- clean %>%
   #Add total weight of recipe in kg
   inner_join(various$recipe_weight) %>%
   #Amount of ingredient pr 100g of a recipe
   mutate(value_100g = (Amounts/Weight)/10) %>%
   #Calculate the mean value for each ingredient
   group_by(Ingredients) %>%
-  summarise(value = mean(value_100g)) %>% ungroup() %>%
+  summarise(value = mean(value_100g)) %>% ungroup()
+
+#Add to the missing amounts
+temp <- various$mean_values %>%
   #Inner join with the ingredients missing amounts
   inner_join(., various$missing) %>%
   #Add the weight of these recipes
@@ -1572,6 +1583,50 @@ clean <- full_join(clean, temp) %>%
   #if a recipe has more than two occurences of a recipe (example_ butter used both for frying and as part of a dough), sum them together
   group_by(`Selected Meals`, Ingredients, Country, Source) %>%
   summarise(Amounts = sum(Amounts)) %>% ungroup()
+
+#Which ingrediens still don't have amounts?
+various$missing <- anti_join(various$missing %>% select(`Selected Meals`, Ingredients),clean %>% select(`Selected Meals`, Ingredients))
+
+#Fill in values for these ingredients based on similar ingredients
+temp <- various$missing %>%
+  mutate(value = case_when(
+    Ingredients %in% c('peanut oil', 'sunflower or peanut oil for frying') ~ various$mean_values %>% filter(Ingredients == 'sunflower oil') %>% select(value) %>% as.numeric(.),
+    Ingredients %in% c('a little canola or olive oil', 'extra-virgin olive or more canola oil, to finish') ~ various$mean_values %>% filter(Ingredients == 'canola or olive oil') %>% select(value) %>% as.numeric(.),
+    Ingredients == 'oil / butter for frying' ~ various$mean_values %>% filter(Ingredients == 'butter for cooking') %>% select(value) %>% as.numeric(.),
+    Ingredients %in% c('a few fresh mint or flat-leaf parsley leaf, finely chopped', 'parsley') ~ various$mean_values %>% filter(Ingredients == 'parsley fresh herbs') %>% select(value) %>% as.numeric(.),
+    Ingredients == 'grape juice' ~ various$mean_values %>% filter(Ingredients == 'vinegar balsamic') %>% select(value) %>% as.numeric(.), #Used "to taste"
+    Ingredients == 'rice sushi' ~ various$mean_values %>% filter(Ingredients == 'rice white long grain') %>% select(value) %>% as.numeric(.),
+    Ingredients == 'sauce horseradish' ~ various$mean_values %>% filter(Ingredients == 'yoghurt') %>% select(value) %>% as.numeric(.), #As conditment
+    
+  )) %>%
+  
+  #Drop those without amounts
+  drop_na(value) %>%
+  
+  #Add the weight of these recipes
+  inner_join(various$recipe_weight) %>%
+  #Calculate the amounts based on weight
+  mutate(Amounts = value*Weight*10,
+         unit = 'kg')
+
+#Add back to clean df
+clean <- full_join(clean, temp) %>%
+  select(-c(value, Weight, unit)) %>%
+  #if a recipe has more than two occurences of a recipe (example_ butter used both for frying and as part of a dough), sum them together
+  group_by(`Selected Meals`, Ingredients, Country, Source) %>%
+  summarise(Amounts = sum(Amounts)) %>% ungroup()
+
+#Fill in missing Country and source info for the missing ingredients
+clean <- clean %>%
+  group_by(`Selected Meals`) %>%
+  fill(c(Country, Source), .direction = 'downup') %>% ungroup()
+
+#New total weight of recipes
+various$recipe_weight <- clean %>%
+  select(`Selected Meals`, Amounts) %>%
+  group_by(`Selected Meals`) %>%
+  summarise(Weight = sum(Amounts, na.rm = TRUE)) %>%
+  ungroup()
   
 
 #Map to nutrients database----
@@ -1647,9 +1702,9 @@ temp2 <- temp %>%
     Ingredients == 'sauce hot' ~ fixRefID(references$nutrients, 'hot pepper sauce'),
     
     Ingredients %in% c('duck or goose fat for confit', 'homemade beef gravy', 'of lime sheet, shredded',
-                       'olive paste tapenade', 'onion - pickled',
+                       'olive paste tapenade', 'cooking spray', 'red food coloring',
                        'pack high quality charcoal briquettes', 'pomegranate kernel', 'yeast nutritional',
-                       'salmon roe', 'sauce horseradish', 'spice seasoning pepper'
+                       'salmon roe', 'spice seasoning pepper', 'toro greek moussaka'
                        ) ~ 0,
     
     #Substitutions or ingredients not found in Matvaretabellen
@@ -1667,53 +1722,50 @@ temp2 <- temp %>%
   
   #Join with nutrient db
   inner_join(databases$nutrients %>% mutate(ID = as.numeric(ID)), by = 'ID') %>%
-  select(-c(ref, Ingredients.y)) %>%
-  replace(is.na(.), 0) %>%
-  rename(Ingredients = Ingredients.x)
+  select(-ref) %>%
+  replace(is.na(.), 0)
 
 #See which ingredients haven't been picked up
 t <- anti_join(clean %>% select(Ingredients) %>% unique(), temp2 %>% select(Ingredients))
 
-various$recipes_nutrients <- temp2 %>% select(Ingredients, ID) %>%
+#Save the raw nutrient values in 100g recipe by ingredients
+various$ingredients_nutrients <- temp2 %>%
+  select(Ingredients, ID) %>%
   inner_join(., clean, by = 'Ingredients') %>%
-  full_join(various$recipe_weight) %>% unique() %>% #Add the total weight of each recipe in kg
+  unique() %>%
+  inner_join(various$recipe_weight) %>%
+  
+  #Amount of each ingredient per 100 g of recipe
+  mutate(temp_amounts = Amounts/Weight) %>%
+  select(-c(Amounts, Weight)) %>%
   
   #Join with nutrient database
   full_join(databases$nutrients, by = 'ID') %>%
-  select(-Ingredients.y) %>%
-  rename(Ingredients = Ingredients.x) %>%
   
   #Turn wide and calculate nutrient contents
   select(-c(ID)) %>%
   pivot_longer(
-    cols = -c(`Selected Meals`, Ingredients, Country, Source, Amounts, Weight),
+    cols = -c(`Selected Meals`, Ingredients, Country, Source, temp_amounts),
     names_to = 'feature',
     values_to = 'value'
   ) %>%
   
   #Calculate nutrient content pr ingredients
-  #Multiply amounts in kg with 10 to make it into centigrams, as value is nutrient content pr 100 g
-  mutate(temp = (Amounts*10)*value) %>% #Nutrient amount from each ingredient
-
-  #Sum for each recipe
-  rename(sample_id = `Selected Meals`,
-         group = Country) %>%
-    
-  group_by(sample_id, group, feature, Weight) %>%
-    summarise(temp = sum(temp, na.rm = TRUE)) %>% ungroup() %>%
-  drop_na(group) %>%
+  mutate(value = temp_amounts*value) %>% #Nutrient amount from each ingredient
+  select(-temp_amounts) %>%
   
-  #Per 100g of the recipe
-  mutate(value_100g = temp/(Weight*10)) %>% select(-temp)
+  #Rename for later
+  rename(sample_id = `Selected Meals`,
+         group = Country)
 
-various$minerals <- c('Calcium', 'Iron', 'Zinc', 'Magnesium', 'Potassium', 'Selenium', 'Iodine', 'Sodium',
-                      'Phosphorus')
-various$energy_contributing <- c('Kilojoules', 'Kilocalories', 'Fat', 'SatFa', 'PuFa', 'MuFa', 'Carbo',
-                                 'Sugar', 'Mono+Di', 'Starch', 'Dietary fibre', 'Alcohol', 'EPA', 'DHA',
-                                 'DPA')
-various$vitamins <- c('Vitamin A', 'Retinol', 'Beta-carotene', 'Thiamin', 'Riboflavin', 'Niacin', 'Vitamin B6',
-                      'Folate', 'Vitamin B12', 'Vitamin C', 'Vitamin D', 'Vitamin E')
-
+#Sum nutrient content for whole recipe
+various$recipes_nutrients <- various$ingredients_nutrients %>%
+  
+  #Sum for each recipe
+  group_by(sample_id, group, feature) %>%
+    summarise(value = sum(value, na.rm = TRUE)) %>% ungroup() %>%
+  drop_na(group) 
+  
 #Calculate the CO2 and landuse----
 temp <- clean %>%
   select(Ingredients) %>% unique() %>%
@@ -1729,7 +1781,7 @@ temp2 <- temp %>%
   mutate(ID = case_when(
     
     #Grains, nuts, seeds, legumes
-    Ingredients == 'almonds' ~ fixRefID(references$sustainability, 'almonds', 'sweet'),
+    Ingredients == 'almond' ~ fixRefID(references$sustainability, 'almonds', 'sweet'),
     Ingredients == 'hazelnut' ~ fixRefID(references$sustainability, 'nut', 'hazel'),
     Ingredients %in% c('lentil', 'lentil green') ~ fixRefID(references$sustainability, 'lentil', 'dry'),
     Ingredients == 'peas green' ~ fixRefID(references$sustainability, 'pea', 'garden'),
@@ -1740,7 +1792,8 @@ temp2 <- temp %>%
     Ingredients == 'pistachio nut' ~ fixRefID(references$sustainability, 'pistachio'),
     
     #Veggies
-    str_detect(Ingredients, 'endive') ~ fixRefID(references$sustainability, 'curly', 'endives'),
+    str_detect(Ingredients, 'pickled') & !str_detect(Ingredients, 'ginger') ~ fixRefID(references$sustainability, 'vegetables', 'pickled'),
+    str_detect(Ingredients, 'endive|chicory') ~ fixRefID(references$sustainability, 'curly', 'endives'),
     Ingredients == 'peach' ~ fixRefID(references$sustainability, 'peaches', 'other'),
     Ingredients == 'sorrel' ~ fixRefID(references$sustainability, 'lettuce', 'other'),
     str_detect(Ingredients, 'winter squash') ~ fixRefID(references$sustainability, 'pumpkin'),
@@ -1773,11 +1826,13 @@ temp2 <- temp %>%
     Ingredients == 'sesame oil' ~ fixRefID(references$sustainability, 'seed', 'oil'),
     Ingredients == 'hazelnut oil' ~ fixRefID(references$sustainability, 'walnut', 'oil'),
     Ingredients == 'sauce pasta' ~ fixRefID(references$sustainability, 'tomato', 'sauce'),
+    Ingredients == 'sweet chili sauce' ~ fixRefID(references$sustainability, 'chili', 'sweet'),
+    str_detect(Ingredients, 'cognac') ~ fixRefID(references$sustainability, 'brandy'),
     
     #Dairy
     str_detect(Ingredients, 'cheddar|romano|parmigiano-reggiano|parmesan|parmigiano-reggiano|cheese hard goat') ~ fixRefID(references$sustainability, 'hard cheese', 'hard cheese'),
-    str_detect(Ingredients, 'halloumi|manchego|havarti|swiss|monterey jack|pepperjack|asiago|mozzarella|goat brown cheese') ~ fixRefID(references$sustainability, 'hard to semi-hard cheese'),
-    str_detect(Ingredients, 'ricotta|blue cheese|camembert|chevre') ~ fixRefID(references$sustainability, 'soft-ripened cheese'),
+    str_detect(Ingredients, 'halloumi|manchego|havarti|swiss|monterey jack|pepperjack|asiago|mozzarella|goat brown cheese|jarlsberg|cheese semi-hard|provolone|norvegia') ~ fixRefID(references$sustainability, 'hard to semi-hard cheese'),
+    str_detect(Ingredients, 'ricotta|cheese blue|camembert|chevre|neufchatel|port salut|brie') ~ fixRefID(references$sustainability, 'soft-ripened cheese'),
     Ingredients == 'cheese american' ~ fixRefID(references$sustainability, 'processed cheese and spreads'),
     Ingredients == 'yogurt greek' ~ fixRefID(references$sustainability, 'yoghurt'),
 
@@ -1787,12 +1842,14 @@ temp2 <- temp %>%
                        'rolls white', 'cracker cream') ~ fixRefID(references$sustainability, 'wheat bread and rolls', 'white'),
     
     #Herbs and spices
-    str_detect(Ingredients, 'caraway|lemongrass|basil|rosemary|thyme|tarragon|pepper|sage|masala|oregano|spice mix|nutmeg|cloves|coriander|cumin|dill|fenugreek leaf|juniper berry|cinnamon|chives|chervil|cardamom|caper|allspice|bay leaf|paprika powder|fennel seed') &
-      !str_detect(Ingredients, 'sau') | str_detect(Ingredients, 'chili') & !str_detect(Ingredients, 'pepper') ~ fixRefID(references$sustainability, 'mixed', 'herbs'),
+    str_detect(Ingredients, 'saffron|turmeric|sazon seasoning|ginger|caraway|lemongrass|basil|rosemary|thyme|tarragon|pepper|sage|masala|oregano|spice mix|nutmeg|cloves|coriander|cumin|dill|fenugreek leaf|juniper berry|cinnamon|chives|chervil|cardamom|caper|allspice|bay leaf|paprika powder|fennel seed') &
+      !str_detect(Ingredients, 'sau|sweet') | str_detect(Ingredients, 'chili') & !str_detect(Ingredients, 'pepper') ~ fixRefID(references$sustainability, 'mixed', 'herbs'),
     
     #Not in ref
-    Ingredients %in% c('homemade beef gravy', 'water broth beef', 'nutritional yeast', 'paste chili', 'cocoa powder',
-                       'corn starch', 'tortilla corn', 'sauce cranberry', 'olive paste tapenade', 'salmon roe', 'sweet green pickle relish') ~ 0,
+    Ingredients %in% c('homemade beef gravy', 'water broth beef', 'yeast nutritional', 'paste chili', 'cocoa powder', 'nacho', 'agar', 'gluten',
+                       'corn starch', 'tortilla corn', 'nori seaweed', 'olive paste tapenade', 'salmon roe', 'sweet green pickle relish',
+                       'plantain', 'tabasco', 'tapioca', 'miso paste white', 'sake', 'liquid smoke flavoring', 'pack high quality charcoal briquettes',
+                       'cooking spray', 'quinoa', 'red food coloring', 'toro greek moussaka', 'sprouts alfalfa') ~ 0,
     str_detect(Ingredients, 'water broth|broth cube') ~ 0,
     
     TRUE ~ ID
@@ -1820,534 +1877,81 @@ various$ingredients_sustainability <- temp2 %>% select(Ingredients, ID) %>%
     values_to = 'sustainability_value_kg' #SHARP has sustainability values pr 1kg of an ingredient
   ) %>%
   #Value pr 100g
-  mutate(value_100g = (sustainability_value_kg*Amounts)/10) %>%
+  mutate(temp = (sustainability_value_kg*Amounts)) %>% #How much does that amount of ingredients contribute to CO/Landuse
   select(-c(sustainability_value_kg, Amounts)) %>%
   drop_na(Ingredients) %>%
+  
+  #How much does the ingredient contribute pr 100g recipe
+  mutate(value = temp/Weight/10) %>%
+  select(-c(temp, Weight)) %>%
+  
   #Turn wide again
   pivot_wider(.,
               names_from = 'feature',
-              values_from = 'value_100g') %>%
+              values_from = 'value') %>%
   #Rename column
   rename(CO2 = `GHGE of 1 kg food as consumed_kgCO2eq`,
-         Landuse = `Land use of 1 kg food as consumed_m2/yr`)
-
-#Per 100g recipe
-various$recipe_sustainability <- various$ingredients_sustainability %>%
-#test5 <- various$all_ingredients_sustainability %>%
+         Landuse = `Land use of 1 kg food as consumed_m2/yr`) %>%
   
+  #Keep in long format
   #Pivot long to do the calculations
   pivot_longer(
-    cols = -c(sample_id, Ingredients, group, Source, Weight, L1),
+    cols = -c(sample_id, Ingredients, group, Source, L1),
     names_to = 'feature',
     values_to = 'value'
-  ) %>%
+  )
+
+#Sum total per 100g recipe
+various$recipe_sustainability <- various$ingredients_sustainability %>%
   
   #Calculate the whole recipe
-  group_by(sample_id, group, feature, Weight) %>%
-  summarise(temp = sum(value, na.rm = TRUE)) %>%
-  ungroup() %>%
-  #Per 100 g
-  mutate(value_100g = temp/(Weight*10)) %>% select(-temp)
+  group_by(sample_id, group, feature) %>%
+  summarise(value = sum(value, na.rm = TRUE)) %>%
+  ungroup() 
 
 #Per foodgroup
 various$foodgroup_sustainability <- various$ingredients_sustainability %>%
-  #test5 <- various$all_ingredients_sustainability %>%
-  
-  #Pivot long to do the calculations
-  pivot_longer(
-    cols = -c(sample_id, Ingredients, group, Source, Weight, L1),
-    names_to = 'feature',
-    values_to = 'value'
-  ) %>%
   
   #Calculate the whole recipe
-  group_by(sample_id, group, L1, feature, Weight) %>%
-  summarise(temp = sum(value, na.rm = TRUE)) %>%
-  ungroup() %>%
-  #Per 100 g
-  mutate(value_100g = temp/(Weight*10)) %>% select(-temp)
-  
-#Calculate the percentage of fruit/vegetables and healthy oils in the recipes-----
-various$KHNS_relevant_amounts <- temp2 %>%
-  #Get foodgroup
-  inner_join(., databases$sustainability, by = 'ID') %>%
-  
-  #Rename columns and select the ones to use
-  select(Ingredients.x, L1, `GHGE of 1 kg food as consumed_kgCO2eq`, `Land use of 1 kg food as consumed_m2/yr`) %>%
-  rename(Ingredients = Ingredients.x,
-         Foodgroup = L1,
-         CO2 = `GHGE of 1 kg food as consumed_kgCO2eq`,
-         Landuse = `Land use of 1 kg food as consumed_m2/yr`) %>%
-  
-  #Get amounts, rename columns
-  full_join(., clean) %>%
-  rename(sample_id = `Selected Meals`,
-         group = Country) %>%
-  
-  #Nutriscore and keyhole relevant foodgroups and ingredients
-  mutate(
-    nutriscore_foods = case_when(
-      (Foodgroup %in% c('Vegetables and vegetable products', 'Fruit and fruit products',
-                'Fruit and vegetable juices and nectars \\(including concentrates\\)',
-                'Legumes, nuts, oilseeds and spices') &
-        !str_detect(Ingredients, 'mushroom|coconut milk|sesame seed|pine')) |
-        str_detect(Ingredients, 'olive oil|rapeseed oil|walnut oil') ~ 'nutriscore_fruit_veg_legumes_nuts_oils'),
-    keyhole_foods = case_when(
-      Foodgroup %in% c('Vegetables and vegetable products', 'Fruit and fruit products',
-                       'Legumes, nuts, oilseeds and spices') & !str_detect(Ingredients, 'peanut') ~ 'keyhole_fruit_veg_legumes')
-   ) %>%
-  
-  #Keep relevant amounts, remove the rest
-  mutate(
-    nutriscore_amounts_pct = case_when(
-      #Dried fruit/veg and ketchup/purees should be doubled
-      !is.na(nutriscore_foods) & str_detect(Ingredients, 'paste|ketchup|dried|raisin|prune') ~ Amounts*2,
-      !is.na(nutriscore_foods) ~ Amounts),
-    keyhole_amounts_pct = case_when(
-      !is.na(keyhole_foods) ~ Amounts)
-    ) %>%
-  select(-c(Amounts, Foodgroup, nutriscore_foods, keyhole_foods)) %>%
-  
-  #Calculate total amounts for each recipe
-  #Turn loger
-  pivot_longer(.,
-               cols = c(nutriscore_amounts_pct, keyhole_amounts_pct),
-               names_to = 'feature',
-               values_to = 'value') %>%
-  group_by(sample_id, feature, group) %>%
-  summarise(Amounts = sum(value, na.rm = TRUE)) %>%
-  ungroup() %>%
-  
-  #In percentage of whole recipe
-  #Add whole weight of recipe
-  inner_join(., various$recipe_weight %>% rename(sample_id = `Selected Meals`)) %>%
-  mutate(value_100g = Amounts/Weight*100) %>% #Calc %
-  select(-c(Amounts, Weight)) #Remove unnecessary columns
-  
+  group_by(group, L1, feature) %>%
+  summarise(value = sum(value, na.rm = TRUE)) %>%
+  ungroup() 
 
-#Calculate health scores----
-#Df with all the info needed
-full_data <- full_join(various$recipes_nutrients, various$recipe_sustainability) %>%
-  full_join(., various$KHNS_relevant_amounts) %>%
-  
-  #Remove weight column
-  select(-Weight) %>%
+#Final df's to run analyses on----
+#Df with all nutrients and sustainability markers pr 100 g recipe
+final_recipes <- full_join(various$recipes_nutrients, various$recipe_sustainability) %>%
   
   #Turn wide
   pivot_wider(.,
               names_from = feature,
-              values_from = value_100g) %>%
+              values_from = value) %>%
   
   #Recalculate Salt (g) column from Sodium (mg) as it seems to have had different units in the nutrient db
   select(-Salt) %>%
   mutate(Salt = Sodium*2.5/1000)
 
-#Just some data exploration
-temp <- full_data %>%
-  select(-c(`Beta-carotene`, Retinol, Kilojoules, Sodium, `Vitamin A`)) %>% #Keep only Vitamin A column for vitamin A, kilocalories for energy and salt for salt
-  pivot_longer(
-    cols = -c(sample_id, group),
-    names_to = 'feature',
-    values_to = 'value'
-  )
 
-createPCA(temp)
-createPCA(temp, plots = 'loadings') + geom_label(aes(label = feature))
+saveRDS(final_recipes, 'recipe_data_ready_for_analysis.Rds')
 
-#Which recipes comply with the whole grain requirement for the keyhole certification
-various$recipe_keyhole_req <- clean %>%
+#With individual ingredients, join the nutrient information with the sustainability one
+final_ingredients <- full_join(various$ingredients_nutrients, various$ingredients_sustainability) %>%
+                               
+  drop_na(Ingredients) %>%
+  #Rename amounts to show it is in kg, and rename L1 to foodgroup
+  rename(Foodgroup  = L1) %>%
+  #Fill in missing values in foodgroup 
+  group_by(Ingredients) %>%
+  fill(Foodgroup, .direction = 'up') %>%
+  ungroup() %>%
   
-  #Rename columns to fit
-  rename(sample_id = `Selected Meals`,
-         group = Country) %>%
+  #Turn wide
+  pivot_wider(.,
+              names_from = feature,
+              values_from = value) %>%
   
-  #Find recipes with whole grain ingredients
-  group_by(sample_id) %>%
-  mutate(whole_grain_requirement = case_when(
-    
-    #If recipe contains grain-products, is it whole grain? If so it fullfills requirement, if they are white it doesn't. Recipes without grains fullfill this requirement by default
-    str_detect(Ingredients, 'pasta|rice|bread|tortilla|wheat flour') & str_detect(Ingredients, 'whole grain|coarse') ~ 'yes',
-    str_detect(Ingredients, 'pasta|rice|bread|tortilla|wheat flour') & !str_detect(Ingredients, 'whole grain|coarse') ~ 'no',
-    
-    TRUE ~ 'yes'
-  )) %>%
-  #Keep only relevant columns
-  select(sample_id, group, whole_grain_requirement) %>% unique() %>%
-  #If any 'no' is found in whole_grain_requirement column, keep it and remove yes
-  mutate(whole_grain_requirement = case_when(
-    any(whole_grain_requirement == 'no') ~ 'no',
-    TRUE ~ 'yes'
-  )) %>% unique() %>% ungroup() %>%
-  
-  #Type of recipe
-  mutate(
-    recipe_type = case_when(
-      str_detect(sample_id, 'soup|stew|\\bpot\\b|casserole') ~ 'soups_and_stews',
-      str_detect(sample_id, 'pizza|\\bpie\\b|\\bPies\\b') ~ 'pizza_and_pies',
-      str_detect(sample_id, 'wraps') ~ 'wraps',
-      TRUE ~ 'ready_meals_27' #Use the ready meal with either a carbohydrate or a protein part, description 27 in Forskrift om frivillig merking med Nøkkelhullet
-    )
-  )
+  #Recalculate Salt (g) column from Sodium (mg) as it seems to have had different units in the nutrient db
+  select(-Salt) %>%
+  mutate(Salt = Sodium*2.5/1000)
 
-#Functions
-calculateEnergypercentDensity <- function(df){
-  
-  df %>%
-    
-    #Select macronutrient columns
-    select(sample_id, group, Kilocalories, Kilojoules, Carbo, Sugar, Fat, SatFa, Protein, `Dietary fibre`) %>%
-    
-    #Turn tidy for calculations
-    pivot_longer(
-      cols = -c(sample_id, group, Kilocalories, Kilojoules),
-      names_to = 'feature',
-      values_to = 'grams') %>%
-    #Create a MJ column for density pr MJ calculations
-    mutate(
-      MJ = Kilocalories*0.004184,
-      
-      #Calculate how many kcals from each macronutrient, and the density of fibre pr megajoule energy
-      #Carbohydrates, sugar and protein is about 4kcal/g, fat 9kcal/g
-      kcal_macro = case_when(
-        str_detect(feature, 'Carbo|Sugar|Protein') ~ grams*4,
-        str_detect(feature, 'Fa') ~ grams*9,
-        str_detect(feature, 'fibre') ~ grams*2),
-      densityMJ = grams/MJ,
-      energy_percent = kcal_macro/Kilocalories*100
-    ) %>%
-    
-    #Remove columns
-    select(-c(MJ, kcal_macro, grams, Kilojoules, Kilocalories))
-  
-}
-calculateNutritionScore_who <- function(df){
-  
-  #first calculate energy percent
-  energy_percent <- calculateEnergypercentDensity(df)
-  
-  #WHO recommendations
-  who_score <- energy_percent %>%
-    
-    #Add 1 for each fulfilled recomendation
-    mutate(who_recommendation = case_when(
-      feature == 'Carbo' & (energy_percent >= 55 & energy_percent <=75) ~ 1,
-      feature == 'Sugar' & energy_percent < 10 ~ 1,
-      feature == 'Dietary fibre' & densityMJ >3 ~ 1,
-      feature == 'Protein' & (energy_percent >=10 & energy_percent <=15) ~ 1, #Is it really 15? Other countries uses 20
-      feature == 'Fat' & (energy_percent >= 15 & energy_percent <= 30) ~ 1,
-      feature == 'SatFa' & energy_percent <10 ~ 1,
-      TRUE ~ 0
-    )) %>%
-    
-    #Sum scores together
-    select(sample_id, group, who_recommendation) %>%
-    group_by(sample_id, group) %>%
-    summarise(who_score = sum(who_recommendation)) %>%
-    ungroup()
-  
-}
-calculateNutritionScore_nnr <- function(df){
-  
-  #first calculate energy percent
-  energy_percent <- calculateEnergypercentDensity(df)
-  
-  #NNR recommendations
-  nnr_score <- energy_percent %>%
-    
-    #Add 1 for each fulfilled reccomendation
-    mutate(nnr_recommendation = case_when(
-      feature == 'Carbo' & (energy_percent >= 45 & energy_percent <= 60) ~ 1,
-      feature == 'Sugar' & energy_percent < 10 ~ 1,
-      feature == 'Dietary fibre' & densityMJ >3 ~ 1,
-      feature == 'Protein' & (energy_percent >=10 & energy_percent <=20) ~ 1,
-      feature == 'Fat' & (energy_percent >= 25 & energy_percent <= 40) ~ 1,
-      feature == 'SatFa' & energy_percent <10 ~ 1,
-      TRUE ~ 0
-    )) %>%
-    
-    #Sum scores together
-    select(sample_id, group, nnr_recommendation) %>%
-    group_by(sample_id, group) %>%
-    summarise(nnr_score = sum(nnr_recommendation)) %>%
-    ungroup()
-  
-}
-calculateNutritionScore_trafficlights <- function(df, inverted = 'yes'){
-  #Takes a wide dataframe and calculate the fsa trafficligght score of the recipe
-  #Inverted can be either 'yes' for an inverted score (1 for high/red, 2 for medium/amber, 3 for low/green)
-  #or no following the normal scoring system. Inverted is standard
-  
-  #Traffic light recommendations
-  #Turn df long
-  temp <- df %>%
-    pivot_longer(
-      cols = -c(sample_id, group),
-      names_to = 'feature',
-      values_to = 'value'
-    )
-  
-  #Inverted or not?
-  if(inverted == 'yes'){
-    
-    traffic_lights <- temp %>%
-      
-      #Score values
-      mutate(inverted_traffic_light_rating = case_when(
-        
-        #Low/green values, score 3
-        feature == 'Fat' & value <= 3 ~ 3,
-        feature == 'SatFa' & value <= 1.5 ~ 3,
-        feature == 'Sugar' & value <= 5 ~ 3,
-        feature == 'Salt' & value <= 0.3 ~ 3,
-        
-        #Medium/amber values score 2
-        feature == 'Fat' & (value >3 & value <= 17.5) ~ 2,
-        feature == 'SatFa' & (value >1.5 & value <= 5) ~ 2,
-        feature == 'Sugar' & (value >5 & value <= 22.5) ~ 2,
-        feature == 'Salt' & (value >0.3 & value <= 1.5) ~ 2,
-        
-        #High/red values score 1
-        feature == 'Fat' & value > 17.5 ~ 1,
-        feature == 'SatFa' & value >5 ~ 1,
-        feature == 'Sugar' & value > 22.5 ~ 1,
-        feature == 'Salt' & value >1.5 ~ 1
-      ))
-    
-    #Sum scores together
-    traffic_lights <- traffic_lights %>%
-      select(sample_id, group, inverted_traffic_light_rating) %>%
-      group_by(sample_id, group) %>%
-      summarise(inverted_traffic_score = sum(inverted_traffic_light_rating, na.rm = TRUE)) %>%
-      ungroup()
-    
-    
-  } else if (inverted == 'no'){
-    
-    traffic_lights <- temp %>%
-      #Score values
-      mutate(traffic_light_rating = case_when(
-        
-        #Low/green values, score 1
-        feature == 'Fat' & value <= 3 ~ 1,
-        feature == 'SatFa' & value <= 1.5 ~ 1,
-        feature == 'Sugar' & value <= 5 ~ 1,
-        feature == 'Salt' & value <= 0.3 ~ 1,
-        
-        #Medium/amber values score 2
-        feature == 'Fat' & (value >3 & value <= 17.5) ~ 2,
-        feature == 'SatFa' & (value >1.5 & value <= 5) ~ 2,
-        feature == 'Sugar' & (value >5 & value <= 22.5) ~ 2,
-        feature == 'Salt' & (value >0.3 & value <= 1.5) ~ 2,
-        
-        #High/red values score 3
-        feature == 'Fat' & value > 17.5 ~ 3,
-        feature == 'SatFa' & value >5 ~ 3,
-        feature == 'Sugar' & value > 22.5 ~ 3,
-        feature == 'Salt' & value >1.5 ~ 3
-      ))
-    
-    #Sum scores together
-    traffic_lights <- traffic_lights %>%
-      select(sample_id, group, traffic_light_rating) %>%
-      group_by(sample_id, group) %>%
-      summarise(traffic_score = sum(traffic_light_rating, na.rm = TRUE)) %>%
-      ungroup()
-    
-  }
-  
-  traffic_lights
-  
-}
-calculateNutritionScore_nutriscore <- function(df, inverted = 'yes'){
-  #Takes a tidy df and calcualtes nutriscore
-  
-  #Turn long
-  nutriscore_raw <- df %>%
-    pivot_longer(.,
-                 cols = -c(sample_id, group),
-                 names_to = 'feature',
-                 values_to = 'value') %>%
-  
-    #Calculate nutriscore
-    mutate(nutriscore_raw = case_when(
-      
-      #Energy
-      feature == 'Kilojoules' & value <= 335 ~ 0,
-      feature == 'Kilojoules' & (value >335 & value <= 670) ~ 1,
-      feature == 'Kilojoules' & (value >670 & value <= 1005) ~ 2,
-      feature == 'Kilojoules' & (value >1005 & value <= 1340) ~ 3,
-      feature == 'Kilojoules' & (value >1340 & value <= 1675) ~ 4,
-      feature == 'Kilojoules' & (value >1675 & value <= 2010) ~ 5,
-      feature == 'Kilojoules' & (value >2010 & value <= 2345) ~ 6,
-      feature == 'Kilojoules' & (value >2345 & value <= 2680) ~ 7,
-      feature == 'Kilojoules' & (value >2680 & value <= 3015) ~ 8,
-      feature == 'Kilojoules' & (value >3015 & value <= 3350) ~ 9,
-      feature == 'Kilojoules' & value >3350 ~ 10,
-      
-      #(Added) Sugars
-      feature == 'Sugar' & value <= 4.5 ~ 0,
-      feature == 'Sugar' & (value >4.5 & value <= 9) ~ 1,
-      feature == 'Sugar' & (value >9 & value <= 13.5) ~ 2,
-      feature == 'Sugar' & (value >13.5 & value <= 18) ~ 3,
-      feature == 'Sugar' & (value >18 & value <= 22.5) ~ 4,
-      feature == 'Sugar' & (value >22.5 & value <= 27) ~ 5,
-      feature == 'Sugar' & (value >27 & value <= 31) ~ 6,
-      feature == 'Sugar' & (value >31 & value <= 36) ~ 7,
-      feature == 'Sugar' & (value >36 & value <= 40) ~ 8,
-      feature == 'Sugar' & (value >40 & value <= 45) ~ 9,
-      feature == 'Sugar' & value >45 ~ 10,
-      
-      #Saturated Fat
-      feature == 'SatFa' & value <= 1 ~ 0,
-      feature == 'SatFa' & (value >1 & value <= 2) ~ 1,
-      feature == 'SatFa' & (value >2 & value <= 3) ~ 2,
-      feature == 'SatFa' & (value >3 & value <= 4) ~ 3,
-      feature == 'SatFa' & (value >4 & value <= 5) ~ 4,
-      feature == 'SatFa' & (value >5 & value <= 6) ~ 5,
-      feature == 'SatFa' & (value >6 & value <= 7) ~ 6,
-      feature == 'SatFa' & (value >7 & value <= 8) ~ 7,
-      feature == 'SatFa' & (value >8 & value <= 9) ~ 8,
-      feature == 'SatFa' & (value >9 & value <= 10) ~ 9,
-      feature == 'SatFa' & value >10 ~ 10,
-      
-      #Sodium
-      feature == 'Sodium' & value <= 90 ~ 0,
-      feature == 'Sodium' & (value >90 & value <= 180) ~ 1,
-      feature == 'Sodium' & (value >180 & value <= 270) ~ 2,
-      feature == 'Sodium' & (value >270 & value <= 360) ~ 3,
-      feature == 'Sodium' & (value >360 & value <= 450) ~ 4,
-      feature == 'Sodium' & (value >450 & value <= 540) ~ 5,
-      feature == 'Sodium' & (value >540 & value <= 630) ~ 6,
-      feature == 'Sodium' & (value >630 & value <= 720) ~ 7,
-      feature == 'Sodium' & (value >720 & value <= 810) ~ 8,
-      feature == 'Sodium' & (value >810 & value <= 900) ~ 9,
-      feature == 'Sodium' & value >900 ~ 10,
-      
-      #Fruits and veggies an legumes and nuts and (certain) oils
-      feature == 'nutriscore_amounts_pct' & value <= 40 ~ 0,
-      feature == 'nutriscore_amounts_pct' & (value > 40 & value <= 60) ~ 1,
-      feature == 'nutriscore_amounts_pct' & (value > 60 & value <= 80) ~ 2,
-      feature == 'nutriscore_amounts_pct' & value > 80 ~ 5,
-      
-      #Fibre
-      feature == 'Dietary fibre' & value <= 0.9 ~ 0,
-      feature == 'Dietary fibre' & (value >0.9 & value <=1.9) ~ 1,
-      feature == 'Dietary fibre' & (value >1.9 & value <=2.8) ~ 2,
-      feature == 'Dietary fibre' & (value >2.8 & value <=3.7) ~ 3,
-      feature == 'Dietary fibre' & (value >3.7 & value <=4.7) ~ 4,
-      feature == 'Dietary fibre' & value >4.7 ~ 5,
-      
-      #Protein
-      feature == 'Protein' & value <= 1.6 ~ 0,
-      feature == 'Protein' & (value >1.6 & value <=3.2) ~ 1,
-      feature == 'Protein' & (value >3.2 & value <=4.8) ~ 2,
-      feature == 'Protein' & (value >4.8 & value <=6.4) ~ 3,
-      feature == 'Protein' & (value >6.4 & value <=8.0) ~ 4,
-      feature == 'Protein' & value >8.0 ~ 5,
-    )) %>% drop_na(nutriscore_raw) #Drop features not needed for calculations
-  
-  #temporary categories used to calculate final score
-  categories <- nutriscore_raw %>%
-    mutate(category = case_when(
-      feature %in% c('Kilojoules', 'Sugar', 'SatFa', 'Sodium') ~ 'N',
-      feature %in% c('nutriscore_amounts_pct', 'Dietary fibre', 'Protein') ~ 'P'
-    )) %>% drop_na(category) %>%
-    #get scores for the categories
-    group_by(sample_id, group, category) %>%
-    summarise(nutriscore_raw = sum(nutriscore_raw)) %>%
-    ungroup() %>%
-    #Turn into wide format
-    pivot_wider(
-      names_from = 'category',
-      values_from = 'nutriscore_raw'
-    )
-  
-  categories_2 <- nutriscore_raw %>%
-    mutate(category = case_when(
-      feature == 'nutriscore_amounts_pct' ~ 'FruitVegLegumesNutsOils',
-      feature == 'Dietary fibre' ~ 'Fibre',
-      feature == 'Protein' ~ 'Protein'
-    )) %>% drop_na(category) %>%
-    #get scores for the categories
-    group_by(sample_id, group, category) %>%
-    summarise(nutriscore_raw = sum(nutriscore_raw)) %>%
-    ungroup() %>%
-    #Turn into wide format
-    pivot_wider(
-      names_from = 'category',
-      values_from = 'nutriscore_raw'
-    )
-  
-  #Calculate nutriscore 
-  nutriscore <- full_join(categories, categories_2) %>%
-    mutate(nutriscore = case_when(
-      N < 11 ~ N-P,
-      N >= 11 & FruitVegLegumesNutsOils >= 5 ~ N-P,
-      N >= 11 & FruitVegLegumesNutsOils < 5 ~ N-(FruitVegLegumesNutsOils+Fibre)
-    ),
-    nutriscore_letter = case_when(
-      nutriscore <= -1 ~ 'A',
-      nutriscore >= 0 & nutriscore <=2 ~ 'B',
-      nutriscore >= 3 & nutriscore <=10 ~ 'C',
-      nutriscore >= 11 & nutriscore <=18 ~ 'D',
-      nutriscore >= 19 ~ 'E',
-    )) %>%
-    #Turn letters into factor
-    mutate(nutriscore_letter = as.factor(nutriscore_letter))
-  
-  #Invert score or not?
-  if(inverted == 'yes'){
-    
-    nutriscore <- nutriscore %>%
-      mutate(nutriscore = nutriscore * -1) %>%
-      #Rename to show it's the inverted score
-      rename(inverted_nutriscore = nutriscore)
-    
-  } else if (inverted == 'no'){
-    
-    nutriscore <- nutriscore
-    
-  }
-  
-  nutriscore %>% select(-c(N, P, Fibre, FruitVegLegumesNutsOils, Protein))
-  
-}
-keyholeCertification <- function(df){
-  
-keyhole_certifications <- df %>%
-  
-  #Do the recipe fulfill keyhole criteria?
-  mutate(keyhole_certified = case_when(
-    
-    #Different requirements based on type of dish
-    recipe_type == 'soups_and_stews' & keyhole_amounts_pct >= 35 & Sugar <= 3 & Salt <= 0.8 & SatFa <= 1.5 & whole_grain_requirement == 'yes' ~ 'Keyhole',
-    recipe_type == 'pizza_and_pies' & keyhole_amounts_pct >= 28 & Sugar <= 3 & Salt <= 1 & SatFa <= 2 & whole_grain_requirement == 'yes' ~ 'Keyhole',
-    recipe_type == 'wraps' & keyhole_amounts_pct >= 25 & Sugar <= 3 & Salt <= 0.9 & SatFa <= 2 & whole_grain_requirement == 'yes' ~ 'Keyhole',
-    recipe_type == 'ready_meals_27' & keyhole_amounts_pct >= 50 & Sugar <= 3 & Salt <= 0.8 & SatFa <= 1.5 & whole_grain_requirement == 'yes' ~ 'Keyhole',
-    
-    TRUE ~ 'No Keyhole'
-  ))
-  
-  
-  
-}
-
-#Save a final df to run analysis on-----
-#Get the dfferent scores
-temp <- list(
-  
-  'nutrients_sustainability' = full_data %>% select(-contains('_pct')),
-  'who' = calculateNutritionScore_who(full_data),
-  'nnr' = calculateNutritionScore_nnr(full_data),
-  'nuriscore' = calculateNutritionScore_nutriscore(full_data),
-  'trafficscore' = calculateNutritionScore_trafficlights(full_data),
-  'keyhole' = full_data %>% inner_join(., various$recipe_keyhole_req) %>% keyholeCertification(.) %>% select(sample_id, group, keyhole_certified)
-
-  )
-
-#Merge them together
-final <- reduce(temp, full_join, by = c('sample_id', 'group'))
-
-  
-  
+saveRDS(final_ingredients, 'ingredients_data_ready_for_analysis.Rds')  
   
