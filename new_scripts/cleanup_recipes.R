@@ -1627,7 +1627,14 @@ various$recipe_weight <- clean %>%
   group_by(`Selected Meals`) %>%
   summarise(Weight = sum(Amounts, na.rm = TRUE)) %>%
   ungroup()
-  
+
+#Weight of each ingredient pr 100g
+various$ingredients_weight <- clean %>%
+  select(`Selected Meals`, Ingredients, Amounts) %>%
+  inner_join(various$recipe_weight) %>%
+  mutate(Amounts_kg = Amounts/Weight) %>%
+  select(-c(Amounts, Weight)) %>%
+  rename(sample_id = `Selected Meals`)
 
 #Map to nutrients database----
 temp <- clean %>%
@@ -1937,6 +1944,9 @@ saveRDS(final_recipes, 'recipe_data_ready_for_analysis.Rds')
 final_ingredients <- full_join(various$ingredients_nutrients, various$ingredients_sustainability) %>%
                                
   drop_na(Ingredients) %>%
+  #Add weight of each ingredient
+  inner_join(various$ingredients_weight) %>%
+  
   #Rename amounts to show it is in kg, and rename L1 to foodgroup
   rename(Foodgroup  = L1) %>%
   #Fill in missing values in foodgroup 
