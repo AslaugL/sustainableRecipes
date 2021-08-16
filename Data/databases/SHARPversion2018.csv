@@ -1,0 +1,958 @@
+FoodEx2,Food item,L1,GHGE of 1 kg food as consumed_kgCO2eq,Land use of 1 kg food as consumed_m2/yr
+A03MB,Beer,Alcoholic beverages,0.430349986,0.573546129
+A03MD,"Beer, strong",Alcoholic beverages,0.430349986,0.573546129
+A03ME,"Beer, regular",Alcoholic beverages,0.430349986,0.573546129
+A03MF,"Beer, light",Alcoholic beverages,0.430349986,0.573546129
+A03MG,"Beer, alcohol-free",Alcoholic beverages,0.430349986,0.573546129
+A0DCH,Soyabeans for consumption (dry),"Legumes, nuts, oilseeds and spices",1.296118296,2.329043625
+A03TF,Textured soy protein,"Products for non-standard diets, food imitates and food supplements",2.278272141,4.537117418
+A03TS,Non dairy coffee creamer,"Products for non-standard diets, food imitates and food supplements",0.637959801,1.348532121
+A03TT,Tofu,"Products for non-standard diets, food imitates and food supplements",2.278272141,4.537117418
+A03TJ,Soya drink,"Products for non-standard diets, food imitates and food supplements",0.530059867,1.008248315
+A03PF,Whisky,Alcoholic beverages,1.272915935,0.893636323
+A03PG,Gin,Alcoholic beverages,1.224514835,0.893636323
+A03PH,Vodka and vodka-like spirits,Alcoholic beverages,1.224514835,0.893636323
+A03PJ,Rum,Alcoholic beverages,1.292646635,0.893636323
+A03TV,Soya yoghurt,"Products for non-standard diets, food imitates and food supplements",0.637959801,1.348532121
+A044R,Soy sauce,"Seasoning, sauces and condiments",1.610136508,3.276807024
+A03MQ,Shandy,Alcoholic beverages,0.818116653,0.573546129
+A03PN,Cocktail drink,Alcoholic beverages,1.292646635,0.893636323
+A036X,"Soya bean oil, refined",Animal and vegetable fats and oils and primary derivatives thereof,4.586731918,12.90325015
+A035A,"Caramel, soft","Sugar and similar, confectionery and water-based sweet desserts",0.600784082,1.160147313
+A03NS,Liqueurs,Alcoholic beverages,1.005675535,0.893636323
+A04QG,Unsweetened flavoured spirits,Alcoholic beverages,1.235205835,0.893636323
+A04QF,Unsweetened spirits and liqueurs,Alcoholic beverages,1.235205835,0.893636323
+A032H,Sucrose (common sugar),"Sugar and similar, confectionery and water-based sweet desserts",0.600784082,1.160147313
+A032J,White sugar,"Sugar and similar, confectionery and water-based sweet desserts",0.600784082,1.160147313
+A03ND,Cider,Alcoholic beverages,0.959971115,0.457317073
+A0CSC,Spirits not from fruit,Alcoholic beverages,1.235205835,0.893636323
+A032K,Refined beet sugar,"Sugar and similar, confectionery and water-based sweet desserts",0.600784082,1.160147313
+A036N,"Vegetable fats and oils, edible",Animal and vegetable fats and oils and primary derivatives thereof,3.858805578,14.18037436
+A036P,Olive oil,Animal and vegetable fats and oils and primary derivatives thereof,3.791529078,14.18037436
+A012P,Peanuts (fresh seeds),"Legumes, nuts, oilseeds and spices",2.290567495,7.461169345
+A036V,Rapeseed oil,Animal and vegetable fats and oils and primary derivatives thereof,3.110744146,10.6822371
+A015J,Poppy seeds,"Legumes, nuts, oilseeds and spices",1.106591146,6.571545408
+A037M,Coconut oil/fat,Animal and vegetable fats and oils and primary derivatives thereof,1.112563255,0.797978692
+A037V,Pork lard,Animal and vegetable fats and oils and primary derivatives thereof,11.51580801,18.93939394
+A039C,Butter,Animal and vegetable fats and oils and primary derivatives thereof,33.6117324,33.38683788
+A039D,Traditional margarine,Animal and vegetable fats and oils and primary derivatives thereof,3.905315245,13.42785406
+A039E,Blended margarine,Animal and vegetable fats and oils and primary derivatives thereof,3.905315245,13.42785406
+A032M,Brown sugar,"Sugar and similar, confectionery and water-based sweet desserts",0.600784082,1.160147313
+A039H,Functional vegetable margarines/fats,Animal and vegetable fats and oils and primary derivatives thereof,3.905315245,13.42785406
+A037X,Beef tallow (including processed suet),Animal and vegetable fats and oils and primary derivatives thereof,33.32494487,58.86994949
+A036Q,"Olive oil, virgin or extra-virgin",Animal and vegetable fats and oils and primary derivatives thereof,3.791529078,14.18037436
+A032Q,Flavoured sugar,"Sugar and similar, confectionery and water-based sweet desserts",0.600784082,1.160147313
+A034X,Hard candies,"Sugar and similar, confectionery and water-based sweet desserts",0.600784082,1.160147313
+A035B,Toffee,"Sugar and similar, confectionery and water-based sweet desserts",0.600784082,1.160147313
+A037K,Walnut oil,Animal and vegetable fats and oils and primary derivatives thereof,6.037234668,23.17583039
+A037R,Cocoa butter,Animal and vegetable fats and oils and primary derivatives thereof,36.39617902,49.85512087
+A039F,Butter and margarine/oil blends,Animal and vegetable fats and oils and primary derivatives thereof,4.343390405,13.42785406
+A035F,"Dragée, sugar coated","Sugar and similar, confectionery and water-based sweet desserts",0.600784082,1.160147313
+A035J,Liquorice candies,"Sugar and similar, confectionery and water-based sweet desserts",0.600784082,1.160147313
+A0F1G,Margarines and similar,Animal and vegetable fats and oils and primary derivatives thereof,4.260315245,13.42785406
+A03GN,"Coffee ground, roasted","Coffee, cocoa, tea and infusions",0.572037013,0.398128648
+A03GQ,Instant coffee powder,"Coffee, cocoa, tea and infusions",0.572037013,0.398128648
+A03HG,Cocoa powder,"Coffee, cocoa, tea and infusions",16.07238784,22.1578315
+A03HH,"Cocoa beverage-preparation, powder","Coffee, cocoa, tea and infusions",16.07238784,22.1578315
+A03HX,Tea powder ingredients and extracts,"Coffee, cocoa, tea and infusions",0.718135968,0.183297842
+A03KA,Coffee beverages,"Coffee, cocoa, tea and infusions",0.572037013,0.398128648
+A03KB,Coffee espresso type (strong) beverage,"Coffee, cocoa, tea and infusions",0.713395898,0.557380108
+A03KC,Coffee (average strenght) beverage,"Coffee, cocoa, tea and infusions",0.572037013,0.398128648
+A03KD,Coffee (weak strenght) beverage,"Coffee, cocoa, tea and infusions",0.430678128,0.238877189
+A03KE,Instant coffee (beverage),"Coffee, cocoa, tea and infusions",0.572037013,0.398128648
+A03KF,Coffee beverage decaffeinated,"Coffee, cocoa, tea and infusions",0.572037013,0.398128648
+A03KG,Coffee with milk or cream,"Coffee, cocoa, tea and infusions",2.000791511,1.622178186
+A03KZ,Hot chocolate,"Coffee, cocoa, tea and infusions",3.004688415,3.113842428
+A03LB,Tea beverages,"Coffee, cocoa, tea and infusions",0.699026212,0.122198561
+A03LC,"Tea infusion (black, white)","Coffee, cocoa, tea and infusions",0.699026212,0.122198561
+A03LD,"Green tea, infusion","Coffee, cocoa, tea and infusions",0.781299312,0.122198561
+A03LF,Tea infusion with added flavouring ingredients,"Coffee, cocoa, tea and infusions",0.699026212,0.122198561
+A03LG,Herbal and other non-tea infusions,"Coffee, cocoa, tea and infusions",0.7430798,0
+A03LH,Camomile infusion,"Coffee, cocoa, tea and infusions",0.800409068,0.183297842
+A0C6B,Cocoa ingredients (RPC derivatives),"Coffee, cocoa, tea and infusions",16.23401494,22.1578315
+A0F2E,"Coffee beverage-preparation, powder","Coffee, cocoa, tea and infusions",0.572037013,0.398128648
+A02MV,Buttermilk,Milk and dairy products,1.590514957,1.460674157
+A01RG,Pig muscle,Meat and meat products,12.10137371,18.90909091
+A01VA,Pig fat tissue,Meat and meat products,12.10137371,18.90909091
+A01XJ,Pig liver,Meat and meat products,12.10137371,18.90909091
+A01YM,Pig kidney,Meat and meat products,12.10137371,18.90909091
+A03VV,Meat based dishes,Composite dishes,17.64891933,25.93212803
+A03VX,Goulash,Composite dishes,17.64891933,25.93212803
+A03VY,Meat stew,Composite dishes,17.64891933,25.93212803
+A03VZ,Meat in aspic,Composite dishes,17.64891933,25.93212803
+A03XA,Meat loaf,Composite dishes,17.64891933,25.93212803
+A03XP,Prepared fish salad,Composite dishes,5.888871357,6.888101912
+A03XV,Fish pâté,Composite dishes,5.888871357,6.888101912
+A03YJ,Egg based dishes,Composite dishes,2.492950337,5.622188906
+A03YZ,Sandwich and sandwich-like dishes,Composite dishes,0.966228073,3.309167813
+A03ZK,Hot dog with bread,Composite dishes,8.073966972,13.06374171
+A03ZL,Hamburger with bread,Composite dishes,17.37142386,29.50734457
+A03ZN,Pizza and pizza-like dishes,Composite dishes,5.561591525,8.010683107
+A03ZS,Pizza and similar with vegetable topping,Composite dishes,5.561591525,8.010683107
+A03ZT,"Pizza and similar with cheese, and vegetables",Composite dishes,5.561591525,8.010683107
+A040Y,"Pasta, with mixed or unspecfied filling, cooked",Composite dishes,0.845287527,1.175288814
+A041E,Rice pudding,Composite dishes,1.172918592,0.777306519
+A041T,Meat soup,Composite dishes,6.115171388,9.397461163
+A036T,Seed oils,Animal and vegetable fats and oils and primary derivatives thereof,3.110744146,10.6822371
+A037A,Peanut oil,Animal and vegetable fats and oils and primary derivatives thereof,3.478467442,13.53016109
+A042M,Prepared mixed egg/meat/fish/vegetable salad,Composite dishes,6.909902014,11.59150954
+A0B9J,Soups (dry mixture uncooked),Composite dishes,6.525400762,10.08508027
+A01ZP,Pig edible offals (other than liver and kidney),Meat and meat products,12.10137371,18.90909091
+A021A,Pig other slaughtering products,Meat and meat products,12.10137371,18.90909091
+A0BZB,"Meat soup, clear",Composite dishes,6.525400762,10.08508027
+A0BZ8,"Mixed vegetables soup, clear",Composite dishes,6.321469402,10.08508027
+A0CDQ,"Pasta, plain (not stuffed), cooked",Composite dishes,0.845287527,1.175288814
+A031G,Hen eggs,Eggs and egg products,1.903757509,5.576086957
+A032A,Hardened egg products,Eggs and egg products,2.212061857,5.869565217
+A032B,Boiled eggs,Eggs and egg products,2.1359749,5.625
+A032C,Fried eggs,Eggs and egg products,2.3839749,5.625
+A032D,Poached eggs,Eggs and egg products,2.1359749,5.625
+A031S,Hen egg yolk,Eggs and egg products,4.924409683,15.28532609
+A031T,Hen egg white,Eggs and egg products,2.935773319,8.893280632
+A031X,"Hen egg mixed whole, dried",Eggs and egg products,7.449567903,22.54497751
+A031Y,"Hen egg yolk, dried",Eggs and egg products,19.50486838,61.29415761
+A031Z,"Hen egg white, dried",Eggs and egg products,11.53043656,35.66205534
+A0F6F,Egg yolk,Eggs and egg products,4.924409683,15.28532609
+A031F,Whole eggs,Eggs and egg products,1.903757509,5.576086957
+A02DD,Anchovies,"Fish, seafood, amphibians, reptiles and invertebrates",2.357693497,0
+A02BJ,Anglerfish and monkfish,"Fish, seafood, amphibians, reptiles and invertebrates",16.95093852,0
+A028P,Atlantic salmon,"Fish, seafood, amphibians, reptiles and invertebrates",4.648680212,3.457446809
+A0FCY,Blue mussel,"Fish, seafood, amphibians, reptiles and invertebrates",46.33065773,14.03922872
+A029J,Brown trout,"Fish, seafood, amphibians, reptiles and invertebrates",5.824343763,6.195599613
+A0FCA,Canned anchovies,"Fish, seafood, amphibians, reptiles and invertebrates",3.462943497,0
+A0FBZ,Canned sardines,"Fish, seafood, amphibians, reptiles and invertebrates",3.546860885,0
+A0FBY,Canned sprats,"Fish, seafood, amphibians, reptiles and invertebrates",3.682403937,0
+A0FBT,Canned tunas and similar,"Fish, seafood, amphibians, reptiles and invertebrates",7.931442546,0
+A0EYR,Canned/jarred fish,"Fish, seafood, amphibians, reptiles and invertebrates",12.72684992,1.368819258
+A027D,"Carp, common","Fish, seafood, amphibians, reptiles and invertebrates",16.75996794,4.433523591
+A027C,Carps,"Fish, seafood, amphibians, reptiles and invertebrates",16.75996794,4.433523591
+A02HA,Clams,"Fish, seafood, amphibians, reptiles and invertebrates",46.33065773,14.03922872
+A02BV,Cod,"Fish, seafood, amphibians, reptiles and invertebrates",5.153078208,0
+A02EP,Cod roe,"Fish, seafood, amphibians, reptiles and invertebrates",5.488593756,0
+A02BT,"Cods, hakes, haddocks","Fish, seafood, amphibians, reptiles and invertebrates",5.153078208,0
+A02JB,"Cuttlefish, common","Fish, seafood, amphibians, reptiles and invertebrates",7.492794456,0
+A0FCP,Edible crab,"Fish, seafood, amphibians, reptiles and invertebrates",13.52003426,1.962765957
+A026V,Fish (meat),"Fish, seafood, amphibians, reptiles and invertebrates",11.62159992,1.368819258
+A02KC,"Fish fingers, breaded","Fish, seafood, amphibians, reptiles and invertebrates",5.324366952,0
+A02KE,Fish paste or surimi,"Fish, seafood, amphibians, reptiles and invertebrates",16.10984514,2.380762411
+A026T,"Fish, seafood, amphibians, reptiles and invertebrates","Fish, seafood, amphibians, reptiles and invertebrates",11.62159992,1.368819258
+A02FG,Freshwater crayfishes,"Fish, seafood, amphibians, reptiles and invertebrates",14.42083805,2.108156028
+A0FAR,Gilthead seabream,"Fish, seafood, amphibians, reptiles and invertebrates",14.06507047,0
+A0FAS,Groupers,"Fish, seafood, amphibians, reptiles and invertebrates",14.06507047,0
+A02CA,Haddock,"Fish, seafood, amphibians, reptiles and invertebrates",5.153078208,0
+A02CB,Hakes,"Fish, seafood, amphibians, reptiles and invertebrates",11.42525605,0
+A02BA,"Halibut, greenland","Fish, seafood, amphibians, reptiles and invertebrates",7.44887677,0
+A02AY,Halibut,"Fish, seafood, amphibians, reptiles and invertebrates",7.44887677,0
+A02DF,"Herring, atlantic","Fish, seafood, amphibians, reptiles and invertebrates",3.684088857,0
+A02DE,Herrings,"Fish, seafood, amphibians, reptiles and invertebrates",3.684088857,0
+A02CC,Ling,"Fish, seafood, amphibians, reptiles and invertebrates",5.48362532,0
+A02FR,"Lobster, european","Fish, seafood, amphibians, reptiles and invertebrates",74.88941836,0
+A02FP,Lobsters,"Fish, seafood, amphibians, reptiles and invertebrates",74.88941836,0
+A02CT,Mackerel,"Fish, seafood, amphibians, reptiles and invertebrates",2.664533679,0
+A02CV,"Mackerel, atlantic","Fish, seafood, amphibians, reptiles and invertebrates",2.664533679,0
+A0F0P,Marinated / pickled fish,"Fish, seafood, amphibians, reptiles and invertebrates",19.71350323,2.300711408
+A029R,Marine fish,"Fish, seafood, amphibians, reptiles and invertebrates",9.841820528,0
+A02AD,Mullets,"Fish, seafood, amphibians, reptiles and invertebrates",9.274013408,0
+A02HF,Mussels,"Fish, seafood, amphibians, reptiles and invertebrates",46.33065773,14.03922872
+A02JE,"Octopus, common","Fish, seafood, amphibians, reptiles and invertebrates",11.26455461,0
+A02HM,"Oyster, pacific cupped","Fish, seafood, amphibians, reptiles and invertebrates",65.80559515,20.04458698
+A027N,Perch,"Fish, seafood, amphibians, reptiles and invertebrates",16.75882152,0
+A02BC,Plaice,"Fish, seafood, amphibians, reptiles and invertebrates",7.44887677,0
+A029N,Rainbow trout,"Fish, seafood, amphibians, reptiles and invertebrates",9.58522384,6.195599613
+A02DQ,Rays,"Fish, seafood, amphibians, reptiles and invertebrates",8.375825689,0
+A028G,River eels,"Fish, seafood, amphibians, reptiles and invertebrates",6.876782016,0
+A0C75,Salmons,"Fish, seafood, amphibians, reptiles and invertebrates",4.648680212,3.457446809
+A0FCB,Salted cod,"Fish, seafood, amphibians, reptiles and invertebrates",5.153078208,0
+A02DA,Sardines and sardine-type fishes,"Fish, seafood, amphibians, reptiles and invertebrates",2.441610885,0
+A02HN,"Scallops, pectens","Fish, seafood, amphibians, reptiles and invertebrates",56.08844381,17.03789894
+A029T,Sea bass,"Fish, seafood, amphibians, reptiles and invertebrates",29.28162431,6.815159574
+A029V,Sea bream,"Fish, seafood, amphibians, reptiles and invertebrates",14.06507047,0
+A02FX,Shrimps and prawns,"Fish, seafood, amphibians, reptiles and invertebrates",15.9759495,2.380762411
+A02GB,"Shrimps, common","Fish, seafood, amphibians, reptiles and invertebrates",15.9759495,2.380762411
+A0EYS,Smoked fish,"Fish, seafood, amphibians, reptiles and invertebrates",17.52454202,2.156164095
+A02KG,Smoked herring,"Fish, seafood, amphibians, reptiles and invertebrates",5.256370181,0
+A02KF,Smoked salmon,"Fish, seafood, amphibians, reptiles and invertebrates",5.960980879,4.760638298
+A02LK,Snails,"Fish, seafood, amphibians, reptiles and invertebrates",11.64457239,0
+A02BF,Sole,"Fish, seafood, amphibians, reptiles and invertebrates",4.685682518,0
+A02FV,Spiny and rock lobsters,"Fish, seafood, amphibians, reptiles and invertebrates",74.88941836,0
+A02DP,Spiny dogfish,"Fish, seafood, amphibians, reptiles and invertebrates",8.019541129,0
+A02JJ,"Squid, common","Fish, seafood, amphibians, reptiles and invertebrates",7.993623414,0
+A02JH,Squids,"Fish, seafood, amphibians, reptiles and invertebrates",7.993623414,0
+A07Y0,Swordfish,"Fish, seafood, amphibians, reptiles and invertebrates",16.85270054,0
+A029F,Trouts,"Fish, seafood, amphibians, reptiles and invertebrates",5.824343763,6.195599613
+A02DX,Tuna,"Fish, seafood, amphibians, reptiles and invertebrates",6.826192546,0
+A02CG,Whiting,"Fish, seafood, amphibians, reptiles and invertebrates",3.490310001,0
+A03RJ,Ready-to-eat fruit-based meal for children,Food products for young population,1.894027594,0
+A0DZB,"Oranges, sweet",Fruit and fruit products,0.738421558,0.550200803
+A01DL,Loquats,Fruit and fruit products,0.718496759,0.325301205
+A035K,Gum drops,"Sugar and similar, confectionery and water-based sweet desserts",0.767784082,1.160147313
+A035L,Jelly candies,"Sugar and similar, confectionery and water-based sweet desserts",0.767784082,1.160147313
+A01BY,Lemons,Fruit and fruit products,0.488155285,0.615434712
+A01EP,Raspberries (red and yellow),Fruit and fruit products,0.712172486,0.307926829
+A01CB,Mandarins and similar-,Fruit and fruit products,0.460305146,0.599412576
+A01CD,Mandarins,Fruit and fruit products,0.460305146,0.599412576
+A01CH,Tangerines,Fruit and fruit products,0.777700579,1.180722892
+A01CR,Oranges,Fruit and fruit products,0.738421558,0.550200803
+A01FF,Bilberries,Fruit and fruit products,0.715501754,0.317073171
+A01DH,Apples and similar-,Fruit and fruit products,0.74261724,0.391566265
+A01DJ,Apples,Fruit and fruit products,0.74261724,0.391566265
+A01GG,Cherries and similar-,Fruit and fruit products,0.180929335,0.332317073
+A01DN,Pears and similar-,Fruit and fruit products,0.243760038,0.277458381
+A01DP,Pears,Fruit and fruit products,0.243760038,0.277458381
+A01GH,Sour cherries,Fruit and fruit products,0.180929335,0.332317073
+A035M,Chewing gum,"Sugar and similar, confectionery and water-based sweet desserts",0.767784082,1.160147313
+A0EQQ,Candies (soft and hard),"Sugar and similar, confectionery and water-based sweet desserts",0.767784082,1.160147313
+A01DZ,Strawberries and similar-,Fruit and fruit products,0.51062147,0.287262873
+A01EA,Strawberries,Fruit and fruit products,0.51062147,0.287262873
+A01GK,Cherries (sweet),Fruit and fruit products,0.180929335,0.332317073
+A01GQ,Plums,Fruit and fruit products,0.184303787,0.319277108
+A015L,Sunflower seeds,"Legumes, nuts, oilseeds and spices",1.077138746,6.571545408
+A039G,Shortening and similar baking fats,Animal and vegetable fats and oils and primary derivatives thereof,3.424872306,17.85736916
+A037D,"Sunflower seed oil, edible",Animal and vegetable fats and oils and primary derivatives thereof,3.424872306,17.85736916
+A01GF,Apricots,Fruit and fruit products,0.535350023,0.684844642
+A01GR,Damsons,Fruit and fruit products,0.184303787,0.319277108
+A01GS,Mirabelles,Fruit and fruit products,0.184303787,0.319277108
+A01GX,Gages,Fruit and fruit products,0.716303987,0.319277108
+A01GL,Peaches and similar-,Fruit and fruit products,0.323483514,0.569550931
+A01GM,Common peaches,Fruit and fruit products,0.323483514,0.569550931
+A0CFN,"Gooseberries (green, red and yellow)",Fruit and fruit products,0.715501754,0.317073171
+A01JV,Litchis,Fruit and fruit products,0.255271466,0.503012048
+A01KC,Passionfruits,Fruit and fruit products,0.212512429,0.385542169
+A01FH,Cranberries,Fruit and fruit products,0.173708022,0.31097561
+A0CFR,Rose hips,Fruit and fruit products,0.181476315,0.332317073
+A01JT,"Kiwi fruits (green, red, yellow)",Fruit and fruit products,0.748867518,0.423512231
+A01LB,Avocados,Fruit and fruit products,1.340467605,1.626506024
+A01LC,Cavendishes,Fruit and fruit products,0.684501853,0.569550931
+A01EY,Blueberries,Fruit and fruit products,0.71661151,0.320121951
+A01LP,Pineapples,Fruit and fruit products,0.466783831,0.274586719
+A0DVR,Black cherries,Fruit and fruit products,0.180929335,0.332317073
+A01DT,Berries and small fruits,Fruit and fruit products,0.71661151,0.320121951
+A01MD,Dried apricots,Fruit and fruit products,2.487880144,3.462270133
+A039J,Blended frying oil/fats,Animal and vegetable fats and oils and primary derivatives thereof,3.518769726,17.85736916
+A01EE,Blackberries,Fruit and fruit products,0.715501754,0.317073171
+A01FQ,Gooseberries and similar-,Fruit and fruit products,0.715501754,0.317073171
+A01MJ,Dried bananas,Fruit and fruit products,2.104068118,2.205184374
+A01MM,Jam of fruit / vegetables,Fruit and fruit products,2.435399826,1.058615541
+A01MN,"Jam, strawberries",Fruit and fruit products,1.565706517,0.911081652
+A01NA,"Jam, apricots",Fruit and fruit products,1.576971643,1.184245116
+A01NB,"Jam, plums",Fruit and fruit products,1.34236181,0.925161109
+A01NF,"Jam, oranges",Fruit and fruit products,1.996059856,1.088820708
+A01NJ,Marmalade,Fruit and fruit products,1.996059856,1.088820708
+A0DSM,Black mulberries,Fruit and fruit products,0.715501754,0.317073171
+A01NP,Canned or jarred mandarin,Fruit and fruit products,1.101842915,0.62976258
+A01NS,Canned or jarred apricot,Fruit and fruit products,1.184693691,0.71952032
+A01HG,Figs,Fruit and fruit products,0.509683253,0.634115409
+A01HQ,Kaki,Fruit and fruit products,0.584750725,0.75511591
+A01NY,Canned or jarred peach,Fruit and fruit products,0.961265797,0.598388953
+A01PB,Canned or jarred pineapple,Fruit and fruit products,1.268043884,0.480816407
+A01HP,Kaki and similar-,Fruit and fruit products,0.584750725,0.75511591
+A01LF,Mangoes,Fruit and fruit products,1.43825879,1.746987952
+A01QK,Canned fruit cocktail,Fruit and fruit products,1.725016649,0.752697942
+A01LG,Papayas,Fruit and fruit products,1.474211225,1.795180723
+A04RK,Fruit used as fruit,Fruit and fruit products,0.975928146,0.507581312
+A01FM,"Currants (black, red and white)",Fruit and fruit products,1.268962548,1.882439024
+A01FN,Blackcurrants,Fruit and fruit products,1.268962548,1.882439024
+A01FP,Redcurrants,Fruit and fruit products,1.268962548,1.882439024
+A01ND,"Jam, sweet cherry",Fruit and fruit products,1.337826665,0.945797912
+A01PF,"Fruit compote, apple",Fruit and fruit products,1.603319609,0.443037975
+A01NR,Canned or jarred pear,Fruit and fruit products,0.873439592,0.291506907
+A039M,"Juice, apple",Fruit and vegetable juices and nectars (including concentrates),0.98488384,0.451807229
+A03AH,"Juice, lemon",Fruit and vegetable juices and nectars (including concentrates),0.985409837,1.058287203
+A03AM,"Juice, orange",Fruit and vegetable juices and nectars (including concentrates),1.14700141,0.803212851
+A0BX9,Fruit and vegetable juices and nectars ,Fruit and vegetable juices and nectars (including concentrates),1.440563703,0.837509165
+A0BY4,Fruit juices (100% from named source),Fruit and vegetable juices and nectars (including concentrates),1.440563703,0.837509165
+A03AP,"Juice, mixed fruit",Fruit and vegetable juices and nectars (including concentrates),1.440563703,0.837509165
+A03AL,"Juice, grapefruit",Fruit and vegetable juices and nectars (including concentrates),1.286982126,0.903614458
+A03BB,Fruit nectars (min. 25-50% fruit as defined in EU legislation),Fruit and vegetable juices and nectars (including concentrates),1.440563703,0.837509165
+A03DB,Mixed fruit and vegetable juices,Fruit and vegetable juices and nectars (including concentrates),1.440563703,0.837509165
+A03DH,Multivitamin juices,Fruit and vegetable juices and nectars (including concentrates),1.440563703,0.837509165
+A03AF,"Juice, pineapple",Fruit and vegetable juices and nectars (including concentrates),0.677541997,0.263379098
+A04SD,Blended fat and oils,Animal and vegetable fats and oils and primary derivatives thereof,4.343390405,13.42785406
+A03BL,Mixed fruit nectars,Fruit and vegetable juices and nectars (including concentrates),1.440563703,0.837509165
+A03BG,"Nectar, orange",Fruit and vegetable juices and nectars (including concentrates),1.14700141,0.803212851
+A03BC,"Nectar, apricot",Fruit and vegetable juices and nectars (including concentrates),1.000869635,1.033608117
+A03BH,"Nectar, peach",Fruit and vegetable juices and nectars (including concentrates),0.687412764,0.892661555
+A03BN,Fruit juice concentrates,Fruit and vegetable juices and nectars (including concentrates),1.285529279,0.628131874
+A01BK,Coconut milk (cocos nucifera) liquid,Fruit and vegetable juices and nectars (including concentrates),0.837907558,0.142600292
+A039Y,"Juice, mango",Fruit and vegetable juices and nectars (including concentrates),1.705645872,1.807228916
+A03AJ,"Juice, lime",Fruit and vegetable juices and nectars (including concentrates),0.985409837,1.058287203
+A03BJ,"Nectar, pear",Fruit and vegetable juices and nectars (including concentrates),0.496802541,0.374943758
+A00RX,Cardoons,Vegetables and vegetable products,0.890865252,4.600081785
+A037N,Palm oil/fat,Animal and vegetable fats and oils and primary derivatives thereof,8.538625814,2.768760162
+A0F4S,Coconut water,Fruit and vegetable juices and nectars (including concentrates),1.344376901,2.690571553
+A001B,Common millet grain,Grains and grain-based products,0.642646102,1.279885322
+A001D,Rice grain,Grains and grain-based products,1.062186903,0.789111727
+A002K,"Barley grain, pearled",Grains and grain-based products,0.432917936,1.29104109
+A00RS,Globe artichokes,Vegetables and vegetable products,0.890865252,4.600081785
+A003Y,Wheat flour white,Grains and grain-based products,0.568187775,3.379180413
+A003X,Wheat flour,Grains and grain-based products,0.568187775,3.379180413
+A004F,Wheat semolina,Grains and grain-based products,0.343841977,1.92699613
+A004Q,Wheat germ,Grains and grain-based products,0.770146625,4.686454588
+A004B,Wheat wholemeal flour,Grains and grain-based products,0.500064769,2.938222035
+A004X,Wheat bread and rolls,Grains and grain-based products,0.966228073,3.309167813
+A005D,"Wheat bread and rolls, semi-brown",Grains and grain-based products,0.919236156,3.004990409
+A005N,"Rye-wheat bread, refined flour",Grains and grain-based products,0.971040069,4.287800132
+A0BB2,Sandwich bread (hamburger roll-type),Grains and grain-based products,0.966228073,3.309167813
+A0BY0,Leavened bread and similar,Grains and grain-based products,0.966228073,3.309167813
+A006M,Rusk,Grains and grain-based products,0.966228073,3.309167813
+A006N,"Rusk, refined flour",Grains and grain-based products,0.966228073,3.309167813
+A006P,"Rusk, wholemeal",Grains and grain-based products,0.919236156,3.004990409
+A00BZ,Fruit pie-tarts,Grains and grain-based products,2.261954932,4.000811927
+A008C,Couscous,Grains and grain-based products,0.118947726,0.431647133
+A00CL,Pancakes,Grains and grain-based products,2.647353656,3.878649986
+A00AN,Cakes,Grains and grain-based products,12.42830087,14.16919177
+A00BG,Chocolate cake,Grains and grain-based products,12.42830087,14.16919177
+A00BX,Flan tart,Grains and grain-based products,12.42830087,14.16919177
+A00CE,"Puff-pastry croissant, filled with chocolate",Grains and grain-based products,21.96033657,23.10584357
+A00CD,Croissant from puff pastry,Grains and grain-based products,21.96033657,23.10584357
+A00BV,Shortcrust (pies -tarts),Grains and grain-based products,3.124079646,9.129453808
+A00AA,"Biscuits, sweet, wheat wholemeal",Grains and grain-based products,3.124079646,9.129453808
+A00AE,"Biscuit with inclusions, filling or coating",Grains and grain-based products,3.124079646,9.129453808
+A00AP,Plain cakes,Grains and grain-based products,12.42830087,14.16919177
+A001P,Durum wheat grain,Grains and grain-based products,0.797516103,0.866065676
+A009T,Fine bakery wares,Grains and grain-based products,12.42830087,14.16919177
+A02NF,"Yoghurt, cow milk",Milk and dairy products,1.722620237,1.460674157
+A001E,"Rice grain, brown",Grains and grain-based products,0.990062382,0.723882734
+A00AY,Cream custard sponge cake,Grains and grain-based products,12.42830087,14.16919177
+A009V,Biscuits,Grains and grain-based products,3.124079646,9.129453808
+A02NS,Acidophilus milk,Milk and dairy products,1.585870237,1.460674157
+A00AJ,Beignets,Grains and grain-based products,2.558754217,6.154685692
+A00AG,Choux pastry,Grains and grain-based products,2.360354217,6.154685692
+A0ETL,Semolina,Grains and grain-based products,0.560841977,1.92699613
+A00AH,Éclair,Grains and grain-based products,2.360354217,6.154685692
+A00EF,Processed wheat-based flakes,Grains and grain-based products,0.440071145,0.824190345
+A009Z,"Biscuits, chocolate",Grains and grain-based products,3.124079646,9.129453808
+A02NV,Kefir,Milk and dairy products,1.722620237,1.460674157
+A00CF,Apple strudel,Grains and grain-based products,2.608496102,4.77874758
+A04NS,Other desserts spoonable,Milk and dairy products,2.127821614,1.653661338
+A009Y,Butter biscuits,Grains and grain-based products,3.124079646,9.129453808
+A02PV,Dairy desserts spoonable,Milk and dairy products,2.127821614,1.653661338
+A00CQ,Waffles,Grains and grain-based products,10.14146614,12.97347687
+A02PX,Custard,Milk and dairy products,2.127821614,1.653661338
+A021B,Pig tongue,Meat and meat products,12.10137371,18.90909091
+A00AK,Profiterole,Grains and grain-based products,2.360354217,6.154685692
+A006Q,"Pizza base, cooked",Grains and grain-based products,0.966228073,3.309167813
+A004Y,"Wheat bread and rolls, white (refined flour)",Grains and grain-based products,0.966228073,3.309167813
+A00DR,"Rice, popped",Grains and grain-based products,1.111786903,0.789111727
+A00DS,Processed rice-based flakes,Grains and grain-based products,1.111786903,0.789111727
+A003D,"Rice grain, polished",Grains and grain-based products,1.062186903,0.789111727
+A005E,"Wheat bread and rolls, brown or wholemeal",Grains and grain-based products,0.919236156,3.004990409
+A005Y,Crackers and breadsticks,Grains and grain-based products,0.966228073,3.309167813
+A006D,Wheat crisp bread,Grains and grain-based products,0.966228073,3.309167813
+A007G,Fresh egg pasta,Grains and grain-based products,0.456299693,1.250296753
+A007J,Fresh durum pasta,Grains and grain-based products,0.83166988,1.087142153
+A007L,Dried pasta,Grains and grain-based products,0.456299693,1.250296753
+A007M,Dried egg pasta,Grains and grain-based products,0.456299693,1.250296753
+A007P,Dried durum pasta,Grains and grain-based products,0.83166988,1.087142153
+A007V,Fresh stuffed egg pasta,Grains and grain-based products,0.456299693,1.250296753
+A04LC,Pasta wholemeal,Grains and grain-based products,0.43109418,1.087142153
+A007A,Breadcrumbs,Grains and grain-based products,0.966228073,3.309167813
+A009M,Common laminated dough,Grains and grain-based products,21.96033657,23.10584357
+A008H,Yeast leavened bread doughs,Grains and grain-based products,0.981080002,3.384376173
+A00AQ,Sponge cake,Grains and grain-based products,12.42830087,14.16919177
+A00AV,Cream cake,Grains and grain-based products,12.42830087,14.16919177
+A00BA,Fruit cake,Grains and grain-based products,12.42830087,14.16919177
+A00BB,Sponge cake roll,Grains and grain-based products,12.42830087,14.16919177
+A00BK,Yeast leavened pastry,Grains and grain-based products,21.96033657,23.10584357
+A009X,"Biscuits, sweet, plain",Grains and grain-based products,3.124079646,9.129453808
+A00BM,Croissant,Grains and grain-based products,21.96033657,23.10584357
+A00BL,Buns,Grains and grain-based products,0.966228073,3.309167813
+A00BR,Doughnuts-berliner,Grains and grain-based products,2.957222234,5.260877916
+A00CC,Puff pastry,Grains and grain-based products,21.96033657,23.10584357
+A00BT,Brioche type products,Grains and grain-based products,0.966228073,3.309167813
+A00CK,"Dumpling, sweet",Grains and grain-based products,0.856539632,3.519979597
+A02QD,Milkshakes,Milk and dairy products,2.292994291,2.096178286
+A02NE,Yoghurt,Milk and dairy products,1.730669117,1.460674157
+A003E,"Rice grain, parboiled",Grains and grain-based products,1.062186903,0.789111727
+A02NG,"Yoghurt, cow milk, plain",Milk and dairy products,1.730669117,1.460674157
+A02NH,"Yoghurt, cow milk, flavoured",Milk and dairy products,1.730669117,1.460674157
+A00CT,Gingerbread,Grains and grain-based products,0.966228073,3.309167813
+A00FG,"Sticks, salty",Grains and grain-based products,0.892792728,3.754644904
+A0BYR,Wafers,Grains and grain-based products,8.960588893,11.38782969
+A0CSK,Pre-mixes (dry) for baked products,Grains and grain-based products,0.568187775,3.379180413
+A0F4Q,Extruded breakfast cereal products,Grains and grain-based products,0.440071145,0.824190345
+A02NQ,"Yoghurt drinks, sweetened and/or flavoured",Milk and dairy products,1.730669117,1.460674157
+A02PA,Filmjölk,Milk and dairy products,1.730669117,1.460674157
+A005F,Rye only bread and rolls,Grains and grain-based products,0.971040069,4.287800132
+A007B,Croutons,Grains and grain-based products,0.966228073,3.309167813
+A0C69,Fermented milk products,Milk and dairy products,1.593919117,1.460674157
+A000P,Barley grains,Grains and grain-based products,0.432917936,1.29104109
+A00FE,Corn curls,Composite dishes,1.855521043,2.728652839
+A005M,Mixed wheat and rye bread and rolls,Grains and grain-based products,0.971040069,4.287800132
+A005Q,Multigrain (not only rye-wheat) bread and rolls,Grains and grain-based products,0.971040069,4.287800132
+A00EE,"Wheat, popped",Grains and grain-based products,0.370830766,0.375999245
+A006B,"Crisp bread, rye wholemeal",Grains and grain-based products,0.971040069,4.287800132
+A006C,"Crisp bread, rye, refined flour",Grains and grain-based products,0.971040069,4.287800132
+A00BC,Muffins,Grains and grain-based products,12.42830087,14.16919177
+A006E,"Crisp bread, wheat, wholemeal",Grains and grain-based products,0.919236156,3.004990409
+A005G,"Rye bread, refined flour",Grains and grain-based products,0.971040069,4.287800132
+A005H,"Rye bread, wholemeal",Grains and grain-based products,0.971040069,4.287800132
+A021C,Pig heart,Meat and meat products,12.10137371,18.90909091
+A021G,Pig trotters and feet,Meat and meat products,12.10137371,18.90909091
+A023A,Cured pork fat,Meat and meat products,10.24531311,15.80681818
+A023H,Cooked cured or seasoned pork meat,Meat and meat products,10.24531311,15.80681818
+A042B,Salads,Composite dishes,7.1868843,12.43966878
+A023K,Cooked pork ham,Meat and meat products,10.24531311,15.80681818
+A024C,Canned meat,Meat and meat products,11.35056311,15.80681818
+A024D,Luncheon spiced ham-type tinned meat,Meat and meat products,11.35056311,15.80681818
+A024S,Teewurst-type sausage,Meat and meat products,12.10137371,18.90909091
+A024X,Salami-type sausage,Meat and meat products,12.10137371,18.90909091
+A025B,Pepperoni/paprika-type sausage,Meat and meat products,12.10137371,18.90909091
+A025G,Knackwurst-type sausage,Meat and meat products,12.10137371,18.90909091
+A025L,Liver-type sausage,Meat and meat products,12.10137371,18.90909091
+A025N,Sliceable or firm cooked sausages,Meat and meat products,12.10137371,18.90909091
+A025P,Polish-type cooked sausage,Meat and meat products,12.10137371,18.90909091
+A025S,Blood-type sausage,Meat and meat products,12.10137371,18.90909091
+A014F,Almonds sweet,"Legumes, nuts, oilseeds and spices",3.602792424,12.8194281
+A014H,Cashew nuts,"Legumes, nuts, oilseeds and spices",4.320136741,32.22996516
+A014J,Chestnuts,"Legumes, nuts, oilseeds and spices",1.957120348,6.621665826
+A014K,Coconuts,"Legumes, nuts, oilseeds and spices",1.642001234,4.538972336
+A014L,Hazelnuts,"Legumes, nuts, oilseeds and spices",1.873472648,6.621665826
+A014Q,Pistachios,"Legumes, nuts, oilseeds and spices",5.567220227,17.7383592
+A014R,Walnuts,"Legumes, nuts, oilseeds and spices",2.119348489,7.725276797
+A015H,Peanuts,"Legumes, nuts, oilseeds and spices",1.224693756,8.305097633
+A042D,Mixed vegetable salad,Composite dishes,7.1868843,12.43966878
+A03CK,"Juice, carrot",Fruit and vegetable juices and nectars (including concentrates),0.380423783,0.237152476
+A025V,Cooked salami,Meat and meat products,12.10137371,18.90909091
+A025X,Weisswurst,Meat and meat products,12.10137371,18.90909091
+A025Z,Head cheese,Meat and meat products,12.10137371,18.90909091
+A006F,"Crisp bread, wheat, refined flour",Grains and grain-based products,0.966228073,3.309167813
+A0F0N,Dried nuts and related flours and powderes,"Legumes, nuts, oilseeds and spices",1.810375679,8.720352515
+A01BR,"Olives, processed",Fruit and fruit products,1.235755768,2.524106636
+A015X,Pumpkin seeds,"Legumes, nuts, oilseeds and spices",0.514382731,0.470854129
+A01QX,"Cow, ox or bull fresh meat",Meat and meat products,34.04164267,58.86994949
+A01QY,Calf fresh meat,Meat and meat products,34.04164267,58.86994949
+A026C,Frankfurter sausage,Meat and meat products,12.10137371,18.90909091
+A02NN,"Yoghurt, goat milk, plain",Milk and dairy products,3.191343275,3.262172285
+A02MB,Goat milk,Milk and dairy products,3.046544395,3.262172285
+A00DD,Processed maize-based flakes,Grains and grain-based products,0.667230451,0.51352244
+A026D,Wiener sausage,Meat and meat products,12.10137371,18.90909091
+A026L,Meat spread,Meat and meat products,12.10137371,18.90909091
+A026R,"Pate, pork liver",Meat and meat products,12.10137371,18.90909091
+A0EYF,Mammals meat,Meat and meat products,23.41450503,39.5959596
+A0EYP,Preserved or partly preserved sausages,Meat and meat products,12.10137371,18.90909091
+A024F,Sausages,Meat and meat products,12.10137371,18.90909091
+A01XG,Beef liver,Meat and meat products,34.04164267,58.86994949
+A022T,"Ham, pork",Meat and meat products,10.24531311,15.80681818
+A024G,Fresh raw sausages,Meat and meat products,12.10137371,18.90909091
+A0EYH,Mammals and birds meat,Meat and meat products,18.56602018,31.35353535
+A024J,Fresh spiced sausages in casing,Meat and meat products,12.10137371,18.90909091
+A01QR,Meat and meat products,Meat and meat products,18.56602018,31.35353535
+A020V,Bovine stomach,Meat and meat products,34.04164267,58.86994949
+A026A,Pre-cooked sausages to be cooked before consumption,Meat and meat products,12.10137371,18.90909091
+A024M,Chipolata-type sausage,Meat and meat products,12.10137371,18.90909091
+A024R,Mettwurst-type sausage,Meat and meat products,12.10137371,18.90909091
+A025C,Chorizo and similar,Meat and meat products,12.10137371,18.90909091
+A026M,Liver based spreadable-textured specialities,Meat and meat products,12.10137371,18.90909091
+A026H,Cervelat (swiss type),Meat and meat products,12.10137371,18.90909091
+A022X,Bacon,Meat and meat products,10.24531311,15.80681818
+A025E,Snack sausages (like Cabanos and landjäger),Meat and meat products,12.10137371,18.90909091
+A01YG,Animal kidney,Meat and meat products,12.10137371,18.90909091
+A025Q,Mortadella-type sausage,Meat and meat products,12.10137371,18.90909091
+A022S,Cured seasoned pork meat,Meat and meat products,10.24531311,15.80681818
+A022V,Tiroler speck,Meat and meat products,12.10137371,18.90909091
+A022Y,Pancetta,Meat and meat products,12.10137371,18.90909091
+A024Y,Italian-type salami,Meat and meat products,12.10137371,18.90909091
+A011L,Potato crisps or sticks,Composite dishes,0.928962921,0.43902439
+A011S,Potato croquettes,Composite dishes,1.567499506,1.631436314
+A03VG,Prepared potato salad,Composite dishes,7.22051766,12.43966878
+A0BYS,Potato crisps from potato slices,Composite dishes,1.164060482,0.87804878
+A0BYV,French fries from cut potato,Composite dishes,1.173884122,0.896393579
+A008D,Gnocchi,Grains and grain-based products,0.48186536,0.379084967
+A00ZT,Potatoes,"Starchy roots or tubers and products thereof, sugar plants",0.503206926,0.388219545
+A00ZX,Main-crop potatoes,"Starchy roots or tubers and products thereof, sugar plants",0.503206926,0.388219545
+A011D,Potato flakes,"Starchy roots or tubers and products thereof, sugar plants",1.497990059,1.609103079
+A011E,Mashed potato powder,"Starchy roots or tubers and products thereof, sugar plants",1.158423794,1.611780455
+A011P,Potato boiled,"Starchy roots or tubers and products thereof, sugar plants",0.503206926,0.388219545
+A04GP,"Bovine and pig, minced meat",Meat and meat products,23.41450503,39.5959596
+A011R,Potato baked,"Starchy roots or tubers and products thereof, sugar plants",0.57718042,0.43373494
+A010C,Sweet potatoes,"Starchy roots or tubers and products thereof, sugar plants",0.606108386,0.39892905
+A049S,"Bovine, minced meat",Meat and meat products,34.04164267,58.86994949
+A00ZN,Mashed vegetable puree,Vegetables and vegetable products,0.505742189,0.39295393
+A01RH,Sheep muscle,Meat and meat products,27.3895834,50.14277984
+A01SP,Chicken fresh meat,Meat and meat products,8.582121315,14.28787879
+A01SQ,Turkey fresh meat,Meat and meat products,8.582121315,14.28787879
+A023C,"Ham, beef",Meat and meat products,34.04164267,58.86994949
+A01SR,Duck fresh meat,Meat and meat products,8.582121315,14.28787879
+A01SS,Goose fresh meat,Meat and meat products,8.582121315,14.28787879
+A01SX,Guinea-fowl fresh meat,Meat and meat products,8.582121315,14.28787879
+A01XZ,Chicken liver,Meat and meat products,8.582121315,14.28787879
+A01XH,Veal liver,Meat and meat products,34.04164267,58.86994949
+A020F,"Chicken, other organs (edible offals non-muscle)",Meat and meat products,8.582121315,14.28787879
+A023X,Cooked other poultry meat,Meat and meat products,8.582121315,14.28787879
+A026Q,"Pate, chicken liver",Meat and meat products,8.582121315,14.28787879
+A01SN,Poultry fresh meat (muscle meat),Meat and meat products,8.582121315,14.28787879
+A026P,"Pate, goose liver",Meat and meat products,8.582121315,14.28787879
+A00DC,"Popcorn (maize, popped)",Grains and grain-based products,0.667230451,0.51352244
+A023R,Cooked bovine tongue,Meat and meat products,34.04164267,58.86994949
+A020H,"Duck, other organs (edible offals non-muscle)",Meat and meat products,8.582121315,14.28787879
+A01XY,Poultry liver,Meat and meat products,8.582121315,14.28787879
+A01SZ,Pheasant fresh meat,Meat and meat products,8.582121315,14.28787879
+A002Q,Maize flour,Grains and grain-based products,0.992006757,2.105442006
+A01TB,Quail fresh meat,Meat and meat products,8.582121315,14.28787879
+A026N,Foie gras,Meat and meat products,8.582121315,14.28787879
+A000T,Maize grain,Grains and grain-based products,0.522721043,0.842176802
+A01TA,Pigeon fresh meat,Meat and meat products,8.582121315,14.28787879
+A03VM,Legumes based dishes,Composite dishes,1.620535707,7.320785813
+A012A,Broad beans (without pods),"Legumes, nuts, oilseeds and spices",1.192437783,2.162615142
+A012B,Borlotti or other common beans (without pods),"Legumes, nuts, oilseeds and spices",1.109263285,1.537918595
+A012G,Peas (without pods) and similar-,"Legumes, nuts, oilseeds and spices",0.476921799,1.122609462
+A020T,Bovine heart,Meat and meat products,34.04164267,58.86994949
+A012J,Garden peas (without pods),"Legumes, nuts, oilseeds and spices",0.476921799,1.122609462
+A01XK,Sheep liver,Meat and meat products,27.3895834,50.14277984
+A012R,Pulses (dried legume seeds),"Legumes, nuts, oilseeds and spices",1.009741805,1.537918595
+A012S,Beans (dry) and similar-,"Legumes, nuts, oilseeds and spices",1.109263285,1.537918595
+A01ZM,Bovine edible offals (other than liver and kidney),Meat and meat products,34.04164267,58.86994949
+A01YK,Beef kidney,Meat and meat products,34.04164267,58.86994949
+A01YN,Sheep kidney,Meat and meat products,27.3895834,50.14277984
+A01ZQ,Sheep edible offals (other than liver and kidney),Meat and meat products,27.3895834,50.14277984
+A0B9G,"Corned beef, cooked",Meat and meat products,37.48861237,64.99242424
+A012T,Borlotti or other common beans (dry),"Legumes, nuts, oilseeds and spices",1.109263285,1.537918595
+A012V,Kidney bean (dry seeds),"Legumes, nuts, oilseeds and spices",1.677770845,1.537918595
+A012X,Navy beans (dry seeds),"Legumes, nuts, oilseeds and spices",1.065829139,1.413222492
+A012Z,Flageolets (dry seeds),"Legumes, nuts, oilseeds and spices",1.109263285,1.537918595
+A02LV,Cow milk,Milk and dairy products,1.585870237,1.460674157
+A02MK,Cream and cream products,Milk and dairy products,10.68224368,10.43338684
+A02ML,"Cream, plain",Milk and dairy products,10.68224368,10.43338684
+A02MP,Flavoured milks,Milk and dairy products,1.585870237,1.460674157
+A00KP,Sweet corn,Vegetables and vegetable products,2.559165579,6.163296329
+A02NA,Sour cream products,Milk and dairy products,10.68224368,10.43338684
+A02NB,"Sour cream, plain",Milk and dairy products,10.68224368,10.43338684
+A00ZP,Sweet corn canned,Vegetables and vegetable products,3.271078327,6.397345557
+A01RQ,Rabbit fresh meat,Meat and meat products,12.11892923,18.90909091
+A01RN,Horse fresh meat,Meat and meat products,33.93804139,58.86994949
+A02PG,Condensed milk (sometimes with added sugars),Milk and dairy products,4.502089986,3.213483146
+A01BQ,Table olives ready for consumption,Fruit and fruit products,0.766568268,2.524106636
+A02PY,Starchy pudding,Milk and dairy products,2.127821614,1.653661338
+A02PZ,Dairy ice creams and similar,Milk and dairy products,10.56874368,10.43338684
+A02QA,"Ice cream, milk-based",Milk and dairy products,10.56874368,10.43338684
+A02QE,Cheese,Milk and dairy products,13.14211514,12.9428895
+A02QF,Fresh uncured cheese,Milk and dairy products,16.96234554,16.69341894
+A02QK,Quark,Milk and dairy products,1.729600757,1.460674157
+A02RB,Soft brined cheese (feta type),Milk and dairy products,14.80596721,16.31086142
+A02RJ,Soft-ripened washed-rind cheese (limburger type),Milk and dairy products,16.89264458,16.69341894
+A02RT,"Soft-ripened cheese with bloomy rind (white mould) (brie, camembert type)",Milk and dairy products,16.89264458,16.69341894
+A02SG,"Soft-ripened cheese veined with blue mould (blue bavarian, blue de graven type )",Milk and dairy products,16.89264458,16.69341894
+A02SN,Soft-ripened cheese with natural rind and other soft-ripened cheeses,Milk and dairy products,16.89264458,16.69341894
+A02TV,"Cheese, edam",Milk and dairy products,13.14211514,12.9428895
+A02YM,"Cheese, emmental",Milk and dairy products,13.14211514,12.9428895
+A030B,Firm-ripened blue mould-veined cheese,Milk and dairy products,13.1186009,12.9428895
+A031A,Processed cheese and spreads,Milk and dairy products,11.8886189,11.68539326
+A031C,"Processed cheese, spreadable",Milk and dairy products,11.8886189,11.68539326
+A01SH,Wild boar fresh meat,Meat and meat products,12.10137371,18.90909091
+A02RC,"Cheese, feta",Milk and dairy products,14.80596721,16.31086142
+A02QG,Cottage cheese,Milk and dairy products,10.70231344,10.43338684
+A02QH,Mascarpone,Milk and dairy products,10.70231344,10.43338684
+A02QJ,Mozzarella,Milk and dairy products,11.88881986,11.68539326
+A02QL,Ricotta,Milk and dairy products,16.72073027,17.9167488
+A02QP,"Cheese, burrata",Milk and dairy products,11.95431986,11.68539326
+A02QQ,"Cheese, chevre frais",Milk and dairy products,23.33220277,25.75399172
+A02QX,"Cheese, triple creme",Milk and dairy products,16.96234554,16.69341894
+A02QZ,Cream cheese,Milk and dairy products,11.95431986,11.68539326
+A031D,Processed cheese wedges and similar,Milk and dairy products,11.9501189,11.68539326
+A02RH,Soft - ripened cheese,Milk and dairy products,16.89264458,16.69341894
+A02RK,"Cheese, epoisses",Milk and dairy products,16.89264458,16.69341894
+A02RL,"Cheese, langres",Milk and dairy products,16.89264458,16.69341894
+A02RN,"Cheese, munster",Milk and dairy products,16.89264458,16.69341894
+A02RR,"Cheese, vacherin mont d'or",Milk and dairy products,16.89264458,16.69341894
+A02RV,"Cheese, brie",Milk and dairy products,16.89264458,16.69341894
+A02RX,"Cheese, camembert",Milk and dairy products,16.89264458,16.69341894
+A02RY,"Cheese, chaource",Milk and dairy products,16.89264458,16.69341894
+A02RZ,"Cheese, chevre mould ripened",Milk and dairy products,33.14676302,36.79141674
+A02SA,"Cheese, coulommiers",Milk and dairy products,16.89264458,16.69341894
+A02SD,"Cheese, pouligny-saint-pierre",Milk and dairy products,33.14676302,36.79141674
+A02SF,"Cheese, saint marcellin",Milk and dairy products,16.89264458,16.69341894
+A02QS,"Cheese, crescenza",Milk and dairy products,16.89684554,16.69341894
+A02SS,"Cheese, robiola",Milk and dairy products,23.70180231,25.59535543
+A02SV,Firm/semi-hard cheese (gouda and edam type),Milk and dairy products,13.14211514,12.9428895
+A02TC,"Cheese, beaufort",Milk and dairy products,13.14211514,12.9428895
+A02TJ,"Cheese, cantal",Milk and dairy products,13.14211514,12.9428895
+A02TP,"Cheese, cream havarti",Milk and dairy products,16.89264458,16.69341894
+A02TQ,"Cheese, danbo",Milk and dairy products,13.14211514,12.9428895
+A02TY,"Cheese, fontina",Milk and dairy products,16.89264458,16.69341894
+A02VA,"Cheese, gouda",Milk and dairy products,13.14211514,12.9428895
+A02VN,"Cheese, maasdam",Milk and dairy products,13.14211514,12.9428895
+A02VQ,"Cheese, mimolette",Milk and dairy products,13.14211514,12.9428895
+A02VR,"Cheese, morbier",Milk and dairy products,13.14211514,12.9428895
+A02VZ,"Cheese, ossau-iraty",Milk and dairy products,16.25059001,17.92402354
+A02XE,"Cheese, provolone",Milk and dairy products,13.14211514,12.9428895
+A02XF,"Cheese, raclette",Milk and dairy products,13.14211514,12.9428895
+A02XH,"Cheese, saint nectaire",Milk and dairy products,16.89264458,16.69341894
+A02XJ,"Cheese, saint paulin",Milk and dairy products,13.14211514,12.9428895
+A02XL,"Cheese, scamorza",Milk and dairy products,16.89264458,16.69341894
+A02XS,"Cheese, tomme de savoie",Milk and dairy products,13.14211514,12.9428895
+A02YE,"Hard cheese (cheddar, emmental type)",Milk and dairy products,13.14211514,12.9428895
+A02YK,"Cheese, cheddar",Milk and dairy products,13.14211514,12.9428895
+A02YP,"Cheese, gruyere",Milk and dairy products,13.14211514,12.9428895
+A02ZD,"Cheese, pecorino toscano",Milk and dairy products,16.25059001,17.92402354
+A02ZH,"Extra hard cheese (parmesan, grana type)",Milk and dairy products,13.14211514,12.9428895
+A02ZL,"Cheese, caciocavallo",Milk and dairy products,14.64545357,15.38255752
+A02ZM,"Cheese, comte",Milk and dairy products,13.14211514,12.9428895
+A02ZQ,"Cheese, grana padano",Milk and dairy products,13.14211514,12.9428895
+A02ZS,"Cheese, parmigiano reggiano",Milk and dairy products,13.14211514,12.9428895
+A02ZT,"Cheese, pecorino romano",Milk and dairy products,16.25059001,17.92402354
+A030C,"Cheese, bleu d'auvergne",Milk and dairy products,13.1186009,12.9428895
+A030F,"Cheese, fourme d'ambert",Milk and dairy products,13.1186009,12.9428895
+A030H,"Cheese, gorgonzola",Milk and dairy products,13.1186009,12.9428895
+A030K,"Cheese, roquefort",Milk and dairy products,16.22707577,17.92402354
+A030P,Firm-ripened bloomy (white mould) or washed rind,Milk and dairy products,13.14211514,12.9428895
+A030V,"Cheese, livarot",Milk and dairy products,16.89264458,16.69341894
+A030X,"Cheese, pont l'eveque",Milk and dairy products,16.89264458,16.69341894
+A030Y,"Cheese, reblochon",Milk and dairy products,16.89264458,16.69341894
+A01SC,"Deer, red fresh meat",Meat and meat products,34.04164267,58.86994949
+A00EJ,Muesli and similar,Grains and grain-based products,0.364822686,1.389189902
+A04LH,"Breakfast cereals, plain",Grains and grain-based products,0.777778986,1.389189902
+A00CV,Breakfast cereals,Grains and grain-based products,1.044378986,1.389189902
+A00EM,Processed mixed cereal-based flakes,Grains and grain-based products,1.044378986,1.389189902
+A00FA,Cereal bars mixed,Grains and grain-based products,1.044378986,1.389189902
+A01RJ,Sheep (adult) fresh meat,Meat and meat products,27.3895834,50.14277984
+A00DH,Oat rolled grains,Grains and grain-based products,0.631422686,1.389189902
+A00EL,Muesli mixed,Grains and grain-based products,0.364822686,1.389189902
+A00EY,Cereal bars,Grains and grain-based products,0.631422686,1.389189902
+A02NC,Créme fraiche and other mild variants of sour cream,Milk and dairy products,10.68224368,10.43338684
+A02PF,"Evaporated milk (liquid, unsweetened)",Milk and dairy products,5.586213063,4.296100463
+A037F,Grape seed oil,Animal and vegetable fats and oils and primary derivatives thereof,1.813613524,2.032520325
+A01RK,Lamb fresh meat,Meat and meat products,27.3895834,50.14277984
+A02MN,Cream sprayable,Milk and dairy products,11.72199368,10.43338684
+A02LT,Milk,Milk and dairy products,1.585870237,1.460674157
+A02LY,"Cow milk, whole",Milk and dairy products,1.585870237,1.460674157
+A02LZ,"Cow milk, semi skimmed (half fat)",Milk and dairy products,1.585870237,1.460674157
+A02MA,"Cow milk, skimmed (low fat)",Milk and dairy products,1.585870237,1.460674157
+A02PL,"Milk powder, skimmed",Milk and dairy products,7.764621323,7.687758723
+A01DX,Table grapes,Fruit and fruit products,0.449296451,0.422764228
+A01CA,Limes,Fruit and fruit products,0.347661309,0.390752198
+A01CY,Grapefruits,Fruit and fruit products,0.991944441,0.803212851
+A01LH,Granate apples,Fruit and fruit products,0.738421558,0.550200803
+A01ME,Dried vine fruits (raisins etc.),Fruit and fruit products,1.214798781,1.845528455
+A042R,"Salt, iodised","Seasoning, sauces and condiments",,
+A042P,Salt,"Seasoning, sauces and condiments",,
+A042X,Sea salt,"Seasoning, sauces and condiments",,
+A042Z,Mixed herbs and spices,"Seasoning, sauces and condiments",,
+A043A,Curry powder,"Seasoning, sauces and condiments",,
+A043F,Stock cubes or granulate (bouillon base),"Seasoning, sauces and condiments",,
+A043L,Vegetable savoury extracts,"Seasoning, sauces and condiments",,
+A043T,Gravy instant granules,"Seasoning, sauces and condiments",,
+A044G,Mustard and related sauces,"Seasoning, sauces and condiments",,
+A044L,Vinegar,"Seasoning, sauces and condiments",,
+A044M,"Vinegar, wine","Seasoning, sauces and condiments",,
+A03AK,"Juice, grape",Fruit and vegetable juices and nectars (including concentrates),0.640353632,0.528455285
+A03CJ,"Juice, tomato",Fruit and vegetable juices and nectars (including concentrates),1.457950986,0.075856275
+A044X,Mayonnaise sauce,"Seasoning, sauces and condiments",4.14206482,18.01928595
+A045B,Barbecue or steak sauces,"Seasoning, sauces and condiments",2.562847304,0.119981821
+A045C,British islands brown sauce,"Seasoning, sauces and condiments",2.562847304,0.119981821
+A045N,Tartar sauce,"Seasoning, sauces and condiments",4.14206482,18.01928595
+A045Y,Pickles,"Seasoning, sauces and condiments",4.131636063,0.06097561
+A045K,Salad dressing,"Seasoning, sauces and condiments",2.293011835,9.009642977
+A045L,"Salad dressing, low fat","Seasoning, sauces and condiments",2.293011835,9.009642977
+A013H,Broad beans (dry),"Legumes, nuts, oilseeds and spices",0.961127214,1.031567423
+A013J,Garden peas (dry),"Legumes, nuts, oilseeds and spices",0.478027839,1.122609462
+A0BAV,Chickpeas (without pods),"Legumes, nuts, oilseeds and spices",1.141608695,6.3923881
+A013M,Chickpeas (dry),"Legumes, nuts, oilseeds and spices",1.141608695,6.3923881
+A013Q,Lentils (dry),"Legumes, nuts, oilseeds and spices",0.669853458,2.861519298
+A01BB,Canned or jarred common beans,"Legumes, nuts, oilseeds and spices",1.228205564,0.560333743
+A01BC,Canned or jarred peas,"Legumes, nuts, oilseeds and spices",0.949886406,1.099283209
+A044P,Tomato ketchup and related sauces,"Seasoning, sauces and condiments",2.562847304,0.119981821
+A00HR,Globe tomato,Vegetables and vegetable products,0.919045024,0.054537191
+A00HT,Plum tomato,Vegetables and vegetable products,0.941270634,0.056024569
+A00ZD,Tomato puree,Vegetables and vegetable products,3.378855367,0.124538093
+A0DMX,Tomatoes,Vegetables and vegetable products,0.919045024,0.054537191
+A00HQ,Tomatoes and similar-,Vegetables and vegetable products,0.919045024,0.054537191
+A033J,Honey,"Sugar and similar, confectionery and water-based sweet desserts",1.181971582,1.160147313
+A034G,Bitter chocolate,"Sugar and similar, confectionery and water-based sweet desserts",7.744342904,10.37723997
+A034H,Bitter-sweet chocolate,"Sugar and similar, confectionery and water-based sweet desserts",7.744342904,10.37723997
+A034J,Milk chocolate,"Sugar and similar, confectionery and water-based sweet desserts",5.994023531,7.864191279
+A034Q,Filled chocolate,"Sugar and similar, confectionery and water-based sweet desserts",5.994023531,7.864191279
+A034R,Chocolate coated confectionery,"Sugar and similar, confectionery and water-based sweet desserts",5.994023531,7.864191279
+A00HY,Cherry tomatoes,Vegetables and vegetable products,0.919045024,0.054537191
+A034Y,Marzipan,"Sugar and similar, confectionery and water-based sweet desserts",2.397951402,6.492892208
+A00ZC,"Preserved tomato, whole or pieces",Vegetables and vegetable products,1.922686591,0.065356768
+A00ZE,Preserved concentrated tomatoes,Vegetables and vegetable products,5.021705578,0.272748715
+A00ZF,Tomato paste,Vegetables and vegetable products,5.021705578,0.272748715
+A00ZG,Sun-dried tomatoes,Vegetables and vegetable products,13.8031473,0.878971331
+A03MV,"Wine, white",Alcoholic beverages,1.397268563,0.528455285
+A03MX,"Wine, red",Alcoholic beverages,1.397268563,0.528455285
+A036K,Sorbet,"Sugar and similar, confectionery and water-based sweet desserts",0.881343951,0.337046371
+A0C6P,Chocolate spread,"Sugar and similar, confectionery and water-based sweet desserts",5.994023531,7.864191279
+A0EQD,Chocolate and similar,"Sugar and similar, confectionery and water-based sweet desserts",5.994023531,7.864191279
+A03MT,Wine,Alcoholic beverages,1.397268563,0.528455285
+A00FJ,Vegetables and vegetable products,Vegetables and vegetable products,1.363187792,2.476914211
+A00FN,Broccoli,Vegetables and vegetable products,0.985591044,1.124131353
+A00FR,Cauliflowers,Vegetables and vegetable products,1.729182118,2.678407017
+A00FY,Head cabbages,Vegetables and vegetable products,0.462641926,0.321220865
+A00GB,Savoy cabbages,Vegetables and vegetable products,0.462641926,0.321220865
+A00GG,Chinese cabbages,Vegetables and vegetable products,0.462641926,0.321220865
+A00GV,Kohlrabies,Vegetables and vegetable products,0.436348182,0.279322491
+A00GZ,Garlic,Vegetables and vegetable products,0.382843477,0.38422987
+A00HC,Onions,Vegetables and vegetable products,0.423678833,0.394253258
+A0DND,Onion bulbs for fresh consumption,Vegetables and vegetable products,0.206678833,0.394253258
+A03NA,Champagne-like wine,Alcoholic beverages,1.291253163,0.528455285
+A03PE,Brandy,Alcoholic beverages,1.153089563,0.528455285
+A00JA,Sweet peppers,Vegetables and vegetable products,3.827375006,0.18597561
+A00JM,Cucumbers,Vegetables and vegetable products,3.861811825,0.062804878
+A00JP,Gherkins,Vegetables and vegetable products,3.861811825,0.062804878
+A00JQ,Courgettes and similar-,Vegetables and vegetable products,0.522913821,0.385779349
+A00JR,Courgettes,Vegetables and vegetable products,0.522913821,0.385779349
+A00JS,Summer squashes,Vegetables and vegetable products,0.538519142,0.408701384
+A00KJ,Watermelons,Vegetables and vegetable products,0.367733707,0.498183705
+A00EQ,Oat porridge,Grains and grain-based products,1.397621595,2.278570313
+A00MJ,Spinaches,Vegetables and vegetable products,0.652546734,0.989547038
+A00PC,Beans (with pods) and similar-,Vegetables and vegetable products,0.596645724,0.539833728
+A00QG,Beetroots,Vegetables and vegetable products,0.513794054,0.332204552
+A00QH,Carrots,Vegetables and vegetable products,0.391467498,0.2667162
+A00QJ,Celeriacs,Vegetables and vegetable products,0.946564449,0.039823685
+A00QK,Horseradish roots,Vegetables and vegetable products,0.391467498,0.2667162
+A00QS,Parsley roots,Vegetables and vegetable products,0.402410783,0.289210337
+A00QY,Daikon,Vegetables and vegetable products,0.391467498,0.2667162
+A00SB,Leeks,Vegetables and vegetable products,0.523697078,0.936341175
+A00TD,Wild fungi and similar-,Vegetables and vegetable products,4.927083039,0.010558015
+A00TG,Ceps,Vegetables and vegetable products,4.927083039,0.010558015
+A00TQ,Common mushrooms,Vegetables and vegetable products,4.927083039,0.010558015
+A00TY,Dried mushrooms,Vegetables and vegetable products,33.75004645,0.075771693
+A00TZ,Canned mushrooms,Vegetables and vegetable products,5.729254862,0.010958952
+A00XA,Celery leaves,Vegetables and vegetable products,0.729564449,0.039823685
+A00YE,Parsley,Vegetables and vegetable products,0.729564449,0.039823685
+A00ZA,Processed or preserved vegetables and similar,Vegetables and vegetable products,1.363187792,2.476914211
+A03NL,Port,Alcoholic beverages,1.397268563,0.528455285
+A00ZJ,Pickled/marinated vegetables,Vegetables and vegetable products,4.63178621,0.065189873
+A00ZK,Sauerkraut,Vegetables and vegetable products,0.489781374,0.364466847
+A01BH,Chickpea flour,"Legumes, nuts, oilseeds and spices",8.684303817,80.54140981
+A00EZ,Cereal bars plain,Grains and grain-based products,0.631422686,1.389189902
+A0DJR,Swiss chards,Vegetables and vegetable products,0.464455302,0.416744062
+A0DLB,Lettuces and similar-,Vegetables and vegetable products,0.369999073,0.019785366
+A03MY,"Wine, rosé",Alcoholic beverages,1.397268563,0.528455285
+A0DNJ,Small radishes,Vegetables and vegetable products,0.160449205,0.237901325
+A00GY,Garlic and similar-,Vegetables and vegetable products,0.382843477,0.38422987
+A0DNB,Shallots and similar-,Vegetables and vegetable products,0.423678833,0.394253258
+A00FM,Broccoli and similar-,Vegetables and vegetable products,0.9812008,1.117318436
+A00KF,Melons,Vegetables and vegetable products,0.381773711,0.508562532
+A00KH,Pumpkins,Vegetables and vegetable products,0.581153289,0.471324984
+A03PS,Punch,Alcoholic beverages,1.397268563,0.528455285
+A03PT,Sangria,Alcoholic beverages,1.124849163,0.528455285
+A00JB,Chili peppers,Vegetables and vegetable products,4.253594518,0.208841463
+A00JD,Aubergines,Vegetables and vegetable products,5.882942401,0.168830317
+A0ETG,Fungi,Vegetables and vegetable products,4.927083039,0.010558015
+A00GA,Red cabbages,Vegetables and vegetable products,0.429398023,0.268247599
+A00GC,White cabbage,Vegetables and vegetable products,0.451195558,0.302981385
+A00GL,Kales and similar-,Vegetables and vegetable products,0.462641926,0.321220865
+A00GM,Curly kales,Vegetables and vegetable products,0.466178511,0.326856318
+A00KR,Leafy vegetables,Vegetables and vegetable products,0.653047854,0.989547038
+A00KT,Lamb's lettuces,Vegetables and vegetable products,0.32620639,0.017121951
+A00KX,Lettuces,Vegetables and vegetable products,0.32620639,0.017121951
+A00KY,Head lettuces,Vegetables and vegetable products,0.32620639,0.017121951
+A00LC,Romaines,Vegetables and vegetable products,0.26573078,0.013443902
+A00LE,Escaroles,Vegetables and vegetable products,0.369999073,0.019785366
+A00LF,Curly endives,Vegetables and vegetable products,0.286584439,0.014712195
+A00LG,Radicchio,Vegetables and vegetable products,0.263645415,0.013317073
+A00LH,Wild chicories,Vegetables and vegetable products,0.369999073,0.019785366
+A00LM,Roman rocket and similar-,Vegetables and vegetable products,0.26573078,0.013443902
+A00LY,Turnip tops,Vegetables and vegetable products,0.1872114,0.292911541
+A00NE,Witloofs,Vegetables and vegetable products,0.316632828,0.016646341
+A00PG,French beans (with pods),Vegetables and vegetable products,0.596645724,0.539833728
+A0ETQ,Canned/jarred vegetables,Vegetables and vegetable products,2.191826746,2.570974244
+A03NG,Fortified and liqueur wines,Alcoholic beverages,1.124849163,0.528455285
+A03NH,Vermouth,Alcoholic beverages,1.124849163,0.528455285
+A03MZ,Sparkling wine,Alcoholic beverages,1.291253163,0.528455285
+A01DY,Wine grapes,Fruit and fruit products,0.950161085,1.37398374
+A00QV,Radishes,Vegetables and vegetable products,0.173308961,0.264334805
+A00RT,Asparagus,Vegetables and vegetable products,2.158790252,6.382739212
+A00RY,Celeries,Vegetables and vegetable products,0.946564449,0.039823685
+A00FV,Brussels sprouts,Vegetables and vegetable products,0.41645939,0.250214147
+A00QR,Parsnip roots,Vegetables and vegetable products,0.391467498,0.2667162
+A00QX,Black radishes,Vegetables and vegetable products,0.160449205,0.237901325
+A00RE,Turnips,Vegetables and vegetable products,0.401113574,0.286543899
+A00SR,Mung bean sprouts,Vegetables and vegetable products,3.658546454,0.007687875
+A02PJ,Milk powder,Milk and dairy products,7.764621323,7.687758723
+A02PK,"Milk powder, full fat",Milk and dairy products,7.764621323,7.687758723
+A00SA,Florence fennels,Vegetables and vegetable products,0.391467498,0.2667162
+A00SC,Palm hearts,Vegetables and vegetable products,1.34756014,2.723383402
+A00SF,"Sprouts, shoots and similar",Vegetables and vegetable products,0.41645939,0.250214147
+A03GF,Powdered drink bases,Water and water-based beverages,0.272771189,0
+A03DL,Tap water,Water and water-based beverages,0,0
+A03DT,Bottled drinking water,Water and water-based beverages,0.272771189,0
+A03EX,"Soft drink, flavoured, no fruit",Water and water-based beverages,0.514550149,0.466888553
+A03FQ,Cola-type drinks,Water and water-based beverages,0.514550149,0.466888553
+A03GD,Drink mixes,Water and water-based beverages,0.514550149,0.466888553
+A03GE,Liquid drink bases (including concentrates and home-made preparations),Water and water-based beverages,0.514550149,0.466888553
+A03DQ,Natural mineral water,Water and water-based beverages,0.272771189,0
+A03DR,Still natural mineral water,Water and water-based beverages,0.272771189,0
+A03DS,Carbonated natural mineral water,Water and water-based beverages,0.272771189,0
+A03DV,Still bottled drinking water,Water and water-based beverages,0.272771189,0
+A03DX,Carbonated bottled drinking water,Water and water-based beverages,0.272771189,0
+A03DY,Flavoured bottled water,Water and water-based beverages,0.272771189,0
+A03DZ,Soft drinks,Water and water-based beverages,0.514550149,0.466888553
+A03EA,"Soft drink, with fruit juice (fruit content below the minimum for nectars)",Water and water-based beverages,0.514550149,0.466888553
+A03EL,"Fruit soft drink, orange",Water and water-based beverages,0.514550149,0.466888553
+A03EV,"Fruit soft drink, mixed fruit",Water and water-based beverages,0.514550149,0.466888553
+A03EY,Soft drink with bitter principle,Water and water-based beverages,0.514550149,0.466888553
+A03FD,"Soft drink, flavoured with herbs",Water and water-based beverages,0.514550149,0.466888553
+A03FF,"Soft drink, lemon flavour",Water and water-based beverages,0.514550149,0.466888553
+A03FR,"Cola beverages, caffeinic",Water and water-based beverages,0.514550149,0.466888553
+A03FV,Diet soft drinks with fruit juice,Water and water-based beverages,0.514550149,0.466888553
+A03FX,Diet soft drinks with flavours,Water and water-based beverages,0.514550149,0.466888553
+A04PY,Water based beverages,Water and water-based beverages,0.272771189,0
+A003K,"Rye flour, light",Grains and grain-based products,0.609554245,4.797879221
+A003M,"Rye flour, wholemeal",Grains and grain-based products,0.556302553,4.362722733
+A037G,Linseed oil,Animal and vegetable fats and oils and primary derivatives thereof,4.213530932,24.95117577
+A03NY,Coffee liqueur,Alcoholic beverages,1.235205835,0.893636323
+A03NM,Marsala,Alcoholic beverages,1.124849163,0.528455285
+A04QC,Other wine-like fruit drinks,Alcoholic beverages,1.124849163,0.528455285
+A038Q,Cod liver oil,Animal and vegetable fats and oils and primary derivatives thereof,4.954078208,0
+A037P,"Palm kernel oil, edible",Animal and vegetable fats and oils and primary derivatives thereof,8.512127234,2.768760162
+A036Y,"Maize oil, edible",Animal and vegetable fats and oils and primary derivatives thereof,3.518769726,17.85736916
+A037L,Other plant oils,Animal and vegetable fats and oils and primary derivatives thereof,3.518769726,17.85736916
+A03HA,Barley coffee ingredient,"Coffee, cocoa, tea and infusions",0.118236653,0.573546129
+A03JV,Ginseng infusion roots,"Coffee, cocoa, tea and infusions",0.800409068,0.183297842
+A03HY,Instant tea powder,"Coffee, cocoa, tea and infusions",0.800409068,0.183297842
+A03KS,Barley coffee infusion,"Coffee, cocoa, tea and infusions",0.118236653,0.573546129
+A03GT,Malt coffee ingredient,"Coffee, cocoa, tea and infusions",0.118236653,0.573546129
+A03GV,Chicory coffee ingredient,"Coffee, cocoa, tea and infusions",0.118236653,0.573546129
+A03XJ,Fish and seafood based dishes,Composite dishes,6.446871357,6.888101912
+A00FC,Corn chips,Composite dishes,1.855521043,2.728652839
+A00FD,Tortilla chips,Composite dishes,0.928962921,0.43902439
+A0BYT,Potato crisps from dough,Composite dishes,0.928962921,0.43902439
+A0B9R,"Mixed vegetables soup, dry",Composite dishes,6.321469402,10.08508027
+A0B9S,"Mushroom soup, dry",Composite dishes,6.320928082,10.08508027
+A00EP,Corn semolina based thick soup,Composite dishes,6.503561382,10.08508027
+A02BS,Garfish,"Fish, seafood, amphibians, reptiles and invertebrates",5.557886166,0
+A02CF,Coalfish,"Fish, seafood, amphibians, reptiles and invertebrates",5.153078208,0
+A0FBV,Canned mackerel,"Fish, seafood, amphibians, reptiles and invertebrates",2.664533679,0
+A02EL,Cod liver,"Fish, seafood, amphibians, reptiles and invertebrates",5.488593756,0
+A02EM,Fish roe,"Fish, seafood, amphibians, reptiles and invertebrates",11.62159992,1.368819258
+A02LL,"Snail, garden","Fish, seafood, amphibians, reptiles and invertebrates",12.15526707,0
+A02FL,"Crabs, sea-spiders","Fish, seafood, amphibians, reptiles and invertebrates",22.0879066,3.345623791
+A029Y,Salema,"Fish, seafood, amphibians, reptiles and invertebrates",14.07363499,0
+A02AG,Miscellaneous demersal marine fishes,"Fish, seafood, amphibians, reptiles and invertebrates",16.95093852,0
+A02BH,Brill,"Fish, seafood, amphibians, reptiles and invertebrates",22.74747445,4.49019066
+A02DN,Smooth hounds,"Fish, seafood, amphibians, reptiles and invertebrates",8.019541129,0
+A0FAX,Dentex,"Fish, seafood, amphibians, reptiles and invertebrates",14.07363499,0
+A02JR,Stockfish,"Fish, seafood, amphibians, reptiles and invertebrates",5.153078208,0
+A0EYT,Salt-preserved fish,"Fish, seafood, amphibians, reptiles and invertebrates",18.60825323,2.300711408
+A0FBS,Canned salmon,"Fish, seafood, amphibians, reptiles and invertebrates",4.648680212,3.457446809
+A0BZ5,Canned seafood,"Fish, seafood, amphibians, reptiles and invertebrates",16.10984514,2.380762411
+A02HG,Oysters,"Fish, seafood, amphibians, reptiles and invertebrates",66.36231211,20.04458698
+A02KR,Frogs (legs),"Fish, seafood, amphibians, reptiles and invertebrates",31.04841385,0
+A027T,Pike,"Fish, seafood, amphibians, reptiles and invertebrates",9.841820528,0
+A02AN,Scorpion fishes,"Fish, seafood, amphibians, reptiles and invertebrates",14.07363499,0
+A02BG,Turbot,"Fish, seafood, amphibians, reptiles and invertebrates",22.74747445,4.49019066
+A02DY,Albacore,"Fish, seafood, amphibians, reptiles and invertebrates",6.826192546,0
+A02KH,Other smoked fishes,"Fish, seafood, amphibians, reptiles and invertebrates",17.52454202,2.156164095
+A0F7F,Lumpfish roe,"Fish, seafood, amphibians, reptiles and invertebrates",11.62159992,1.368819258
+A02GX,"Water snails, conches and whelks","Fish, seafood, amphibians, reptiles and invertebrates",9.331125848,0
+A02JA,Cuttlefishes,"Fish, seafood, amphibians, reptiles and invertebrates",7.492794456,0
+A01GN,Nectarines,Fruit and fruit products,0.338085923,0.602409639
+A01DR,Quinces,Fruit and fruit products,0.243760038,0.277458381
+A01MB,Dried prunes,Fruit and fruit products,0.696315836,1.725903614
+A01NT,Canned or jarred plum,Fruit and fruit products,0.815154852,0.335443038
+A01NV,Canned or jarred sweet cherry,Fruit and fruit products,0.810489549,0.344936709
+A01DC,Tangelos (except minneolas),Fruit and fruit products,0.460305146,0.599412576
+A01MF,Dried dates,Fruit and fruit products,2.089952508,2.143310082
+A01KD,Prickly pears,Fruit and fruit products,0.243760038,0.277458381
+A01MG,Dried figs,Fruit and fruit products,1.570647108,2.143310082
+A01PC,Canned or jarred mixed fruit,Fruit and fruit products,1.725016649,0.752697942
+A01PS,Candied fruits,Fruit and fruit products,2.435399826,1.058615541
+A01QE,Citrus fruit peel,Fruit and fruit products,0.488155285,0.615434712
+A01MA,Dried fruit,Fruit and fruit products,1.964575848,2.575340683
+A01NN,Canned or jarred fruit,Fruit and fruit products,1.550822322,0.439957346
+A01PD,Compote of fruit / vegetables,Fruit and fruit products,1.681129736,0.615940285
+A01QF,Mixed dried fruits,Fruit and fruit products,2.507010528,2.575340683
+A01QJ,Fruit or fruit-vegetable puree,Fruit and fruit products,1.898129736,0.615940285
+A039V,"Juice, elderberry",Fruit and vegetable juices and nectars (including concentrates),0.962956129,0.391566265
+A03CS,Mixed vegetable juice,Fruit and vegetable juices and nectars (including concentrates),2.453491069,3.670607806
+A04PQ,Vegetable juices,Fruit and vegetable juices and nectars (including concentrates),2.453491069,3.670607806
+A002G,Buckwheat flour,Grains and grain-based products,0.61466988,1.087142153
+A003F,Rice flour,Grains and grain-based products,0.845186903,0.789111727
+A004P,Wheat bran,Grains and grain-based products,0.560841977,1.92699613
+A004G,Bulgur,Grains and grain-based products,0.560841977,1.92699613
+A006K,Puffed rice textured bread,Grains and grain-based products,0.966228073,3.309167813
+A004Z,"Wheat bread and rolls, white with maize",Grains and grain-based products,0.966228073,3.309167813
+A005A,"Wheat bread and rolls, white with potato",Grains and grain-based products,0.966228073,3.309167813
+A005C,"Wheat bread and rolls, white with soya",Grains and grain-based products,0.966228073,3.309167813
+A04KZ,Unleavened or flat bread and similar,Grains and grain-based products,0.966228073,3.309167813
+A00DA,Processed barley-based flakes,Grains and grain-based products,0.482517936,1.29104109
+A00DN,Processed oat-based flakes,Grains and grain-based products,0.631422686,1.389189902
+A000G,Oat grain,Grains and grain-based products,0.364822686,1.389189902
+A000N,Buckwheat,Grains and grain-based products,0.560841977,1.92699613
+A001R,Spelt grain,Grains and grain-based products,0.343841977,1.92699613
+A00AB,"Biscuits, oat meal",Grains and grain-based products,2.830264485,8.115070052
+A00AR,Cheese cake,Grains and grain-based products,12.42830087,14.16919177
+A00AS,Cream cheese cake,Grains and grain-based products,12.42830087,14.16919177
+A00AX,Cream custard cake,Grains and grain-based products,12.42830087,14.16919177
+A00CR,Spice cakes,Grains and grain-based products,12.42830087,14.16919177
+A00BQ,"Croissant, filled with jam",Grains and grain-based products,17.6642179,18.48467486
+A008F,"Noodle, rice",Grains and grain-based products,1.111786903,0.789111727
+A009H,Choux pastry dough,Grains and grain-based products,2.318562861,6.017914899
+A00AM,Gougere,Grains and grain-based products,2.318562861,6.017914899
+A00CH,Baklava,Grains and grain-based products,17.6642179,18.48467486
+A00CN,Macaroons,Grains and grain-based products,12.42830087,14.16919177
+A00CP,Meringue,Grains and grain-based products,3.107223319,8.893280632
+A008X,Short pastry doughs (pate brisee),Grains and grain-based products,2.318562861,6.017914899
+A009L,Laminated doughs,Grains and grain-based products,17.6642179,18.48467486
+A013L,Field (maple) pea (dry seeds),"Legumes, nuts, oilseeds and spices",0.476921799,1.122609462
+A015G,Linseeds,"Legumes, nuts, oilseeds and spices",1.934910889,16.91605731
+A015K,Sesame seeds,"Legumes, nuts, oilseeds and spices",1.208671646,6.571545408
+A014P,Pine nut kernels and similar-,"Legumes, nuts, oilseeds and spices",7.268711949,0.013455728
+A01BV,Pine nut kernels,"Legumes, nuts, oilseeds and spices",7.268711949,0.013455728
+A0F0L,Candied or sugar preserved nuts,"Legumes, nuts, oilseeds and spices",1.449725779,8.720352515
+A014C,Tree nuts,"Legumes, nuts, oilseeds and spices",1.873472648,6.621665826
+A014G,Brazil nuts,"Legumes, nuts, oilseeds and spices",4.320136741,32.22996516
+A01BL,Chestnut puree (castanea vulgaris),"Legumes, nuts, oilseeds and spices",2.44883398,6.952749117
+A01BN,Peanut butter,"Legumes, nuts, oilseeds and spices",1.666563179,8.720352515
+A01SJ,Hare fresh meat,Meat and meat products,12.10137371,18.90909091
+A03NV,Herb liqueur,Alcoholic beverages,1.235205835,0.893636323
+A03PD,Unsweetened spirits,Alcoholic beverages,1.235205835,0.893636323
+A03PK,Spirits made from stone fruits,Alcoholic beverages,1.235205835,0.893636323
+A03HD,Mixed coffee imitates,"Coffee, cocoa, tea and infusions",0.118236653,0.573546129
+A03KL,Coffee imitate beverages,"Coffee, cocoa, tea and infusions",0.118236653,0.573546129
+A03KY,Cocoa beverages,"Coffee, cocoa, tea and infusions",3.004688415,3.113842428
+A0F0B,Pig head,Meat and meat products,12.10137371,18.90909091
+A0F1T,Animal blood,Meat and meat products,23.41450503,39.5959596
+A022N,"Horse meat, dried",Meat and meat products,34.04164267,58.86994949
+A0F3L,Mammals other organs (edible offals non-muscle),Meat and meat products,23.41450503,39.5959596
+A020S,Bovine tongue,Meat and meat products,34.04164267,58.86994949
+A020X,Bovine marrowbone,Meat and meat products,34.04164267,58.86994949
+A01RL,Goat muscle,Meat and meat products,27.3895834,50.14277984
+A01RP,Asses-mules-hinnies fresh meat,Meat and meat products,34.04164267,58.86994949
+A01SA,Deer fresh meat,Meat and meat products,34.04164267,58.86994949
+A05QH,Porchetta,Meat and meat products,12.10137371,18.90909091
+A022R,Raw cured meat,Meat and meat products,10.24531311,15.80681818
+A022Z,"Corned pork, uncooked",Meat and meat products,10.24531311,15.80681818
+A024H,Italian-style sausage,Meat and meat products,12.10137371,18.90909091
+A024Z,Hungarian-type salami,Meat and meat products,12.10137371,18.90909091
+A020Z,Bovine trotters and feet,Meat and meat products,34.04164267,58.86994949
+A02QB,"Ice cream, milk-imitate based",Milk and dairy products,0.661209801,1.348532121
+A02NK,"Yoghurt, sheep milk, plain",Milk and dairy products,3.191343275,3.262172285
+A03TQ,Dairy imitates other than milks,"Products for non-standard diets, food imitates and food supplements",0.530059867,1.008248315
+A03TM,Rice drink,"Products for non-standard diets, food imitates and food supplements",0.922664487,0.736920422
+A03TE,Meat imitates,"Products for non-standard diets, food imitates and food supplements",2.278272141,4.537117418
+A044Y,"Mayonnaise, low fat","Seasoning, sauces and condiments",2.293011835,9.009642977
+A043A,Curry powder,"Seasoning, sauces and condiments",,
+A0F1N,White sauces,"Seasoning, sauces and condiments",2.101404312,2.123585531
+A00ZV,New potatoes,"Starchy roots or tubers and products thereof, sugar plants",0.503206926,0.388219545
+A011G,Potato flour,"Starchy roots or tubers and products thereof, sugar plants",0.939990059,1.609103079
+A033Z,Syrups,"Sugar and similar, confectionery and water-based sweet desserts",0.998277832,1.160147313
+A0EQP,Soft candies and analogues,"Sugar and similar, confectionery and water-based sweet desserts",0.767784082,1.160147313
+A00VM,Kombu,Vegetables and vegetable products,4.791168405,0.0102505
+A00HH,Spring onions,Vegetables and vegetable products,0.206678833,0.394253258
+A00KZ,Crisp lettuces,Vegetables and vegetable products,0.316632828,0.016646341
+A00QA,Podded pea (young pods),Vegetables and vegetable products,0.326371799,1.122609462
+A00QQ,Jerusalem artichokes,Vegetables and vegetable products,0.890865252,4.600081785
+A00SD,Rhubarbs,Vegetables and vegetable products,0.400388229,0.285052938
+A034N,Gianduja chocolate,"Sugar and similar, confectionery and water-based sweet desserts",7.744342904,10.37723997
+A034P,White chocolate,"Sugar and similar, confectionery and water-based sweet desserts",5.052790992,6.587509644
+A035D,Nougat,"Sugar and similar, confectionery and water-based sweet desserts",2.397951402,6.492892208
+A036J,Water-based ice creams,"Sugar and similar, confectionery and water-based sweet desserts",0.881343951,0.337046371
+A0DGR,Courgette (edible flowers),Vegetables and vegetable products,0.522913821,0.385779349
+A0DDD,Périgord black truffles,Vegetables and vegetable products,4.927083039,0.010558015
+A0DDH,Other cultivated fungi,Vegetables and vegetable products,4.927083039,0.010558015
+A0DLA,Puntarelle,Vegetables and vegetable products,0.286584439,0.014712195
+A00MR,Agretti,Vegetables and vegetable products,0.436047854,0.989547038
+A00ZQ,Dried vegetables,Vegetables and vegetable products,7.983476434,15.47726495
+A00SY,Soyabeans sprouts,Vegetables and vegetable products,0.41645939,0.250214147
+A00MD,Dandelions,Vegetables and vegetable products,0.286584439,0.014712195
+A00ND,Watercresses,Vegetables and vegetable products,0.286584439,0.014712195
+A00MP,Purslanes,Vegetables and vegetable products,0.653047854,0.989547038
+A0DJT,Chards and similar-,Vegetables and vegetable products,0.464455302,0.416744062
+A00RA,Salsifies,Vegetables and vegetable products,0.653047854,0.989547038
+A03GA,Energy drinks,Water and water-based beverages,0.514550149,0.466888553
+A03FP,"Cola beverages, decaffeinated",Water and water-based beverages,0.514550149,0.466888553
+A03GB,Isotonic and sport drinks,Water and water-based beverages,0.514550149,0.466888553
