@@ -1776,7 +1776,12 @@ various$recipes_nutrients <- various$ingredients_nutrients %>%
 
 #Ingredients that has not been mapped regardless of reason
 various$no_nutrient_info <- t %>%
-  inner_join(clean %>% select(`Selected Meals`, Ingredients, Amounts))
+  inner_join(clean %>% select(`Selected Meals`, Ingredients, Amounts)) %>%
+  
+  #Calculate amount pr 100 g
+  inner_join(., various$recipe_weight) %>% #Total weight of recipe
+  mutate(`pct_of_full_recipe` = round(Amounts/Weight*100, 2)) %>%
+  select(-c(Amounts, Weight))
 
 #Calculate the CO2 and landuse----
 temp <- clean %>%
@@ -1934,7 +1939,12 @@ various$foodgroup_sustainability <- various$ingredients_sustainability %>%
 #Ingredients that are still without sustainability indicators
 various$no_sustainability_indiactors <- temp2 %>% filter(ID == 0) %>%
   select(Ingredients) %>%
-  inner_join(clean) %>% select(`Selected Meals`, Ingredients, Amounts)
+  inner_join(clean) %>% select(`Selected Meals`, Ingredients, Amounts) %>%
+  
+#Calculate amount pr 100 g
+inner_join(., various$recipe_weight) %>% #Total weight of recipe
+  mutate(`pct_of_full_recipe` = round(Amounts/Weight*100, 2)) %>%
+  select(-c(Amounts, Weight))
 
 #Final df's to run analyses on----
 #Df with all nutrients and sustainability markers pr 100 g recipe
