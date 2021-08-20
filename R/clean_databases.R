@@ -286,6 +286,9 @@ temp <- list(
   c('Chick peas, canned', 'box', '290', 'Øko kolonial', 'english'),
   c('cucumber, pickled', 'stk', '70', 'Produce converter Howmuchisin', 'english'),
   c('chunky salsa', 'glass', '230', 'Santa Maria', 'english'),
+  c('orange zest', 'dl', '40.58', 'FoodData Central', 'english'),
+  c('lemon zest', 'dl', '40.58', 'FoodData Central', 'english'),
+  c('lime zest', 'dl', '40.58', 'FoodData Central', 'english'), #Assume the same as orange and lemon
   
   #Seafood
   c('Anchovies, canned', 'box', '55', 'Abba', 'english'),

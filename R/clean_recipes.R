@@ -651,7 +651,7 @@ clean <- clean %>%
     str_detect(Ingredients, 'olive') & str_detect(Ingredients, 'green') ~ 'olive green',
     str_detect(Ingredients, 'onion') & !str_detect(Ingredients, 'pickle|spring|green|pearl|leek|mire|garlic|powder|soup') ~ 'onion',
     str_detect(Ingredients, 'pearl onion') ~ 'pearl onion',
-    str_detect(Ingredients, 'orange') & str_detect(Ingredients, 'juice') & str_detect(Ingredients, 'zest|peel|shell') ~ 'orange the juice and zest',
+    str_detect(Ingredients, 'orange') & str_detect(Ingredients, 'juice') & str_detect(Ingredients, 'zest|peel|shell') ~ 'orange, the juice and zest',
     str_detect(Ingredients, 'orange') & str_detect(Ingredients, 'shell|zest|peel') ~ 'orange, the zest',
     str_detect(Ingredients, 'orange') & str_detect(Ingredients, 'juice') ~ 'orange juice',
     str_detect(Ingredients, 'orange') ~ 'orange',
@@ -1399,6 +1399,37 @@ separate(., Amounts, c('Amounts', 'unit'), sep = ' ') %>%
     unit = unit %>%
       str_replace('\\bg\\b', 'kg'))
 
+#Change the amount of lemon/orange/lime juice/zest from whole pieces of fruit to dl when applicable
+temp <- clean %>%
+  filter(str_detect(Ingredients, 'the juice|the zest')) %>%
+  
+  #If it says 'juice and zest' treat as a whole fruit
+  mutate(Ingredients = str_replace(Ingredients, ', the juice and zest', '')) %>%
+  
+  #Turn whole fruits into the equivalent amount of juice in kg and zest in dl
+  mutate(
+    Amounts = case_when(
+      #Juice (info from https://www.webstaurantstore.com/blog/2760/juice-in-citrus-fruits.html)
+      str_detect(Ingredients, 'lemon') & str_detect(Ingredients, 'juice') & str_detect(unit, 'stk') ~ (Amounts*3)*0.15,
+      str_detect(Ingredients, 'lime') & str_detect(Ingredients, 'juice') & str_detect(unit, 'stk') ~ (Amounts*2)*0.15,
+      #Zest (info from https://bakingbites.com/2017/01/how-much-zest-does-citrus-lemon-yield/)
+      str_detect(Ingredients, 'lemon') & str_detect(Ingredients, 'zest') & str_detect(unit, 'stk') ~ (Amounts*(1/3))*0.15,
+      str_detect(Ingredients, 'lime') & str_detect(Ingredients, 'zest') & str_detect(unit, 'stk') ~ (Amounts*1)*0.15,
+      str_detect(Ingredients, 'orange') & str_detect(Ingredients, 'zest') & str_detect(unit, 'stk') ~ (Amounts*1.5)*0.15,
+      
+      TRUE ~ Amounts),
+    unit = case_when(
+      str_detect(Ingredients, 'lemon|lime|orange') & str_detect(Ingredients, 'juice') & str_detect(unit, 'stk') ~ 'kg',
+      str_detect(Ingredients, 'lemon|lime|orange') & str_detect(Ingredients, 'zest') & str_detect(unit, 'stk') ~ 'dl',
+      
+      TRUE ~ unit)
+  )
+
+#Add back
+clean <- clean %>%
+  filter(!str_detect(Ingredients, 'the juice|the zest')) %>%
+  bind_rows(., temp)
+
 #Save the orginal and standardized ingredient names for comparisons-----
 various$org_ingredients <- clean %>% select(`Selected Meals`, Ingredients, org_ingredients)
 
@@ -1837,7 +1868,7 @@ temp2 <- temp %>%
     str_detect(Ingredients, 'noodle') ~ fixRefID(references$sustainability, 'noodle'),
     Ingredients == 'pistachio nut' ~ fixRefID(references$sustainability, 'pistachio'),
     
-    #Veggies
+    #Veggies and fruit
     str_detect(Ingredients, 'pickled') & !str_detect(Ingredients, 'ginger') ~ fixRefID(references$sustainability, 'vegetables', 'pickled'),
     str_detect(Ingredients, 'endive|chicory') ~ fixRefID(references$sustainability, 'curly', 'endives'),
     Ingredients == 'peach' ~ fixRefID(references$sustainability, 'peaches', 'other'),
@@ -1849,6 +1880,8 @@ temp2 <- temp %>%
     Ingredients == 'mangold' ~ fixRefID(references$sustainability, 'chard'),
     Ingredients == 'olive black' ~ fixRefID(references$sustainability, 'olives', 'canned'),
     Ingredients %in% c('olive green', 'of olives') ~ fixRefID(references$sustainability, 'olives', 'fresh'),
+    str_detect(Ingredients, 'orange') & str_detect(Ingredients, 'zest') ~ fixRefID(references$sustainability, 'orange', 'juice'), #The zest is a processed product
+    str_detect(Ingredients, 'lemon') & str_detect(Ingredients, 'zest') ~ fixRefID(references$sustainability, 'lemon', 'juice'),  #The zest is a processed product
     
     #Red meat
     str_detect(Ingredients, 'reindeer') ~ fixRefID(references$sustainability, 'mammals', 'meat'),

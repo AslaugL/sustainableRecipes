@@ -787,10 +787,10 @@ PCA_loadings <- createPCA(temp, plots = 'loadings') +
 
 #Plots----
 #Violin boxplots----
-
 #Data completeness
   #Nutrients
   plotViolinBox(data_completeness$no_nutrient_info) +
+    scale_color_manual(values = various$country_colors$sample_group) +
     labs(
       color = 'Country',
       x = 'Country',
@@ -798,6 +798,7 @@ PCA_loadings <- createPCA(temp, plots = 'loadings') +
     )
   #Sustainability indicators
   plotViolinBox(data_completeness$no_sustainability_indicators) +
+    scale_color_manual(values = various$country_colors$sample_group) +
     labs(
       color = 'Country',
       x = 'Country',
