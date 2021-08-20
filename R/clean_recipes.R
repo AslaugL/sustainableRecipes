@@ -1731,9 +1731,11 @@ temp2 <- temp %>%
     Ingredients == 'sauce pasta' ~ fixRefID(references$nutrients, 'tomato', 'sauce'), #Use as substitute for time being
     Ingredients == 'whole turkey' ~ fixRefID(references$nutrients, 'turkey', 'meat'),
     Ingredients == 'sauce hot' ~ fixRefID(references$nutrients, 'hot pepper sauce'),
+    Ingredients == 'olive paste tapenade' ~ fixRefID(references$nutrients, 'olive paste tapenade'),
+    Ingredients == 'homemade beef gravy' ~ fixRefID(references$nutrients, 'beef gravy'),
     
-    Ingredients %in% c('duck or goose fat for confit', 'homemade beef gravy', 'of lime sheet, shredded',
-                       'olive paste tapenade', 'cooking spray', 'red food coloring',
+    Ingredients %in% c('duck or goose fat for confit', 'of lime sheet, shredded',
+                       'cooking spray', 'red food coloring',
                        'pack high quality charcoal briquettes', 'pomegranate kernel', 'yeast nutritional',
                        'salmon roe', 'spice seasoning pepper', 'toro greek moussaka'
     ) ~ 0,
@@ -1891,11 +1893,10 @@ temp2 <- temp %>%
       !str_detect(Ingredients, 'sau|sweet') | str_detect(Ingredients, 'chili') & !str_detect(Ingredients, 'pepper') ~ fixRefID(references$sustainability, 'mixed', 'herbs'),
     
     #Not in ref
-    Ingredients %in% c('homemade beef gravy', 'water broth beef', 'yeast nutritional', 'paste chili', 'cocoa powder', 'nacho', 'agar', 'gluten',
-                       'corn starch', 'tortilla corn', 'nori seaweed', 'olive paste tapenade', 'salmon roe', 'sweet green pickle relish',
+    Ingredients %in% c('yeast nutritional', 'paste chili', 'cocoa powder', 'nacho', 'agar', 'gluten',
+                       'corn starch', 'nori seaweed','salmon roe', 'sweet green pickle relish',
                        'plantain', 'tabasco', 'tapioca', 'miso paste white', 'sake', 'liquid smoke flavoring', 'pack high quality charcoal briquettes',
                        'cooking spray', 'quinoa', 'red food coloring', 'toro greek moussaka') ~ 0,
-    str_detect(Ingredients, 'water broth|broth cube') ~ 0,
     
     TRUE ~ ID
     
@@ -2021,3 +2022,4 @@ missing_data <- list(
 )
 
 saveRDS(missing_data, './output/missing_data.Rds')
+

@@ -324,6 +324,7 @@ temp <- list(
   c('molasses', 'dl', '142.44', 'FoodData Central', 'english'),
   c('tamarind paste', 'dl', '101.44', 'FoodData Central', 'english'),
   c('horseradish prepared', 'dl', '101.44', 'FoodData Central', 'english'),
+  c('mayonnaise', 'dl', '87.92', 'FoodData Central', 'english'),
   
   #MISSING
   c('Einebær/juniper berry', 'stk', '', '', 'norwegian/english'),
@@ -902,7 +903,6 @@ mutate(Ingredients = case_when(
   str_detect(food_item, 'bread, white') & str_detect(food_item, '0-25') & str_detect(food_item, 'industrially made') & !str_detect(food_item, 'spiral|square') ~ 'bread_white',
   str_detect(food_item, 'bread, coarse') & str_detect(food_item, '50-75') & str_detect(food_item, 'industrially made') ~ 'bread_coarse',
   food_item == 'rolls, white, industrially made' ~ 'roll_white',
-  food_item == 'tortilla, corn flour, soft' ~ 'tortilla_corn',
   food_item == 'tortilla, wheat flour' ~ 'tortilla',
   
   #oils----
@@ -1381,7 +1381,7 @@ various$sharp_to_remove <- SHARP %>%
                                      #Grain/grain replacements products
                                      'rice flour', 'rice drink', 'rice grain', 'rice grain, brown', 'noodle, rice', 'couscous',
                                      'puff pastry', 'biscuits', 'maize flour', 'crisp bread, rye wholemeal', 'wheat bread and rolls',
-                                     'breadcrumbs', 'buns', 'wheat bread and rolls, brown or wholemeal', 'wheat flour',
+                                     'breadcrumbs', 'buns', 'wheat bread and rolls, brown or wholemeal', 'wheat flour', 'maize flour',
                                      'wheat wholemeal flour', 'dried pasta', 'pasta wholemeal', 'oat grain', 'bulgur', 'barley grain, pearled',
                                      #Alcoholic beverages
                                      'beer', 'wine', 'whisky', 'fortified and liqueur wines', 'cider', 'brandy',
@@ -1522,6 +1522,7 @@ SHARP <- SHARP %>%
            str_replace('barley grain, pearled', 'barley pearl') %>%
            str_replace('courgettes', 'zucchini') %>% #Name used in recipes
            str_replace('sprouts, shoots and similar', 'sprout') %>%
+           str_replace('maize flour', 'corn flour') %>%
            
            #Meat
            str_replace('beef tallow including processed suet', 'tallow') %>%

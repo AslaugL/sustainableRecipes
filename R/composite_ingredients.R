@@ -110,7 +110,7 @@ Name = c('condensed cream of mushroom soup', 'condensed cream of chicken soup',
          'chili_sauce', 'shrimp_salad', 'barbeque_sauce', 'omelet', 'adobo_seasoning',
          'chinese five spice', 'italian seasoning', 'steak seasoning', 'puff pastry',
          'mint_sauce', 'taco spice mix', 'tandoori spice mix', 'shortcrust pastry',
-         'horseradish_sauce')
+         'horseradish_sauce', 'olive paste tapenade', 'beef gravy', 'tortilla_corn')
 Ingredients = c(
   #Concentrated cream of soups
   #From https://onceamonthmeals.com/blog/recipe-roundups/homemade-cream-of-something-soup/
@@ -196,7 +196,7 @@ Ingredients = c(
 1 clove garlic, minced
 1 pinch salt
 400 g diced tomatoes
-125 ml Vegetable broth
+125 ml broth vegetable
 20 ml white vinegar
 2 tsp cumin
 2 tsp smokey paprika powder
@@ -466,13 +466,41 @@ Salt and freshly ground black pepper to taste',
 1 pinch salt',
   
   #Horseradish sauce
+  #From https://natashaskitchen.com/horseradish-sauce-recipe/
   '0.5 cup sour cream
 2 tbsp prepared horseradish drained
 2 tbsp mayonnaise
 1 tsp apple cider vinegar
 0.25 tsp salt
 0.125 tsp black pepper
-1 tbsp chives finely chopped'
+1 tbsp chives finely chopped',
+  
+
+# Olive paste tapenade
+#From https://www.culinaryhill.com/olive-tapenade/
+'1.5 cup olive green
+2 stk anchovy fillets
+3 tbsp capers rinsed
+1.5 tbsp parsley coarsely chopped
+3 clove garlic roasted if desired (see notes)
+3 tbsp lemon juice
+Salt and freshly ground black pepper
+0.25 cup olive oil',
+
+#(Homemade) beef gravy
+#From https://www.recipetineats.com/gravy/
+'1 stk broth cube chicken
+1 stk broth cube beef
+565 ml boiling water
+60 g unsalted butter
+4 tbsp wheat flour
+0.25 tsp finely ground black pepper',
+
+#Corn tortillas, flour should be the masa harina type
+#From https://www.matprat.no/oppskrifter/kos/maistortilla/
+'300 g corn flour
+1 tsp salt
+5 dl water'
 )
 
 composite_ingredients <- tibble(Name = Name, Ingredients = Ingredients)
@@ -566,12 +594,33 @@ separate(., Amounts, c('Amounts', 'unit_enhet'), sep = ' ') %>%
     unit_enhet = unit_enhet %>%
       str_replace('\\bg\\b', 'kg'))
 
-#Get ID
+#Split broth into water and broth cubes (1 cube pr 5 dl/0.5kg broth/water)
+temp <- composite_ingredients %>%
+  #Find broth ingredients
+  filter(Ingredients %in% c('broth', 'broth vegetable')) %>%
+  #Add '/' to separate rows into water and broth cubes, and find number of broth cubes for the amount of water
+  mutate(Ingredients = str_replace(Ingredients, 'broth', 'water/broth cube')) %>%
+  separate_rows(Ingredients, sep = '/') %>%
+  mutate(
+    Amounts = case_when(
+      str_detect(Ingredients, 'broth cube') ~ Amounts/0.5,
+      TRUE ~ Amounts),
+    unit_enhet = case_when(
+      str_detect(Ingredients, 'broth cube') ~ 'stk',
+      TRUE ~ unit_enhet)
+    )
+
+#Add back to composite ingredients df
+composite_ingredients <- composite_ingredients %>%
+  filter(!Ingredients %in% c('broth', 'broth vegetable')) %>%
+  bind_rows(., temp)
+
+#Get ID from weight/volume database
 temp <- checkRefList(reference = references$volume_weight, composite_ingredients)
 
 #Fix errors
 temp2 <- temp %>%
-  inner_join(composite_ingredients) %>%
+  full_join(composite_ingredients) %>%
   mutate(
     ID = case_when(
       Ingredients == 'parmesan cheese' ~ fixRefID(references$volume_weight, 'parmesan'),
@@ -641,14 +690,14 @@ temp2 <- temp %>%
     Ingredients == 'sesame seed oil' ~ fixRefID(references$nutrients, 'sesame', 'oil'),
     Ingredients == 'potato' ~ fixRefID(references$nutrients, 'potato'),
     Ingredients %in% c('rice wine vinegar', 'white wine vinegar', 'apple cider vinegar') ~ fixRefID(references$nutrients, 'vinegar'),
-    Ingredients %in% c('vegetable broth', 'broth') ~ fixRefID(references$nutrients, 'water'),
     Ingredients == 'dry mustard' ~ fixRefID(references$nutrients, 'mustard'),
-    Ingredients == 'fresh cranberry' ~ fixRefID(references$sustainability, 'cranberries'),
-    Ingredients == 'plum' ~ fixRefID(references$sustainability, 'plums'),
-    Ingredients == 'apricot' ~ fixRefID(references$sustainability, 'apricots'),
-    Ingredients == 'mayonnaise sauce' ~ fixRefID(references$sustainability, 'mayonnaise'),
-    Ingredients == 'haddock' ~ fixRefID(references$sustainability, 'haddock'),
-    Ingredients == 'star anise pods' ~ fixRefID(references$sustainability, 'anise'),
+    Ingredients == 'fresh cranberry' ~ fixRefID(references$nutrients, 'cranberries'),
+    Ingredients == 'plum' ~ fixRefID(references$nutrients, 'plums'),
+    Ingredients == 'apricot' ~ fixRefID(references$nutrients, 'apricots'),
+    Ingredients == 'mayonnaise sauce' ~ fixRefID(references$nutrients, 'mayonnaise'),
+    Ingredients == 'haddock' ~ fixRefID(references$nutrients, 'haddock'),
+    Ingredients == 'star anise pods' ~ fixRefID(references$nutrients, 'anise'),
+    Ingredients == 'corn flour' ~ fixRefID(references$nutrients, 'corn flour', 'polenta'),
     
     TRUE ~ ID
   )) %>% unique() %>%
@@ -700,10 +749,13 @@ temp2 <- temp %>%
     str_detect(Ingredients, 'vinegar') ~ fixRefID(references$sustainability, 'vinegar'),
     Ingredients == 'fresh cranberry' ~ fixRefID(references$sustainability, 'cranberries'),
     Ingredients == 'mango chutney' ~ fixRefID(references$sustainability, 'mango chutney'),
+    Ingredients == 'olive green' ~ fixRefID(references$sustainability, 'olives', 'canned'),
+    str_detect(Ingredients, 'broth cube') ~ fixRefID(references$sustainability, 'stock', 'cubes'),
+    Ingredients == 'corn flour' ~ fixRefID(references$sustainability, 'corn', 'flour'),
     
     #Not in ref
     Ingredients %in% c('chili flakes', 'chili powder', 'corn starch',
-                       'smoked paprika powder', 'vegetable broth') ~ 0,
+                       'smoked paprika powder') ~ 0,
     
     TRUE ~ ID
   ))
