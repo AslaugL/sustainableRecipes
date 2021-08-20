@@ -1438,6 +1438,31 @@ clean <- clean %>%
 
 various$unique_ingredients <- clean %>% select(Ingredients) %>% unique()
 
+#Split broth into water and broth cubes----
+#Pull out broth ingredients
+temp <- clean %>%
+  filter(str_detect(Ingredients, 'water broth')) %>%
+  #Add / to split the rows into two separate ingredients, and add "cube" to broth
+  mutate(Ingredients = str_replace(Ingredients, 'water broth', 'water/broth cube')) %>%
+  separate_rows(Ingredients, sep = '/') %>%
+  #Turn the broth cube amounts into number of broth cubes, 1 cube per 5 dl/0.5 kg water
+  mutate(
+    Amounts = case_when(
+      str_detect(Ingredients, 'broth cube') ~ Amounts/0.5,
+      TRUE ~ Amounts),
+    unit = case_when(
+      str_detect(Ingredients, 'broth cube') ~ 'stk',
+      TRUE ~ unit)
+    )
+
+#Add back to 'clean'
+clean <- clean %>%
+  #Remove broth wthout broth cubes
+  filter(!str_detect(Ingredients, 'water broth')) %>%
+  #Add back with broth cues
+  bind_rows(., temp)
+
+
 #Get the ingredients that don't have amounts in kg already and map to volume/weight database----
 various$get_amounts_kg <- clean %>%
   filter(unit != 'kg')
@@ -1828,7 +1853,7 @@ temp2 <- temp %>%
     str_detect(Ingredients, 'pork') & !str_detect(Ingredients, 'lard') ~ fixRefID(references$sustainability, 'pork'),
     
     #Poultry
-    str_detect(Ingredients, 'turkey') ~ fixRefID(references$sustainability, 'turkey'),
+    str_detect(Ingredients, 'turkey') & !str_detect(Ingredients, 'broth') ~ fixRefID(references$sustainability, 'turkey'),
     
     #Seafood
     Ingredients == 'scampi' ~ fixRefID(references$sustainability, 'prawn'),
@@ -1847,6 +1872,7 @@ temp2 <- temp %>%
     Ingredients == 'sauce pasta' ~ fixRefID(references$sustainability, 'tomato', 'sauce'),
     Ingredients == 'sweet chili sauce' ~ fixRefID(references$sustainability, 'chili', 'sweet'),
     str_detect(Ingredients, 'cognac') ~ fixRefID(references$sustainability, 'brandy'),
+    str_detect(Ingredients, 'broth cube') ~ fixRefID(references$sustainability, 'stock', 'cubes'),
     
     #Dairy
     str_detect(Ingredients, 'cheddar|romano|parmigiano-reggiano|parmesan|parmigiano-reggiano|cheese hard goat') ~ fixRefID(references$sustainability, 'hard cheese', 'hard cheese'),
