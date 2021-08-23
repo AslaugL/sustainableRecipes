@@ -6,7 +6,7 @@ library(thesisToolsOmics)
 #Get the nutrient and sustainability information for each recipe per 100g of the recipe
 
 #Working directory
-setwd('C:/Users/aslau/Desktop/UiBV21/Master/R/sustainableRecipes/Data')
+setwd('./Data')
 
 #GGplot theme
 theme_set(theme_bw())
@@ -1002,7 +1002,6 @@ clean <- clean %>%
     str_detect(Ingredients, 'turkey') & !str_detect(Ingredients, 'broth|stock|fund') ~ 'whole turkey',
     
     #Meat----
-    
     str_detect(Ingredients, 'bacon|lettsaltet sideflesk|lardons') & str_detect(Ingredients, 'cooked') ~ 'bacon cooked',
     str_detect(Ingredients, 'bacon|lettsaltet sideflesk|lardons') ~ 'bacon',
     str_detect(Ingredients, 'lard') ~ 'lard pork fat',
@@ -1430,6 +1429,14 @@ clean <- clean %>%
   filter(!str_detect(Ingredients, 'the juice|the zest')) %>%
   bind_rows(., temp)
 
+#Split rows with 'salt and pepper and oil'
+clean <- clean %>%
+  separate_rows(Ingredients, sep = ' and ') %>%
+  #Remove "slice" of pepper/salt, mistaken translation from Norwegian
+  mutate(unit = case_when(
+    !(Ingredients %in% c('salt', 'pepper') & unit == 'slice') ~ unit
+  ))
+
 #Save the orginal and standardized ingredient names for comparisons-----
 various$org_ingredients <- clean %>% select(`Selected Meals`, Ingredients, org_ingredients)
 
@@ -1633,7 +1640,7 @@ temp <- various$mean_values %>%
 #Add back to clean df
 clean <- full_join(clean, temp) %>%
   select(-c(value, Weight, unit)) %>%
-  #if a recipe has more than two occurences of a recipe (example_ butter used both for frying and as part of a dough), sum them together
+  #if a recipe has more than two occurences of a recipe (example: butter used both for frying and as part of a dough), sum them together
   group_by(`Selected Meals`, Ingredients, Country, Source) %>%
   summarise(Amounts = sum(Amounts)) %>% ungroup()
 
@@ -1650,6 +1657,7 @@ temp <- various$missing %>%
     Ingredients == 'grape juice' ~ various$mean_values %>% filter(Ingredients == 'vinegar balsamic') %>% select(value) %>% as.numeric(.), #Used "to taste"
     Ingredients == 'rice sushi' ~ various$mean_values %>% filter(Ingredients == 'rice white long grain') %>% select(value) %>% as.numeric(.),
     Ingredients == 'sauce horseradish' ~ various$mean_values %>% filter(Ingredients == 'yoghurt') %>% select(value) %>% as.numeric(.), #As conditment
+    Ingredients == 'oil' ~ various$mean_values %>% filter(Ingredients == 'vegetable oil') %>% select(value) %>% as.numeric(.),
     
   )) %>%
   
@@ -1773,7 +1781,7 @@ temp2 <- temp %>%
     
     #Substitutions or ingredients not found in Matvaretabellen
     Ingredients %in% c('garlic oil', 'oil truffle') ~ fixRefID(references$nutrients, 'olive', 'oil'), #Garlic/truffle oil can be made by placing garlic in olive oil
-    Ingredients == 'frying oil' ~ fixRefID(references$nutrients, 'vegetable', 'oil'),
+    Ingredients %in% c('frying oil', 'oil') ~ fixRefID(references$nutrients, 'vegetable', 'oil'),
     Ingredients == 'hazelnut oil' ~ fixRefID(references$nutrients, 'walnut', 'oil'), #Another nut oil
     Ingredients == 'bean canned' ~ fixRefID(references$nutrients, 'bean black', 'canned'),
     Ingredients == 'scampi' ~ fixRefID(references$nutrients, 'shrimp'),
@@ -1908,6 +1916,7 @@ temp2 <- temp %>%
     Ingredients == 'sweet chili sauce' ~ fixRefID(references$sustainability, 'chili', 'sweet'),
     str_detect(Ingredients, 'cognac') ~ fixRefID(references$sustainability, 'brandy'),
     str_detect(Ingredients, 'broth cube') ~ fixRefID(references$sustainability, 'stock', 'cubes'),
+    Ingredients == 'nacho' ~ fixRefID(references$sustainability, 'tortilla', 'corn'), #Similar ingredients just with more salt
     
     #Dairy
     str_detect(Ingredients, 'cheddar|romano|parmigiano-reggiano|parmesan|parmigiano-reggiano|cheese hard goat') ~ fixRefID(references$sustainability, 'hard cheese', 'hard cheese'),
@@ -1926,7 +1935,7 @@ temp2 <- temp %>%
       !str_detect(Ingredients, 'sau|sweet') | str_detect(Ingredients, 'chili') & !str_detect(Ingredients, 'pepper') ~ fixRefID(references$sustainability, 'mixed', 'herbs'),
     
     #Not in ref
-    Ingredients %in% c('yeast nutritional', 'paste chili', 'cocoa powder', 'nacho', 'agar', 'gluten',
+    Ingredients %in% c('yeast nutritional', 'paste chili', 'cocoa powder', 'agar', 'gluten',
                        'corn starch', 'nori seaweed','salmon roe', 'sweet green pickle relish',
                        'plantain', 'tabasco', 'tapioca', 'miso paste white', 'sake', 'liquid smoke flavoring', 'pack high quality charcoal briquettes',
                        'cooking spray', 'quinoa', 'red food coloring', 'toro greek moussaka') ~ 0,
