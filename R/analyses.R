@@ -7,7 +7,7 @@ library(psych)
 library(GGally)
 
 #Working directory
-setwd('C:/Users/aslau/Desktop/UiBV21/Master/R/sustainableRecipes/Data')
+setwd('./Data')
 
 #GGplot theme
 theme_set(theme_bw())
@@ -871,7 +871,7 @@ plotViolinBox(run_stats %>%
     y = 'Percentage of RDI'
   ) + theme(legend.position="bottom")
 #Energy
-plotViolinBox(tidy_recipes %>%
+plotViolinBox(run_stats %>%
                 filter(feature %in% various$energy_contributing) %>%
                 mutate(feature = feature %>%
                          str_replace('Carbo', 'Carbohydrates E%') %>%
@@ -889,35 +889,6 @@ plotViolinBox(tidy_recipes %>%
     x = 'Country',
     y = 'Value'
   )
-#Which foodgroups contribute to the different macros?
-#Amounts of each ingredient per 100g recipe
-temp <- data_ingredients %>%
-  #Total weight of recipe
-  select(sample_id, Ingredients, Amounts_kg, Foodgroup) %>% unique() %>%
-  group_by(sample_id) %>%
-  summarise(total_weight = sum(Amounts_kg, na.rm = TRUE)) %>%
-  ungroup() %>%
-  #Nutrient content per ingredients per 100g recipe
-  inner_join(data_ingredients) %>%
-  filter(feature %in% with_energy_pct$feature) %>%
-  mutate(value_100g = value/total_weight/10) %>% #Value is in grams, total weight is in kilos
-  #Nutrients per foodgroup
-  group_by(group, sample_id, Foodgroup, feature) %>%
-  summarise(value_foodgroup = sum(value_100g, na.rm = TRUE)) %>%
-  ungroup() %>%
-  #Turn into energy %
-  #First turn macros (grams) into teir kcal equivalent
-  mutate(value = case_when(
-    feature %in% c('Protein', 'Sugar', 'Carbo') ~ value_foodgroup*4,
-    feature %in% c('Fat', 'SatFa') ~ value_foodgroup*9,
-    TRUE ~ value_foodgroup
-  )) %>%
-  #Add total amount of kalories pr 100g
-  inner_join(data_recipes %>% select(sample_id, Kilocalories)) %>%
-  mutate(value = round(value/Kilocalories*100),0)
-#Check why soybean oil is classified as a legume in cleanup file
-plotViolinBox(temp %>% filter(feature == 'Fat')) +
-  facet_wrap(~Foodgroup, scales = 'free')
 
 #Percentage of different foodgroups in the different countries recipes
 temp <- tidy_ingredients %>% group_by(group, sample_id, Foodgroup) %>%
