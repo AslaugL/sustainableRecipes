@@ -1077,7 +1077,7 @@ fromFoodDataCentral_foods <- read_csv('./databases/food.csv') %>%
     'Mollusks, clam, mixed species, raw', 'Fish, grouper, mixed species, raw', 'Fish, sea bass, mixed species, raw',
     
     #Div
-    'Seaweed, agar, dried', 'Miso', 'Soup, onion, dry, mix', 'Alcoholic beverage, rice (sake)',
+    'Seaweed, agar, dried', 'Soup, onion, dry, mix', 'Alcoholic beverage, rice (sake)',
     'Shortening, vegetable, household, composite', 'Pickle relish, sweet', 'Syrups, maple',
     'Sauce, ready-to-serve, pepper, TABASCO', 'Tapioca, pearl, dry', 'Molasses', 'Vital wheat gluten',
     'Horseradish, prepared')) %>%
@@ -1116,7 +1116,6 @@ fromFoodDataCentral_foods <- read_csv('./databases/food.csv') %>%
            str_replace('Fish, grouper, mixed species, raw', 'grouper') %>%
            str_replace('Fish, sea bass, mixed species, raw', 'sea bass') %>%
            str_replace('Seaweed, agar, dried', 'agar') %>%
-           str_replace('Miso', 'miso') %>%
            str_replace('Soup, onion, dry, mix', 'onion soup mix') %>%
            str_replace('Alcoholic beverage, rice \\(sake\\)', 'sake') %>%
            str_replace('Shortening, vegetable, household, composite', 'shortening') %>%
@@ -1349,6 +1348,7 @@ reference <- clean_nutrients %>%
 saveRDS(reference, './output/nutrient_reference.Rds')
 
 #Sustainability indicators from SHARP----
+various <- list()
 #Read sustainability data and change to fit recipes----
 SHARP <- read_csv('./databases/SHARPversion2018.csv') %>%
   
@@ -1765,6 +1765,7 @@ sharp_ref <- SHARP %>%
       Ingredients == 'kiwi fruits green red yellow' ~ '\\',
       Ingredients == 'parnip roots' ~ '\\',
       Ingredients == 'watercresses' ~ 'water',
+      Ingredients == 'rice grain' ~ '\\', #Standard
       TRUE ~ second_word
     )
   ) %>%
