@@ -5,11 +5,11 @@ library(stringi)
 #Databases used to get weight of ingredients with volume/pieces amounts, 
 #the nutrient content and sustainability indicators of each ingredient.
 
-#List to keep various dataframes and keep envronment clean
+#List to keep various dataframes and keep environment clean
 various <- list()
 
 #Working directory
-setwd('C:/Users/aslau/Desktop/UiBV21/Master/R/sustainableRecipes/Data')
+setwd('./Data')
 
 #Weight and portion size database----
 #Load raw data helsedir
