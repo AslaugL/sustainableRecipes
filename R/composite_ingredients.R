@@ -110,7 +110,8 @@ Name = c('condensed cream of mushroom soup', 'condensed cream of chicken soup',
          'chili_sauce', 'shrimp_salad', 'barbeque_sauce', 'omelet', 'adobo_seasoning',
          'chinese five spice', 'italian seasoning', 'steak seasoning', 'puff pastry',
          'mint_sauce', 'taco spice mix', 'tandoori spice mix', 'shortcrust pastry',
-         'horseradish_sauce', 'olive paste tapenade', 'beef gravy', 'tortilla_corn')
+         'horseradish_sauce', 'olive paste tapenade', 'beef gravy', 'tortilla_corn',
+         'miso_paste')
 Ingredients = c(
   #Concentrated cream of soups
   #From https://onceamonthmeals.com/blog/recipe-roundups/homemade-cream-of-something-soup/
@@ -500,7 +501,14 @@ Salt and freshly ground black pepper
 #From https://www.matprat.no/oppskrifter/kos/maistortilla/
 '300 g corn flour
 1 tsp salt
-5 dl water'
+5 dl water',
+
+#Miso paste
+#From https://food52.com/blog/13601-make-miso-from-scratch-get-funky
+'1 kg dried soybeans
+2 tsp miso
+1 kg brown or white rice koji
+0.4 kg sea salt'
 )
 
 composite_ingredients <- tibble(Name = Name, Ingredients = Ingredients)
@@ -698,6 +706,7 @@ temp2 <- temp %>%
     Ingredients == 'haddock' ~ fixRefID(references$nutrients, 'haddock'),
     Ingredients == 'star anise pods' ~ fixRefID(references$nutrients, 'anise'),
     Ingredients == 'corn flour' ~ fixRefID(references$nutrients, 'corn flour', 'polenta'),
+    Ingredients == 'dried soybeans' ~ fixRefID(references$nutrients, 'bean', 'soya'),
     
     TRUE ~ ID
   )) %>% unique() %>%
@@ -752,6 +761,8 @@ temp2 <- temp %>%
     Ingredients == 'olive green' ~ fixRefID(references$sustainability, 'olives', 'canned'),
     str_detect(Ingredients, 'broth cube') ~ fixRefID(references$sustainability, 'stock', 'cubes'),
     Ingredients == 'corn flour' ~ fixRefID(references$sustainability, 'corn', 'flour'),
+    Ingredients == 'dried soybeans' ~ fixRefID(references$sustainability, 'bean', 'soy'),
+    Ingredients == 'brown or white rice koji' ~ fixRefID(references$sustainability, 'rice'),
     
     #Not in ref
     Ingredients %in% c('chili flakes', 'chili powder', 'corn starch',
