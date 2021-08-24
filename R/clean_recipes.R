@@ -1937,8 +1937,9 @@ temp2 <- temp %>%
     #Not in ref
     Ingredients %in% c('yeast nutritional', 'paste chili', 'cocoa powder', 'agar', 'gluten',
                        'corn starch', 'nori seaweed','salmon roe', 'sweet green pickle relish',
-                       'plantain', 'tabasco', 'tapioca', 'miso paste white', 'sake', 'liquid smoke flavoring', 'pack high quality charcoal briquettes',
-                       'cooking spray', 'quinoa', 'red food coloring', 'toro greek moussaka') ~ 0,
+                       'plantain', 'tabasco', 'tapioca', 'sake', 'wine rice', 'liquid smoke flavoring',
+                       'pack high quality charcoal briquettes', 'cooking spray', 'quinoa',
+                       'red food coloring', 'toro greek moussaka') ~ 0,
     
     TRUE ~ ID
     
