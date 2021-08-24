@@ -868,6 +868,7 @@ mutate(Ingredients = case_when(
   food_item == 'mung beans, sprouted, raw' ~ 'bean_sprout', #Standard
   food_item == 'beans, white, large, canned' ~ 'bean_white canned',
   food_item == 'beans, white, uncooked' ~ 'bean_white',
+  food_item == 'beans, soya, uncooked' ~ 'bean_soya',
   food_item == 'flatbread, hard' ~ 'bread flat hard',
   food_item == 'bulgur, uncooked' ~ 'bulgur_wheat',
   food_item == 'cashew nuts, salted' ~ 'cashew nut salt',
