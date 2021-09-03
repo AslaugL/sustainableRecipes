@@ -1,0 +1,9 @@
+---
+title:
+author:
+output:
+  pdf_document:
+    fig_caption: yes
+bibliography: library.bib
+---
+

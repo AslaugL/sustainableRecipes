@@ -1,0 +1,38 @@
+---
+output: 
+  bookdown::pdf_book:
+    includes:
+      in_header: tex/preamble.tex
+    keep_tex: false
+    toc: yes
+    toc_depth: 3
+indent: true
+link-citations: yes
+lot: true
+lof: true
+fontsize: 12pt
+linestretch: 1.5
+bibliography: library.bib
+biblio-style: naturemag
+geometry: "left=2.5cm, right=2.5cm, top=2.5cm, bottom=2.5cm"
+---
+
+```{r setup thesis, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, echo = FALSE, message = FALSE, warning = FALSE)
+```
+
+<!-- Start the redaction on a new page -->
+\newpage
+
+<!-- Start page numbering where the redaction starts -->
+\pagenumbering{arabic}
+
+```{r globaloptions, include=FALSE, echo = FALSE, message = FALSE}
+# Include here chunk options
+```
+
+
+
+<!-- Call the child documents -->
+```{r body, child = c('01background.Rmd', '02methods.Rmd', '03results.Rmd', '04discussion_conclusion.Rmd')}
+```

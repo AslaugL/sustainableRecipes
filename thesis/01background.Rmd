@@ -1,0 +1,248 @@
+---
+title: Background
+output:
+  html_document:
+    fig_caption: yes
+    number_sections: yes
+    toc: yes
+    df_print: paged
+  bookdown::pdf_document2:
+    keep_tex: yes
+  bookdown::word_document2:
+    toc: yes
+  bookdown::html_document2: default
+bibliography: library.bib
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r setup methods, include=FALSE}
+library(bookdown)
+knitr::opts_chunk$set(echo = FALSE, echo = FALSE, message = FALSE, warning = FALSE)
+```
+
+```{r}
+library(tibble)
+Abbreviations <- tibble(
+  'Abbreviation' = c('DALY'),
+  'Explanation' = c('Disability Adjusted Life Years')
+)
+```
+
+# Background
+
+Not only are unhealthy diets that lead to malnutrition believed to be
+responsible for one in five adult deaths and 15% of the total adult
+disability adjusted life years (DALY) globally[@Afshin2019], but our
+current food systems, i.e. how we produce, distribute and process food
+items, is also taking its toll on the environment. Globally, food
+production accounts for 70% of fresh water resources[@Shukla2019](p5),
+42-61% of land resources[@Shukla2019](p6) and 21-37% of total greenhouse
+gas emissions (GHGE)[@Crippa2021]. Additionally there is growing
+awareness of how food production and consumption can negatively impact
+biodiversity, pollute air, water and land and increase soil
+degradation[@Benton2021; @RodriguezEugenio2018; @Domingo2021;
+@Kopittke2019]. These factors have led to the need to develop diets that
+are both healthy and environmentally sustainable, so called "Sustainable
+Healthy Diets". The World Health Organization (WHO) and the Food and
+Agriculture Organization of the United Nations (FAO) defines a
+sustainable healthy diet as a diet that: "promote all dimensions of
+individuals' health and wellbeing; have low environmental pressure and
+impact; are accessible, affordable, safe and equitable; and are
+culturally
+acceptable."[@FoodandAgricultureOrganizationoftheUnitedNations2019]
+
+While these four aspects of sustainable diets are all important, this
+thesis will focus on two of them: Healthiness and environmental impact.
+
+-   Add something about the consequences for children
+-   Add something about the sustainability goals?
+-   Add something about the pandemic?
+
+## Diet and health
+
+### Consequences of malnutrition
+
+There are three forms of malnutrition that are typically associated with
+ill health. Undernutrition (low
+weight-for-age/weight-for-height/height-for-age), micronutrient
+deficiency or excess, and overnutrition
+(overweight/obesity)[@WorldHealthOrganization]. WHO include diet-related
+noncommunicable diseases such as cardiovascular disease, type II
+diabetes, chronic pulmonary disease and certain types of cancer with
+overnutrition. Not only can an unhealthy diet increase the risk of
+developing these noncommunicable diseases, it can also worsen prognosis
+of those who have already developed them[@Afshin2019; @Wu2016;
+@Casas2018; @Steck2020].
+
+Malnutrition is a global health issue, and every country in the world is
+affected by at least one form of
+malnutrition[@DevelopmentInitiatives2020](p21). Within a population,
+household or individual, multiple forms of malnutrition can coexist.
+When this happens, it is called the double or triple burden of
+malnutrition. For example within a population some can be underweight
+while others can be obese and/or suffer from micronutrient deficiencies
+or diet-related noncommunicable diseases, and an individual can be obese
+due to excess energy intake while also struggling with micronutrient
+deficiencies due to low nutrient quality of the foods eaten.
+
+While malnutrition is a global health issue, it affects populations
+differently. Undernutrition is more common in low- and
+lower-middle-income countries than high-income countries. Globally the
+prevalence of undernutrition has decreased, although when looking at
+country/regional level there are large variations. On the other hand,
+overnutrition is more prevalent in higher-middle-income and high-income
+countries, and is increasing globally at an alarming
+rate[@DevelopmentInitiatives2020](p51-53).
+
+Micronutrient deficiencies are more common in low- and middle-income
+countries than high-income countries[@Bailey2015], but even in high
+income countries in Europe and Central Asia micronutrient deficiencies
+lead to substantial disease burden and DALYs of 268 per 100 000
+population[@Bruins2018]. Regardless of income status, children and women
+of childbearing age are at highest risk[@Bailey2015; @Bruins2018]. Of
+special concern are iron, iodine, zinc, vitamin A, vitamin D and folate
+(vitamin B9), with some regional differences.
+
+-   Add short section on what these nutrients do
+
+-   Vitamin A deficiency is associated with increased mortality and
+    morbidity in children under five years of age[@Imdad2017], and is a
+    leading cause of preventable childhood blindness[@Wiseman2017]
+
+While it is easy to think that micronutrient deficiencies occur due to a
+low intake of food or poor diet quality, there are several factors that
+can lead or contribute to micronutrient deficiencies. Such as impaired
+digestion or absorption of nutrients, increased excretion or increased
+requirements. For example women of childbearing age are at an increased
+risk of iron deficiency anemia due to blood loss during menses, and
+during pregnancy and lactation women have increased requirements of
+several nutrients to support the growing fetus and provide nutrition for
+the baby (**SOURCE**).
+
+Malnutrition in any form is especially devastating for children and the
+developing fetus. Malnutrition, especially undernutrition, is a
+contributing factor in about 45% of death in children below five years
+of age[@WorldHealthOrganization], and malnutrition early in life is
+associated with impaired cognitive and physical development in addition
+to increased risk of developing many diseases in adulthood[@Bailey2015]
+(**SOURCES**). There are also concerns that these effects can pass on to
+the next generation[@Kaspar2020].
+
+To combat malnutrition at both population and individual level, many
+countries and regions, have developed regional/national dietary
+guidelines that provide nutritional advice for how to eat to get
+adequate energy and nutrients to stay healthy[@Herforth2019]. These
+guidelines are created for the general healthy population, and people
+with certain diseases may need different and/or additional advice. For
+countries without their own national dietary guidelines, WHO has
+developed a set of global dietary guidelines[@Herforth2019;
+@WorldHealthOrganizationa].
+
+### Healthy dietary patterns
+
+In addition to the national dietary guidelines, other healthy dietary
+patterns are described in the literature. Such as the Mediterranean
+diet, the Dietary Approaches to Stop Hypertension and the Healthy Eating
+Index. These dietary patterns all share common themes: Recommendations
+to eat high quality whole foods within ones energy requirements, include
+a variety of colorful vegetables (starchy roots and tubers are generally
+not counted as a vegetable in these instances) and fruit and other fiber
+rich foods such as nuts, legumes and whole grains, consume marine
+omega-3 fatty acids and have a low intake of processed foods, added
+sugar and salt.
+
+Several studies have found that adherence to the respective populations
+dietary guideline is low with the following high to very high
+probability of nutrient deficiencies.
+
+-   High/very high probability of Norwegian students to have inadequte
+    intake of vitamin A, folate, Vitamin D, iodine, selenium and iron
+    [@Valen2020]
+
+-   Page 56-57 in THE STATE OF THE WORLD's BIODIVERSITY THE STATE OF THE
+    WORLD's BIODIVERSITTY FOR FOOD AND AGRICULTURE by FAO include
+    information about dietary guidelines that take biodiversity into
+    account
+
+-   Healthy dietary patterns
+
+-   Country guidelines
+
+-   How healthiness is described to the public -- national guidelines,
+    front of pack labels such as Keyhole (Scandinavia), traffic light
+    system (UK) and Nutriscore (France, Portugal)
+
+Whole diets are often scored according to a specific dietary pattern,
+such as the WHO dietary guidelines, the Mediterranean diet, the New
+Nordic Diet, the Healthy Eating Index or others. These scores vary in
+their execution, with some providing individual scores for different
+parts of the diet, such as vegetable and sodium intake, or a composite
+score for all dietary components. The number of different dietary
+components vary, and sometimes they can be weighted in relation to each
+other. **Provide examples**. While dietary patterns are what is of most
+interest when looking for associations between diet and health, it is
+also useful to be able to decide if a specific meal or food is a healthy
+option. In some cases, dietary guidelines can be used to calculate how
+healthy a meal is, such as ... UK CHEF'S VS NORMAL RECIPES SOURCE.
+Another option is to use one of the many developed tools to help the
+public make healthier food choices. These tools, such as the multiple
+traffic light system (later called traffic light system) in the UK,
+Nutriscore in France and Keyhole in Scandinavia, provide nutritional
+information of a product in an easy to understand manner for the public.
+By scoring an individual food or meal on a number of different criteria,
+such as amount of saturated fat or added sugar pr. 100 grams or
+kilocalorie, important dietary information can be simplified. The
+information is presented as a front-of-pack label, that pro These tools,
+such as the multiple traffic light system (later called traffic light
+system) in the UK, the Nutriscore metric in France and the Keyhole in
+Scandinavia,
+
+-IMAGE OF DIFFERENT FOPs-
+
+Throughout the world there are many programs that aim to improve
+health/nutrition literacy to help people make good, healthy diet
+decisions.
+
+Other ways to help nudge people into more healthy dietary habits is the
+use of healthiness indicators on food items bought in stores. These
+front-of-pack food labels include information at a glance about a foods
+nutritional qualities.
+
+### Healthiness indicators to help the public
+
+Environmentally sustainable diets Climate change is not fair High burden
+of malnutrition, also high burden of the effects of climate change
+
+Few national dietary guidelines, that promote healthy dietary patterns,
+include information on the environmental impact of the dietary
+recommendation7. The Netherlands, France, Germany, Brazil, Qatar, Sweden
+and Denmark are exemptions, while the rest of the Nordic countries will
+include environmental impact in the new Nordic Nutritional
+Recommendations to be published in 2023 (SOURCE). Assessing
+environmental impacts of food are usually done by a
+life-cycle-assessment ...
+
+Assessing environmental impacts
+
+Reaching consumers Mixed messages in the media regarding food, nutrition
+and climate science. People may not know their national food guidelines
+(in Norway: "Five a day" is well known, but "three a day" and "three a
+week" less so)
+
+## Diet and sustainability
+
+Many of the countries that are the most affected by malnutrition, are
+the countries that will experience the worst consequences of climate
+change (**SOURCE**).
+
+Globally, deficiency of nutrients that are easily available from animal
+based foods, such as iron, vitamin A, zinc and iodine, are
+common[@Bailey2015].
+
+### Sustainability indicators to help the public
+
+## Consumer beliefs about diet, health and sustainability
+
+Need for information
