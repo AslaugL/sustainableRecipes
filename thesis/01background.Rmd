@@ -94,7 +94,10 @@ prevalence of undernutrition has decreased, although when looking at
 country/regional level there are large variations. On the other hand,
 overnutrition is more prevalent in higher-middle-income and high-income
 countries, and is increasing globally at an alarming
-rate[@DevelopmentInitiatives2020](p51-53).
+rate[@DevelopmentInitiatives2020](p51-53). There are also differences in
+nutrition status between socioeconomic groups within a country, with
+undernutrition being more prevalent in low socioeconomic groups than
+high socioeconomic group, and the other way around of obesity.
 
 Micronutrient deficiencies are more common in low- and middle-income
 countries than high-income countries[@Bailey2015], but even in high
@@ -102,33 +105,144 @@ income countries in Europe and Central Asia micronutrient deficiencies
 lead to substantial disease burden and DALYs of 268 per 100 000
 population[@Bruins2018]. Regardless of income status, children and women
 of childbearing age are at highest risk[@Bailey2015; @Bruins2018]. Of
-special concern are iron, iodine, zinc, vitamin A, vitamin D and folate
-(vitamin B9), with some regional differences.
+special concern are iron, iodine, zinc, calcium, vitamin A, vitamin D
+and folate (vitamin B9), with some regional differences.
 
--   Add short section on what these nutrients do
+All of these micronutrients have several important functions in the
+body. Iron is needed to transport oxygen around the body, to synthesize
+certain hormones and to maintain healthy cellular functioning and
+tissues. Iron is also important for physical growth and neurological
+functioning. Dietary iron comes in two forms, heme-iron that is only
+found in animal based foods, like red meat and liver, and nonheme-iron
+found in both plant- and animal-based foods. Heme-iron is more readily
+absorbed in humans, although absorption of nonheme-iron can be improved
+in several ways[@NIH-Iron]. A common consequence of iron deficiency is
+iron deficiency anemia (IDA), which globally is one of the five leading
+causes for years lived with disability[@Vos2017], causing symptoms such
+as cognitive impairments and fatigue. It is estimated that 18.8% of
+children under five years of age, 20.1% of pregnant women and 16.3% of
+nonpregnant women suffer from IDA[@Vos2017].
 
--   Vitamin A deficiency is associated with increased mortality and
-    morbidity in children under five years of age[@Imdad2017], and is a
-    leading cause of preventable childhood blindness[@Wiseman2017]
+Iodine is needed for synthesis of thyroid hormones, that regulate
+several bodily functions including metabolism. During fetal and infant
+development, iodine is important for correct development of the central
+nervous system and the skeleton. There are few good food sources of
+iodine, with seafood and seaweed being the rare exceptions, leading many
+countries to supplementing certain food items with iodine to improve
+consumption in the population[@NIH-Iodine]. WHO promote the use of
+iodized salt, but also other foods such as milk is used[@Santos2019].
+Globally iodine deficiency disorders are a leading cause of preventable
+mental retardation, it can also cause goitre, and increases the risk of
+perinatal and infant death[@Zimmermann2008].
+
+Zinc is important for the immune system, protein synthesis, wound
+healing, cell division, reproductive function, the sense of taste and
+smell, and takes part in about 100 enzymatic reactions in the body. Zinc
+also plays a part during growth and development, from the fetal stage to
+adulthood[@NIH-Zinc]. Zinc can be found in many foods of both animal and
+plant origin, but is often more bioavailable from animal based foods. In
+plant based sources such as grains and seeds, bioavailability is lowered
+due to the presence of phytate, a compound that binds to zinc and
+hinders absorption in the human gut. By reducing or removing the phytic
+acid from the food, zinc bioavailability improves. This can be done
+through processes such as fermenting, soaking and sprouting of grains
+and seeds[@Maares2020; @Luo2014]. It is believed zinc deficiency could
+be a public health concern in most low- to middle-income
+countries[@Gupta2020]. In 2004, zinc deficiency was estimated to be the
+cause of 4.4% of deaths in children under five years of age in Latin
+America, Africa and Asia, and also accounted for substantial morbidity
+from diarrhea, malaria and lower respiratory tract infections in the
+same age group and region[@Walker2008].
+
+Calcium is well known for its role in skeletal health and growth, but is
+also required for transmission of nerve signals, muscle function and
+hormonal secretion[@NIH-Calcium]. Inadequate calcium intake is
+associated with poorer bone health, and low bone mineral density which
+increase the risk of osteoporosis and fractures. Osteoporosis is a
+growing health concern, and it has been estimated that by 2040 274
+million people will be at high risk of osteoporotic fractures, a
+doubling from 2010[@Oden2015]. More than half of the population at risk
+is found in Asia. There are few dietary sources of calcium, with cow's
+milk, small fish eaten with bones, and cruciferous vegetables such as
+kale and broccoli being among the best sources. However, for calcium to
+be absorbed from the diet, the host must have adequate levels of the fat
+soluble vitamin D[@NIH-Calcium; @NIH-VitD]. Estimations of average
+dietary calcium intake have been found to be low in South, East and
+Southeast Asia, and low-moderate in in Africa and South America. In
+Europe, and especially Northern Europe average dietary intakes have been
+found adequate[@Balk2017]. Many of the countries with suboptimal calcium
+intakes also have suboptimal vitamin D status, adding to the problem of
+insufficient calcium intake by also hampering absorption of what calcium
+is consumed. Suboptimal vitamin D status is also a problem in Northern
+European countries with adequate calcium intake[@Wacker2013]. Improving
+calcium intake and vitamin D status could possibly improve bone health,
+and reduce disease burden of poor bone health[@Balk2017; @Nuti2019].
+
+As already mentioned, vitamin D is essential for proper absorption and
+utilization of calcium in the body, and vitamin D deficiency can cause
+rickets in children and osteomalacia in adults[@NIH-Calcium; @NIH-VitD].
+Other functions of vitamin D include support of the immune system, cell
+growth and metabolism, and vitamin D deficiency is associated with a
+range of both acute and chronic health conditions. These include
+periodontitis, several types of cancer, cardiovascular disease, type II
+diabetes, metabolic syndrome, autoimmune disease, asthma and infections
+[@Palacios2014; @Roth2018]. There is not established causal
+relationships between vitamin D and many of the conditions associated
+with vitamin D deficiency, but the potential causal effects of vitamin D
+deficiency and potential benefits of increasing vitamin D status are
+studied intensively (**SOURCES**. "When not to use meta analysis:
+analysing the metaanalyses on vitamin d in critical care", Roth2018).
+Vitamin D can be synthesized in the skin by exposure to sunlight, while
+some amounts can also be obtained from foods. Supplementation is
+necessary in areas with little sun exposure, and for people with
+no/little sun exposure due to other reasons, as it is difficult to reach
+the required daily intake amounts by diet alone[@Roth2018]. Vitamin D
+deficiency is found in both low-, middle- and high-income
+countries[@Roth2018].
+
+-   Need some numbers
+
+Vitamin A is a fat soluble vitamin, that like iron comes in multiple
+forms. Retinol, or preformed vitamin A, is found in animal based foods
+such as dairy, seafood, meat and is found in especially high amounts in
+offal such as liver. In plants there are several types of provitamin A,
+compounds that can be turned into retinol in the body through enzymatic
+reactions. The most important provitamin A is beta-carotene, that gives
+many fruits and vegetables their orange color. In the body, vitamin A
+supports cell growth, communication between cells, the immune system and
+is essential for vision[@NIH-VitA]. Vitamin A deficiency is not common
+in high-income countries, but globally it is a leading cause of
+preventable childhood blindness[@Wiseman2017], and associated with
+increased mortality and morbidity in children under five years of
+age[@Imdad2017]. For adults.... **SOURCES**.
+
+Folate is an important water soluble vitamin that is needed for
+synthesis of DNA. Inadequate folate intake leads to a reduced rate of
+cell division causing a form of anemia called megaloblastic anemia.
+Inadequate folate intake during pregnancy can cause neural tube defects
+in the developing fetus.
+
+-   Add the deficiency symptoms/diseases! And some epidemiology on the
+    consequences of these.
 
 While it is easy to think that micronutrient deficiencies occur due to a
 low intake of food or poor diet quality, there are several factors that
 can lead or contribute to micronutrient deficiencies. Such as impaired
 digestion or absorption of nutrients, increased excretion or increased
 requirements. For example women of childbearing age are at an increased
-risk of iron deficiency anemia due to blood loss during menses, and
-during pregnancy and lactation women have increased requirements of
-several nutrients to support the growing fetus and provide nutrition for
-the baby (**SOURCE**).
+risk of iron deficiency anemia due to blood loss during menses
+(**SOURCES**), and during pregnancy and lactation women have increased
+requirements of several nutrients to support the growing fetus and
+provide nutrition for the baby[@Helsedirektorateta].
 
 Malnutrition in any form is especially devastating for children and the
 developing fetus. Malnutrition, especially undernutrition, is a
-contributing factor in about 45% of death in children below five years
+contributing factor in about 45% of death in children under five years
 of age[@WorldHealthOrganization], and malnutrition early in life is
 associated with impaired cognitive and physical development in addition
-to increased risk of developing many diseases in adulthood[@Bailey2015]
-(**SOURCES**). There are also concerns that these effects can pass on to
-the next generation[@Kaspar2020].
+to increased risk of developing many diseases in adulthood[@Bailey2015;
+@Peter2014] (**SOURCES**). There are also concerns that these effects
+can pass on to the next generation[@Kaspar2020].
 
 To combat malnutrition at both population and individual level, many
 countries and regions, have developed regional/national dietary
@@ -160,6 +274,9 @@ probability of nutrient deficiencies.
 -   High/very high probability of Norwegian students to have inadequte
     intake of vitamin A, folate, Vitamin D, iodine, selenium and iron
     [@Valen2020]
+
+-   Females and young adults in britain have lower intake than their
+    RDIs [@Derbyshire2018]
 
 -   Page 56-57 in THE STATE OF THE WORLD's BIODIVERSITY THE STATE OF THE
     WORLD's BIODIVERSITTY FOR FOOD AND AGRICULTURE by FAO include
