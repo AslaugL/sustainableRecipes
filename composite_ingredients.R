@@ -1,104 +1,20 @@
 library(tidyverse)
 library(stringi)
+roxygen2::roxygenise()
 
 #Run twice to get the nutrient amounts/sustainability indicators for mango chutney in the worcestershire sauce recipe
 
-#Working directory
-setwd('C:/Users/aslau/Desktop/UiBV21/Master/R/sustainableRecipes/Data')
-
 #Different databases to search through to find amounts in kilos, nutrient content and sustainability measurements
 references <- list(
-  'volume_weight' = readRDS('./output/food_weight_ref.Rds') %>% filter(language == 'english'),
-  'sustainability' = readRDS('./output/sharp_ref.Rds'),
-  'nutrients' = readRDS('./output/nutrient_reference.Rds')
+  'volume_weight' = readRDS('./Data/output/food_weight_ref.Rds') %>% filter(language == 'english'),
+  'sustainability' = readRDS('./Data/output/sharp_ref.Rds'),
+  'nutrients' = readRDS('./Data/output/nutrient_reference.Rds')
 )
 databases <- list(
-  'volume_weight' = readRDS('./output/all_weights.Rds'),
-  'nutrients' = readRDS('./output/nutrients_df.Rds'),
-  'sustainability' = readRDS('./output/sharp_db.Rds')
+  'volume_weight' = readRDS('./Data/output/all_weights.Rds'),
+  'nutrients' = readRDS('./Data/output/nutrients_df.Rds'),
+  'sustainability' = readRDS('./Data/output/sharp_db.Rds')
 )
-#Helper functions
-checkRef <- function(ingredient, reference){
-  #Reference is a list of names from a food database
-  
-  #Fill tibble with info
-  results <- tibble(
-    Ingredients = character(),
-    ref = character(),
-    ID = numeric(),
-    loop = character()
-  )
-  
-  
-  #Look for both search terms in ref in Ingredient
-  for(i in 1:nrow(reference)){
-    
-    
-    #Only look for the whole word found in the reference
-    if(str_detect(ingredient, regex(paste0('\\b', reference$second_word[i], '\\b|\\b', reference$second_word[i], '\\w+'), ignore_case = TRUE)) &
-       str_detect(ingredient, regex(paste0('\\b', reference$first_word[i], '\\b|\\b', reference$first_word[i], '\\w+'), ignore_case = TRUE)) ){
-      
-      print('first loop')
-      results <- results %>%
-        add_row(Ingredients = ingredient,
-                ref = paste0(reference$first_word[i], ', ', reference$second_word[i]),
-                ID = as.numeric(reference$ID[i]),
-                loop = 'first loop')
-      
-      #Break after first hit
-      break
-    }
-  }
-  
-  #Look for foods not identified by both first and second word i ref
-  if(!ingredient %in% results$Ingredients){
-    
-    for(i in 1:nrow(reference)){
-      
-      if (str_detect(ingredient, regex(paste0('\\b', reference$first_word[i], '\\b'), ignore_case = TRUE))  &
-          isFALSE(str_detect(ingredient, regex(paste0('\\b', reference$second_word[i], '\\b|\\b', reference$second_word[i], '\\w+'), ignore_case = TRUE)) )){
-        
-        print('second loop')
-        results <- results %>%
-          add_row(Ingredients = ingredient,
-                  ref = reference$first_word[i],
-                  ID = as.numeric(reference$ID[i]),
-                  loop = 'second loop')
-        
-        #Break after first hit
-        break
-        
-      } else if (str_detect(ingredient, regex(paste0('\\b', reference$first_word[i], '\\w+'), ignore_case = TRUE)) &
-                 reference$second_word[i] == '\\') {
-        
-        print('third loop')
-        results <- results %>%
-          add_row(Ingredients = ingredient,
-                  ref = reference$first_word[i],
-                  ID = as.numeric(reference$ID[i]),
-                  loop = 'third loop')
-        
-        break
-      }
-      
-    }
-    
-    
-  }
-  
-  results
-  
-}
-checkRefList <- function(df, reference){
-  
-  results <- lapply(df$Ingredients, checkRef, reference = reference) %>% bind_rows()
-  
-}
-fixRefID <- function(reference, first_w, second_w = '\\') {
-  
-  ID <- reference %>% filter(first_word == first_w & second_word == second_w) %>% select(ID) %>% as.numeric(.)
-  
-}
 
 #Composite ingredient ingredients----
 Name = c('condensed cream of mushroom soup', 'condensed cream of chicken soup',
@@ -111,7 +27,7 @@ Name = c('condensed cream of mushroom soup', 'condensed cream of chicken soup',
          'chinese five spice', 'italian seasoning', 'steak seasoning', 'puff pastry',
          'mint_sauce', 'taco spice mix', 'tandoori spice mix', 'shortcrust pastry',
          'horseradish_sauce', 'olive paste tapenade', 'beef gravy', 'tortilla_corn',
-         'miso_paste')
+         'miso_paste', 'potetlefse', 'meatball')
 Ingredients = c(
   #Concentrated cream of soups
   #From https://onceamonthmeals.com/blog/recipe-roundups/homemade-cream-of-something-soup/
@@ -123,7 +39,7 @@ Ingredients = c(
 1 cup milk
 0.75 cup broth',
   '2 clove garlic
-0.33 cup chicken, diced
+0.33 cup chicken breast, diced
 0.5 cup mushroom
 0.25 cup butter
 0.25 cup wheat flour
@@ -508,7 +424,23 @@ Salt and freshly ground black pepper
 '1 kg dried soybeans
 2 tsp miso
 1 kg brown or white rice koji
-0.4 kg sea salt'
+0.4 kg sea salt',
+
+#potetlefse
+'5 dl wheat flour
+2000 g potato
+2 tsp salt',
+
+#Meatballs
+#From https://www.tine.no/oppskrifter/middag-og-hovedretter/kjott/hjemmelagde-kj%C3%B8ttkaker
+'1 stk onion
+500 g minced meat
+1 stk egg
+2 tbsp potato starch
+2 dl low fat milk
+0.5 tsp salt
+0.25 tsp pepper
+2 tbsp butter'
 )
 
 composite_ingredients <- tibble(Name = Name, Ingredients = Ingredients)
@@ -623,8 +555,18 @@ composite_ingredients <- composite_ingredients %>%
   filter(!Ingredients %in% c('broth', 'broth vegetable')) %>%
   bind_rows(., temp)
 
+#Standardize names
+composite_ingredients <- composite_ingredients %>%
+  #Add columns needed in standardiseIngredients function
+  mutate(Country = 'not_specified',
+         `Selected Meals` = 'not_specified') %>%
+  standardiseIngredients() %>%
+  #Remove columns again as they are not needed here
+  select(-c(Country, `Selected Meals`, Ingredients)) %>%
+  rename(Ingredients = Ingredients_standardised)
+
 #Get ID from weight/volume database
-temp <- checkRefList(reference = references$volume_weight, composite_ingredients)
+temp <- checkRef(reference = references$volume_weight, composite_ingredients)
 
 #Fix errors
 temp2 <- temp %>%
@@ -633,12 +575,12 @@ temp2 <- temp %>%
     ID = case_when(
       Ingredients == 'parmesan cheese' ~ fixRefID(references$volume_weight, 'parmesan'),
       Ingredients %in% c('chili peppers', 'chili', 'strong chili') ~ fixRefID(references$volume_weight, 'chili', 'red'),
-      
+      Ingredients == 'corn flour' ~ fixRefID(references$volume_weight, 'cornmeal', 'polenta'),
       TRUE ~ ID
     )) %>% unique()
 
 #Calculate the weight of each ingredient
-various$weights <- readRDS('./output/all_weights.Rds') %>%
+various$weights <- readRDS('./Data/output/all_weights.Rds') %>%
   filter(language == 'english')
 #Ingredients to turn from tbsp to dl
 various$to_dl <- c('pepper', 'peanøttsmør', 'olje', 'oil', 'smør', 'butter', 'margarin',
@@ -686,25 +628,23 @@ various$weight_of_recipes <- various$ingredients_weight %>%
 
 #Calculate nutrient content pr 100 g----
 #Map to nutrient database
-temp <- checkRefList(various$ingredients_weight, references$nutrients)
+temp <- checkRef(various$ingredients_weight, references$nutrients)
 
 #Add amounts and fix some errors
 temp2 <- temp %>%
   full_join(., composite_ingredients %>% select(Ingredients)) %>% unique() %>%
   mutate(ID = case_when(
+    str_detect(Ingredients, 'vinegar') ~ fixRefID(references$nutrients, 'vinegar'),
+    Ingredients == 'parmesan cheese' ~ fixRefID(references$nutrients, 'parmesan'),
+    Ingredients == 'chili flake dried' ~ fixRefID(references$nutrients, 'chili', 'powder'),
     Ingredients %in% c('red chili', 'strong chili', 'chili peppers') ~ fixRefID(references$nutrients, 'chili pepper', 'red'),
     Ingredients == 'mushroom' ~ fixRefID(references$nutrients, 'mushroom'),
-    Ingredients %in% c('sugar', 'granulated sugar', 'white granulated sugar') ~ fixRefID(references$nutrients, 'sugar'),
     Ingredients == 'sesame seed oil' ~ fixRefID(references$nutrients, 'sesame', 'oil'),
-    Ingredients == 'potato' ~ fixRefID(references$nutrients, 'potato'),
-    Ingredients %in% c('rice wine vinegar', 'white wine vinegar', 'apple cider vinegar') ~ fixRefID(references$nutrients, 'vinegar'),
     Ingredients == 'dry mustard' ~ fixRefID(references$nutrients, 'mustard'),
-    Ingredients == 'fresh cranberry' ~ fixRefID(references$nutrients, 'cranberries'),
     Ingredients == 'plum' ~ fixRefID(references$nutrients, 'plums'),
     Ingredients == 'apricot' ~ fixRefID(references$nutrients, 'apricots'),
     Ingredients == 'mayonnaise sauce' ~ fixRefID(references$nutrients, 'mayonnaise'),
     Ingredients == 'haddock' ~ fixRefID(references$nutrients, 'haddock'),
-    Ingredients == 'star anise pods' ~ fixRefID(references$nutrients, 'anise'),
     Ingredients == 'corn flour' ~ fixRefID(references$nutrients, 'corn flour', 'polenta'),
     Ingredients == 'dried soybeans' ~ fixRefID(references$nutrients, 'bean', 'soya'),
     

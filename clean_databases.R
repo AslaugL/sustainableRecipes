@@ -8,12 +8,9 @@ library(stringi)
 #List to keep various dataframes and keep environment clean
 various <- list()
 
-#Working directory
-setwd('./Data')
-
 #Weight and portion size database----
 #Load raw data helsedir
-raw_data <- read_xlsx('./databases/vekt_porsjonsstørrelser_helsedir.xlsx')
+raw_data <- read_xlsx('./Data/databases/vekt_porsjonsstørrelser_helsedir.xlsx')
 
 #Reformat
 all_weights <- raw_data %>% rename(
@@ -49,7 +46,8 @@ all_weights <- raw_data %>% rename(
   #Rename some ingredients
   mutate(Ingredients = Ingredients %>%
            str_replace('Loff, formstekt', 'Loff') %>%
-           str_replace('Bread, white, square-shaped', 'Bread, white')) %>%
+           str_replace('Bread, white, square-shaped', 'Bread, white') %>%
+           str_replace('Grapes, with seeds', 'grapes')) %>%
   
   #Create unique IDs for each ingredients
   group_by(Ingredients) %>%
@@ -279,7 +277,6 @@ temp <- list(
   c('allspice', 'dl', '40.58', 'FoodData Central', 'english'),
   c('pine nuts', 'neve', '20', 'As other nuts', 'english'),
   c('radish', 'bunch', '130', 'Kolonial', 'english'),
-  c('grapes, with seeds', 'neve', '70', 'As dl', 'english'),
   c('peas, frozen', 'neve', '60', 'As dl', 'english'),
   c('sugar snap peas', 'dl/neve', '26.95', 'FoodData Central', 'english'),
   c('lemongrass/sitrongressrot', 'stk', '50', 'Meny', 'english/norwegian'),
@@ -289,7 +286,8 @@ temp <- list(
   c('orange zest', 'dl', '40.58', 'FoodData Central', 'english'),
   c('lemon zest', 'dl', '40.58', 'FoodData Central', 'english'),
   c('lime zest', 'dl', '40.58', 'FoodData Central', 'english'), #Assume the same as orange and lemon
-  c('grape', 'bunch', '500', 'Kolonial', 'english'),
+  c('grapes', 'bunch', '500', 'Kolonial', 'english'),
+  c('grapes', 'neve', '70', 'As dl', 'english'),
   
   #Seafood
   c('Anchovies, canned', 'box', '55', 'Abba', 'english'),
@@ -526,7 +524,6 @@ all_weights <- all_weights %>%
            str_replace('aubergine', 'eggplant') %>%
            str_replace('bread, semi-coarse', 'bread') %>%
            str_replace('cream cracker', 'cracker cream') %>%
-           str_replace('grapes, with seeds', 'grapes') %>%
            str_replace('anchovies', 'anchovy') %>%
            
            #Change all plural forms to singular
@@ -539,7 +536,10 @@ all_weights <- all_weights %>%
            str_replace('chops', 'chop') %>%
            str_replace('olives', 'olive') %>%
            str_replace('tomatoes', 'tomato') %>%
-           str_replace('purée', 'puree')
+           str_replace('purée', 'puree') %>%
+           str_replace('grapes', 'grape') %>%
+           str_replace('plums', 'plum') %>%
+           str_replace('apricots', 'apricot')
   ) %>%
   #Conditionals
   mutate(Ingredients = case_when(
@@ -550,7 +550,7 @@ all_weights <- all_weights %>%
   select(-Foodgroup) %>% unique()
 
 #Save
-saveRDS(all_weights, './output/all_weights.Rds')
+saveRDS(all_weights, './Data/output/all_weights.Rds')
 
 #Use store bought breads and rolls as default
 
@@ -638,14 +638,14 @@ ref <- all_weights %>% select(-c(g, unit_enhet, reference)) %>% unique() %>% #On
   ) %>%
   select(-Ingredients) %>% arrange(first_word, second_word)
 
-saveRDS(ref, './output/food_weight_ref.Rds')
+saveRDS(ref, './Data/output/food_weight_ref.Rds')
 
 #Nutrient content database----
 #List to fill with various items to keep environment clean
 various <- list()
 
 #Load raw data helsedir
-raw_data <- read_xlsx('./databases/matvaretabellen2020.xlsx')
+raw_data <- read_xlsx('./Data/databases/matvaretabellen2020.xlsx')
 
 #Clean it up and use means for items with more than one addition (such as vegetables with both Norwegian and Imported values)----
 clean_nutrients <- raw_data %>%
@@ -733,6 +733,7 @@ mutate(Ingredients = case_when(
   food_item == 'turkey, breast, without skin, raw' ~ 'turkey_breast',
   food_item == 'ham, turkey, smoked' ~ 'turkey_ham',
   food_item == 'turkey, meat and skin, raw' ~ 'turkey_meat',
+  food_item == 'grouse, breast, without skin, raw' ~ 'grouse_breast',
   
   #Game meat----
   food_item == 'moose, roasting, raw' ~ 'elk moose',
@@ -1017,23 +1018,24 @@ mutate(Ingredients = case_when(
   #Some single food items to keep
   food_item %in% c('ghee') ~ food_item
   
-  #TRUE ~ food_item----
-  
 )) %>%
   
   mutate(Ingredients = case_when(
-    #Turn seeds and nuts into singular form
+    #Turn seeds and nuts and some fruits into singular form
     str_detect(food_item, 'nuts') ~ str_replace(food_item, 'nuts', 'nut'),
     #str_detect(food_item, 'seeds') ~ str_replace(food_item, 'seeds', 'seed'),
     
     #Some other fruits and vegetable
-    Foodgroup %in% c('vegetables, raw and frozen', 'fruits and berries, raw') & str_detect(food_item, ', raw') & is.na(Ingredients) ~ str_replace(food_item, ', raw', ''),
-    Foodgroup %in% c('vegetables, raw and frozen', 'fruits and berries, raw') & str_detect(food_item, ', ') & is.na(Ingredients) ~ str_replace(food_item, ', ', '_'),
+    Foodgroup %in% c('vegetables, raw and frozen', 'fruit and berries, raw/fresh') & str_detect(food_item, ', raw') & is.na(Ingredients) ~ str_replace(food_item, ', raw', ''),
+    Foodgroup %in% c('vegetables, raw and frozen', 'fruit and berries, raw/fresh') & str_detect(food_item, ', ') & is.na(Ingredients) ~ str_replace(food_item, ', ', '_'),
     
     TRUE ~ Ingredients
   )) %>%
   
-  mutate(Ingredients = str_replace(Ingredients, 'alfalfa seed, sprouted, raw', 'alfalfa_sprout')) %>%
+  mutate(Ingredients = Ingredients %>%
+           str_replace('alfalfa seed, sprouted, raw', 'alfalfa_sprout') %>%
+           str_replace('plums', 'plum') %>%
+           str_replace('apricots', 'apricot')) %>%
   #Separate rows with multiple food items
   separate_rows(., Ingredients, sep = '/') %>%
   
@@ -1045,10 +1047,10 @@ mutate(Ingredients = case_when(
 
 #Add missing food items from FoodData Central----
 #Nutrients
-fromFoodDataCentral_nutrients <- read_csv('./databases/food_nutrient.csv')
-fromFoodDataCentral_nutrient_names <- read_csv('./databases/nutrient_incoming_name.csv')
+fromFoodDataCentral_nutrients <- read_csv('./Data/databases/food_nutrient.csv')
+fromFoodDataCentral_nutrient_names <- read_csv('./Data/databases/nutrient_incoming_name.csv')
 #Food items
-fromFoodDataCentral_foods <- read_csv('./databases/food.csv') %>%
+fromFoodDataCentral_foods <- read_csv('./Data/databases/food.csv') %>%
   
   #Select missing foods
   filter(description %in% c(
@@ -1227,7 +1229,7 @@ fromFoodDataCentral_foods <- read_csv('./databases/food.csv') %>%
 clean_nutrients <- bind_rows(clean_nutrients, fromFoodDataCentral_foods %>% select(ID, Ingredients))
 
 #Add composite ingredients----
-various$component_ingredients_nutrients <- readRDS('./output/composite_ingredients_nutrient_content.Rds') %>%
+various$component_ingredients_nutrients <- readRDS('./Data/output/composite_ingredients_nutrient_content.Rds') %>%
   #Create an ID column
   group_by(Ingredients) %>%
   mutate(ID = cur_group_id()) %>%
@@ -1315,7 +1317,7 @@ nutrients_to_use <- nutrients_to_use %>%
   bind_rows(., various$component_ingredients_nutrients) %>%
   bind_rows(., various$shellfish) %>% select(-Ingredients)
 
-saveRDS(nutrients_to_use, './output/nutrients_df.Rds')
+saveRDS(nutrients_to_use, './Data/output/nutrients_df.Rds')
 
 
 #Create a search reference----
@@ -1347,12 +1349,12 @@ reference <- clean_nutrients %>%
   arrange(first_word, second_word)
 
 
-saveRDS(reference, './output/nutrient_reference.Rds')
+saveRDS(reference, './Data/output/nutrient_reference.Rds')
 
 #Sustainability indicators from SHARP----
 various <- list()
 #Read sustainability data and change to fit recipes----
-SHARP <- read_csv('./databases/SHARPversion2018.csv') %>%
+SHARP <- read_csv('./Data/databases/SHARPversion2018.csv') %>%
   
   #Rename to fit with the other datasets
   rename(Ingredients = `Food item`) %>%
@@ -1610,7 +1612,7 @@ various$shellfish <- SHARP %>%
          L1 = 'Fish, seafood, amphibians, reptiles and invertebrates')
 SHARP <- full_join(SHARP, various$shellfish)
 #Add composite ingredients
-various$composite_ingredients_sharp <- readRDS('./output/composite_ingredients_sustainability_markers.Rds')
+various$composite_ingredients_sharp <- readRDS('./Data/output/composite_ingredients_sustainability_markers.Rds')
 
 #Add to SHARP
 SHARP <- full_join(SHARP, various$composite_ingredients_sharp)
@@ -1779,7 +1781,7 @@ sharp_ref <- SHARP %>%
 #Is the maize flour in SHARP the same as corn starch?
 
 #Save
-saveRDS(sharp_ref, './output/sharp_ref.Rds')
+saveRDS(sharp_ref, './Data/output/sharp_ref.Rds')
 
 
 
