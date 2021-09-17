@@ -78,6 +78,7 @@ standardiseIngredients <- function(df){
       str_detect(Ingredients, 'fig') ~ 'fig',
       
       str_detect(Ingredients, 'garlic') & str_detect(Ingredients, 'chinese') ~ 'garlic chinese',
+      str_detect(Ingredients, 'garlic') & str_detect(Ingredients, 'powder') ~ 'garlic powder',
       str_detect(Ingredients, 'garlic') & str_detect(Ingredients, 'whole') & !str_detect(Ingredients, 'salt|powder') ~ 'whole garlic',
       str_detect(Ingredients, 'garlic') & !str_detect(Ingredients, 'pickle|sauce|paste|oil|baguette|cheese') ~ 'garlic',
       str_detect(Ingredients, 'grape') & str_detect(Ingredients, 'juice') ~ 'grape juice',
@@ -252,10 +253,9 @@ standardiseIngredients <- function(df){
       str_detect(Ingredients, 'anis') & !str_detect(Ingredients, 'star') ~ 'anise ground',
       
       str_detect(Ingredients, 'basil') & (str_detect(Ingredients, 'fresh|chop|crush|neve|twig|leaf') |
-                                            str_detect(Amounts, 'twig|bunch|leaf|neve|dl')) & !str_detect(Ingredients, 'thyme|rosemary|oregano|parsley|chives|dill') |
-        Ingredients == 'fresh chopped herbs eg basil, dill or leaf parsley' ~ 'basil fresh herbs',
+                                            str_detect(Amounts, 'twig|bunch|leaf|neve|dl')) ~ 'basil fresh herbs',
       str_detect(Ingredients, 'thaibasil') ~ 'basil fresh herbs',
-      str_detect(Ingredients, 'basil') & str_detect(Ingredients, 'dried') ~ 'basil dried',
+      str_detect(Ingredients, 'basil') ~ 'basil dried', #Standard
       str_detect(Ingredients, 'bay leaf') ~ 'bay leaf',
       str_detect(Ingredients, 'burrito spice') ~ 'burrito spice mix',
       
@@ -263,22 +263,22 @@ standardiseIngredients <- function(df){
       str_detect(Ingredients, 'caraway') ~ 'caraway seed',
       str_detect(Ingredients, 'cardamom') & str_detect(Ingredients, 'fruit|pod|capsule') ~ 'cardamom pod',
       str_detect(Ingredients, 'cardamom') ~ 'cardamom',
-      str_detect(Ingredients, 'chervil') & !str_detect(Ingredients, 'parsley|rosemary|thyme|mint|basil|oregano|dill|coriander|tarragon') ~ 'chervil fresh herb', #All chives are fresh
-      str_detect(Ingredients, 'chives') & !str_detect(Ingredients, 'parsley|rosemary|thyme|mint|basil|oregano|dill|coriander') ~ 'chives fresh herb', #All chives are fresh
+      str_detect(Ingredients, 'chervil') & !str_detect(Ingredients, 'parsley|rosemary|thyme|mint|basil|oregano|dill|coriander|tarragon') ~ 'chervil fresh herb', #All chervils are fresh
+      str_detect(Ingredients, 'chives') ~ 'chives fresh herb', #All chives are fresh
       (str_detect(Ingredients, 'chili') & str_detect(Ingredients, 'dried') & str_detect(Ingredients, 'flake')) | str_detect(Ingredients, 'red pepper flate') | str_detect(Ingredients, 'chili flake') ~ 'chili flake dried',
       str_detect(Ingredients, 'chinese') & str_detect(Ingredients, 'spice') ~ 'chinese five spice',
       str_detect(Ingredients, 'cinnamon') & str_detect(Ingredients, 'bar|rod|stick') ~ 'cinnamon bar',
       str_detect(Ingredients, 'cinnamon') ~ 'cinnamon',
       str_detect(Ingredients, 'cloves|carnation') & !str_detect(Ingredients, 'garlic') ~ 'cloves',
-      str_detect(Ingredients, 'coriander|cilantro') & !str_detect(Ingredients, 'seed') & (str_detect(Ingredients, 'fresh|chop|crush|neve|twig|leaf|malt') | str_detect(Amounts, 'twig|bunch|leaf|neve|dl')) & !str_detect(Ingredients, 'parsley|rosemary|thyme|oregano|basil|chives|mint|dill') ~ 'coriander fresh herbs',
-      str_detect(Ingredients, 'coriander|cilantro') & str_detect(Ingredients, 'dried') ~ 'coriander dried',
       str_detect(Ingredients, 'coriander') & str_detect(Ingredients, 'seed') ~ 'coriander seed',
+      str_detect(Ingredients, 'coriander|cilantro') & !str_detect(Ingredients, 'seed') & str_detect(Ingredients, 'fresh|chop|crush|neve|twig|leaf|malt') ~ 'coriander fresh herbs',
+      str_detect(Ingredients, 'coriander|cilantro') ~ 'coriander dried', #Standard
       str_detect(Ingredients, 'cress') ~ 'cress fresh herbs',
       str_detect(Ingredients, 'cumin') ~ 'cumin',
       str_detect(Ingredients, 'curry') ~ 'curry powder',
       
-      str_detect(Ingredients, 'dill') & (str_detect(Ingredients, 'fresh|chop|crush|neve|twig|leaf') | str_detect(Amounts, 'twig|bunch|leaf|neve|dl')) & !str_detect(Ingredients, 'parsley|rosemary|thyme|oregano|basil|chives|mint|coriander') ~ 'dill fresh herbs',
-      str_detect(Ingredients, 'dill') & str_detect(Ingredients, 'dried') ~ 'dill dried',
+      str_detect(Ingredients, 'dill') & str_detect(Ingredients, 'fresh|chop|crush|neve|twig|leaf') ~ 'dill fresh herbs',
+      str_detect(Ingredients, 'dill') ~ 'dill dried', #Standard
       
       str_detect(Ingredients, 'fajita') & str_detect(Ingredients, 'spice') ~ 'fajita spice mix',
       str_detect(Ingredients, 'fennel') & str_detect(Ingredients, 'seed') ~ 'fennel seed',
@@ -300,37 +300,38 @@ standardiseIngredients <- function(df){
       
       str_detect(Ingredients, 'lemon balm') ~ 'lemon balm',
       
-      str_detect(Ingredients, 'mint') & (str_detect(Ingredients, 'fresh|chop|crush|neve|twig|leaf') | str_detect(Amounts, 'twig|bunch|leaf|neve|dl')) & !str_detect(Ingredients, 'parsley|rosemary|thyme|oregano|basil|chives|dill|coriander') ~ 'mint fresh herbs',
-      str_detect(Ingredients, 'mint') & str_detect(Ingredients, 'dried') ~ 'mint dried',
+      str_detect(Ingredients, 'mint') & (str_detect(Ingredients, 'fresh|chop|crush|neve|twig|leaf') | str_detect(Amounts, 'twig|bunch|leaf|neve|dl')) ~ 'mint fresh herbs',
+      str_detect(Ingredients, 'mint') ~ 'mint dried', #Standard
       
       str_detect(Ingredients, 'nutmeg') ~ 'nutmeg',
       
       str_detect(Ingredients, 'onion') & str_detect(Ingredients, 'powder') ~ 'onion powder',
-      str_detect(Ingredients, 'oregano') & (str_detect(Ingredients, 'fresh|chop|crush|neve|twig|leaf') | str_detect(Amounts, 'twig|bunch|leaf|neve|dl')) & !str_detect(Ingredients, 'parsley|rosemary|thyme|mint|basil|chives|dill|coriander') ~ 'oregano fresh herbs',
+      str_detect(Ingredients, 'oregano') & (str_detect(Ingredients, 'fresh|chop|crush|neve|twig|leaf') | str_detect(Amounts, 'twig|bunch|leaf|neve|dl')) ~ 'oregano fresh herbs',
       str_detect(Ingredients, 'oregano') & str_detect(Ingredients, 'dried|spice') ~ 'oregano dried',
-      str_detect(Ingredients, 'oregano') & !str_detect(Ingredients, 'parsley|rosemary|thyme|mint|basil|chives|dill|coriander') ~ 'oregano dried', #Standard
+      str_detect(Ingredients, 'oregano') ~ 'oregano dried', #Standard
       
       str_detect(Ingredients, 'paprika|pepper') & str_detect(Ingredients, 'powder|spice') & !str_detect(Ingredients, 'spice seasoning pepper') ~ 'paprika powder',
-      str_detect(Ingredients, 'parsley|mug') & (str_detect(Ingredients, 'fresh|chop|crush|neve|twig|leaf') | str_detect(Amounts, 'twig|bunch|leaf|neve|dl')) & !str_detect(Ingredients, 'thyme|rosemary|oregano|mint|basil|chives|dill|coriander') ~ 'parsley fresh herbs',
-      str_detect(Ingredients, 'parsley') & str_detect(Ingredients, 'dried') ~ 'parsley dried',
+      str_detect(Ingredients, 'parsley|mug') & (str_detect(Ingredients, 'fresh|chop|crush|neve|twig|leaf') | str_detect(Amounts, 'twig|bunch|leaf|neve|dl')) ~ 'parsley fresh herbs',
+      str_detect(Ingredients, 'parsley') ~ 'parsley dried', #Standard
       
-      str_detect(Ingredients, 'rosemary') & (str_detect(Ingredients, 'fresh|chop|crush|neve|twig|leaf') | str_detect(Amounts, 'twig|bunch|leaf|neve|dl')) & !str_detect(Ingredients, 'thyme|basil|oregano|parsley') ~ 'rosemary fresh herbs',
-      str_detect(Ingredients, 'rosemary') & str_detect(Ingredients, 'dried') ~ 'rosemary dried',
+      str_detect(Ingredients, 'rosemary') & (str_detect(Ingredients, 'fresh|chop|crush|neve|twig|leaf') | str_detect(Amounts, 'twig|bunch|leaf|neve|dl')) ~ 'rosemary fresh herbs',
+      str_detect(Ingredients, 'rosemary') ~ 'rosemary dried', #Standard
       
       str_detect(Ingredients, 'saffron') ~ 'saffron',
-      str_detect(Ingredients, 'sage') & !str_detect(Ingredients, 'sau') & (str_detect(Ingredients, 'fresh|chop|crush|neve|twig|leaf') | str_detect(Amounts, 'twig|bunch|leaf|neve|dl')) & !str_detect(Ingredients, 'parsley|rosemary|thyme|oregano|basil|chives|dill|coriander') ~ 'sage fresh herbs',
-      str_detect(Ingredients, 'sage') & !str_detect(Ingredients, 'sau') ~ 'sage dried',
-      str_detect(Ingredients, 'salvie') & (str_detect(Ingredients, 'fresh|chop|crush|neve|twig|leaf') | str_detect(Amounts, 'twig|bunch|leaf|neve|dl')) & !str_detect(Ingredients, 'thyme|basil|oregano|parsley') ~ 'salvie fresh herbs',
+      str_detect(Ingredients, 'sage') & !str_detect(Ingredients, 'sau') & (str_detect(Ingredients, 'fresh|chop|crush|neve|twig|leaf') | str_detect(Amounts, 'twig|bunch|leaf|neve|dl')) ~ 'sage fresh herbs',
+      str_detect(Ingredients, 'sage') & !str_detect(Ingredients, 'sau') ~ 'sage dried', #Standard
+      str_detect(Ingredients, 'salvie') & (str_detect(Ingredients, 'fresh|chop|crush|neve|twig|leaf') | str_detect(Amounts, 'twig|bunch|leaf|neve|dl')) ~ 'salvie fresh herbs',
+      str_detect(Ingredients, 'salvie') ~ 'salvie dried', #Standard
       str_detect(Ingredients, 'sazon seasoning') ~ 'sazon seasoning',
       str_detect(Ingredients, 'star anis') ~ 'star anise',
       
       str_detect(Ingredients, 'taco') & str_detect(Ingredients, 'spice|season') ~ 'taco spice mix',
       str_detect(Ingredients, 'tandoori') ~ 'tandoori spice mix',
-      str_detect(Ingredients, 'tarragon') & (str_detect(Ingredients, 'fresh|chop|crush|neve|twig|leaf') | str_detect(Amounts, 'twig|bunch|leaf|neve|dl')) & !str_detect(Ingredients, 'parsley|rosemary|thyme|chervil|mint|basil|chives|dill|coriander') ~ 'tarragon fresh herbs',
+      str_detect(Ingredients, 'tarragon') & (str_detect(Ingredients, 'fresh|chop|crush|neve|twig|leaf') | str_detect(Amounts, 'twig|bunch|leaf|neve|dl')) ~ 'tarragon fresh herbs',
       str_detect(Ingredients, 'tarragon') & str_detect(Ingredients, 'dried') ~ 'tarragon dried',
       str_detect(Ingredients, 'tarragon') & !str_detect(Ingredients, 'parsley|rosemary|thyme|chervil|mint|basil|chives|dill|coriander') ~ 'tarragon dried', #Standard
-      str_detect(Ingredients, 'thyme') & (str_detect(Ingredients, 'fresh|chop|crush|neve|twig|leaf') | str_detect(Amounts, 'twig|bunch|leaf|neve|dl')) & !str_detect(Ingredients, 'parsley|rosemary|oregano|mint|basil|chives|dill|coriander') ~ 'thyme fresh herbs',
-      str_detect(Ingredients, 'thyme') & str_detect(Ingredients, 'dried') ~ 'thyme dried',
+      str_detect(Ingredients, 'thyme') & (str_detect(Ingredients, 'fresh|chop|crush|neve|twig|leaf') | str_detect(Amounts, 'twig|bunch|leaf|neve|dl')) ~ 'thyme fresh herbs',
+      str_detect(Ingredients, 'thyme') ~ 'thyme dried', #Standard
       str_detect(Ingredients, 'turmeric') ~ 'turmeric',
       
       #Mushrooms----
@@ -390,7 +391,8 @@ standardiseIngredients <- function(df){
       str_detect(Ingredients, 'flour') & str_detect(Ingredients, 'chick') ~ 'chick pea flour',
       str_detect(Ingredients, 'chickpea|chick pea') & !str_detect(Ingredients, 'lentil') ~ 'chick pea',
       str_detect(Ingredients, 'ciabatta') ~ 'ciabatta',
-      (str_detect(Ingredients, 'corn') & str_detect(Ingredients, 'flour|starch')) | str_detect(Ingredients, 'maizena') | str_detect(Ingredients, 'corn') & !str_detect(Ingredients, 'oil|pepper|crispy|cob|minim|coat|water to the') & str_detect(Amounts, 'tbsp|tsp') ~ 'corn starch',
+      (str_detect(Ingredients, 'corn') & str_detect(Ingredients, 'starch')) | str_detect(Ingredients, 'maizena') | str_detect(Ingredients, 'corn') & !str_detect(Ingredients, 'oil|pepper|crispy|cob|minim|coat|water to the|flour') & str_detect(Amounts, 'tbsp|tsp') ~ 'corn starch',
+      str_detect(Ingredients, 'corn') & str_detect(Ingredients, 'flour') ~ 'corn flour',
       str_detect(Ingredients, 'polenta') ~ 'corn flour polenta',
       str_detect(Ingredients, 'cous') ~ 'couscous',
       str_detect(Ingredients, 'cream cracker') ~ 'cracker cream',
@@ -531,7 +533,7 @@ standardiseIngredients <- function(df){
       str_detect(Ingredients, 'sheep cabbage meat') ~ 'lamb sheep cabbage stew meat',
       str_detect(Ingredients, 'sheep head') ~ 'lamb sheep head',
       
-      str_detect(Ingredients, 'meatball') ~ 'meatball',
+      str_detect(Ingredients, 'meat') & str_detect(Ingredients, 'ball') ~ 'meatball',
       
       str_detect(Ingredients, 'pork') & str_detect(Ingredients, 'butt') ~ 'pork shoulder',
       str_detect(Ingredients, 'pork') & str_detect(Ingredients, 'ground|minced') ~ 'pork minced meat',
