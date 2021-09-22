@@ -160,6 +160,7 @@ temp <- list(
   c('chicken diced', 'dl', '57.14', 'https://www.eatthismuch.com/food/nutrition/chicken-breast,454/', 'english'),
   c('rabbit', 'stk', '2500', 'http://grillogmat.blogspot.com/2013/04/kanin-med-smak-av-rosmarin-og-lime.html', 'english'),
   c('pork hock', 'stk', '1000', 'Fjellgris', 'english'),
+  c('grouse breast', 'stk', '100', 'https://ultimateupland.com/skewering-meathunters-the-true-cost-of-a-pound-of-game-bird/', 'english'),
   
   #Bread
   c('Naan bread', 'stk', '130', 'Santa Maria', 'english'),
@@ -905,6 +906,8 @@ mutate(Ingredients = case_when(
   food_item == 'wheat flour, wholemeal' ~ 'wheat flour_wholemeal',
   food_item == 'peanuts, raw' ~ 'peanut',
   food_item %in% c('hamburger bun', 'peanut butter', 'potato starch') ~ str_replace(food_item, ' ', '_'),
+  food_item == 'oatmeal' ~ 'oatmeal',
+  food_item == 'rolled oats' ~ 'oat_rolled',
   
   str_detect(food_item, 'bread, semi-coarse') & str_detect(food_item, '25-50') & str_detect(food_item, 'industrially made') ~ 'bread',
   str_detect(food_item, 'bread, white') & str_detect(food_item, '0-25') & str_detect(food_item, 'industrially made') & !str_detect(food_item, 'spiral|square') ~ 'bread_white',
@@ -924,6 +927,7 @@ mutate(Ingredients = case_when(
   food_item == 'oil, walnut' ~ 'walnut_oil',
   
   #Dairy and substitutes----
+  food_item == 'butter' ~ 'butter',
   food_item == 'butter, unsalted' ~ 'butter_unsalted',
   food_item == 'cheese, blue mold, norzola' ~ 'norzola_blue cheese',
   food_item == 'cheese, blue mold, normanna' ~ 'normanna_blue cheese',
@@ -1367,9 +1371,11 @@ various$sharp_to_remove <- SHARP %>%
   
   #Whole groups of ingredients
   filter(L1 %in% c('Coffee, cocoa, tea and infusions', 'Composite dishes',
-                   'Food products for young population', 'Sugar and similar, confectionery and water-based sweet desserts',
-                   'Eggs and egg products', 'Grains and grain-based products', 'Alcoholic beverages', 'Seasoning, sauces and condiments',
-                   'Milk and dairy products', 'Water and water-based beverages') |
+                   'Food products for young population', 'Eggs and egg products',
+                   'Sugar and similar, confectionery and water-based sweet desserts',
+                    'Grains and grain-based products', 'Milk and dairy products',
+                   'Alcoholic beverages', 'Seasoning, sauces and condiments',
+                    'Water and water-based beverages') |
            str_detect(Ingredients, 'rice|other wine-like fruit drinks|soft')) %>%
   #Remove ingredients in these categories that should be kept
   filter(!Ingredients %in% tolower(c('White sugar', 'Honey', 'Syrups',
@@ -1391,6 +1397,7 @@ various$sharp_to_remove <- SHARP %>%
                                      'puff pastry', 'biscuits', 'maize flour', 'crisp bread, rye wholemeal', 'wheat bread and rolls',
                                      'breadcrumbs', 'buns', 'wheat bread and rolls, brown or wholemeal', 'wheat flour', 'maize flour',
                                      'wheat wholemeal flour', 'dried pasta', 'pasta wholemeal', 'oat grain', 'bulgur', 'barley grain, pearled',
+                                     'oat rolled grains', 'processed oat-based flakes',
                                      #Alcoholic beverages
                                      'beer', 'wine', 'whisky', 'fortified and liqueur wines', 'cider', 'brandy',
                                      #Conditments, sauces and spices
@@ -1531,6 +1538,8 @@ SHARP <- SHARP %>%
            str_replace('courgettes', 'zucchini') %>% #Name used in recipes
            str_replace('sprouts, shoots and similar', 'sprout') %>%
            str_replace('maize flour', 'corn flour') %>%
+           str_replace('processed oat-based flakes', 'oatmeal') %>%
+           str_replace('oat rolled grains', 'oat rolled') %>%
            
            #Meat
            str_replace('beef tallow including processed suet', 'tallow') %>%
@@ -1626,7 +1635,7 @@ SHARP <- SHARP %>%
   #Create unique ID for each item
   mutate(ID = seq_along(Ingredients))
 #Save
-saveRDS(SHARP, './output/sharp_db.Rds')
+saveRDS(SHARP, './Data/output/sharp_db.Rds')
 
 #Create a df with reference names to query ingredient lists----
 sharp_ref <- SHARP %>%

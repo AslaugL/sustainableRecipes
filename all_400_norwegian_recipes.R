@@ -42,7 +42,7 @@ various <- list(
             
             'garlic', 'grape',
             
-            'herring smoked',
+            'hen breast fillet grouse', 'herring smoked',
             
             'jerusalem artichoke', 'juniper berry',
             
@@ -445,8 +445,8 @@ recipes <- recipes %>% standardiseIngredients() %>%
     mutate(
       Amounts = case_when(
         #Juice (info from https://www.webstaurantstore.com/blog/2760/juice-in-citrus-fruits.html)
-        str_detect(Ingredients, 'lemon') & str_detect(Ingredients, 'juice') & str_detect(unit, 'stk') ~ (Amounts*3)*0.15,
-        str_detect(Ingredients, 'lime') & str_detect(Ingredients, 'juice') & str_detect(unit, 'stk') ~ (Amounts*2)*0.15,
+        str_detect(Ingredients, 'lemon') & str_detect(Ingredients, 'juice') & str_detect(unit, 'stk') ~ (Amounts*3)*0.015,
+        str_detect(Ingredients, 'lime') & str_detect(Ingredients, 'juice') & str_detect(unit, 'stk') ~ (Amounts*2)*0.015,
         #Zest (info from https://bakingbites.com/2017/01/how-much-zest-does-citrus-lemon-yield/)
         str_detect(Ingredients, 'lemon') & str_detect(Ingredients, 'zest') & str_detect(unit, 'stk') ~ (Amounts*(1/3))*0.15,
         str_detect(Ingredients, 'lime') & str_detect(Ingredients, 'zest') & str_detect(unit, 'stk') ~ (Amounts*1)*0.15,
@@ -520,6 +520,7 @@ various$org_ingredients <- recipes %>% select(`Selected Meals`, Ingredients, org
   
 #Sum the amounts for all the ingredients with the same name for each recipe----
 recipes <- recipes %>%
+    select(-org_ingredients) %>%
     group_by(`Selected Meals`, Ingredients, Country, Source, unit) %>%
     summarise(Amounts = sum(Amounts, na.rm = TRUE)) %>% ungroup() %>%
     #Using na.rm gives ingredients with no amounts a '0' value, change back to NA
@@ -555,16 +556,12 @@ various$get_amounts_kg <- recipes %>%
       Ingredients == 'cheese mozzarella' ~ fixRefID(reference = references$volume_weight, 'mozzarella'),
       Ingredients == 'parmesan cheese' ~ fixRefID(reference = references$volume_weight, 'parmesan'),
       Ingredients %in% c('chili pepper green', 'chili pepper jalapeno') ~ fixRefID(reference = references$volume_weight, 'chili', 'red'), #Same in volume
-      Ingredients == 'grape' ~ fixRefID(reference = references$volume_weight, 'grapes'), #Same in volume
-      Ingredients == 'hazelnut' ~ fixRefID(reference = references$volume_weight, 'hazel', 'nut'), #Same in volume
       Ingredients == 'mackerel tomato canned' ~ fixRefID(reference = references$volume_weight, 'mackerel', 'fillet'),
-      Ingredients == 'of olives' ~ fixRefID(reference = references$volume_weight, 'olive', 'green'),
       Ingredients == 'peas green' ~ fixRefID(reference = references$volume_weight, 'pea', 'frozen'),
       Ingredients == 'pork neck chop' ~ fixRefID(reference = references$volume_weight, 'pork', 'neck'),
       Ingredients == 'sweet pepper grilled' & unit == 'stk' ~ fixRefID(reference = references$volume_weight, 'sweet', 'pepper'),
       Ingredients == 'sweet pepper grilled' ~ fixRefID(reference = references$volume_weight, 'sweet pepper', 'grilled'),
       Ingredients == 'turkey chicken drumstick' ~ fixRefID(reference = references$volume_weight, 'turkey', 'drumstick'),
-      Ingredients == 'soy' ~ fixRefID(reference = references$volume_weight, 'soy', 'sauce'), #This seems most likely as it is part of a marinade for sashimi
       Ingredients == 'lemongrass' ~ fixRefID(reference = references$volume_weight, 'lemongrass'),
       Ingredients == 'fig' ~ fixRefID(reference = references$volume_weight, 'fig'),
       Ingredients == 'shrimp' ~ fixRefID(reference = references$volume_weight, 'shrimps', 'in'),
@@ -753,7 +750,7 @@ various$get_amounts_kg <- recipes %>%
     checkRef(., reference = references$nutrients)
   
   #See which ingredients haven't been picked up
-  t <- anti_join(clean %>% select(Ingredients) %>% unique(), temp %>% select(Ingredients))
+  t <- anti_join(recipes %>% select(Ingredients) %>% unique(), temp %>% select(Ingredients))
   
   temp2 <- temp %>%
     select(-loop) %>%
@@ -816,7 +813,7 @@ various$get_amounts_kg <- recipes %>%
       Ingredients == 'sauce hot' ~ fixRefID(references$nutrients, 'hot pepper sauce'),
       Ingredients == 'olive paste tapenade' ~ fixRefID(references$nutrients, 'olive paste tapenade'),
       Ingredients == 'homemade beef gravy' ~ fixRefID(references$nutrients, 'beef gravy'),
-      
+    
       Ingredients %in% c('duck or goose fat for confit', 'of lime sheet, shredded',
                          'cooking spray', 'red food coloring', 'beef fund',
                          'pack high quality charcoal briquettes', 'pomegranate kernel', 'yeast nutritional',
@@ -830,6 +827,7 @@ various$get_amounts_kg <- recipes %>%
       Ingredients == 'bean canned' ~ fixRefID(references$nutrients, 'bean black', 'canned'),
       Ingredients == 'scampi' ~ fixRefID(references$nutrients, 'shrimp'),
       Ingredients == 'ciabatta' ~ fixRefID(references$nutrients, 'bread', 'white'),
+      Ingredients == 'elk shoulder' ~ fixRefID(references$nutrients, 'elk moose'),
       
       #Find a solution for the lemon/lime juice/zest
       
@@ -842,12 +840,12 @@ various$get_amounts_kg <- recipes %>%
     replace(is.na(.), 0)
   
   #See which ingredients haven't been picked up
-  t <- anti_join(clean %>% select(`Selected Meals`, Ingredients) %>% unique(), temp2 %>% select(`Selected Meals`, Ingredients))
+  t <- anti_join(recipes %>% select(`Selected Meals`, Ingredients) %>% unique(), temp2 %>% select(`Selected Meals`, Ingredients))
   
   #Save the raw nutrient values in 100g recipe by ingredients
   various$ingredients_nutrients <- temp2 %>%
     select(Ingredients, ID) %>%
-    inner_join(., clean, by = 'Ingredients') %>%
+    inner_join(., recipes, by = 'Ingredients') %>%
     unique() %>%
     inner_join(various$recipe_weight) %>%
     
@@ -886,7 +884,7 @@ various$get_amounts_kg <- recipes %>%
   
   #Ingredients that has not been mapped regardless of reason
   various$no_nutrient_info <- t %>%
-    inner_join(clean %>% select(`Selected Meals`, Ingredients, Amounts)) %>%
+    inner_join(recipes %>% select(`Selected Meals`, Ingredients, Amounts)) %>%
     
     #Calculate amount pr 100 g
     inner_join(., various$recipe_weight) %>% #Total weight of recipe

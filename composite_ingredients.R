@@ -27,7 +27,8 @@ Name = c('condensed cream of mushroom soup', 'condensed cream of chicken soup',
          'chinese five spice', 'italian seasoning', 'steak seasoning', 'puff pastry',
          'mint_sauce', 'taco spice mix', 'tandoori spice mix', 'shortcrust pastry',
          'horseradish_sauce', 'olive paste tapenade', 'beef gravy', 'tortilla_corn',
-         'miso_paste', 'potetlefse', 'meatball')
+         'miso_paste', 'potetlefse', 'meatball', 'garam masala', 'sauce piri-piri',
+         'sauce pad thai', 'sauce tikka masala', 'fajita spice mix')
 Ingredients = c(
   #Concentrated cream of soups
   #From https://onceamonthmeals.com/blog/recipe-roundups/homemade-cream-of-something-soup/
@@ -440,7 +441,68 @@ Salt and freshly ground black pepper
 2 dl low fat milk
 0.5 tsp salt
 0.25 tsp pepper
-2 tbsp butter'
+2 tbsp butter',
+
+#Garam Masala
+#From https://www.seriouseats.com/garam-masala-recipe
+'7 stk green cardamom pods
+20 g whole coriander seed
+10 g whole cumin seed
+12 g whole black peppercorns
+4 g whole cloves
+4 g fennel seed
+6 g cinnamon
+1 g star anise
+2 g ground nutmeg',
+
+#Piri piri sauce
+#From https://www.chilipeppermadness.com/chili-pepper-recipes/sauces/peri-peri-sauce/
+'1 pound red chilies
+4 clove garlic chopped
+1 tsp chili powders
+0.5 cup chopped cilantro
+0.25 cup chopped basil
+0.5 cup olive oil
+3 tbsp lemon juice
+Salt',
+
+#Sauce pad thai
+#From https://www.thespruceeats.com/chicken-pad-thai-without-tamarind-3217100
+'0.33333333 cup chicken stock
+3 tbsp rice vinegar
+1 tbsp lime juice
+3.5 tbsp brown sugar
+2 tbsp fish sauce
+1 tbsp soy sauce
+0.125 tsp white pepper',
+
+#Sauce tikka masala
+#From https://www.simplyrecipes.com/recipes/chicken_tikka_masala/
+'2 tbsp canola oil
+5 ounce onion
+2 tsp grated ginger
+4 clove garlic
+1 tbsp ground coriander seed
+2 tsp paprika powder
+1 tsp garam masala
+0.5 tsp turmeric
+0.5 tsp freshly ground black pepper
+14 ounce canned tomatoes
+6 tbsp yogurt
+0.33 tsp cayenne pepper
+0.5 tsp salt',
+
+#Fajita spice
+#From https://www.spendwithpennies.com/fajita-seasoning/
+'1 tbsp chili powder
+2 tsp ground cumin
+2 tsp smoked paprika
+2 tsp garlic powder
+1 tsp onion powder
+1 tsp granulated sugar
+0.5 tsp black pepper
+0.5 tsp kosher salt to taste
+0.25 tsp cayenne pepper'
 )
 
 composite_ingredients <- tibble(Name = Name, Ingredients = Ingredients)
@@ -534,10 +596,20 @@ separate(., Amounts, c('Amounts', 'unit_enhet'), sep = ' ') %>%
     unit_enhet = unit_enhet %>%
       str_replace('\\bg\\b', 'kg'))
 
+#Standardize names
+composite_ingredients <- composite_ingredients %>%
+  #Add columns needed in standardiseIngredients function
+  mutate(Country = 'not_specified',
+         `Selected Meals` = 'not_specified') %>%
+  standardiseIngredients() %>%
+  #Remove columns again as they are not needed here
+  select(-c(Country, `Selected Meals`, Ingredients)) %>%
+  rename(Ingredients = Ingredients_standardised)
+
 #Split broth into water and broth cubes (1 cube pr 5 dl/0.5kg broth/water)
 temp <- composite_ingredients %>%
   #Find broth ingredients
-  filter(Ingredients %in% c('broth', 'broth vegetable')) %>%
+  filter(str_detect(Ingredients, 'water broth')) %>%
   #Add '/' to separate rows into water and broth cubes, and find number of broth cubes for the amount of water
   mutate(Ingredients = str_replace(Ingredients, 'broth', 'water/broth cube')) %>%
   separate_rows(Ingredients, sep = '/') %>%
@@ -548,22 +620,12 @@ temp <- composite_ingredients %>%
     unit_enhet = case_when(
       str_detect(Ingredients, 'broth cube') ~ 'stk',
       TRUE ~ unit_enhet)
-    )
+  )
 
 #Add back to composite ingredients df
 composite_ingredients <- composite_ingredients %>%
-  filter(!Ingredients %in% c('broth', 'broth vegetable')) %>%
+  filter(!str_detect(Ingredients, 'water broth')) %>%
   bind_rows(., temp)
-
-#Standardize names
-composite_ingredients <- composite_ingredients %>%
-  #Add columns needed in standardiseIngredients function
-  mutate(Country = 'not_specified',
-         `Selected Meals` = 'not_specified') %>%
-  standardiseIngredients() %>%
-  #Remove columns again as they are not needed here
-  select(-c(Country, `Selected Meals`, Ingredients)) %>%
-  rename(Ingredients = Ingredients_standardised)
 
 #Get ID from weight/volume database
 temp <- checkRef(reference = references$volume_weight, composite_ingredients)
@@ -628,7 +690,7 @@ various$weight_of_recipes <- various$ingredients_weight %>%
 
 #Calculate nutrient content pr 100 g----
 #Map to nutrient database
-temp <- checkRef(various$ingredients_weight, references$nutrients)
+temp <- checkRef(various$ingredients_weight %>% select(Ingredients) %>% unique(), references$nutrients)
 
 #Add amounts and fix some errors
 temp2 <- temp %>%
@@ -641,10 +703,7 @@ temp2 <- temp %>%
     Ingredients == 'mushroom' ~ fixRefID(references$nutrients, 'mushroom'),
     Ingredients == 'sesame seed oil' ~ fixRefID(references$nutrients, 'sesame', 'oil'),
     Ingredients == 'dry mustard' ~ fixRefID(references$nutrients, 'mustard'),
-    Ingredients == 'plum' ~ fixRefID(references$nutrients, 'plums'),
-    Ingredients == 'apricot' ~ fixRefID(references$nutrients, 'apricots'),
     Ingredients == 'mayonnaise sauce' ~ fixRefID(references$nutrients, 'mayonnaise'),
-    Ingredients == 'haddock' ~ fixRefID(references$nutrients, 'haddock'),
     Ingredients == 'corn flour' ~ fixRefID(references$nutrients, 'corn flour', 'polenta'),
     Ingredients == 'dried soybeans' ~ fixRefID(references$nutrients, 'bean', 'soya'),
     
@@ -683,30 +742,29 @@ various$with_nutrients <- temp2 %>%
   #Rename
   rename(Ingredients = Name)
 
-saveRDS(various$with_nutrients, './output/composite_ingredients_nutrient_content.Rds')
+saveRDS(various$with_nutrients, './Data/output/composite_ingredients_nutrient_content.Rds')
 
 #Calculate CO2 and landuse per kg----
-temp <- checkRefList(composite_ingredients, references$sustainability)
+temp <- checkRef(composite_ingredients %>% select(Ingredients) %>% unique(), references$sustainability)
 
 #Fix errors
 temp2 <- temp %>%
   full_join(., composite_ingredients) %>% unique() %>%
   
   mutate(ID = case_when(
-    Ingredients %in% c('red chili', 'strong chili', 'chili peppers') ~ fixRefID(references$sustainability, 'chili', 'peppers'),
+    Ingredients %in% c('red chili', 'strong chili', 'chili peppers') ~ fixRefID(references$sustainability, 'chili', 'pepper'),
     str_detect(Ingredients, 'vinegar') & str_detect(Ingredients, 'wine') ~ fixRefID(references$sustainability, 'vinegar', 'wine'),
     str_detect(Ingredients, 'vinegar') ~ fixRefID(references$sustainability, 'vinegar'),
     Ingredients == 'fresh cranberry' ~ fixRefID(references$sustainability, 'cranberries'),
     Ingredients == 'mango chutney' ~ fixRefID(references$sustainability, 'mango chutney'),
     Ingredients == 'olive green' ~ fixRefID(references$sustainability, 'olives', 'canned'),
     str_detect(Ingredients, 'broth cube') ~ fixRefID(references$sustainability, 'stock', 'cubes'),
-    Ingredients == 'corn flour' ~ fixRefID(references$sustainability, 'corn', 'flour'),
     Ingredients == 'dried soybeans' ~ fixRefID(references$sustainability, 'bean', 'soy'),
-    Ingredients == 'brown or white rice koji' ~ fixRefID(references$sustainability, 'rice'),
     
     #Not in ref
-    Ingredients %in% c('chili flakes', 'chili powder', 'corn starch',
-                       'smoked paprika powder') ~ 0,
+    Ingredients %in% c('chili flake dried', 'chili powder', 'corn starch',
+                       'smoked paprika powder', 'fennel seed', 'onion powder',
+                       'garlic powder', 'coriander seed') ~ 0,
     
     TRUE ~ ID
   ))
@@ -744,4 +802,4 @@ final <- full_join(temp2, various$ingredients_weight) %>% left_join(., databases
   ))
 
 #Save
-saveRDS(final, './output/composite_ingredients_sustainability_markers.Rds')
+saveRDS(final, './Data/output/composite_ingredients_sustainability_markers.Rds')
