@@ -605,7 +605,7 @@ standardiseIngredients <- function(df){
       str_detect(Ingredients, 'oyster') & !str_detect(Ingredients, 'sauce') ~ 'oyster',
       
       str_detect(Ingredients, 'pollock') & str_detect(Ingredients, 'smoked') ~ 'pollock smoked',
-      str_detect(Ingredients, 'pollock|pollack|chop fillet, without skins and bones') ~ 'pollock',
+      str_detect(Ingredients, 'pollock|pollack|chop fillet, without skins and bones|saithe') ~ 'pollock',
       str_detect(Ingredients, 'prawn') ~ 'prawn',
       
       str_detect(Ingredients, 'redfish') ~ 'redfish',
@@ -622,6 +622,7 @@ standardiseIngredients <- function(df){
       str_detect(Ingredients, 'shellfish') & !str_detect(Ingredients, 'borth|stock') ~ 'shellfish',
       str_detect(Ingredients, 'shrimp') & str_detect(Ingredients, 'lake') ~ 'shrimp in brine',
       str_detect(Ingredients, 'shrimp') & !str_detect(Ingredients, 'paste|salad|shellfish') ~ 'shrimp',
+      str_detect(Ingredients, 'shrimp') & str_detect(Ingredients, 'salad') ~ 'shrimp salad',
       str_detect(Ingredients, 'squid') & !str_detect(Ingredients, 'honey') ~ 'squid',
       
       str_detect(Ingredients, 'trout') & str_detect(Ingredients, 'cured') ~ 'cured trout',
@@ -649,7 +650,6 @@ standardiseIngredients <- function(df){
       str_detect(Ingredients, 'garlic oil') ~ 'garlic oil',
       
       str_detect(Ingredients, 'hazelnut oil') ~ 'hazelnut oil',
-      
       
       str_detect(Ingredients, 'oil for deep frying') | Ingredients == 'frying oil' ~ 'vegetable oil for deep frying',
       Ingredients %in% c('oil for frying', 'oil for brushing', 'lubricating and brushing oil') ~ 'vegetable oil for cooking',
@@ -694,6 +694,7 @@ standardiseIngredients <- function(df){
       
       str_detect(Ingredients, 'madeira') ~ 'madeira fortified wine 15 vol-% alcohol',
       str_detect(Ingredients, 'marsala') ~ 'marsala fortified wine 20 vol-% alcohol',
+      str_detect(Ingredients, 'mire poix') ~ 'mire poix',
       str_detect(Ingredients, 'miso') & str_detect(Ingredients, 'white') & str_detect(Ingredients, 'paste') ~ 'miso paste white',
       str_detect(Ingredients, 'mustard') & str_detect(Ingredients, 'seed') ~ 'mustard seed',
       str_detect(Ingredients, 'mustard') & str_detect(Ingredients, 'powder') ~ 'mustard powder',
@@ -702,6 +703,7 @@ standardiseIngredients <- function(df){
       str_detect(Ingredients, 'mustard') & str_detect(Ingredients, 'honey') ~ 'mustard honey',
       str_detect(Ingredients, 'mustard') & !str_detect(Ingredients, 'cheese') ~ 'mustard',
       
+      str_detect(Ingredients, 'noodle') ~ 'rice noodle', #Default
       str_detect(Ingredients, 'nori') & str_detect(Ingredients, 'flak|seaweed') ~ 'nori seaweed',
       
       str_detect(Ingredients, 'olive paste tapenade') ~ 'olive paste tapenade',
@@ -719,6 +721,7 @@ standardiseIngredients <- function(df){
       str_detect(Ingredients, 'pepper') & str_detect(Ingredients, 'white') ~ 'white pepper',
       str_detect(Ingredients, 'pepper') & str_detect(Ingredients, 'cayenne') ~ 'cayenne pepper',
       str_detect(Ingredients, 'pepper|Pepper') & !str_detect(Ingredients, 'chili|white|sweet|cayenne|spice|bell|salad|sauce') & !str_detect(Ingredients, 'salt') ~ 'black pepper',
+      str_detect(Ingredients, 'pickle') ~ 'cucumber pickled', #Standard
       str_detect(Ingredients, 'pizza filling') ~ 'pizza filling',
       
       str_detect(Ingredients, 'sake') ~ 'sake',
