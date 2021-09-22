@@ -86,6 +86,7 @@ checkRef <- function(df, reference){
     
   }
   
+  #Run on all ingredients
   results <- lapply(df$Ingredients, temp, reference = reference) %>% bind_rows()
   
 }
