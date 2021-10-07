@@ -16,6 +16,9 @@ databases <- list(
   'sustainability' = readRDS('./Data/output/sharp_db.Rds')
 )
 
+#Empty list to fill with various df's
+various <- list()
+
 #Composite ingredient ingredients----
 Name = c('condensed cream of mushroom soup', 'condensed cream of chicken soup',
          'condensed cream of celery soup', 'refrigerated buttermilk biscuit dough',
@@ -28,7 +31,8 @@ Name = c('condensed cream of mushroom soup', 'condensed cream of chicken soup',
          'mint_sauce', 'taco spice mix', 'tandoori spice mix', 'shortcrust pastry',
          'horseradish_sauce', 'olive paste tapenade', 'beef gravy', 'tortilla_corn',
          'miso_paste', 'potetlefse', 'meatball', 'garam masala', 'sauce piri-piri',
-         'sauce pad thai', 'sauce tikka masala', 'fajita spice mix')
+         'sauce pad thai', 'sauce tikka masala', 'fajita spice mix', 'kimchi', 'sauce_teriyaki',
+         'mire_poix')
 Ingredients = c(
   #Concentrated cream of soups
   #From https://onceamonthmeals.com/blog/recipe-roundups/homemade-cream-of-something-soup/
@@ -502,22 +506,40 @@ Salt',
 1 tsp granulated sugar
 0.5 tsp black pepper
 0.5 tsp kosher salt to taste
-0.25 tsp cayenne pepper'
+0.25 tsp cayenne pepper',
+
+#Kimchi
+#From https://www.tine.no/oppskrifter/lunsj-og-smaretter/forretter-snacks-og-tapas/kimchi
+'0.5 stk chinese cabbage
+6 stk carrot
+15 stk radish
+1 tbsp salt
+2 tbsp fish sauce
+4 cm fresh ginger
+1 stk red chili pepper
+6 clove garlic',
+
+#Teriyaki sauce
+#From https://www.daringgourmet.com/homemade-teriyaki-sauce/
+'0.5 cup soy sauce
+0.25 cup brown sugar
+1.5 tsp fresh ginger ,minced
+1 clove garlic
+1 tbsp honey
+1 tsp sesame oil
+3 tbsp sherry
+1 pinch sugar
+0.25 cup water
+3 tsp cornstarch',
+
+#Mire poix
+#From https://www.masterclass.com/articles/complete-guide-to-mirepoix-the-aromatic-vegetable-base#5-common-mirepoix-variations
+'100 g carrot
+100 g celery
+200 g onion'
 )
 
 composite_ingredients <- tibble(Name = Name, Ingredients = Ingredients)
-
-#Split amounts and ingredient name into separate columns, turn amounts into grams
-various <- list(
-  
-  #Units to keep in the recipes
-  #Recipes from Kolonialen has translated 'pk/pakke/stykk' to 'hp'
-  #What is hp?
-  'units' = c('tsp', 'tbsp', 'l', 'dl', 'g', 'kg', 'hp', 'krm', 'tins', 'cm', 'leaf', 'can',
-              'stk', 'glass', 'cup', 'box', 'pinch', 'flaske', 'portion', 'slice', '\\bclove\\b',
-              'neve', 'ml', 'cl', 'bunch', 'pack', 'plate', 'drop', 'twig', 'pound', 'ounce', 'stalk') %>%
-    #Add whitespace on both sides to only match a unit in a string
-    sapply(., function(x) {paste0('\\s', x, '\\s')}))
 
 composite_ingredients <- composite_ingredients %>%
   #Separate ingredients into separate rows
@@ -526,129 +548,20 @@ composite_ingredients <- composite_ingredients %>%
   #Turn ingredients to lowercase
   mutate(Ingredients = stri_trans_tolower(Ingredients)) %>%
   
-  #Extract the amounts to their own column----
-mutate(Amounts = case_when(
-  #Extract amounts with units
-  str_detect(Ingredients, paste0('(\\d+\\.\\d+|\\d+-\\d+|\\d+)', various$units, collapse = '|')) ~
-    str_extract(Ingredients, '((\\d+\\.\\d+|\\d+-\\d+|\\d+)\\s\\w+)'),
-  #Extract pure numbers
-  !str_detect(Ingredients, paste0('(\\d+\\.\\d+|\\d+-\\d+|\\d+)', various$units, collapse = '|')) &
-    str_detect(Ingredients, '^\\d+') ~ str_extract(Ingredients, '^[^\\s]+')),
+  #Add columns needed by standardiserecipes
+  mutate(Source = '') %>%
   
-  #Remove this information from Ingredients columns
-  Ingredients = case_when(
-    str_detect(Ingredients, paste0('(\\d+\\.\\d+|\\d+-\\d+|\\d+)', various$units, collapse = '|')) ~
-      str_remove(Ingredients, '((\\d+\\.\\d+|\\d+-\\d+|\\d+)\\s\\w+)'),
-    !str_detect(Ingredients, paste0('(\\d+\\.\\d+|\\d+-\\d+|\\d+)', various$units, collapse = '|')) & str_detect(Ingredients, '^\\d+') ~
-      str_remove_all(Ingredients, '^[^\\s]+'),
-    TRUE ~ Ingredients)
-) %>%
-  
-  #Remove whitespace
-  mutate(Ingredients = str_trim(Ingredients)) %>%
-  
-  #Calculate weight of the ingredients----
-#Turn volume units to dl
-#(use 2.45dl for one cup, as 1 cup is 2.5dl in Norway and 2.4 in US), and turn into grams for water and other liquids with 100g/dl
-#Split Amounts into amounts and units
-separate(., Amounts, c('Amounts', 'unit_enhet'), sep = ' ') %>%
-  #Turn amounts into numeric
-  mutate_at('Amounts', ~as.numeric(.)) %>%
-  
-  #Turn volume units to dl and ounce/pound to g
-  mutate(Amounts = case_when(
-    unit_enhet == 'cup' ~ Amounts * 2.45,
-    unit_enhet == 'l' ~ Amounts * 10,
-    unit_enhet == 'ml' ~ Amounts / 10,
-    unit_enhet == 'tbsp' ~ Amounts / 6.67,
-    unit_enhet == 'tsp' ~ Amounts / 20,
-    unit_enhet == 'krm' ~ Amounts / 100,
-    unit_enhet == 'drop' ~ Amounts / 2000, #One drop is 0.05ml 
-    unit_enhet == 'pinch' ~ Amounts / (20*16), #A pinch is usually defined as 1/16 of a tsp
-    unit_enhet == 'ounce' ~ Amounts * 28.35,
-    unit_enhet == 'pound' ~ Amounts * 453.59,
-    TRUE ~ Amounts
-  )) %>%
-  mutate(unit_enhet = case_when(
-    unit_enhet %in% c('cup', 'l', 'ml', 'tsp', 'tbsp', 'krm', 'drop', 'pinch') ~ 'dl',
-    unit_enhet %in% c('ounce', 'pound') ~ 'g',
-    TRUE ~ unit_enhet
-  )) %>%
-  
-  #Turn juice, water, vinegar and other liquids with similar density to water from dl/l to grams as they are all about 100g/dl
-  mutate(
-    Amounts = case_when(
-      (str_detect(Ingredients, 'water|beer|madeira|marsala|cognac|cider|juice|Juice|broth|kraft|wine|vin|eddik|vinegar|fund|milk|stock|cream|Crème Fraîche|rømme|yogurt|yoghurt|sherry') &
-         unit_enhet == 'dl') &
-        !str_detect(Ingredients, 'sugar|cheese|sour|flour') ~ Amounts * 100,
-      TRUE ~ Amounts),
-    unit_enhet = case_when(
-      (str_detect(Ingredients, 'water|beer|madeira|marsala|cognac|cider|juice|Juice|broth|wine|vin|eddik|vinegar|fund|milk|stock|cream|Crème Fraîche|rømme|yogurt|yoghurt|sherry') &
-         unit_enhet == 'dl') &
-        !str_detect(Ingredients, 'sugar|cheese|sour|flour') ~ 'g',
-      TRUE ~ unit_enhet)) %>%
-  
-  #Turn grams into kilos
-  mutate(
-    Amounts = case_when(
-      unit_enhet == 'g' ~ Amounts/1000,
-      TRUE ~ Amounts),
-    unit_enhet = unit_enhet %>%
-      str_replace('\\bg\\b', 'kg'))
-
-#Standardize names
-composite_ingredients <- composite_ingredients %>%
-  #Add columns needed in standardiseIngredients function
-  mutate(Country = 'not_specified',
-         `Selected Meals` = 'not_specified') %>%
-  standardiseIngredients() %>%
-  #Remove columns again as they are not needed here
-  select(-c(Country, `Selected Meals`, Ingredients)) %>%
-  rename(Ingredients = Ingredients_standardised)
-
-#Split broth into water and broth cubes (1 cube pr 5 dl/0.5kg broth/water)
-temp <- composite_ingredients %>%
-  #Find broth ingredients
-  filter(str_detect(Ingredients, 'water broth')) %>%
-  #Add '/' to separate rows into water and broth cubes, and find number of broth cubes for the amount of water
-  mutate(Ingredients = str_replace(Ingredients, 'broth', 'water/broth cube')) %>%
-  separate_rows(Ingredients, sep = '/') %>%
-  mutate(
-    Amounts = case_when(
-      str_detect(Ingredients, 'broth cube') ~ Amounts/0.5,
-      TRUE ~ Amounts),
-    unit_enhet = case_when(
-      str_detect(Ingredients, 'broth cube') ~ 'stk',
-      TRUE ~ unit_enhet)
-  )
-
-#Add back to composite ingredients df
-composite_ingredients <- composite_ingredients %>%
-  filter(!str_detect(Ingredients, 'water broth')) %>%
-  bind_rows(., temp)
+  #Standardise ingredients and units
+  standardiseRecipes()
 
 #Get ID from weight/volume database
 temp <- checkRef(reference = references$volume_weight, composite_ingredients)
 
-#Fix errors
-temp2 <- temp %>%
-  full_join(composite_ingredients) %>%
-  mutate(
-    ID = case_when(
-      Ingredients == 'parmesan cheese' ~ fixRefID(references$volume_weight, 'parmesan'),
-      Ingredients %in% c('chili peppers', 'chili', 'strong chili') ~ fixRefID(references$volume_weight, 'chili', 'red'),
-      Ingredients == 'corn flour' ~ fixRefID(references$volume_weight, 'cornmeal', 'polenta'),
-      TRUE ~ ID
-    )) %>% unique()
-
-#Calculate the weight of each ingredient
-various$weights <- readRDS('./Data/output/all_weights.Rds') %>%
-  filter(language == 'english')
 #Ingredients to turn from tbsp to dl
 various$to_dl <- c('pepper', 'peanøttsmør', 'olje', 'oil', 'smør', 'butter', 'margarin',
                    'ghee', 'garlic', 'baking powder')
 
-weights <- various$weights %>%
+weights <- databases$volume_weight %>%
   #Set netto as default value pr stk, as SHARP takes edible portion and cooking losses into account when calculating environmental impact
   mutate(
     g = case_when(
@@ -663,25 +576,21 @@ weights <- various$weights %>%
       TRUE ~ unit_enhet
     )) %>%
   #Only keep those necessary
-  filter(unit_enhet %in% composite_ingredients$unit_enhet)
+  filter(unit_enhet %in% composite_ingredients$unit) %>%
+  rename(unit = unit_enhet)
 
-various$ingredients_weight <- right_join(weights, temp2, by = c('ID', 'unit_enhet')) %>% #Doing this gives final three more rows than temp...?
+various$ingredients_weight <- right_join(weights, temp, by = c('ID', 'unit')) %>% #Doing this gives final three more rows than temp...?
   
   #Turn weights into kilo
   mutate(Amounts_kg = case_when(
-    unit_enhet == 'kg' ~ Amounts,
-    !unit_enhet == 'kg' ~ Amounts*g/1000
+    unit == 'kg' ~ Amounts,
+    !unit == 'kg' ~ Amounts*g/1000
   )) %>%
   
   #Cleanup
-  select(Name, Ingredients.y, Amounts_kg, ref, Amounts, unit_enhet) %>%
+  select(Name, Ingredients.y, Amounts_kg, ref, Amounts, unit) %>%
   unique() %>% #Got some values twice 
-  rename(Ingredients = Ingredients.y) %>% select(-ref) %>%
-  
-  #Change some names to fit the SHARP database
-  mutate(Ingredients = Ingredients %>%
-           str_replace('can anchovies', 'anchovy canned') %>%
-           str_replace('cranberry', 'cranberries'))
+  rename(Ingredients = Ingredients.y) %>% select(-ref)
 
 #Total weight of the recipes
 various$weight_of_recipes <- various$ingredients_weight %>%
@@ -690,30 +599,12 @@ various$weight_of_recipes <- various$ingredients_weight %>%
 
 #Calculate nutrient content pr 100 g----
 #Map to nutrient database
-temp <- checkRef(various$ingredients_weight %>% select(Ingredients) %>% unique(), references$nutrients)
-
-#Add amounts and fix some errors
-temp2 <- temp %>%
-  full_join(., composite_ingredients %>% select(Ingredients)) %>% unique() %>%
-  mutate(ID = case_when(
-    str_detect(Ingredients, 'vinegar') ~ fixRefID(references$nutrients, 'vinegar'),
-    Ingredients == 'parmesan cheese' ~ fixRefID(references$nutrients, 'parmesan'),
-    Ingredients == 'chili flake dried' ~ fixRefID(references$nutrients, 'chili', 'powder'),
-    Ingredients %in% c('red chili', 'strong chili', 'chili peppers') ~ fixRefID(references$nutrients, 'chili pepper', 'red'),
-    Ingredients == 'mushroom' ~ fixRefID(references$nutrients, 'mushroom'),
-    Ingredients == 'sesame seed oil' ~ fixRefID(references$nutrients, 'sesame', 'oil'),
-    Ingredients == 'dry mustard' ~ fixRefID(references$nutrients, 'mustard'),
-    Ingredients == 'mayonnaise sauce' ~ fixRefID(references$nutrients, 'mayonnaise'),
-    Ingredients == 'corn flour' ~ fixRefID(references$nutrients, 'corn flour', 'polenta'),
-    Ingredients == 'dried soybeans' ~ fixRefID(references$nutrients, 'bean', 'soya'),
-    
-    TRUE ~ ID
-  )) %>% unique() %>%
-  
+temp <- checkRef(various$ingredients_weight, references$nutrients) %>%
+  #Join with the ingredient weight df
   inner_join(various$ingredients_weight) 
 
 #Calculate the nutrient content
-various$with_nutrients <- temp2 %>%
+various$with_nutrients <- temp %>%
   select(Ingredients, ID, Name, Amounts_kg) %>%
   #Get nutrient values for the ingredients
   inner_join(., databases$nutrients, by = 'ID') %>% select(-ID) %>%
@@ -745,32 +636,10 @@ various$with_nutrients <- temp2 %>%
 saveRDS(various$with_nutrients, './Data/output/composite_ingredients_nutrient_content.Rds')
 
 #Calculate CO2 and landuse per kg----
-temp <- checkRef(composite_ingredients %>% select(Ingredients) %>% unique(), references$sustainability)
-
-#Fix errors
-temp2 <- temp %>%
-  full_join(., composite_ingredients) %>% unique() %>%
-  
-  mutate(ID = case_when(
-    Ingredients %in% c('red chili', 'strong chili', 'chili peppers') ~ fixRefID(references$sustainability, 'chili', 'pepper'),
-    str_detect(Ingredients, 'vinegar') & str_detect(Ingredients, 'wine') ~ fixRefID(references$sustainability, 'vinegar', 'wine'),
-    str_detect(Ingredients, 'vinegar') ~ fixRefID(references$sustainability, 'vinegar'),
-    Ingredients == 'fresh cranberry' ~ fixRefID(references$sustainability, 'cranberries'),
-    Ingredients == 'mango chutney' ~ fixRefID(references$sustainability, 'mango chutney'),
-    Ingredients == 'olive green' ~ fixRefID(references$sustainability, 'olives', 'canned'),
-    str_detect(Ingredients, 'broth cube') ~ fixRefID(references$sustainability, 'stock', 'cubes'),
-    Ingredients == 'dried soybeans' ~ fixRefID(references$sustainability, 'bean', 'soy'),
-    
-    #Not in ref
-    Ingredients %in% c('chili flake dried', 'chili powder', 'corn starch',
-                       'smoked paprika powder', 'fennel seed', 'onion powder',
-                       'garlic powder', 'coriander seed') ~ 0,
-    
-    TRUE ~ ID
-  ))
+temp <- checkRef(various$ingredients_weight, references$sustainability)
 
 #Final df with co2/landuse pr kg
-final <- full_join(temp2, various$ingredients_weight) %>% left_join(., databases$sustainability, by ='ID') %>%
+final <- full_join(temp, various$ingredients_weight) %>% left_join(., databases$sustainability, by ='ID') %>%
   select(Name, Ingredients.x, Amounts_kg, `GHGE of 1 kg food as consumed_kgCO2eq`, `Land use of 1 kg food as consumed_m2/yr`) %>%
   
   #CO2/Landuse by each ingredient in the composite ingredient
@@ -795,10 +664,12 @@ final <- full_join(temp2, various$ingredients_weight) %>% left_join(., databases
   
   #Add foodgroup/L1 from sharp
   mutate(L1 = case_when(
-    str_detect(Ingredients, 'salsa|soup|sauce|chutney|guacamole|pesto|paste|spice|seasoning') ~ 'Seasoning, sauces and condiments',
+    str_detect(Ingredients, 'salsa|soup|sauce|chutney|guacamole|pesto|paste|spice|seasoning|gravy|garam') ~ 'Seasoning, sauces and condiments',
     str_detect(Ingredients, 'fish') ~ 'Fish, seafood, amphibians, reptiles and invertebrates',
-    str_detect(Ingredients, 'dough|bread|pastry') ~ 'Grains and grain-based products',
-    Ingredients == 'shrimp_salad|omelet' ~ 'Composite dishes'
+    str_detect(Ingredients, 'meatball') ~ 'Meat and meat products',
+    str_detect(Ingredients, 'kimchi|mire_poix') ~ 'Vegetables and vegetable products',
+    str_detect(Ingredients, 'dough|bread|pastry|lefse|tortilla') ~ 'Grains and grain-based products',
+    Ingredients %in% c('shrimp_salad', 'omelet') ~ 'Composite dishes'
   ))
 
 #Save

@@ -143,7 +143,6 @@ all_weights <- all_weights %>%
   filter(!str_detect(tolower(Ingredients), 'crisp bread')) %>%
   full_join(temp)
 
-
 #Ingredients from recipes not present in the Norwegian food weight and measurement database
 temp <- list(
   
@@ -157,10 +156,12 @@ temp <- list(
   c('Duck leg', 'stk', '280', 'Gårdsand/Holte', 'english'),
   c('sheep head', 'stk', '1100', 'Nortura, Eldhus Smalahove', 'english'),
   c('sausage cumberland', 'stk', '56.75', 'Tesco British Cumberland Sausages', 'english'),
+  c('sausage turkey chicken', 'pack', '600', 'PRIOR kylling og kalkun grillpølser', 'english'),
   c('chicken diced', 'dl', '57.14', 'https://www.eatthismuch.com/food/nutrition/chicken-breast,454/', 'english'),
   c('rabbit', 'stk', '2500', 'http://grillogmat.blogspot.com/2013/04/kanin-med-smak-av-rosmarin-og-lime.html', 'english'),
   c('pork hock', 'stk', '1000', 'Fjellgris', 'english'),
   c('grouse breast', 'stk', '100', 'https://ultimateupland.com/skewering-meathunters-the-true-cost-of-a-pound-of-game-bird/', 'english'),
+  c('marrow bone', 'stk', '113.4', 'https://grassrunfarms.com/blog/benefits-of-grass-fed-beef-marrow-bones/', 'english'), #Really per serving
   
   #Bread
   c('Naan bread', 'stk', '130', 'Santa Maria', 'english'),
@@ -175,7 +176,7 @@ temp <- list(
   c('Bean sprout', 'neve/dl', '97.3', 'FoodData Central', 'english'),
   c('Beans, green, raw', 'neve/dl', '40', 'FoodData Central', 'english'),
   c('olives, black, in oil, canned', 'neve', '50', 'Same as dl', 'english'),
-  c('oliven, svarte, i olje, hermetisk', 'neve', '50', 'Same as dl', 'english'),
+  c('oliven, svarte, i olje, hermetisk', 'neve', '50', 'Same as dl', 'norwegian'),
   c('Break beans', 'stk', '7', 'Assumed twice the weight of a sugar snap pea', 'english'),
   c('brødrasp/griljermel/bread crumb', 'dl', '67.6', 'FoodData Central', 'norwegian/norwegian/english'),
   c('Bread, semi-coarse', 'stk', '700', 'Meny, assortert utvalg', 'english'), #Rewrite to keep only Bread, coarse and Loff as bread 
@@ -189,6 +190,8 @@ temp <- list(
   c('cherry tomato', 'neve', '65', 'Assume one handful is about one dl', 'english'),
   #c('Coriander', 'dl', '6.7', 'FoodData Central'),
   c('Coconut milk', 'stk', '400', 'Rema 1000, kokosmelk', 'english'),
+  c('Coconut milk', 'box', '400', 'Rema 1000, kokosmelk', 'english'),
+  c('Coconut milk', 'can', '400', 'Rema 1000, kokosmelk', 'english'),
   c('corn cob', 'stk', '250', 'Grønn&Frisk, Meny', 'english'),
   c('corn kernel', 'dl', '105.7', 'FoodData Central', 'english'),
   c('chapati', 'stk', '60', 'Assume weight is the same as a tortilla', 'english'),
@@ -198,6 +201,7 @@ temp <- list(
   c('chili flake', 'dl', '48.7', 'FoodData Central', 'english'),
   c('chili paste', 'dl', '101.4', 'FoodData Central', 'english'),
   c('chili powder', 'dl', '54.1', 'FoodData Central', 'english'),
+  c('chili pepper, red', 'dl', '38', 'FoodData Central', 'english'),
   c('Chili sauce/chilisaus', 'dl', '111.6', 'FoodData Central', 'english/norwegian'),
   c('ciabatta', 'stk', '62', 'Eldorado, Steinsovnbakt', 'english'),
   c('cardamom pod', 'stk', '0.14', 'The Spice Guide', 'english'),
@@ -206,7 +210,7 @@ temp <- list(
   c('cinnamon bar', 'stk', '4', 'Google', 'english'),
   c('curry powder', 'dl', '42.6', 'FoodData Central', 'english'),
   c('cumin', 'dl', '40.6', 'FoodData Central', 'english'),
-  c('crispis salad', 'stk', '150', 'Meny, Gartner', 'english'),
+  c('crispi salad', 'stk', '150', 'Meny, Gartner', 'english'),
   c('eplemos/apple sauce', 'dl', '108.2', 'FoodData Central', 'norwegian/english'),
   c('fig', 'stk', '62.5', 'Kolonial', 'english'),
   c('curry paste', 'dl', '108.2', 'FoodData Central', 'english'),
@@ -243,14 +247,16 @@ temp <- list(
   c('pickled pepper', 'dl', '101.4', 'FoodData Central', 'english'),
   c('puff pastry', 'stk', '75', 'Meny, Bakeverket', 'english'),
   c('ruccola', 'dl/neve', '8.5', 'FoodData Central', 'english'),
+  c('ruccola', 'pack', '65', 'Grønn og frisk', 'english'),
   c('Taco sauce', 'glass', '230', 'Rema1000 and Old El Paso', 'english'),
-  c('tandoori spice', 'dl', '106.8', 'FoodData Central', 'english'),
+  c('taco spice mix', 'pack', '28', 'Santa Maria', 'english'),
   c('Tomatoes, canned', 'box', '400', 'Mutti, Eldorado', 'english'),
   c('Tomatoes, canned', 'can', '400', 'Mutti, Eldorado', 'english'),
   c('Tomato Paste', 'dl', '101.4', 'FoodData Central', 'english'),
   c('Tomato purée', 'glass', '140', 'Mutti, Eldorado', 'english'),
   c('Tomato purée', 'stk', '200', 'Petti, Kolonial', 'english'),
   c('tomato salsa', 'dl', '101.4', 'FoodData Central', 'english'),
+  c('tomato salsa', 'glass', '240', 'Kolonial Supermat', 'english'),
   c('Tomatoes, sun-dried', 'dl', '101.4', 'FoodData Central', 'english'), #In oil, a bit less without oil 
   c('Beans, white, in tomato sauce, canned', 'box', '410', 'Eldorado', 'english'),
   c('cherry tomato', 'bunch', '250', 'Kolonial, cherrytomat', 'english'),
@@ -289,6 +295,15 @@ temp <- list(
   c('lime zest', 'dl', '40.58', 'FoodData Central', 'english'), #Assume the same as orange and lemon
   c('grapes', 'bunch', '500', 'Kolonial', 'english'),
   c('grapes', 'neve', '70', 'As dl', 'english'),
+  c('nutmeg', 'stk', '7.5', 'Wikipedia', 'english'),
+  c('celery', 'stk', '400', 'Meny', 'english'),
+  c('cashew nuts', 'stk', '1.6', 'https://www.verywellfit.com/cashew-nutrition-facts-4586608', 'english'),
+  c('rice parboiled', 'pack', '400', 'Toro', 'english'),
+  c('broccolini', 'pack', '200', 'Kolonial', 'english'),
+  c('lingonberry jam', 'stk', '200', 'Løiten Gourmet', 'english'), #Used in the online recipe cart
+  c('lentils, canned', 'box', '180', 'GoEco', 'english'),
+  c('swede', 'slice', '55', 'same as dl', 'english'),
+  c('squash, zucchini', 'pack', '250', 'https://www.shoprite.co.za/All-Departments/Food/Fresh-Food/Fresh-Vegetables/Courgettes%2C-Aubergines-and-Squash/Mixed-Patty-Pans-Pack-250g/p/10145280EA', 'english'),
   
   #Seafood
   c('Anchovies, canned', 'box', '55', 'Abba', 'english'),
@@ -296,7 +311,9 @@ temp <- list(
   c('crab', 'stk', '500', 'Meny, portion sizes seafood', 'english'),
   c('crab shell', 'stk', '150', 'Meny, Lerøy seafood', 'english'),
   c('crab claw', 'portion', '500', 'Meny, portion sizes seafood', 'english'),
-  c('kreps/lobster', 'portion', '500', 'Meny, portion sizes seafood', 'norwegian/english'),
+  c('crab claw', 'stk', '400', 'Kolonial', 'english'),
+  c('lobster', 'portion', '500', 'Meny, portion sizes seafood', 'english'),
+  c('lobster', 'stk', '300', 'Meny Atlantic star', 'english'),
   c('Mackerel fillet, in tomato sauce, canned', 'stk', '170', 'Stabburet', 'english'),
   c('scampi', 'portion', '200', 'Protein rich seafood', 'english'),
   c('shrimp paste', 'dl', '101.4', 'FoodData Central', 'english'),
@@ -307,6 +324,7 @@ temp <- list(
   c('squid baby', 'stk', '85.05', 'http://www.clovegarden.com/ingred/seasquidc.html', 'english'),
   c('herring smoked', 'stk', '300', 'DOMSTEIN Sjømat', 'english'),
   c('prawn', 'stk', '17', 'Kostholdsplanleggeren//Matvaretabellen', 'english'),
+  c('arctic char', 'stk', '650', 'Mat i Bergen', 'english'),
   
   #Dairy
   c('Blue cheese', 'dl', '47.34', 'FoodData Central', 'english'),
@@ -316,11 +334,12 @@ temp <- list(
   c('Feta cheese', 'stk', '200', 'Meny, Apetina/Kolios', 'english'),
   c('Parmesan', 'neve', '40', 'Assume about the same as one dl', 'english'),
   c('chevre', 'stk', '190', 'Tine', 'english'),
+  c('butter spice', 'pack', '125', 'Tine Grillsmør', 'english'),
+  c('soft-ripened cheese (brie, camembert etc)', 'stk', '150', 'Kolonial', 'english'),
+  c('soft-ripened cheese (brie, camembert etc)', 'dl', '95', 'FoodData Central', 'english'), #Mascarpone
   
   #Div
   c('broth cube', 'stk', '10', 'TORO klar kjøttbuljong', 'english'),
-  c('taco seasoning', 'dl', '60.9', 'FoodData Central', 'english'),
-  c('taco seasoning', 'pack', '28', 'Santa Maria', 'english'),
   c('tabasco', 'dl', '101.4', 'FoodData Central', 'english'),
   c('oyster sauce', 'dl', '304.3', 'FoodData Central', 'english'),
   c('Walnuts', 'stk', '7', 'Google', 'english'),
@@ -329,14 +348,30 @@ temp <- list(
   c('tamarind paste', 'dl', '101.44', 'FoodData Central', 'english'),
   c('horseradish prepared', 'dl', '101.44', 'FoodData Central', 'english'),
   c('mayonnaise', 'dl', '87.92', 'FoodData Central', 'english'),
+  c('cream sauce base', 'stk', '50', 'Toro', 'english'), #Used in the online recipe cart
+  c('fish soup base', 'stk', '81', 'Toro Bergensk fiskesuppe', 'english'), #Used in online recipe cart
+  c('hollandaise base', 'stk', '26', 'Toro', 'english'),
+  c('bolognese base', 'stk', '45', 'Toro Kjøttdeigsaus', 'english'), #Used in online recipe cart
+  c('nacho', 'pack', '185', 'Olde El Paso', 'english'),
+  c('sauce white', 'pack', '38', 'Toro Hvit Saus', 'english'),
+  c('sauce teriyaki', 'dl', '94.7', 'FoodData Central', 'english'),
+  c('sauce hoisin', 'dl', '111.6', 'FoodData Central', 'english'),
+  c('salsa', 'dl', '94.7', 'FoodData Central', 'english'),
+  c('dip mix', 'pack', '22', 'Maarud', 'english'),
+  c('tandoori spice', 'dl', '106.8', 'FoodData Central', 'english'),
+  c('fajita spice', 'dl', '81.2', 'FoodData Central', 'english'),
+  c('wasabi', 'dl', '101.4', 'FoodData Central', 'english'),
+  c('yeast dry', 'dl', '81.2', 'FoodData Central', 'english'),
+  c('anise star', 'stk', '0.7', 'https://www.chowhound.com/post/mass-star-anise-pod-969821', 'english'),
+  c('kimchi', 'dl', '63.4', 'FoodData Central', 'english'),
+  c('miso', 'dl', '116.2', 'FoodData Central', 'english'),
   
   #MISSING
   c('Einebær/juniper berry', 'stk', '', '', 'norwegian/english'),
   c('Einebær/juniper berry', 'dl', '', '', 'norwegian/english'),
   c('pickled onion', 'dl', '', '', 'english'),
   c('salmon roe', 'dl', '', '', 'english'),
-  c('asparagus white', 'dl', '', '', 'english'),
-  c('potetlefse', 'stk', '', '', 'norwegian')
+  c('asparagus white', 'dl', '', '', 'english')
   
 )
 
@@ -378,13 +413,16 @@ herbs <- tibble(
 herbs_sprigs <- tibble(
   'Ingredients' = c('rosemary fresh', 'tarragon fresh', 'Basil fresh/Basilikum', 'Chives fresh',
                     'Parsley fresh/Kruspersille/Persille', 'thyme fresh', 'Oregano fresh',
-                    'Dill fresh', 'mint fresh', 'sage fresh')) %>%
-  mutate(unit_enhet = c('tsp', 'tsp', 'tbsp/tbsp', 'tsp', 'tsp/tsp/tsp',
-                        'tsp', 'tsp', 'tsp', 'tsp', 'tbsp'),
-         g = c('1', '1', '1/1', '0.375', '1.5/1.5/1.5', '0.125', '1', '1', '1', '1'),
+                    'Dill fresh', 'mint fresh', 'sage fresh', 'coriander fresh')) %>%
+  mutate(unit_enhet = c('tsp', 'tsp', 'tbsp/tbsp', 'tsp',
+                        'tsp/tsp/tsp', 'tsp', 'tsp',
+                        'tsp', 'tsp', 'tbsp', 'tsp'),
+         g = c('1', '1', '1/1', '0.375',
+               '1.5/1.5/1.5', '0.125', '1',
+               '1', '1', '1', '0.25'),
          language = c('english', 'english', 'english/norwegian', 'english',
                       'english/norwegian/norwegian', 'english', 'english/norwegian',
-                      'english/norwegian', 'english', 'english')) %>%
+                      'english/norwegian', 'english', 'english', 'english')) %>%
   separate_rows(., c(Ingredients, language), sep = '/') %>% 
   separate_rows(unit_enhet, sep = '/') %>%
   separate_rows(g, sep = '/') %>%
@@ -454,7 +492,7 @@ temp <- all_weights %>%
   filter(is.na(ID)) %>%
   group_by(Ingredients) %>%
   mutate(ID = cur_group_id()) %>%
-  mutate(ID = ID + 650) %>% #can't use max(ID) from all_weights as it contains NA
+  mutate(ID = ID + 1000) %>% #can't use max(ID) from all_weights as it contains NA
   ungroup() %>%
   separate_rows(Ingredients, sep = '/') 
 
@@ -499,7 +537,7 @@ various$not_needed <- all_weights %>%
   filter(!Ingredients %in% c('crisp bread', 'flatbread, hard','smoke-cured ham', 'cured ham', 'spekeskinke', 'boiled ham', 'honning', 'sukker, brunt',
                              'sukker hvitt', 'anchovies, canned', 'anchovy fillets, canned', 'salmon, smoked, dry salted',
                              'mackerel fillet, in tomato sauce, canned', 'cod roe', 'tuna canned', 'ground meat, raw', 'bread, semi-coarse', 'bread, white',
-                             'cream cracker', 'salami'))
+                             'cream cracker', 'salami', 'rice parboiled'))
 
 #Remove the not needed ingredients, add cloves
 all_weights <- all_weights %>%
@@ -540,7 +578,11 @@ all_weights <- all_weights %>%
            str_replace('purée', 'puree') %>%
            str_replace('grapes', 'grape') %>%
            str_replace('plums', 'plum') %>%
-           str_replace('apricots', 'apricot')
+           str_replace('apricots', 'apricot') %>%
+           str_replace('almonds', 'almond') %>%
+           str_replace('prunes', 'prune') %>%
+           str_replace('lentils', 'lentil') %>%
+           str_replace('raisins', 'raisin')
   ) %>%
   #Conditionals
   mutate(Ingredients = case_when(
@@ -549,6 +591,15 @@ all_weights <- all_weights %>%
   )) %>%
   #Remove some duplicates (f.ex both storebought and homemade bread, or where the english and norwegian name is the same)
   select(-Foodgroup) %>% unique()
+
+#Create one ID each for butter, margarine and ghee
+all_weights <- all_weights %>%
+  mutate(ID = case_when(
+    Ingredients %in% c('smør', 'butter') ~ ID + 2000,
+    Ingredients %in% c('margarin', 'margarine') ~ ID + 2001,
+    Ingredients == 'ghee' ~ ID + 2002,
+    TRUE ~ ID
+  ))
 
 #Save
 saveRDS(all_weights, './Data/output/all_weights.Rds')
@@ -588,10 +639,13 @@ ref <- all_weights %>% select(-c(g, unit_enhet, reference)) %>% unique() %>% #On
       Ingredients == 'cured leg of mutton' ~ 'mutton',
       Ingredients == 'whole-grain pasta' ~ 'pasta',
       Ingredients == 'grapess' ~ 'grapes',
-      Ingredients == 'soft-ripened cheese (brie, camembert etc)' ~ 'soft ripened cheese',
+      Ingredients == 'soft-ripened cheese (brie camembert etc)' ~ 'soft ripened cheese',
       Ingredients == 'bean white large canned' ~ 'bean white',
       Ingredients == 'bean kidney canned' ~ 'bean kidney',
       Ingredients == 'bean black canned' ~ 'bean black',
+      Ingredients == 'cream sauce base' ~ 'cream sauce base',
+      Ingredients == 'fish soup base' ~ 'fish soup base',
+      Ingredients == 'sausage turkey chicken' ~ 'sausage turkey chicken',
       TRUE ~ first_word),
     
     second_word = case_when(
@@ -634,6 +688,7 @@ ref <- all_weights %>% select(-c(g, unit_enhet, reference)) %>% unique() %>% #On
       Ingredients == 'bean white in tomato sauce canned' ~ 'tomato',
       Ingredients == 'bean kidney canned' ~ 'canned',
       Ingredients == 'bean black canned' ~ 'canned',
+      Ingredients == 'sausage turkey chicken' ~ '\\',
       TRUE ~ second_word
     )
   ) %>%
@@ -782,7 +837,6 @@ mutate(Ingredients = case_when(
   food_item == 'ginger, root, raw' ~ 'ginger',
   food_item == 'ginger, ground' ~ 'ginger_dried',
   food_item == 'water-cress, raw' ~ 'cress',
-  str_detect(food_item, 'grapes') ~ str_replace(food_item, 'grapes', 'grape'),
   food_item == 'nutmeg, ground' ~ 'nutmeg',
   food_item == 'sweet pepper, paprika, powder' ~ 'paprika_powder',
   food_item == 'parsley, herb, norwegian, raw' ~ 'parsley_fresh',
@@ -860,7 +914,7 @@ mutate(Ingredients = case_when(
   food_item %in% c('apple juice', 'pineapple juice', 'cranberry juice', 'grape juice',
                    'grapefruit juice', 'orange juice', 'tomato juice', 'tomato ketchup') ~ str_replace(food_item, ' ', '_'),
   food_item == 'sweet corn, canned' ~ 'sweet corn_canned',
-  food_item == 'grape, unspecified, raw' ~ 'grape',
+  food_item == 'grapes, unspecified, raw' ~ 'grape',
   
   #Grains----
   food_item == 'almonds' ~ 'almond',
@@ -876,7 +930,7 @@ mutate(Ingredients = case_when(
   food_item == 'flatbread, hard' ~ 'bread flat hard',
   food_item == 'bulgur, uncooked' ~ 'bulgur_wheat',
   food_item == 'cashew nuts, salted' ~ 'cashew nut salt',
-  food_item == 'peanuts, raw' ~ 'peanut',
+  food_item == 'peanuts, raw' ~ 'peanut', #These seem to be shelled
   food_item == 'peanuts, roasted, salted' ~ 'peanut_salt',
   food_item == 'peas, chick peas, uncooked' ~ 'chick pea',
   food_item == 'peas, chick peas, canned' ~ 'chick pea_canned',
@@ -899,12 +953,12 @@ mutate(Ingredients = case_when(
   food_item == 'rice, brown, long-grain, uncooked' ~ 'rice brown long grain',
   food_item == 'rice, arborio, risotto rice, uncooked' ~ 'rice_risotto',
   food_item == 'rice, white, long-grain, uncooked' ~ 'rice white long grain',
+  food_item == 'rice, white, pre-boiled, uncooked' ~ 'rice parboiled',
   food_item == 'rolls, white, industrially made' ~ 'rolls white',
   food_item == 'sesame seeds, without shell' ~ 'sesame_seed',
   food_item == 'tortilla chips' ~ 'nacho', 
   food_item == 'wheat flour, 80 % extraction' ~ 'wheat flour',
   food_item == 'wheat flour, wholemeal' ~ 'wheat flour_wholemeal',
-  food_item == 'peanuts, raw' ~ 'peanut',
   food_item %in% c('hamburger bun', 'peanut butter', 'potato starch') ~ str_replace(food_item, ' ', '_'),
   food_item == 'oatmeal' ~ 'oatmeal',
   food_item == 'rolled oats' ~ 'oat_rolled',
@@ -1010,7 +1064,7 @@ mutate(Ingredients = case_when(
   food_item %in% c('pineapple, raw', 'asparagus, raw', 'avocado, raw', 'banana, raw',
                    'blueberries, raw', 'catfish, raw', 'char, raw',
                    'cherries, raw', 'chives, raw', 'clementine, raw',
-                   'coconut, raw', 'cranberries, raw',
+                   'coconut, raw', 'cranberries, raw', 'peanuts, raw',
                    'egg, raw', 'fennel, raw', 'garlic, raw', 'grapefruit, raw', 'haddock, raw',
                    'hare, raw', 'kale, raw', 'jerusalem artichoke, raw', 'cranberries, raw',
                    'egg, raw', 'lemon, raw', 'lime, raw', 'lychee, raw', 'orange, raw',
@@ -1039,7 +1093,9 @@ mutate(Ingredients = case_when(
   mutate(Ingredients = Ingredients %>%
            str_replace('alfalfa seed, sprouted, raw', 'alfalfa_sprout') %>%
            str_replace('plums', 'plum') %>%
-           str_replace('apricots', 'apricot')) %>%
+           str_replace('apricots', 'apricot') %>%
+           str_replace('peanut, roasted, salted', 'peanut_salt') %>%
+           str_replace('peanut, raw', 'peanut')) %>%
   #Separate rows with multiple food items
   separate_rows(., Ingredients, sep = '/') %>%
   
@@ -1088,7 +1144,7 @@ fromFoodDataCentral_foods <- read_csv('./Data/databases/food.csv') %>%
     'Seaweed, agar, dried', 'Soup, onion, dry, mix', 'Alcoholic beverage, rice (sake)',
     'Shortening, vegetable, household, composite', 'Pickle relish, sweet', 'Syrups, maple',
     'Sauce, ready-to-serve, pepper, TABASCO', 'Tapioca, pearl, dry', 'Molasses', 'Vital wheat gluten',
-    'Horseradish, prepared')) %>%
+    'Horseradish, prepared', 'Oil, coconut')) %>%
   
   #Rename to fit ingredient names
   mutate(description = description %>%
@@ -1135,7 +1191,8 @@ fromFoodDataCentral_foods <- read_csv('./Data/databases/food.csv') %>%
            str_replace("Tomato products, canned, paste, without salt added \\(Includes foods for USDA's Food Distribution Program\\)", 'tomato_paste') %>%
            str_replace('Lime juice, raw', 'lime_juice') %>%
            str_replace('Vital wheat gluten', 'gluten') %>%
-           str_replace('Horseradish, prepared', 'horseradish_prepared')
+           str_replace('Horseradish, prepared', 'horseradish_prepared') %>%
+           str_replace('Oil, coconut', 'coconut_oil')
          #'Tamarind nectar, canned'
   ) %>%
   
@@ -1319,17 +1376,28 @@ nutrients_to_use <- raw_data %>%
 nutrients_to_use <- nutrients_to_use %>%
   bind_rows(., fromFoodDataCentral_foods) %>%
   bind_rows(., various$component_ingredients_nutrients) %>%
-  bind_rows(., various$shellfish) %>% select(-Ingredients)
+  bind_rows(., various$shellfish) %>% 
+  full_join(., clean_nutrients, by = 'ID') %>%
+  #Give sour cream, crème fraîche and veal liver individual IDs, while keeping the nutrition information rows
+  mutate(ID = case_when(
+    str_detect(Ingredients.y, 'crème fraîche|veal_liver') ~ ID + 300,
+    
+    TRUE ~ ID
+  )) %>%
+  select(-c(food_item, Foodgroup, Ingredients.x, Ingredients.y))
 
 saveRDS(nutrients_to_use, './Data/output/nutrients_df.Rds')
-
 
 #Create a search reference----
 reference <- clean_nutrients %>%
   select(ID, Ingredients) %>%
+  #Individual ID for crème fraîche and veal_liver, so that they don't share ID's with sour cream and
+  #beef liver respectively. Otherwise there will be duplicates when mapping to a recipe by ingredient ID
+  mutate(ID = case_when(
+    str_detect(Ingredients, 'crème fraîche|veal_liver') ~ ID + 300,
+    
+    TRUE ~ ID)) %>%
   drop_na(Ingredients) %>%
-  #Separate rows with /
-  separate_rows(Ingredients, sep = '/') %>%
   
   #Create searchwords
   separate(., col = Ingredients, into = c('first_word', 'second_word'), sep = '_', remove = FALSE) %>%
@@ -1350,8 +1418,8 @@ reference <- clean_nutrients %>%
   ) %>%
   
   #Arrange in lexogographical order
-  arrange(first_word, second_word)
-
+  arrange(first_word, second_word) %>%
+  select(-Ingredients)
 
 saveRDS(reference, './Data/output/nutrient_reference.Rds')
 
@@ -1399,7 +1467,7 @@ various$sharp_to_remove <- SHARP %>%
                                      'wheat wholemeal flour', 'dried pasta', 'pasta wholemeal', 'oat grain', 'bulgur', 'barley grain, pearled',
                                      'oat rolled grains', 'processed oat-based flakes',
                                      #Alcoholic beverages
-                                     'beer', 'wine', 'whisky', 'fortified and liqueur wines', 'cider', 'brandy',
+                                     'beer', 'wine', 'whisky', 'fortified and liqueur wines', 'cider', 'brandy', 'vodka and vodka-like spirits',
                                      #Conditments, sauces and spices
                                      'soy sauce', 'salt', 'mixed herbs and spices', 'curry powder',
                                      'stock cubes or granulate bouillon base', 'mustard and related sauces', 'vinegar', 'vinegar, wine',
@@ -1559,7 +1627,7 @@ SHARP <- SHARP %>%
            str_replace('canned tunas and similar', 'tuna canned') %>%
            str_replace('canned anchovies', 'anchovies canned') %>%
            str_replace('canned mackerel', 'mackerel canned') %>%
-           str_replace('shrimps and prawns', 'shrimps/prawns') %>%
+           str_replace('shrimps and prawns', 'shrimp/prawn') %>%
            str_replace('canned/jarred fish', 'fish canned') %>%
            str_replace('scallops, pectens', 'scallops') %>%
            str_replace('edible crab', 'crab') %>%
@@ -1578,7 +1646,8 @@ SHARP <- SHARP %>%
            str_replace('maize oil', 'corn oil') %>%
            str_replace('short pastry doughs pate brisee', 'pastry dough') %>%
            str_replace('tap water', 'water') %>%
-           str_replace('pasta sauce', 'tomato sauce') #PAsta sauces are tomato sauces
+           str_replace('pasta sauce', 'tomato sauce') %>% #pasta sauces are tomato sauces
+           str_replace('vodka and vodka-like spirits', 'vodka')
          
   ) %>%
   
@@ -1632,15 +1701,19 @@ SHARP <- SHARP %>%
           `GHGE of 1 kg food as consumed_kgCO2eq` = (10.6822437+1.5858702)/2,
           `Land use of 1 kg food as consumed_m2/yr` = (10.4333868+1.4606742)/2) %>%
   
+  #Split ingredients that share a row, and remove duplicates created
+  separate_rows(Ingredients, sep = '/') %>%
+  unique() %>%
+  
   #Create unique ID for each item
   mutate(ID = seq_along(Ingredients))
 #Save
-saveRDS(SHARP, './Data/output/sharp_db.Rds')
+saveRDS(SHARP %>%
+          select(-Ingredients), './Data/output/sharp_db.Rds')
 
 #Create a df with reference names to query ingredient lists----
 sharp_ref <- SHARP %>%
   select(ID, Ingredients) %>%
-  separate_rows(Ingredients, sep = '/') %>%
   
   #Remove plural s
   mutate(Ingredients = case_when(
@@ -1740,7 +1813,7 @@ sharp_ref <- SHARP %>%
       Ingredients == 'cheese, feta' ~ 'cheese',
       Ingredients == 'cheese, chevre frais' ~ '\\',
       Ingredients == 'soft-ripened cheese' ~ '\\',
-      Ingredients == 'hard cheese' ~ 'hard cheese',
+      Ingredients == 'hard cheese' ~ '\\',
       Ingredients == 'hard to semi-hard cheese' ~ '\\',
       Ingredients == 'garden peas dry' ~ 'garden',
       Ingredients == 'sugar snap pea' ~ 'sugar snap',

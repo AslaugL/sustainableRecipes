@@ -11,6 +11,10 @@
 standardiseIngredients <- function(df){
   df  %>%
     
+    #Turn ingredients to lowercase
+    mutate(Ingredients = stri_trans_tolower(Ingredients)) %>%
+    
+    #Standardise
     mutate(Ingredients_standardised = case_when(
       
       #Vegetables/fruit----
@@ -99,6 +103,8 @@ standardiseIngredients <- function(df){
       str_detect(Ingredients, 'lime') & str_detect(Ingredients, 'juice|pressed') & !str_detect(Ingredients, 'peel') ~ 'lime, the juice',
       str_detect(Ingredients, 'lime') & str_detect(Amounts, 'tsp|tbsp|dl') ~ 'lime, the juice',
       str_detect(Ingredients, 'lime') & !str_detect(Ingredients, 'sheet|lemon|leaf') ~ 'lime',
+      str_detect(Ingredients, 'lingonberr') & str_detect(Ingredients, 'jam') ~ 'lingonberry jam',
+      str_detect(Ingredients, 'lingonberr') ~ 'lingonberry',
       str_detect(Ingredients, 'lemon') & str_detect(Ingredients, 'juice') & str_detect(Ingredients, 'peel|zest|shell') & !str_detect(Ingredients, 'pepper') ~ 'lemon, the juice and zest',
       str_detect(Ingredients, 'lemon') & str_detect(Ingredients, 'juice') & !str_detect(Ingredients, 'pepper') ~ 'lemon, the juice',
       str_detect(Ingredients, 'lemon') & (str_detect(Amounts, 'tsp|tbsp|dl') | str_detect(Ingredients, 'drop')) & !str_detect(Ingredients, 'peel|shell|zest') & !str_detect(Ingredients, 'pepper') ~ 'lemon, the juice',
@@ -112,7 +118,7 @@ standardiseIngredients <- function(df){
       str_detect(Ingredients, 'mango') & !str_detect(Ingredients, 'chutney') ~ 'mango',
       
       str_detect(Ingredients, 'tamarind juice') ~ 'tamarind juice',
-      str_detect(Ingredients, 'tomat') & (str_detect(Amounts, 'can|box|hp|drain') | str_detect(Ingredients, 'can|box')) & !str_detect(Ingredients, 'water|mackerel|beans|sauce') ~ 'tomato canned',
+      str_detect(Ingredients, 'tomat') & (str_detect(Amounts, 'can|box|hp') | str_detect(Ingredients, 'can|box|drain')) & !str_detect(Ingredients, 'water|mackerel|beans|sauce') ~ 'tomato canned',
       str_detect(Ingredients, 'tomat') & !str_detect(Ingredients, 'canned|alsa|sauce|ketchup|canned|cherry|can|box|purée|puree|paste|mackerel|tube|vegetable|sun|beans|bunch') ~ 'tomato',
       str_detect(Ingredients, 'tomat') & str_detect(Ingredients, 'pur') ~ 'tomato puree',
       str_detect(Ingredients, 'tomat') & str_detect(Ingredients, 'bunch') ~ 'tomato bunch',
@@ -174,7 +180,6 @@ standardiseIngredients <- function(df){
       str_detect(Ingredients, 'sweet pepper|bell pepper|paprika') & str_detect(Ingredients, 'yellow') ~ 'sweet pepper yellow',
       str_detect(Ingredients, 'sweet pepper|bell pepper|paprika') & !str_detect(Ingredients, 'grilled|pickled|powder|spice') ~ 'sweet pepper red',
       str_detect(Ingredients, 'pickled red pepper') ~ 'sweet pepper pickled',
-      Country == "Norway" & str_detect(Ingredients, 'red pepper') ~ 'sweet pepper red',
       str_detect(Ingredients, 'pepper') & str_detect(Ingredients, 'grilled') ~ 'sweet pepper grilled',
       str_detect(Ingredients, 'sweet') & str_detect(Ingredients, 'potato') ~ 'sweet potato',
       str_detect(Ingredients, 'squash|zucchini') & !str_detect(Ingredients, 'butter|acorn') ~ 'summer squash zucchini', #Standard
@@ -184,9 +189,10 @@ standardiseIngredients <- function(df){
       
       #Dairy / substitutes----
       str_detect(Ingredients, 'ghee|clarified butter') ~ 'butter clarified ghee',
+      str_detect(Ingredients, 'spice') & str_detect(Ingredients, 'butter') ~ 'spice butter',
       str_detect(Ingredients, 'butter|smør') & str_detect(Ingredients, 'unsalted|usalted') ~ 'unsalted butter',
-      str_detect(Ingredients, 'butter|smør') & !str_detect(Ingredients, 'frying|peanut|dough|unsalted|browning|brushing|pepper|sour cream|roasting|oil|butternut|pastry|greasing|milk|beans') | Ingredients %in% c('butter / oil for frying') ~ 'butter',
-      str_detect(Ingredients, 'butter') & str_detect(Ingredients, 'frying|browning|roasting|greasing|brushing') & !str_detect(Ingredients, 'oil') ~ 'butter for cooking',
+      str_detect(Ingredients, 'butter|smør') & !str_detect(Ingredients, 'frying|dough|unsalted|browning|brushing|pepper|sour cream|roasting|butternut|pastry|greasing|milk|beans|peanut') ~ 'butter',
+      str_detect(Ingredients, 'butter') & str_detect(Ingredients, 'frying|browning|roasting|greasing|brushing') ~ 'butter for cooking',
       str_detect(Ingredients, 'buttermilk') & !str_detect(Ingredients, 'dough') ~ 'buttermilk',
       
       str_detect(Ingredients, 'cheese') & str_detect(Ingredients, 'norman') ~ 'cheese blue normanna', #Tine cheese
@@ -244,7 +250,7 @@ standardiseIngredients <- function(df){
       str_detect(Ingredients, 'lightroom 18 %|light stream|light flow 18%|lightroom 18%|light flow 18 %|light rømme') | (str_detect(Ingredients, 'sour cream') & !str_detect(Ingredients, '%')) | (str_detect(Ingredients, 'cream') & str_detect(Ingredients, 'light') & !str_detect(Ingredients, 'alternativ')) ~ 'sour cream 18 %', #Standard
       str_detect(Ingredients, 'seatroom|seat cream') ~ 'sour cream 35 %',
       
-      str_detect(Ingredients, 'yogurt|yoghurt') & str_detect(Ingredients, 'greek') ~ 'yogurt greek',
+      str_detect(Ingredients, 'yogurt|yoghurt') & str_detect(Ingredients, 'greek') ~ 'yoghurt greek',
       str_detect(Ingredients, 'yogurt|yoghurt') ~ 'yoghurt',
       
       #Herbs and spices----
@@ -271,13 +277,13 @@ standardiseIngredients <- function(df){
       str_detect(Ingredients, 'cinnamon') ~ 'cinnamon',
       str_detect(Ingredients, 'cloves|carnation') & !str_detect(Ingredients, 'garlic') ~ 'cloves',
       str_detect(Ingredients, 'coriander') & str_detect(Ingredients, 'seed') ~ 'coriander seed',
-      str_detect(Ingredients, 'coriander|cilantro') & !str_detect(Ingredients, 'seed') & str_detect(Ingredients, 'fresh|chop|crush|neve|twig|leaf|malt') ~ 'coriander fresh herbs',
+      str_detect(Ingredients, 'coriander|cilantro') & !str_detect(Ingredients, 'seed') & (str_detect(Ingredients, 'fresh|chop|crush|neve|twig|leaf|malt') | str_detect(Amounts, 'twig|bunch|leaf|neve|dl')) ~ 'coriander fresh herbs',
       str_detect(Ingredients, 'coriander|cilantro') ~ 'coriander dried', #Standard
       str_detect(Ingredients, 'cress') ~ 'cress fresh herbs',
       str_detect(Ingredients, 'cumin') ~ 'cumin',
       str_detect(Ingredients, 'curry') ~ 'curry powder',
       
-      str_detect(Ingredients, 'dill') & str_detect(Ingredients, 'fresh|chop|crush|neve|twig|leaf') ~ 'dill fresh herbs',
+      str_detect(Ingredients, 'dill') & (str_detect(Ingredients, 'fresh|chop|crush|neve|twig|leaf') | str_detect(Amounts, 'twig|bunch|leaf|neve|dl')) ~ 'dill fresh herbs',
       str_detect(Ingredients, 'dill') ~ 'dill dried', #Standard
       
       str_detect(Ingredients, 'fajita') & str_detect(Ingredients, 'spice') ~ 'fajita spice mix',
@@ -416,7 +422,6 @@ standardiseIngredients <- function(df){
       str_detect(Ingredients, 'lasagna noodles') ~ 'pasta',
       str_detect(Ingredients, 'barley') ~ 'pearl barley',
       str_detect(Ingredients, 'peanut') & str_detect(Ingredients, 'butter') ~ 'peanut butter',
-      str_detect(Ingredients, 'peanut') & str_detect(Ingredients, 'oil') & !str_detect(Ingredients, 'sunflower|rapeseed') ~ 'peanut oil',
       str_detect(Ingredients, 'peanut') & str_detect(Ingredients, 'salt') ~ 'peanut salt',
       str_detect(Ingredients, 'peanut') & !str_detect(Ingredients, 'oil') ~ 'peanut',
       str_detect(Ingredients, 'pie dough') ~ 'pie dough',
@@ -429,9 +434,11 @@ standardiseIngredients <- function(df){
       
       str_detect(Ingredients, 'quinoa') ~ 'quinoa',
       
+      str_detect(Ingredients, 'rice') & str_detect(Ingredients, '\\bcooked') ~ 'rice cooked',
       str_detect(Ingredients, 'rice|ris') & str_detect(Ingredients, 'basmati') ~ 'rice basmati',
       str_detect(Ingredients, 'rice|ris') & str_detect(Ingredients, 'risotto|arbori|paella') | str_detect(Ingredients, 'vialone nano') ~ 'rice risotto',
       str_detect(Ingredients, 'rice') & str_detect(Ingredients, 'jasmin') ~ 'rice jasmin',
+      str_detect(Ingredients, 'rice') & str_detect(Ingredients, 'parboiled|pre boiled') ~ 'rice parboiled',
       str_detect(Ingredients, 'rice') & str_detect(Ingredients, '\\bcooked') ~ 'rice cooked',
       str_detect(Ingredients, 'rice') & str_detect(Ingredients, 'whole') ~ 'rice brown long grain',
       str_detect(Ingredients, 'rice') & str_detect(Ingredients, 'sushi') ~ 'rice sushi',
@@ -449,14 +456,25 @@ standardiseIngredients <- function(df){
       str_detect(Ingredients, 'wheat flour|all-purpose flour|plain flour|flour|durum wheat') & !str_detect(Ingredients, 'whole|tortilla|potato|corn') ~ 'wheat flour',
       
       #Poultry----
-      str_detect(Ingredients, 'chicken') & str_detect(Ingredients, 'breast|fillet|filet') & str_detect(Ingredients, 'without|skinless|no skin') & str_detect(Ingredients, 'cooked') & !str_detect(Amounts, 'stk') ~ 'chicken breast without skin cooked',
-      str_detect(Ingredients, 'chicken') & str_detect(Ingredients, 'breast|fillet|filet') & str_detect(Ingredients, 'without|skinless|no skin') ~ 'chicken breast without skin',
-      str_detect(Ingredients, 'chicken') & str_detect(Ingredients, 'breast|fillet|filet') & str_detect(Ingredients, 'cooked') & !str_detect(Amounts, 'stk') ~ 'chicken breast cooked',
+      str_detect(Ingredients, 'chicken') &
+        str_detect(Ingredients, 'breast|fillet|filet') &
+        str_detect(Ingredients, 'without|skinless|no skin') &
+        str_detect(Ingredients, 'cooked') & !str_detect(Amounts, 'stk') ~ 'chicken breast without skin cooked',
+      str_detect(Ingredients, 'chicken') & 
+        str_detect(Ingredients, 'breast|fillet|filet') &
+        str_detect(Ingredients, 'without|skinless|no skin') ~ 'chicken breast without skin',
+      str_detect(Ingredients, 'chicken') &
+        str_detect(Ingredients, 'breast|fillet|filet') &
+        str_detect(Ingredients, 'cooked') & !str_detect(Amounts, 'stk') ~ 'chicken breast cooked',
       str_detect(Ingredients, 'chicken') & str_detect(Ingredients, 'breast|fillet|filet') ~ 'chicken breast',
-      str_detect(Ingredients, 'chicken') & str_detect(Ingredients, 'thigh|leg') & str_detect(Ingredients, 'without|skinless|no skin') ~ 'chicken thigh without skin',
-      str_detect(Ingredients, 'chicken') & str_detect(Ingredients, 'thigh|leg') & str_detect(Ingredients, 'grilled|cooked') & !str_detect(Amounts, 'stk') ~ 'chicken thigh cooked', #This is 
+      str_detect(Ingredients, 'chicken') &
+        str_detect(Ingredients, 'thigh|leg') &
+        str_detect(Ingredients, 'without|skinless|no skin') ~ 'chicken thigh without skin',
+      str_detect(Ingredients, 'chicken') &
+        str_detect(Ingredients, 'thigh|leg') &
+        str_detect(Ingredients, 'grilled|cooked') & !str_detect(Amounts, 'stk') ~ 'chicken thigh cooked', #This is 
       str_detect(Ingredients, 'chicken') & str_detect(Ingredients, 'thigh|leg') ~ 'chicken thigh',
-      str_detect(Ingredients, 'chicken') & str_detect(Ingredients, 'grilled|cooked') & !str_detect(Amounts, 'stk') ~ 'chicken cooked',
+      str_detect(Ingredients, 'chicken') & str_detect(Ingredients, 'grilled|cooked') & !str_detect(Amounts, 'stk') ~ 'chicken whole cooked',
       str_detect(Ingredients, 'chicken') & str_detect(Ingredients, 'drum') ~ 'chicken drumstick',
       str_detect(Ingredients, 'chicken') & !str_detect(Ingredients, 'power|condensed|broth|stock') ~ 'chicken whole',
       
@@ -486,7 +504,7 @@ standardiseIngredients <- function(df){
       str_detect(Ingredients, 'bankekjøtt|beef round roast|bottom round roast|knocked meat') ~ 'beef bottom round',
       str_detect(Ingredients, 'roast beef') ~ 'beef bottom round roast beef',
       str_detect(Ingredients, 'beef') & str_detect(Ingredients, 'sirloin') ~ 'beef sirloin',
-      str_detect(Ingredients, 'beef') & str_detect(Ingredients, 'comb|entre') | str_detect(Ingredients, 'entrecote|cote de boef|scotch or black welsh beef|standing rib roast, bone in') | `Selected Meals` == 'Steak with potato salad' & Ingredients == 'steak' ~ 'beef rib-eye steak',
+      str_detect(Ingredients, 'beef') & str_detect(Ingredients, 'comb|entre') | str_detect(Ingredients, 'entrecote|cote de boef|scotch or black welsh beef|standing rib roast, bone in|rib-eye steak|rib eye steak') ~ 'beef rib-eye steak', #Also used for the steak in Steak with potato salad
       str_detect(Ingredients, 'beef|cattle') & str_detect(Ingredients, 'tenderloin|fillet') & !str_detect(Ingredients, 'outer') ~ 'beef tenderloin',
       str_detect(Ingredients, 'beef') & str_detect(Ingredients, 'rump') | str_detect(Ingredients, 'top round steak') ~ 'beef roast of knuckle',
       str_detect(Ingredients, 'beef') & str_detect(Ingredients, 'high back|high-roast|stew meat|pureed') | str_detect(Ingredients, 'chuck steak|cubed beef') | Ingredients == 'of beef' ~ 'beef chuck roll',
@@ -500,13 +518,13 @@ standardiseIngredients <- function(df){
       str_detect(Ingredients, 'beef') & str_detect(Ingredients, 'ground|mince') & str_detect(Ingredients, 'lean') ~ 'beef minced meat 6 %',
       str_detect(Ingredients, 'beef') & str_detect(Ingredients, 'ground|mince|all-beef hot dog') | str_detect(Ingredients, 'chop dough') ~ 'beef minced meat',
       str_detect(Ingredients, 'minced meat') & !str_detect(Ingredients, 'pork|deer') ~ 'beef minced meat', #Standard
-      str_detect(Ingredients, 'beef') & str_detect(Ingredients, 'shredded') | str_detect(Ingredients, 'steak strips') | `Selected Meals` == 'Beef quesadillas' & str_detect(Ingredients, 'steak') ~ 'beef sirloin butt',
+      str_detect(Ingredients, 'beef') & str_detect(Ingredients, 'shredded|steak strip|sirloin butt') ~ 'beef sirloin butt', #Also used in Beef quesedillas and Steak Strips On Spaghetti With Parsley Pesto
       str_detect(Ingredients, 'beef') & str_detect(Ingredients, 'ground|mince') | str_detect(Ingredients, 'ground') & str_detect(Ingredients, 'meat') & !str_detect(Ingredients, 'pork|turkey|deer') | str_detect(Ingredients, 'meat dough') ~ 'beef minced meat',
       str_detect(Ingredients, 'calf') & str_detect(Ingredients, 'liver') ~ 'beef calf liver',
       str_detect(Ingredients, 'calf') & str_detect(Ingredients, 'leg') ~ 'beef calf shoulder', #Actually hind leg but not in database,
       str_detect(Ingredients, 'calf') & str_detect(Ingredients, 'steak') ~ 'beef veal for roast',
-      str_detect(Ingredients, 'beef|cattle') & !str_detect(Ingredients, 'fund|broth|stock') ~ 'beef chuck roll',
-      str_detect(Ingredients, 'bone marrow') ~ 'bone marrow',
+      str_detect(Ingredients, 'beef|cattle') & !str_detect(Ingredients, 'fund|broth|stock|bouilljon|bouillion') ~ 'beef chuck roll',
+      str_detect(Ingredients, 'bone marrow') ~ 'marrow bone',
       
       str_detect(Ingredients, 'deer') & str_detect(Ingredients, 'ground') & !str_detect(Ingredients, 'rein|rain') ~ 'roe deer minced meat',
       
@@ -542,18 +560,19 @@ standardiseIngredients <- function(df){
       str_detect(Ingredients, 'pork') & str_detect(Ingredients, 'neck') ~ 'pork neck',
       str_detect(Ingredients, 'pork') & str_detect(Ingredients, 'tenderloin|fillet|escalope') | Ingredients == 'thinly sliced pork loin' ~ 'pork tenderloin',
       Ingredients == 'cold roast pork loin' ~ 'pork tenderloin cooked',
-      str_detect(Ingredients, 'pork') & str_detect(Ingredients, 'shred') | `Selected Meals` == 'Satay of pigs with honey and ginger' & str_detect(Ingredients, 'pork') | Ingredients == 'pork steak, cut into strips' ~ 'pork inside round', #What is used to create shredded pork in Norway
+      str_detect(Ingredients, 'pork') & str_detect(Ingredients, 'shred') | Ingredients == 'pork steak, cut into strips' ~ 'pork inside round', #What is used to create shredded pork in Norway, also why it says inside round in Satay of pigs with honey and ginger
       str_detect(Ingredients, 'pork') & str_detect(Ingredients, 'hock') ~ 'pork hock',
       str_detect(Ingredients, 'pork') & str_detect(Ingredients, 'stew|shoulder') ~ 'pork shoulder', 
       str_detect(Ingredients, 'pork') & str_detect(Ingredients, 'pulled') ~ 'pork shoulder cooked', 
       str_detect(Ingredients, 'pork') & str_detect(Ingredients, 'salt') ~ 'pork shoulder salt', 
       str_detect(Ingredients, 'pork') & str_detect(Ingredients, 'kidney') ~ 'pork kidney', 
       str_detect(Ingredients, 'pig') & str_detect(Ingredients, 'liver') ~ 'pork liver',
-      str_detect(Ingredients, 'pork belly') | str_detect(`Selected Meals`, 'Ribbe|ribbe') & str_detect(Ingredients, 'rib') ~ 'pork belly',
+      str_detect(Ingredients, 'pork belly') ~ 'pork belly',
       str_detect(Ingredients, 'pork rib roast') ~ 'pork rib roast',
       str_detect(Ingredients, 'pork') & str_detect(Ingredients, 'ham') | str_detect(Ingredients, 'ham steak') ~ 'pork ham roast',
       str_detect(Ingredients, 'bone-in ham') ~ 'pork ham roast bone in',
-      str_detect(Ingredients, 'spare rib') & !str_detect(Ingredients, 'beef') | `Selected Meals` == 'Juicy ribs with homemade tortillas' & Ingredients == 'ribs' | str_detect(Ingredients, 'pork sparerib') ~ 'pork spare rib',
+      str_detect(Ingredients, 'spare rib') & !str_detect(Ingredients, 'beef') | str_detect(Ingredients, 'pork sparerib') ~ 'pork spare rib',
+      str_detect(Ingredients, 'pork') ~ 'pork shoulder', #Default
       
       str_detect(Ingredients, 'rabbit') ~ 'rabbit',
       str_detect(Ingredients, 'reindeer') & str_detect(Ingredients, 'fillet') ~ 'reindeer tenderloin',
@@ -595,6 +614,7 @@ standardiseIngredients <- function(df){
       str_detect(Ingredients, 'herring') & str_detect(Ingredients, 'smoked') ~ 'herring smoked',
       str_detect(Ingredients, 'herring') ~ 'herring',
       
+      str_detect(Ingredients, 'lobster') & str_detect(Ingredients, '\\bcooked') ~ 'lobster cooked',
       str_detect(Ingredients, 'lobster') & !str_detect(Ingredients, 'shell') ~ 'lobster',
       
       str_detect(Ingredients, 'mackerel') & str_detect(Ingredients, 'tomato') ~ 'mackerel tomato canned',
@@ -620,6 +640,7 @@ standardiseIngredients <- function(df){
       str_detect(Ingredients, 'sea bass') ~ 'sea bass',
       str_detect(Ingredients, 'sea urchin') ~ 'sea urchin',
       str_detect(Ingredients, 'shellfish') & !str_detect(Ingredients, 'borth|stock') ~ 'shellfish',
+      str_detect(Ingredients, 'shrimp') & str_detect(Ingredients, '\\bcooked') ~ 'shrimp cooked',
       str_detect(Ingredients, 'shrimp') & str_detect(Ingredients, 'lake') ~ 'shrimp in brine',
       str_detect(Ingredients, 'shrimp') & !str_detect(Ingredients, 'paste|salad|shellfish') ~ 'shrimp',
       str_detect(Ingredients, 'shrimp') & str_detect(Ingredients, 'salad') ~ 'shrimp salad',
@@ -632,28 +653,43 @@ standardiseIngredients <- function(df){
       str_detect(Ingredients, 'tuna') ~ 'tuna',
       
       #Oils----
-      str_detect(Ingredients, 'canola oil|rapeseed oil') & !str_detect(Ingredients, 'frying|olive|corn') ~ 'rapeseed oil',
-      str_detect(Ingredients, 'canola oil|rapeseed oil') & str_detect(Ingredients, 'frying') & !str_detect(Ingredients, 'corn') ~ 'rapeseed oil for cooking',
+      #If multiple oils are listed as alternatives, use first in alphabetical order
+      str_detect(Ingredients, 'canola|rapeseed') & str_detect(Ingredients, 'oil') & str_detect(Ingredients, 'deep fry') ~ 'rapeseed oil for deep frying',
+      str_detect(Ingredients, 'canola|rapeseed') & str_detect(Ingredients, 'oil') & str_detect(Ingredients, 'frying|browning|roasting|greasing|brushing') ~ 'rapeseed oil for cooking',
+      str_detect(Ingredients, 'canola|rapeseed') & str_detect(Ingredients, 'oil')  ~ 'rapeseed oil',
+      str_detect(Ingredients, 'coconut oil') & str_detect(Ingredients, 'deep fry') ~ 'coconut oil for deep frying',
+      str_detect(Ingredients, 'coconut oil') & str_detect(Ingredients, 'frying|browning|roasting|greasing|brushing') ~ 'coconut oil for cooking',
       str_detect(Ingredients, 'coconut oil') ~ 'coconut oil',
-      str_detect(Ingredients, 'corn') & str_detect(Ingredients, 'oil') & !str_detect(Ingredients, 'rapeseed') ~ 'oil corn',
-      
-      str_detect(Ingredients, 'olive oil|olivenolje|extra-virgin olive|olive oil / butter') & !str_detect(Ingredients, 'canola|frying|butter') ~ 'olive oil',
-      str_detect(Ingredients, 'olive oil') & str_detect(Ingredients, 'frying') ~ 'olive oil for cooking',
-      
-      str_detect(Ingredients, 'sesame oil') ~ 'sesame oil',
-      str_detect(Ingredients, 'soy') & str_detect(Ingredients, 'oil') ~ 'soybean oil',
-      str_detect(Ingredients, 'sunflower oil') & !str_detect(Ingredients, 'peanut|frying|waking|duck') ~ 'sunflower oil',
-      str_detect(Ingredients, 'sunflower oil') & str_detect(Ingredients, 'frying|waking') ~ 'sunflower oil for cooking',
-      
-      str_detect(Ingredients, 'oil') & str_detect(Ingredients, 'truffle') ~ 'oil truffle',
+      str_detect(Ingredients, 'corn') & str_detect(Ingredients, 'oil') & str_detect(Ingredients, 'deep fry') ~ 'oil corn for deep frying',
+      str_detect(Ingredients, 'corn') & str_detect(Ingredients, 'oil') ~ 'oil corn',
       
       str_detect(Ingredients, 'garlic oil') ~ 'garlic oil',
       
       str_detect(Ingredients, 'hazelnut oil') ~ 'hazelnut oil',
       
+      str_detect(Ingredients, 'olive') & str_detect(Ingredients, 'oil') & str_detect(Ingredients, 'deep fry') ~ 'olive oil for deep frying',
+      str_detect(Ingredients, 'olive') & str_detect(Ingredients, 'oil') & str_detect(Ingredients, 'frying|browning|roasting|greasing|brushing') ~ 'olive oil for cooking',
+      str_detect(Ingredients, 'olive oil|olivenolje|extra-virgin olive|olive oil') ~ 'olive oil',
+      
+      str_detect(Ingredients, 'peanut') & str_detect(Ingredients, 'oil') & str_detect(Ingredients, 'deep fry') ~ 'peanut oil for deep frying',
+      str_detect(Ingredients, 'peanut') & str_detect(Ingredients, 'oil') & str_detect(Ingredients, 'frying|browning|roasting|greasing|brushing') ~ 'peanut oil for cooking',
+      str_detect(Ingredients, 'peanut') & str_detect(Ingredients, 'oil') ~ 'peanut oil',
+      
+      str_detect(Ingredients, 'sesame oil') ~ 'sesame oil',
+      str_detect(Ingredients, 'soy') & str_detect(Ingredients, 'oil') & str_detect(Ingredients, 'deep fry') ~ 'soybean oil for deep frying',
+      str_detect(Ingredients, 'soy') & str_detect(Ingredients, 'oil') & str_detect(Ingredients, 'frying|waking|browning|roasting|greasing|brushing') ~ 'soybean oil for deep frying',
+      str_detect(Ingredients, 'soy') & str_detect(Ingredients, 'oil') ~ 'soybean oil',
+      str_detect(Ingredients, 'sunflower oil') & str_detect(Ingredients, 'deep fry') ~ 'sunflower oil for deep frying',
+      str_detect(Ingredients, 'sunflower oil') & str_detect(Ingredients, 'frying|waking|browning|roasting|greasing|brushing') ~ 'sunflower oil for cooking',
+      str_detect(Ingredients, 'sunflower oil') ~ 'sunflower oil',
+      
+      str_detect(Ingredients, 'walnut') & str_detect(Ingredients, 'oil') ~ 'walnut oil',
+      
+      str_detect(Ingredients, 'oil') & str_detect(Ingredients, 'truffle') ~ 'oil truffle',
+      
       str_detect(Ingredients, 'oil for deep frying') | Ingredients == 'frying oil' ~ 'vegetable oil for deep frying',
       Ingredients %in% c('oil for frying', 'oil for brushing', 'lubricating and brushing oil') ~ 'vegetable oil for cooking',
-      str_detect(Ingredients, 'vegetable oil|salad oil|oil, neutral|vegetabie oil') | Ingredients %in% c('oil', 'of oil', 'oil / butter for frying')  ~ 'vegetable oil',
+      str_detect(Ingredients, 'vegetable oil|salad oil|oil, neutral|vegetabie oil') | Ingredients %in% c('oil', 'of oil')  ~ 'vegetable oil',
       
       str_detect(Ingredients, 'mayo') ~ 'mayonnaise',
       
@@ -666,6 +702,7 @@ standardiseIngredients <- function(df){
       str_detect(Ingredients, 'beer|ale') ~ 'beer',
       Ingredients == 'black truffle or 2 tbsp s truffle oil' ~ 'black truffle',
       str_detect(Ingredients, 'brandy') ~ 'spirits 40 vol-% alcohol brandy',
+      str_detect(Ingredients, 'brine') & !str_detect(Ingredients, 'shrimp') ~ 'water brine',
       str_detect(Ingredients, 'bolognese') & str_detect(Ingredients, 'base') ~ 'bolognese base',
       str_detect(Ingredients, 'bearnaise') & str_detect(Ingredients, 'base') ~ 'bearnaise base',
       
@@ -682,6 +719,8 @@ standardiseIngredients <- function(df){
       str_detect(Ingredients, 'condensed cream') & str_detect(Ingredients, 'chicken') ~ 'condensed cream of chicken soup',
       str_detect(Ingredients, 'condensed cream') & str_detect(Ingredients, 'mushroom') ~ 'condensed cream of mushroom soup',
       str_detect(Ingredients, 'cream sauce') & str_detect(Ingredients, 'base') ~ 'cream sauce base',
+      
+      str_detect(Ingredients, 'dip mix') ~ 'dip mix',
       
       str_detect(Ingredients, 'fish soup') & str_detect(Ingredients, 'base') ~ 'fish soup base',
       
@@ -816,5 +855,9 @@ standardiseIngredients <- function(df){
       str_detect(Ingredients, 'yeast') ~ 'yeast',
       
       TRUE ~ Ingredients
-    ))
+    )) %>%
+    
+    #Rename column for later
+    rename(org_ingredients = Ingredients,
+           Ingredients = Ingredients_standardised)
 }
