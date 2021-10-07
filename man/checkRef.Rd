@@ -4,12 +4,14 @@
 \alias{checkRef}
 \title{checkRef}
 \usage{
-checkRef(df, reference)
+checkRef(df, reference, fix_errors = TRUE)
 }
 \arguments{
-\item{df}{A dataframe with an Ingredients column to be checked against the reference database.}
+\item{df}{A dataframe with an Ingredients column to be checked against the reference database. To fix common errors, the df also needs a "unit" column.}
 
 \item{reference}{The reference database.}
+
+\item{fix_errors}{Fix known errors automatically? For fixes of volume/weight database, df must have a unit column.}
 }
 \value{
 A dataframe with the ingredient name and the reference ID of the first hit in the database. See references for how the databse must be built.

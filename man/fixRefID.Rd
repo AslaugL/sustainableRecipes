@@ -14,7 +14,7 @@ fixRefID(reference, first_w, second_w = "\\\\")
 \item{second_w}{The correct second word in reference database.}
 }
 \value{
-The dataframe with updated IDs.
+The updated ID number.
 }
 \description{
 Set a new ID number for an ingredient if checkRef made a mistake.

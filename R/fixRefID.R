@@ -7,7 +7,7 @@
 #' @param first_w The correct first word in reference database.
 #' @param second_w The correct second word in reference database.
 #'
-#' @return The dataframe with updated IDs.
+#' @return The updated ID number.
 #'
 #' @export
 
