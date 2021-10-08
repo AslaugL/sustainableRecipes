@@ -1,5 +1,5 @@
 ---
-title:
+title: "Discussion"
 author:
 output:
   pdf_document:
@@ -7,3 +7,14 @@ output:
 bibliography: library.bib
 ---
 
+## Choosing ingredients with low environmental impact
+
+## Low environmental impact, high nutritional value
+
+-   Indias water stress could be reduced by swapping rice with other cereals, this could also improve nutrition status as cereals such as millet, sorghum and wheat have more iron
+-   Mekonnen et al. found that if Americans change their diet to be in line with the American dietary guidelines, it will increase the water footprint of the diet by about 7% despite a lower intake of meat. However, if American shifted to a vegetarian or vegan diet it could reduce the water footprint by 20% and 37% respectively [@Mekonnen2018]. At the same time they found that if food waste was eliminated, the water footprint of the current American diet could be reduced by 49%, 12% more than changing to a vegan diet. It is interesting to note that the blue water increased for both vegetarian and vegan diets, and that the reduction in water footprint came from a lower use of green water. Another study by Tom et al. found that if calories were kept the same, a change in food consumption of Americans to be in line with their dietary guidelines would lead to an increase in energy use by 43 %, blue water footprint by 16 %, and GHG emissions by 11 % [@Tom2015].
+
+    - Only a small amount of the water footprint of animals comes from drinking and serving water, while 98% comes from the growing of their feed [@Mekonnen2012]. Ruminant animals that can eat roughage has a lower blue water footprint than non-ruminants that feed on crops
+-   While ruminants can be fed roughage that are not edible for humans, non-ruminant (pork, chicken and farmed fish) feed consists of cereals that could feed humans [@Makkar2018].
+-   The blue water footprint of food is more important than green water, as it competes with other blue water demands. It is also important to look at grey water (pollution from runoff). While the average total water footprint of beef is higher than that of pork and chicken, the average blue and gray water footprint is similar. If the cattle is allowed to graze, the blue and gray water footprint of beef is less than that of pork and chicken [@Gerbens-Leenes2013]
+-    Fresh water, which is a limited resource many places in the world is believed to be even more scarce in the face of climate change [@UnitedNationsWater2019].

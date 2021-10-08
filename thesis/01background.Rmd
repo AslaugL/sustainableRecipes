@@ -1,186 +1,157 @@
 ---
-title: Background
+title: "Background"
 output:
-  html_document:
-    fig_caption: yes
-    number_sections: yes
-    toc: yes
-    df_print: paged
-  bookdown::pdf_document2:
-    keep_tex: yes
-  bookdown::word_document2:
-    toc: yes
-  bookdown::html_document2: default
+  bookdown::html_document2:
 bibliography: library.bib
-editor_options: 
-  markdown: 
+csl: vancouver-imperial-college-london.csl
+editor_options:
+  markdown:
     wrap: 72
 ---
 
-```{r setup methods, include=FALSE}
-library(bookdown)
-knitr::opts_chunk$set(echo = FALSE, echo = FALSE, message = FALSE, warning = FALSE)
-```
-
-```{r}
+```{r abbreviations}
 library(tibble)
 Abbreviations <- tibble(
-  'Abbreviation' = c('DALY'),
-  'Explanation' = c('Disability Adjusted Life Years')
+  'Abbreviation' = c('DALY', 'FBDG', 'LMIC', 'HIC', 'NNR', 'WHO', 'FAO', 'NCD', 'RDI', 'FOP', 'LCA', 'FV'),
+  'Explanation' = c('Disability Adjusted Life Years', 'Food Based Dietary Guideline', 'Low- Middle-Income Countries', 'High Income Countries', 'Nordic Nutritional Recommendations', 'World Health Organization', 'Food and Agriculture Organization of the United Nations', 'Non-communicable disease', 'Recommended Dietary Intake', 'Front of Pack', 'Life Cycle Assesment', 'Fruit and Vegetables')
 )
 ```
 
 # Background
 
+## Diet, health and sustainability
+
 Not only are unhealthy diets that lead to malnutrition believed to be
 responsible for one in five adult deaths and 15% of the total adult
-disability adjusted life years (DALY) globally[@Afshin2019], but our
-current food systems, i.e. how we produce, distribute and process food
-items, is also taking its toll on the environment. Globally, food
-production accounts for 70% of fresh water resources[@Shukla2019](p5),
-42-61% of land resources[@Shukla2019](p6) and 21-37% of total greenhouse
-gas emissions (GHGE)[@Crippa2021]. Additionally there is growing
-awareness of how food production and consumption can negatively impact
-biodiversity, pollute air, water and land and increase soil
-degradation[@Benton2021; @RodriguezEugenio2018; @Domingo2021;
-@Kopittke2019]. These factors have led to the need to develop diets that
-are both healthy and environmentally sustainable, so called "Sustainable
-Healthy Diets". The World Health Organization (WHO) and the Food and
-Agriculture Organization of the United Nations (FAO) defines a
-sustainable healthy diet as a diet that: "promote all dimensions of
-individuals' health and wellbeing; have low environmental pressure and
-impact; are accessible, affordable, safe and equitable; and are
-culturally
-acceptable."[@FoodandAgricultureOrganizationoftheUnitedNations2019]
+disability adjusted life years (DALYs) globally [@Afshin2019], but our
+current food system, i.e. how we produce, distribute and process food
+items, is also taking its toll on the environment. The EAT-Lancet
+Commission on Food, Planet, Health states that food production is the
+largest cause of global environmental change [@Willett2019].
+
+This is the background for the need to develop diets that are both
+healthy and environmentally sustainable, so called "Sustainable Healthy
+Diets". The World Health Organization (WHO) and the Food and Agriculture
+Organization of the United Nations (FAO) defines a sustainable healthy
+diet as a diet that: "promote all dimensions of individuals' health and
+well being; have low environmental pressure and impact; are accessible,
+affordable, safe and equitable; and are culturally acceptable."
+[@FoodandAgricultureOrganizationoftheUnitedNations2019]
 
 While these four aspects of sustainable diets are all important, this
 thesis will focus on two of them: Healthiness and environmental impact.
-
--   Add something about the consequences for children
--   Add something about the sustainability goals?
--   Add something about the pandemic?
-
-## Diet and health
 
 ### Consequences of malnutrition
 
 There are three forms of malnutrition that are typically associated with
 ill health. Undernutrition (low
 weight-for-age/weight-for-height/height-for-age), micronutrient
-deficiency or excess, and overnutrition
-(overweight/obesity)[@WorldHealthOrganization]. WHO include diet-related
-noncommunicable diseases such as cardiovascular disease, type II
-diabetes, chronic pulmonary disease and certain types of cancer with
+deficiency or excess, and overnutrition (overweight/obesity)
+[@WorldHealthOrganization]. WHO includes diet-related non-communicable
+diseases (NCDs) such as cardiovascular disease, type II diabetes,
+chronic pulmonary disease and certain types of cancer with
 overnutrition. Not only can an unhealthy diet increase the risk of
-developing these noncommunicable diseases, it can also worsen prognosis
-of those who have already developed them[@Afshin2019; @Wu2016;
-@Casas2018; @Steck2020].
+developing these NCDs, it can also worsen the prognoses of those who
+have already developed them [@Afshin2019; @Wu2016; @Casas2018;
+@Steck2020].
 
 Malnutrition is a global health issue, and every country in the world is
-affected by at least one form of
-malnutrition[@DevelopmentInitiatives2020](p21). Within a population,
-household or individual, multiple forms of malnutrition can coexist.
-When this happens, it is called the double or triple burden of
-malnutrition. For example within a population some can be underweight
-while others can be obese and/or suffer from micronutrient deficiencies
-or diet-related noncommunicable diseases, and an individual can be obese
-due to excess energy intake while also struggling with micronutrient
-deficiencies due to low nutrient quality of the foods eaten.
+affected by at least one form of malnutrition
+[@DevelopmentInitiatives2020](p21). Within a population, household or
+individual, multiple forms of malnutrition can coexist. When this
+happens, it is called the double or triple burden of malnutrition. For
+example within a population some can be underweight while others can be
+obese and/or suffer from micronutrient deficiencies or diet-related
+NCDs, and an individual can be obese due to excess energy intake while
+also struggling with micronutrient deficiencies due to low nutrient
+quality of the foods eaten. The cost of malnutrition globally is
+enormous, and in 2013 FAO estimated that the costs could be as high as
+US \$3.5 trillion
+[@AgricultureandEconomicDevelopmentAnalysisDivision2013].
 
 While malnutrition is a global health issue, it affects populations
-differently. Undernutrition is more common in low- and
-lower-middle-income countries than high-income countries. Globally the
-prevalence of undernutrition has decreased, although when looking at
-country/regional level there are large variations. On the other hand,
-overnutrition is more prevalent in higher-middle-income and high-income
-countries, and is increasing globally at an alarming
-rate[@DevelopmentInitiatives2020](p51-53). There are also differences in
-nutrition status between socioeconomic groups within a country, with
-undernutrition being more prevalent in low socioeconomic groups than
-high socioeconomic group, and the other way around of obesity.
+differently. Undernutrition is more common in low-middle income
+countries (LMICs) than high income countries (HICs), and in lower
+socioeconomic groups compared to high socioeconomic groups. Premortality
+and impaired physical and cognitive capacities due to undernutrition
+lead to large burdens on the health and economy of individuals and
+societies. It is estimated that by investing US \$1 in reducing
+undernutrition, a return of US \$18 would be achieved in countries with
+a high burden of undernutrition
+[@GlobalPanelonAgricultureandFoodSystemsforNutrition2016] (p14).
+Globally the prevalence of undernutrition has decreased, although when
+looking at country/regional level there are large variations
+[@DevelopmentInitiatives2020] (p51-53). However, while undernutrition
+has become less common, in the same areas there is a rapid rise in
+overweight/obesity, contributing to the double burden of malnutrition in
+these populations [@Bixby2019].
 
-Micronutrient deficiencies are more common in low- and middle-income
-countries than high-income countries[@Bailey2015], but even in high
-income countries in Europe and Central Asia micronutrient deficiencies
-lead to substantial disease burden and DALYs of 268 per 100 000
-population[@Bruins2018]. Regardless of income status, children and women
-of childbearing age are at highest risk[@Bailey2015; @Bruins2018]. Of
-special concern are iron, iodine, zinc, calcium, vitamin A, vitamin D
-and folate (vitamin B9), with some regional differences.
+Overnutrition like being overweight/obese is increasing all over the
+world, and more rapidly in LMICs [@DevelopmentInitiatives2020 (p51-53);
+@Abarca-Gomez2017]. Currently, the prevalence of overnutrition is higher
+in HICs than LMICs [@Min2018]. In Europe, as many as one in two adults
+may be overweight or obese [@Marques2018], leading to high disease
+burden. In 2015 being overweight/obese contributed to 4.0 million deaths
+and approximately 120 million DALYs globally
+[@TheGBD2015ObesityCollaborators2017]. This is mostly due to diet
+related NCDs such as cardiovascular disease, diabetes, certain cancers
+and chronic kidney disease. While it is difficult to calculate the
+direct and indirect economic costs of overnutrition, they are believed
+to be substantial. For the 38 countries in the Organization for Economic
+Co-operation and Development, it is estimated that the average negative
+effect of overweight/obesity on gross domestic product is 3.3 %
+[@OrganisationforEconomicCo-operationandDevelopment2019].
 
-All of these micronutrients have several important functions in the
-body. Iron is needed to transport oxygen around the body, to synthesize
-certain hormones and to maintain healthy cellular functioning and
-tissues. Iron is also important for physical growth and neurological
-functioning. Dietary iron comes in two forms, heme-iron that is only
-found in animal based foods, like red meat and liver, and nonheme-iron
-found in both plant- and animal-based foods. Heme-iron is more readily
-absorbed in humans, although absorption of nonheme-iron can be improved
-in several ways[@NIH-Iron]. A common consequence of iron deficiency is
-iron deficiency anemia (IDA), which globally is one of the five leading
-causes for years lived with disability[@Vos2017], causing symptoms such
-as cognitive impairments and fatigue. It is estimated that 18.8% of
-children under five years of age, 20.1% of pregnant women and 16.3% of
-nonpregnant women suffer from IDA[@Vos2017].
+Both under- and overnutrition can coexist with micronutrient
+deficiencies. Micronutrient deficiencies are more common in LMICs than
+HICs [@Bailey2015], but even in HICs in Europe and Central Asia
+micronutrient deficiencies lead to substantial disease burden and DALYs
+of 268 per 100 000 population [@Bruins2018]. Regardless of income
+status, children and women of childbearing age are at highest risk
+[@Bailey2015; @Bruins2018]. Of special concern are the micronutrients
+iron, iodine, zinc, calcium, vitamin D, vitamin A and folate (vitamin
+B9), with some regional differences.
 
-Iodine is needed for synthesis of thyroid hormones, that regulate
-several bodily functions including metabolism. During fetal and infant
-development, iodine is important for correct development of the central
-nervous system and the skeleton. There are few good food sources of
-iodine, with seafood and seaweed being the rare exceptions, leading many
-countries to supplementing certain food items with iodine to improve
-consumption in the population[@NIH-Iodine]. WHO promote the use of
-iodized salt, but also other foods such as milk is used[@Santos2019].
-Globally iodine deficiency disorders are a leading cause of preventable
-mental retardation, it can also cause goitre, and increases the risk of
-perinatal and infant death[@Zimmermann2008].
+Iron deficiency anemia is one of the five leading causes for years lived
+with disability globally [@Vos2017], causing symptoms such as cognitive
+impairments and fatigue. It is estimated that globally 18.8% of children
+under five years of age, 20.1% of pregnant women and 16.3% of
+nonpregnant women suffer from Iron deficiency anemia [@Vos2017]. Iodine
+deficiency disorders are a leading cause of preventable mental
+retardation globally, it can also cause goiter, and increases the risk
+of perinatal and infant death [@Zimmermann2008]. In 2004, zinc
+deficiency was estimated to be the cause of 4.4% of deaths in children
+under five years of age in Latin America, Africa and Asia, and also
+accounted for substantial morbidity from diarrhea, malaria and lower
+respiratory tract infections in the same age group and region
+[@Walker2008]. It is believed zinc deficiency is so prevalent it could
+be a public health concern in most LMICs [@Gupta2020].
 
-Zinc is important for the immune system, protein synthesis, wound
-healing, cell division, reproductive function, the sense of taste and
-smell, and takes part in about 100 enzymatic reactions in the body. Zinc
-also plays a part during growth and development, from the fetal stage to
-adulthood[@NIH-Zinc]. Zinc can be found in many foods of both animal and
-plant origin, but is often more bioavailable from animal based foods. In
-plant based sources such as grains and seeds, bioavailability is lowered
-due to the presence of phytate, a compound that binds to zinc and
-hinders absorption in the human gut. By reducing or removing the phytic
-acid from the food, zinc bioavailability improves. This can be done
-through processes such as fermenting, soaking and sprouting of grains
-and seeds[@Maares2020; @Luo2014]. It is believed zinc deficiency could
-be a public health concern in most low- to middle-income
-countries[@Gupta2020]. In 2004, zinc deficiency was estimated to be the
-cause of 4.4% of deaths in children under five years of age in Latin
-America, Africa and Asia, and also accounted for substantial morbidity
-from diarrhea, malaria and lower respiratory tract infections in the
-same age group and region[@Walker2008].
+Inadequate calcium intake is associated with poorer bone health, and low
+bone mineral density [@NIH-Calcium]. It is important to keep in mind
+that for calcium to be absorbed from the diet, the host must have
+adequate levels of the fat soluble vitamin D, meaning vitamin D
+deficiency can contribute to calcium deficiency [@NIH-Calcium;
+@NIH-VitD]. Estimates of average dietary calcium intake have been found
+to be low in South, East and Southeast Asia, and low-moderate in Africa
+and South America. In Europe, and especially Northern Europe most
+countries have adequate dietary intake [@Balk2017]. Vitamin D can be
+synthesized in the skin by exposure to sunlight, while some amounts can
+also be obtained from foods. Supplementation is necessary in areas with
+little sun exposure, and for people with no/little sun exposure due to
+other reasons such as clothing that hides skin, as it is difficult to
+reach the recommended daily intake amounts by diet alone. Vitamin D
+deficiency is a global public health issue [@Roth2018]. In Europe the
+prevalence is estimated to be 40.4 % irrespective of age group, ethnic
+mix, and latitude of study populations, with dark-skinned ethnic groups
+having a higher prevalence than caucasians [@Cashman2016]. Lack of
+vitamin D and/or calcium can cause rickets in children and osteomalacia
+in adults. The resurgence of rickets in Western countries is highest in
+ethnic groups with dark skin [@Uday2019]. While there is less data on
+prevalence rates in countries from Asia and Africa, even conservative
+estimates put prevalence above that of Western countries
+[@Prentice2013].
 
-Calcium is well known for its role in skeletal health and growth, but is
-also required for transmission of nerve signals, muscle function and
-hormonal secretion[@NIH-Calcium]. Inadequate calcium intake is
-associated with poorer bone health, and low bone mineral density which
-increase the risk of osteoporosis and fractures. Osteoporosis is a
-growing health concern, and it has been estimated that by 2040 274
-million people will be at high risk of osteoporotic fractures, a
-doubling from 2010[@Oden2015]. More than half of the population at risk
-is found in Asia. There are few dietary sources of calcium, with cow's
-milk, small fish eaten with bones, and cruciferous vegetables such as
-kale and broccoli being among the best sources. However, for calcium to
-be absorbed from the diet, the host must have adequate levels of the fat
-soluble vitamin D[@NIH-Calcium; @NIH-VitD]. Estimations of average
-dietary calcium intake have been found to be low in South, East and
-Southeast Asia, and low-moderate in in Africa and South America. In
-Europe, and especially Northern Europe average dietary intakes have been
-found adequate[@Balk2017]. Many of the countries with suboptimal calcium
-intakes also have suboptimal vitamin D status, adding to the problem of
-insufficient calcium intake by also hampering absorption of what calcium
-is consumed. Suboptimal vitamin D status is also a problem in Northern
-European countries with adequate calcium intake[@Wacker2013]. Improving
-calcium intake and vitamin D status could possibly improve bone health,
-and reduce disease burden of poor bone health[@Balk2017; @Nuti2019].
-
-As already mentioned, vitamin D is essential for proper absorption and
-utilization of calcium in the body, and vitamin D deficiency can cause
-rickets in children and osteomalacia in adults[@NIH-Calcium; @NIH-VitD].
 Other functions of vitamin D include support of the immune system, cell
 growth and metabolism, and vitamin D deficiency is associated with a
 range of both acute and chronic health conditions. These include
@@ -188,178 +159,512 @@ periodontitis, several types of cancer, cardiovascular disease, type II
 diabetes, metabolic syndrome, autoimmune disease, asthma and infections
 [@Palacios2014; @Roth2018]. There is not established causal
 relationships between vitamin D and many of the conditions associated
-with vitamin D deficiency, but the potential causal effects of vitamin D
-deficiency and potential benefits of increasing vitamin D status are
-studied intensively (**SOURCES**. "When not to use meta analysis:
-analysing the metaanalyses on vitamin d in critical care", Roth2018).
-Vitamin D can be synthesized in the skin by exposure to sunlight, while
-some amounts can also be obtained from foods. Supplementation is
-necessary in areas with little sun exposure, and for people with
-no/little sun exposure due to other reasons, as it is difficult to reach
-the required daily intake amounts by diet alone[@Roth2018]. Vitamin D
-deficiency is found in both low-, middle- and high-income
-countries[@Roth2018].
+with vitamin D deficiency, but this is under study.
 
--   Need some numbers
-
-Vitamin A is a fat soluble vitamin, that like iron comes in multiple
-forms. Retinol, or preformed vitamin A, is found in animal based foods
-such as dairy, seafood, meat and is found in especially high amounts in
-offal such as liver. In plants there are several types of provitamin A,
-compounds that can be turned into retinol in the body through enzymatic
-reactions. The most important provitamin A is beta-carotene, that gives
-many fruits and vegetables their orange color. In the body, vitamin A
-supports cell growth, communication between cells, the immune system and
-is essential for vision[@NIH-VitA]. Vitamin A deficiency is not common
-in high-income countries, but globally it is a leading cause of
-preventable childhood blindness[@Wiseman2017], and associated with
-increased mortality and morbidity in children under five years of
-age[@Imdad2017]. For adults.... **SOURCES**.
-
-Folate is an important water soluble vitamin that is needed for
-synthesis of DNA. Inadequate folate intake leads to a reduced rate of
-cell division causing a form of anemia called megaloblastic anemia.
-Inadequate folate intake during pregnancy can cause neural tube defects
-in the developing fetus.
-
--   Add the deficiency symptoms/diseases! And some epidemiology on the
-    consequences of these.
-
-While it is easy to think that micronutrient deficiencies occur due to a
-low intake of food or poor diet quality, there are several factors that
-can lead or contribute to micronutrient deficiencies. Such as impaired
-digestion or absorption of nutrients, increased excretion or increased
-requirements. For example women of childbearing age are at an increased
-risk of iron deficiency anemia due to blood loss during menses
-(**SOURCES**), and during pregnancy and lactation women have increased
-requirements of several nutrients to support the growing fetus and
-provide nutrition for the baby[@Helsedirektorateta].
+Vitamin A deficiency is not common in HICs, but globally it is a leading
+cause of preventable childhood blindness [@Wiseman2017], and associated
+with increased mortality and morbidity in children under five years of
+age [@Imdad2017]. Inadequate folate intake during pregnancy can cause
+neural tube defects in the developing fetus, but also growth
+retardation, low birth weight and preterm delivery [@NIH-Folate;
+@Bailey2015]. In many LMICs, folate deficiency could be present in \>20%
+of females of reproductive age, but there is limited data on prevalence,
+and methodological issues call for cautious interpretations of these
+estimates [@Rogers2018].
 
 Malnutrition in any form is especially devastating for children and the
 developing fetus. Malnutrition, especially undernutrition, is a
 contributing factor in about 45% of death in children under five years
-of age[@WorldHealthOrganization], and malnutrition early in life is
+of age [@WorldHealthOrganization], and malnutrition early in life is
 associated with impaired cognitive and physical development in addition
-to increased risk of developing many diseases in adulthood[@Bailey2015;
-@Peter2014] (**SOURCES**). There are also concerns that these effects
-can pass on to the next generation[@Kaspar2020].
+to increased risk of developing many diseases, such as NCDs, in
+adulthood [@Bailey2015; @Peter2014]. There are also concerns that these
+effects can be passed on to the next generation [@Kaspar2020].
+
+The consequences of malnutrition are dire, and need to be addressed. At
+the same time it must be done in such a way to reduce the climate impact
+of our current dysfunctional food system to mitigate the consequences of
+human activity to the Earth. This aspect cannot be ignored, as there is
+a bi-directional relationship between our food and the climate.
+
+### The environmental impact of food
+
+Globally, food production accounts for 70% of fresh water resources
+[@Shukla2019](p5), 42-61% of land resources [@Shukla2019](p6) and 21-37%
+of total greenhouse gas emissions (GHGE) [@Crippa2021]. Additionally
+there is growing awareness of how food production can negatively impact
+biodiversity, increase soil degradation and pollute air, water and land
+[@Benton2021; @RodriguezEugenio2018; @Domingo2021; @Kopittke2019]. This
+is made even worse by the fact that about a third of all food produced
+in the world is either lost or wasted through the supply-chain or at the
+consumer. Food waste the third largest contributor to the world's GHGE
+[@FoodandAgricultureOrganizationoftheUnitedNations2013] , and accounts
+for 23-24% of freshwater, land and fertilizer used in food production
+[@Kummu2012].
+
+An environmentally sustainable food system is defined as a system which
+effect "on the surrounding natural environment are neutral or positive,
+taking into consideration biodiversity, water, soil, animal and plant
+health, the carbon footprint, the water footprint, food loss and waste,
+and toxicity."
+
+Most research that has been done on the environmental impact of
+different foods have focused on GHGE. Increased GHGE cause climate
+change, which with various degrees of certainty will result in sea level
+rise, ocean acidification, increased temperature and more extreme
+weather events such as floods and droughts [@Masson-Delmotte2021]. This
+in turn can have consequences on the yield and nutrition value of
+produce and livestock products, and worsen nutrition status of humans
+[@Hatfield2011; @Rojas-Downing2017]. Sustainability is now an important
+consideration for food security, the physical and economical access
+individuals have to nutritious and safe foods [@Shukla2019 ;
+@Gustafson2016].
+
+The environmental impact of foods are commonly found through life cycle
+assessments (LCAs), a "compilation and evaluation of the inputs,
+outputs, and potential environmental impacts of a product system
+throughout its life cycle." [@Cucurachi2019] The input in an LCA for a
+food product could be the raw materials used to produce farm equipment,
+the energy source used for heating a greenhouse or powering a tractor,
+how the food is packaged, distributed, processed and finally how any
+waste produced is handled. The result is the environmental impact (GHGE,
+land use, water footprint, eutrophication, acidification and/or others)
+per output functional unit of the food. The functional unit varies, but
+could be the kilo of food produced at the farm, or that reaches the
+consumer. Other functional units used are amounts of energy, protein and
+various micronutrients produced, or hectares of land used to produce a
+given amount of product. There are no standardized method to perform an
+LCA of a food, so it can be difficult to compare results between studies
+that have performed LCAs with various inputs, outputs and type of
+environmental impact.
+
+#### Different foods, different impact
+
+In general, production at the farm contributes the most to a food's
+environmental impact, while distribution, packaging, processing,
+preparation and waste removal is less important [@Crippa2021;
+@Ledgard2010; @EulalioNeto2021].
+
+There are however huge variations both within and between the same foods
+and food groups. A food could also be sustainable when looking at one
+type of environmental impact, but very harmful when looking at another.
+
+Multiple studies have found that industrial meat production from
+ruminants is the largest contributor to GHGE and land use in the
+agriculture sector [@Clune2017; @Phelps2017; @Mertens2019]. Per kilo
+produced, median GHGE from beef is 71 times higher than field grown
+vegetables, 53 times higher than cereals and legumes, 22 times higher
+than tree nuts, eight times higher than fish, seven times higher than
+chicken, five times higher than pork, three times higher than shrimps
+and prawns, and about similar to lamb [@Clune2017].
+
+When it comes to water footprint, the situation is more nuanced. There
+are three types of water that must be taken into account, namely blue
+water (surface- and groundwater), green water (rainwater) and gray water
+(surface- and groundwater that has been polluted) [@Gerbens-Leenes2013].
+While the global average water footprint of beef per kilo produced is
+higher than for other animals(2.6 times more than pork, 3.6 times more
+than chicken [@Mekonnen2012]), if green water is excluded the water
+footprint of beef is similar to that of pork and chicken
+[@Gerbens-Leenes2013]. The global average total water footprint per kilo
+produced of beef is 21.8 times higher than vegetables, 9.4 times higher
+than cereals, 3.8 times higher than pulses and 1.7 times higher than
+nuts. When removing green water, beef has 5.4 times the water footprint
+of vegetables, 2.4 times the water footprint of cereals, 1.1 the water
+footprint of pulses, and 0.5 the water footprint of nuts [@Mekonnen2011;
+@Mekonnen2012]. There is a lack of water footprint analyses of seafood,
+but aquaculture in China has been found to have a similar blue and green
+water footprint to global levels for chicken [@Gephart2017]. It is
+however believed that the water footprint of aquaculture will increase
+as fish feed increasingly includes more water intensive ingredients
+[@Pahlow2015].
+
+-   
+
+-   Land use (Include that land use for animals include land used for
+    feed.
+
+-   Biodiversity - mention the monoculture problem
+
+-   Included in the environmental impact of animal production is the
+    environmental impact of growing feed. Currently 1/3 of all crops are
+    used to feed animals. The rise of fish farming puts even more
+    pressure on crop production as crops are increasingly part of fish
+    feed as well [@Pahlow2015]. While ruminants can be fed roughage that
+    are not edible for humans, non-ruminant (pork, chicken and farmed
+    fish) feed consists of cereals that could feed humans
+    [@Makkar2018].\
+    and the increase of aquaculture will increase the need for crops for
+    fish feed. In EAT Lancet it is proposed to increase food production
+    without increasing land use, this might not be possible
+    <https://pubmed.ncbi.nlm.nih.gov/23840465/>
+
+It is possible to produce food in a more sustainable manner. For example
+for ruminant meat, mitigation strategies for GHGE include the use of
+pasture and grazing techniques that improve soil carbon sequestration
+[@Godde2020; @Willett2019; @Byrnes2018; @Cusack2021; @DeFigueiredo2017].
+In some studies it is even shown that grazing management could lead to
+net negative carbon emissions of the livestock at farm level
+[@Stanley2018; @Viglizzo2019; @Salvador2017; @Gutierrez-Pena2019].
+Finding sustainable ways to keep ruminants is especially important in
+countries such as Norway where only three percent of the land is used as
+farmland, and an even smaller area can be used for crops fit for human
+consumption [@Knutsen2020].
+
+When it comes to plants, locally field grown products are the most
+sustainable. There are possible strategies to improve field growing even
+further, such as intercropping or a rotating crop system. Intercropping,
+growing two or more crops in close proximity such as legumes and oats
+[@Tidaker2021] or lettuce and cucumbers [@Pereira2021], could reduce
+GHGE of both species. Introducing legumes in a rotating crop system
+reduce the subsequent crop's need for fertilizer [@Nemecek2008;
+@Costa2020]. This could decrease climate impact by 12-21%
+[@Tidaker2021]. However, field growing is not always possible due to
+seasonal climate, and the use of heated greenhouses can increase GHGE of
+a fruit or vegetable substantially. In such cases, importing the produce
+from a region where it is in season might be the better option.
+Tomatoes, aubergine, peppers and cucumbers grown locally in a heated
+greenhouse could have up to a 100 times the GHGE than if they had been
+imported from a country where they are in season and grown in fields
+[@Theurl2014; @Frankowska2019; @Davis2011; @Ntinas2017]. It is however
+important to think about how the produce is transported. For example
+long haul air-freighting of peas into UK from non European countries has
+nearly 59 times higher GHGE than the use of heavy goods vehicles to
+transport peas to UK from EU countries [@Michalsky2015].
+
+Production of nuts has higher GHGE than cereals and legumes, but still
+considerably less than animal based foods. However there are limited
+studies on the GHGE of nut production [@Clune2017]. Besides GHGE, nuts
+have a large water footprint and 74 % of nuts produced today are
+produced under blue water stress, 63 % under severe water stress
+[@Vanham2020]. Per kilo produced, almonds, pistachios, hazelnuts and
+walnuts have the same water footprint as meat from beef [@Vanham2020].
+
+For seafood, fish caught offshore by trawling or long line fishing has
+higher GHGE than fish caught closer to the coast [@Clune2017]. Lobsters,
+shrimp and prawn may under certain circumstances have as high an impact
+as ruminants, while pollock and herring on the other end is comparable
+to tree-nuts and cereals [@Clune2017]. The majority of marine fish comes
+from sustainable fished stocks without overfishing, but there are
+geographical differences
+[@FoodandAgricultureOrganizationoftheUnitedNations2020] (p7-8). About 50
+% of seafood consumed globally comes from aquaculture, and production is
+expanding [@FoodandAgricultureOrganizationoftheUnitedNations2020] p6).
+Feed for aquaculture are primarily based on wild caught forage fish, and
+this has raised concerns about overfishing and the collapse of aquatic
+food webs [@Naylor2009]. Farming of Atlantic Salmon has especially high
+demands of marine feed sources [@Naylor2009]. Alternative feed sources
+are crops, but this will increase pressure on freshwater resources
+[@Pahlow2015], and compete with crop production for human consumption
+[@Makkar2018].
+
+Another aspect is the difference between organic and conventional
+farming. While there are different certification systems for classifying
+a farm as an organic farm, there is typically a focus on animal and
+plant diversity, crop rotations, soil quality and animal welfare, and
+avoiding prophylactic use of antibiotics and most synthetic pesticides
+and fertilizers [@Reganold2016]. Meta-analyses have found improved soil
+quality, higher biodiversity and lower energy use on organic farms, but
+that organic farms often use more land, and due to lower yields
+generally have higher GHGE per kilo product than conventional farms
+[@Reganold2016]. However, concerns have been raised that typical LCAs
+fail to adequately assess the full environmental impact of organic
+farming, and that results may be to overestimate acidification,
+eutrophication and global warming potential while downplaying the
+benefits of organic farming [@Meier2015].
+
+Lastly, there is the food packaging. The use of tin cans and glass jars
+for packaging have higher environmental impact than cartons and plastic
+[@Brock2020; @Stefanini2021]. While plastic may have a low GHGE, plastic
+from food packaging is the major source of plastic waste that pollutes
+the environment [@Ncube2020].
+
+In short, there are numerous concerns an environmentally conscious
+consumer must take into account. Many of the details mentioned, such as
+type of feed used for livestock, if a vegetable is grown in a field or
+in a heated greenhouse and the type of transportation used during
+distribution may not be easily accessible to the consumer when shopping.
+Additional concerns not mentioned here are farm worker and animal
+welfare, and cultural and socioeconomic aspects of food choices
+[@Jarmul2019]. Also, while some foods can have a low environmental
+impact compared to ruminant meat, they could be with no nutritional
+value. Growing and producing nutrient poor foods takes away resources
+that could be used for better purposes.
 
 To combat malnutrition at both population and individual level, many
-countries and regions, have developed regional/national dietary
-guidelines that provide nutritional advice for how to eat to get
-adequate energy and nutrients to stay healthy[@Herforth2019]. These
-guidelines are created for the general healthy population, and people
-with certain diseases may need different and/or additional advice. For
-countries without their own national dietary guidelines, WHO has
-developed a set of global dietary guidelines[@Herforth2019;
-@WorldHealthOrganizationa].
+countries and regions have developed regional/national food based
+dietary guidelines (FBDGs) that provide nutritional advice for how to
+eat to get adequate energy and nutrients to stay healthy
+[@Herforth2019]. In recent updates of FBDGs, the countries Sweden
+[@SwedishFood], Denmark [@Fødevarestyrelsen], Netherlands [@Brink2019],
+France [@FoodandAgricultureOrganizationoftheUnitedNations] and Qatar
+[@Seed2015] have also included that the recommended diet should have a
+low environmental impact. Environmental impact will also be included in
+the new Nordic Nutritional Recommendations (NNR) for 2022, that will be
+used as a basis for FBDGs in the Nordic and Baltic countries
+[@Helsedirektoratetc].
 
-### Healthy dietary patterns
+## Dietary guidelines
 
-In addition to the national dietary guidelines, other healthy dietary
-patterns are described in the literature. Such as the Mediterranean
-diet, the Dietary Approaches to Stop Hypertension and the Healthy Eating
-Index. These dietary patterns all share common themes: Recommendations
-to eat high quality whole foods within ones energy requirements, include
-a variety of colorful vegetables (starchy roots and tubers are generally
-not counted as a vegetable in these instances) and fruit and other fiber
-rich foods such as nuts, legumes and whole grains, consume marine
-omega-3 fatty acids and have a low intake of processed foods, added
-sugar and salt.
+There are more than 100 countries in the world that either has or is
+developing a FBDG [@FoodandAgricultureOrganizationoftheUnitedNationsa].
+These guidelines are developed by looking at the science on diet and
+health, and translating it into guidelines for healthy eating that fits
+the national context. Among other things this means taking into account
+which foods are available and culturally acceptable in that
+country/region, that can be eaten to supply the body with the nutrients
+it needs. Even though there are differences between countries and
+regions, FBDGs around the world share similarities such as
+recommendations to eat high quality whole foods within one's energy
+requirements, include a variety of colorful vegetables (starchy roots
+and tubers are generally not counted as a vegetable in these instances)
+and fruit and other fiber rich foods such as whole grain cereals,
+legumes and nuts, consume marine omega-3 fatty acids and have a low
+intake of processed foods, saturated fat, added sugar and salt
+[@Herforth2019].
 
-Several studies have found that adherence to the respective populations
-dietary guideline is low with the following high to very high
-probability of nutrient deficiencies.
+The recommendations to consume FVs, whole grain cereals, legumes and
+nuts indicates that even if not all FBDGs have incorporated
+environmental sustainability as part of their development, they are
+still sustainable. Following a predominantly plant based diet with low
+to moderate consumption of animal based foods is an advice commonly
+given to consumers that want to be environmentally friendly, while still
+eating healthy [@Willett2019; @SwedishFood; @Fødevarestyrelsen;
+@Brink2019; @Seed2015]. Animal sourced foods are generally nutrient
+dense, and they are not required in large amounts in the diet to provide
+necessary nutrients for good health [@Willett2019]. If eliminating
+animal based foods completely, special focus must be placed on vitamin
+B12, vitamin A, iodine, zinc, calcium and selenium as these nutrients
+are either not present in plant based foods (vitamin B12) or more
+difficult to obtain [@Bakaloudi2021; @Kristensen2015]. Other advice
+presented in FBDGs that include environmental impact is to eat local,
+seasonal produce and choose organic if possible, and to reduce intake of
+meat and of nutrient poor foods such as confectionery.
 
--   High/very high probability of Norwegian students to have inadequte
-    intake of vitamin A, folate, Vitamin D, iodine, selenium and iron
-    [@Valen2020]
+FBDGs are often presented to consumers with images that show various
+food groups and their proportion in relation to each other in a healthy
+diet. An example is the Norwegian "diet circle" that can be seen in
+**Figure** \@ref(fig:kostholdssirkelen).
 
--   Females and young adults in britain have lower intake than their
-    RDIs [@Derbyshire2018]
+```{r kostholdssirkelen, fig.cap = "The Norwegian diet circle, an illustration of how various food groups should contribute to a healthy Norwegian diet[@Helsedirektoratetb]."}
+knitr::include_graphics("images/kostsirkelen.PNG")
+```
 
--   Page 56-57 in THE STATE OF THE WORLD's BIODIVERSITY THE STATE OF THE
-    WORLD's BIODIVERSITTY FOR FOOD AND AGRICULTURE by FAO include
-    information about dietary guidelines that take biodiversity into
-    account
+Some guidelines also include how much of total energy (E%) should come
+from the three macronutrients fat, protein and carbohydrates, and
+subgroups such as saturated fat and added sugar. For example, the NNR
+recommends that 25-40 E% should come from fats, 10-20 E% should come
+from protein and 45-60 E% should come from carbohydrates. Additionally
+they state that \<10 E% should come from either saturated fat or added
+sugar [@NordicCouncilofMinisters2014](p.25-29). WHO guidelines has the
+same recommendations for saturated fat and added sugar, but has slight
+variations in the macronutrient recommendations, stating that 15-30 E%
+should come from fat, 10-15 E% from protein and 55-75 E% from
+carbohydrates [@WorldHealthOrganization2003](p.56).
 
--   Healthy dietary patterns
+By following the FBDGs, an individual should meet their recommended
+dietary intake (RDI) of all nutrients, and thus support their good
+health and well-being. However, many studies have found that adherence
+to national FBDGs is low, especially when it comes to intake of healthy
+and sustainable foods such as FVs, legumes, whole grain cereals, nuts
+and seeds, fish and dairy, and for unhealthy foods high in sugar, salt
+and/or saturated fat [@Valen2020; @Derbyshire2018; @Leme2021;
+@Brettschneider2021; @Kristjansdottir2009; @Bel2019; @AlThani2018]. This
+pattern is seen in all age groups, genders and socioeconomic groups, but
+lower adherence is more prevalent in lower socioeconomic groups. Low
+adherence is associated with increased risk of malnutrition and its
+associated diseases.
 
--   Country guidelines
+In Denmark, higher adherence to the Danish FBDG has been associated with
+lower risk of developing NCDs such as type II diabetes and stroke
+[@Markanti2020; @Hansen2018a; @Hansen2018]. In the Netherlands, one
+study found that higher adherence to the national FBDG was associated
+with lower mortality, and lower risk of developing the NCDs stroke,
+chronic obstructive pulmonary disease and colorectal cancer, but not
+type II diabetes, coronary heart disease, heart failure, dementia,
+breast or lung cancer [@Voortman2017]. Another study found that high
+adherence to the Dutch FBDGs were associated with lower risk of type II
+diabetes [@DenBraver2020]. Due to many confounding factors when it comes
+to diet and health, such as socioeconomic status, and the difficulty of
+measuring dietary intake, it is not surprising to see different results
+in such studies. Still, there is wide consensus that a higher adherence
+to healthy dietary habits such as following national FBDGs would lower
+disease burden of individuals globally and substantially decrease health
+costs [@Schulze2018; @McCullough2014; @USDA2014]. The Institute for
+Health Metrics and Evaluation has in their Global Burden of Disease
+series quantified how low adherence to different advice found in FBDGs
+contribute to mortality and disease risk in 195 countries [@Afshin2019].
+Both globally and in most of the included countries, the leading causes
+of diet related mortality and DALYs were high salt intake and low intake
+of whole grain cereals, fruit, nuts and seeds and vegetables. By
+improving these dietary patterns, the diet would also improve
+environmental sustainability.
 
--   How healthiness is described to the public -- national guidelines,
-    front of pack labels such as Keyhole (Scandinavia), traffic light
-    system (UK) and Nutriscore (France, Portugal)
+It is beyond the scope of this thesis to include a comprehensive review
+of the literature on the systemic and individual factors that underlie
+food choice that in turn influence the healthiness and sustainability of
+ones diet, but for a more thorough discussion of the science, please
+read the review by Chen and Antonelli [@Chen2020]. In short, the
+availability, accessibility and affordability of healthy foods in the
+environment, together with individual food preferences, cultural norms
+and knowledge of the relationship between diet and health all play a
+role.
 
-Whole diets are often scored according to a specific dietary pattern,
-such as the WHO dietary guidelines, the Mediterranean diet, the New
-Nordic Diet, the Healthy Eating Index or others. These scores vary in
-their execution, with some providing individual scores for different
-parts of the diet, such as vegetable and sodium intake, or a composite
-score for all dietary components. The number of different dietary
-components vary, and sometimes they can be weighted in relation to each
-other. **Provide examples**. While dietary patterns are what is of most
-interest when looking for associations between diet and health, it is
-also useful to be able to decide if a specific meal or food is a healthy
-option. In some cases, dietary guidelines can be used to calculate how
-healthy a meal is, such as ... UK CHEF'S VS NORMAL RECIPES SOURCE.
-Another option is to use one of the many developed tools to help the
-public make healthier food choices. These tools, such as the multiple
-traffic light system (later called traffic light system) in the UK,
-Nutriscore in France and Keyhole in Scandinavia, provide nutritional
-information of a product in an easy to understand manner for the public.
-By scoring an individual food or meal on a number of different criteria,
-such as amount of saturated fat or added sugar pr. 100 grams or
-kilocalorie, important dietary information can be simplified. The
-information is presented as a front-of-pack label, that pro These tools,
-such as the multiple traffic light system (later called traffic light
-system) in the UK, the Nutriscore metric in France and the Keyhole in
-Scandinavia,
+There are several sources of dietary information available to the
+general consumer. Concerns have been raised that contradictory messaging
+on diet and health, for example in news media, cause confusion and lower
+intentions to follow healthy dietary advice [@Lee2018b; @Clark2019;
+@Nagler2014; @Vijaykumar2021]. These concerns could also apply to making
+food choices with low environmental impact.
 
--IMAGE OF DIFFERENT FOPs-
+To avoid what is known as "nutrition confusion", the population must
+have nutritional literacy: "the ability to critically analyze nutrition
+information, increase awareness and participate in action to address
+barriers to healthy eating behaviors." [@Guttersrud2014; @Cornish2015].
+Low nutritional literacy, which typically includes difficulty finding
+and interpreting reliable nutrition information, has been associated
+with low adherence to healthy dietary habits [@Taylor2019; @Kalkan2019;
+@Hill2020; @Liao2019].
 
-Throughout the world there are many programs that aim to improve
-health/nutrition literacy to help people make good, healthy diet
-decisions.
+To help consumers make informed, healthy dietary choices when shopping
+for foods, WHO recommends the use of front-of-pack (FOP) nutrition
+labels, that provide consumers with easy to understand nutrition
+information at a glance [@WorldHealthOrganization2014;
+@WorldHealthOrganization2013; @WorldHealthOrganizaton2016]. There also
+exists some FOP labels to help consumers make sustainable food choices
+[@Liu2016; @Cornish2020; @Meyerding2019; @Grunert2014].
 
-Other ways to help nudge people into more healthy dietary habits is the
-use of healthiness indicators on food items bought in stores. These
-front-of-pack food labels include information at a glance about a foods
-nutritional qualities.
+## Front of pack labels
 
-### Healthiness indicators to help the public
+### Nutrition labels
 
-Environmentally sustainable diets Climate change is not fair High burden
-of malnutrition, also high burden of the effects of climate change
+In 2019 there were over 30 countries around the world that have endorsed
+the use of FOP nutrition labels as a tool to make it easier for
+consumers to choose healthier food options [@Jones2019]. In most
+countries the use of these labels by food manufacturers and retail is
+voluntary, but a few countries including Chile, South Korea, Mexico and
+Finland have mandatory FOP nutrition labels [@Jones2019]. There are two
+groups of FOPs, summary labels and nutrient-specific labels
+[@Temple2020]. In both groups, qualifying (i.e. healthy) and
+disqualifying (i.e. unhealthy) components are used to decide on a food's
+healthiness. Summary labels use a set of criteria that can be turned
+into an algorithm to decide a food's healthiness, while
+nutrient-specific labels showcase the amount of the various
+qualifying/disqualifying components in the food per 100 g/per serving.
+Typically the nutrients fat, saturated fat, sodium (or salt) and added
+sugar are seen as disqualifying components, while protein, fibre and
+omega-3 fatty acids are seen as qualifying. The addition of fruits,
+vegetables, nuts, legumes and healthy fats such as olive and nut oils is
+also qualifying in some criteria. Some FOPs uses a mix of disqualifying
+and qualifying components to decide if a food is healthy or not, while
+others use only one or the other [@VanderBend2019; @Temple2020].
 
-Few national dietary guidelines, that promote healthy dietary patterns,
-include information on the environmental impact of the dietary
-recommendation7. The Netherlands, France, Germany, Brazil, Qatar, Sweden
-and Denmark are exemptions, while the rest of the Nordic countries will
-include environmental impact in the new Nordic Nutritional
-Recommendations to be published in 2023 (SOURCE). Assessing
-environmental impacts of food are usually done by a
-life-cycle-assessment ...
+There is also a difference in what message is conveyed. The Scandinavian
+Keyhole is a single mark summary label that is given to foods that are a
+healthier option in their given product category, such as ready-made
+meals or breads. For the Keyhole there are different thresholds of
+disqualifying (energy, fat, saturated fat, trans fat, sodium and sugar)
+and qualifying components (energy, fibre, fruits, vegetables, nuts,
+legumes) per 100 g for what it takes to receive the label depending on
+product category, and some product categories such as soft drinks cannot
+receive the label at all [@VanderBend2019, @Helsedirektoratet2015]. The
+Multiple Traffic Light System used in the UK is a nutrient-specific
+label that only include disqualifying components (fat, saturated fat,
+sodium and added sugar), and the same threshold values for the various
+components is used on all food categories. The Multiple Traffic Light
+System presents the consumer with the values of each disqualifying
+component per 100 g/per serving in grams and percentage of the daily
+amount one should eat, color coded with either green for "low", amber
+for "medium", or red for "high" [@VanderBend2019]. Consumers are advised
+to choose foods with more green and amber than red
+[@BritishNutritionFoundation2019]. Yet another type of FOP is the
+Nutriscore, that originated in France and is now used in many countries
+in Europe. Like the Keyhole label, the Nutriscore is a summary label
+that uses both disqualifying (energy, saturated fat, sodium, added
+sugar) and qualifying components (protein, fibre, fruits, vegetables,
+nuts, legumes, olive oil, nut oil, rapeseed oil) per 100 g/100 ml of a
+food/drink. However, where the Keyhole is a single mark given to foods
+that comply the given set of criteria, the Nutriscore is a gradient from
+A (dark green, healthy) to E (dark orange, less healthy), where the
+value of the specific food is highlighted [@VanderBend2019;
+@Chantal2017; @SantePubliqueFrance2021; @SantePubliqueFrance2021a].
+Originally the Nutriscore was used as-is on all food product categories,
+but it was changed to have specific criteria for fats and dairy. The
+design of the mentioned FOPs can be seen in **Figure**
+\@ref(fig:nutritionlabels).
 
-Assessing environmental impacts
+```{r nutritionlabels, fig.cap = "Examples of front of pack nutrition labels used in Europe, the Multiple Traffic Light System (UK), Nutriscore (France, Belgium, Spain, Portugal, Germany, the Netherlands, Switzerland and Luxembourg) and Keyhole (Scandinavia)."}
+knitr::include_graphics("images/nutritionlabels.PNG")
+```
 
-Reaching consumers Mixed messages in the media regarding food, nutrition
-and climate science. People may not know their national food guidelines
-(in Norway: "Five a day" is well known, but "three a day" and "three a
-week" less so)
+These labels provide simplified dietary information and are accessible
+to the consumer when making dietary choices while food shopping. Another
+potential consequence of the mandatory use of FOP nutrition labels, is
+that manufacturers improve the healthiness of their products to be able
+to receive a FOP label. Indeed, a recent meta analysis found that the
+use of FOP nutrition labels influence consumers to reduce their intake
+of energy and fat, and increase their intake of vegetables. At the same
+time, it was found that food manufacturers reduced the amount of
+sodium/salt in their product formulas [@Shangguan2019]. The European
+Academy of Paediatrics and the European Childhood Obesity Group have
+called for a uniform, mandatory FOP nutrition label use in the European
+Union to help mitigate the rising obesity trend in European children and
+adolescents [@Deren2021].
 
-## Diet and sustainability
+There are of course other interventions and tools that governments,
+together with the industry and non-profit organizations use to improve
+dietary choices of general consumers, such as promotional campaigns and
+regulatory restrictions and mandates, but such interventions would be
+outside the scope of this thesis. For a review please read Russo et al
+[@Russo2020].
 
-Many of the countries that are the most affected by malnutrition, are
-the countries that will experience the worst consequences of climate
-change (**SOURCE**).
+### Sustainability labels
 
-Globally, deficiency of nutrients that are easily available from animal
-based foods, such as iron, vitamin A, zinc and iodine, are
-common[@Bailey2015].
+Sustainability labels are not as much used as nutrition labels, but
+labeling schemes exist for foods that are organic, local, come from
+sustainable fisheries, have high animal welfare or worker's rights,
+and/or a low carbon footprint [@Liu2016; @Cornish2020;
+@MarineStewardshipCouncil; @Meyerding2019]. Recently, retailers in
+France have developed a sustainability label for their geographical
+region in line with the summary Nutriscore, that has both qualifying
+(environmental benefits such as organic or local production) and
+disqualifying (packaged in non--recyclable packaging, has ingredients
+with negative environmental impacts such as lowered biodiversity)
+properties [@ecoscore-criteria]. In the UK, Foundation Earth has
+developed a sustainability label after the model of nutrient-specific
+labels [@foundation-earth].
 
-### Sustainability indicators to help the public
+There is uncertainty if sustainability labels improve the sustainability
+of consumer's food choices [@Liu2016; @DeBauw2021; @Grunert2014].
 
-## Consumer beliefs about diet, health and sustainability
+## Meals, not guidelines or labels
 
-Need for information
+While dietary guidelines and FOP labels can help individuals make
+healthy, and perhaps sustainable, food choices, foods are seldom bought
+to be eaten in isolation. Rather, they are bought to be part of meals.
+Consumers find inspiration for what meals to cook in various sources,
+such as cookbooks and on the Internet [@Doub2016]. Some recipe sources,
+like the popular recipe site Allrecipes.com, provide users with
+nutrition information. In the case of Allrecipes.com this is the amount
+of calories and percentage of RDI of macro- and micronutrients per
+serving [@allrecipes-nutrition].
+
+Several studies have looked at how well recipes found in cookbooks
+[@Irwin2017; @Howard2012], supermarket magazines [@Wademan2020], food
+blogs [@Schneider2013; @Keogh2019; @Dickinson2018] or other Internet
+sources such as recipe sites [@Trattner2017a] compare to dietary
+guidelines and/or FOP labeling schemes. Results are sobering, as most
+recipes studied do not comply with healthy dietary principles. To date,
+I am not aware of any study on these kinds of recipes sustainability.
+
+## Thesis aims
+
+This thesis aims to look at a selection of recipes from three countries
+(UK, Norway, US), from cookbooks (UK) and the Internet (Norway, US), and
+compare their health and sustainability.
+
+RQ1: How sustainable are recipes from these countries?
+
+RQ2: Do sustainability indicators correlate with healthiness indicators?
+
+RQ3: Do sustainability indicators correlate with micronutrient content?

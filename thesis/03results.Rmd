@@ -14,143 +14,6 @@ output:
 bibliography: library.bib
 ---
 
-```{r setup-results, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, echo = FALSE, message = FALSE, warning = FALSE)
-```
-
-```{r packages and functions}
-# Load here the packages
-#Add analysis script
-load("../Data/results.RData")
-
-#Libraries
-library(thesisToolsOmics)
-library(kableExtra)
-library(GGally)
-library(bookdown)
-
-##GGplot theme
-theme_set(theme_bw())
-
-#Functions
-#KableExtra formatting
-formatKableStat <- function(df, features = NULL, caption = NULL){
-  
-  #Filter out features of interest or show all?
-  if(!is.null(features)){
-    dt <- df %>% filter(Feature %in% features)
-  } else {
-    dt <- df
-  }
-  
-  #Add a caption or not
-  if(!is.null(caption)){
-    kbl(dt, booktabs = TRUE, linesep = "", escape = FALSE) %>%
-      kable_classic_2() %>%
-      kable_styling(full_width = FALSE) %>%
-      add_header_above(c(" " = 1, "Median (IQR)" = 3, "Kruskal-Wallis test" = 2, "Dunn test, Holm corrected" = 2))
-  } else {
-    kbl(dt, booktabs = TRUE, linesep = "", caption = caption, escape = FALSE) %>%
-      kable_classic_2() %>%
-      kable_styling(full_width = FALSE) %>%
-      add_header_above(c(" " = 1, "Median (IQR)" = 3, "Kruskal-Wallis test" = 2, "Dunn test, Holm corrected" = 2))
-  }
-  
-}
-standardKbl <- function(df, caption = NULL){
-  #df = dataframe to turn into kableExtra table, caption = caption for the table
-  
-  if(is.null(caption)){
-    
-    table <- df %>%
-      kbl(booktabs = TRUE, linesep = "", escape = FALSE) %>%
-      kable_classic_2(full_width = FALSE)
-    
-  } else {
-    table <- df %>%
-      kbl(booktabs = TRUE, linesep = "", caption = caption, escape = FALSE) %>%
-      kable_classic_2(full_width = FALSE)
-  }
-  
-  table 
-  
-}
-
-#Correlation analysis helper functions
-#Helper function tp get results from corr.test
-collectCorr <- function(corr_test_results) {
-  #Create a df with group, adjusted p.value and symbols for showing the significance of the p value from a corr.test result
-  correlations <- tibble(
-    'estimate' = round(corr_test_results$r[1,2], 3),
-    'pvalue' = corr_test_results$p.adj,
-  ) %>%
-    mutate(pvalue_star = as.character(symnum(pvalue, corr = FALSE, na = FALSE, 
-                                             cutpoints = c(0, 0.001, 0.01, 0.05, 0.1, 1), 
-                                             symbols = c("***", "**", "*", "'", " "))))
-}
-#Fix the colors on the correlation scores in the upper segment, slight alteration of code from Isaac Zhao on statexchange
-myCorrelations <- function(data,mapping,...){
-  
-  #Get the data to use for correlation analysis
-  data2 = data
-  data2$x = as.numeric(data[,as_label(mapping$x)])
-  data2$y = as.numeric(data[,as_label(mapping$y)])
-  data2$group = data[,as_label(mapping$colour)]
-  
-  #Split into separate datasets based on group and run corr.test each + all groups combined
-  to_correlate <- data2 %>%
-    select(group, x, y) %>%
-    #Split into individual df's and remove group column as it's numeric
-    split(f = as.factor(.$group)) %>%
-    lapply(., select, ... = -group)
-  #Add the df with all groups to the list  
-  to_correlate$`Overall Corr` <- data2 %>%
-    select(x,y)
-  
-  #Run correlation analysis on each list element, and turn into a single df before plotting
-  correlations <- lapply(to_correlate, corr.test, method = 'spearman') %>%
-    #Get the estimate, p.value and create a column with symbols that show stat.sig. og p value
-    lapply(., collectCorr) %>%
-    #Bind together
-    bind_rows(., .id = 'group')
-  
-  ggplot(data = correlations, aes(x = 1, y = factor(group, levels = c('Overall Corr', 'US', 'Norway', 'UK')), color = group)) +
-    geom_text(aes(label=paste0(group, ": ", estimate, pvalue_star)))
-  
-}
-#One with altered textsize
-myCorrelations_textsize <- function(data,mapping,...){
-  
-  #Get the data to use for correlation analysis
-  data2 = data
-  data2$x = as.numeric(data[,as_label(mapping$x)])
-  data2$y = as.numeric(data[,as_label(mapping$y)])
-  data2$group = data[,as_label(mapping$colour)]
-  
-  #Split into separate datasets based on group and run corr.test each + all groups combined
-  to_correlate <- data2 %>%
-    select(group, x, y) %>%
-    #Split into individual df's and remove group column as it's numeric
-    split(f = as.factor(.$group)) %>%
-    lapply(., select, ... = -group)
-  #Add the df with all groups to the list  
-  to_correlate$`Overall Corr` <- data2 %>%
-    select(x,y)
-  
-  #Run correlation analysis on each list element, and turn into a single df before plotting
-  correlations <- lapply(to_correlate, corr.test, method = 'spearman') %>%
-    #Get the estimate, p.value and create a column with symbols that show stat.sig. og p value
-    lapply(., collectCorr) %>%
-    #Bind together
-    bind_rows(., .id = 'group')
-  
-  ggplot(data = correlations, aes(x = 1, y = factor(group, levels = c('Overall Corr', 'US', 'Norway', 'UK')), color = group)) +
-    geom_text(aes(label=paste0(group, ": ", estimate, pvalue_star)), size = 3.5)
-  
-}
-
-```
-
 # Results
 
 ## Data completeness
@@ -161,7 +24,7 @@ There were five recipes, all from Norway, that included ingredients where the am
 
 ### Missing nutrition information and sustainability indicators
 
-For all three countries, the median percentage of the weight of the recipe that was not mapped to a nutrient database or the SHARP Indicators database was 0, and the interquartile range were 0, 0. See **Figure** \@ref(fig:data-completeness)A and B.
+For all three countries, the median percentage of the weight of the recipe that was mapped to a nutrient database or the SHARP Indicators database was 0, and the interquartile range was 100, 100. See **Figure** \@ref(fig:data-completeness)A and B.
 
 ```{r data-completeness, fig.cap = "Percentage of the recipe in weight not mapped to a nutrient database (A) and SHARP Indicators database (B).", fig.width=10, fig.asp=0.45}
 #Nutrient plot
@@ -170,7 +33,7 @@ nutrients_completeness <- plotViolinBox(data_completeness$no_nutrient_info) +
     labs(
       color = 'Country',
       x = 'Country',
-      y = '% of recipe weight with no nutrient information'
+      y = '% of recipe weight with nutrient information'
     ) + ylim(0,100)
 #Sustainability plot
 sustainability_completeness <- plotViolinBox(data_completeness$no_sustainability_indicators) +
@@ -178,7 +41,7 @@ sustainability_completeness <- plotViolinBox(data_completeness$no_sustainability
     labs(
       color = 'Country',
       x = 'Country',
-      y = '% of recipe weight with no sustainability indicators'
+      y = '% of recipe weight with sustainability indicators'
     ) + ylim(0,100)
 #Legend, right
 legend <- get_legend(
@@ -256,7 +119,7 @@ See **Appendix** **Table** \@ref(tab:stats-data) for the full details.
 
 ## Contribution of different food groups to environmental impact of recipes
 
-Per 100 g, meat products followed by seafood, fats and oils (including butter) and dairy products were the ingredients that contributed most to a recipes environmental impact. Recipes from the UK tended to include less meat and dairy than recipes from Norway and the US (Appendix Figure \@ref(fig:percent-foodgroup-weight).
+Per 100 g, meat products followed by seafood, fats and oils (including butter) and dairy products were the ingredients that contributed most to a recipes environmental impact. Recipes from the UK tended to include less meat and dairy than recipes from Norway and the US (**Appendix Figure** \@ref(fig:percent-foodgroups-weight).
 
 ## Principal component analysis
 
@@ -412,16 +275,17 @@ stat_table %>%
   #Escape % for LaTeX
   mutate(Feature = str_replace(Feature, "%", "\\\\%")) %>%
   #Format table
-  formatKableStat(caption = "Results from Kruskal-Wallis and post-hoc dunn test.") %>%
-  kable_styling(latex_options = c("scale_down", "hold_position"))
+  kbl(booktabs = TRUE, linesep = "", caption = "Kruskal Wallis and 
+      Dunn test results.", escape = FALSE) %>%
+  kable_classic_2(full_width = FALSE)  %>%
+  kable_styling(latex_options = c("scale_down", "hold_position")) %>%
+      add_header_above(c(" " = 1, "Median (IQR)" = 3, "Kruskal-Wallis test" = 2, "Dunn test, Holm corrected" = 2))
 ```
-
-### 
 
 ```{r percent-foodgroups-weight, fig.cap = "How much various food groups contributed to the weight of the recipes.", fig.width = 10, fig.asp = 0.75}
 #Percentage of weight from each foodgroup
 temp <- tidy_ingredients %>% group_by(group, sample_id, Foodgroup) %>%
-  summarise(value = sum(Amounts_kg, na.rm = TRUE))
+  summarise(value = sum(Amounts, na.rm = TRUE))
 
 #Plot
 plotViolinBox(temp) + facet_wrap(~Foodgroup) +
