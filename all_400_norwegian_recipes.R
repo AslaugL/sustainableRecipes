@@ -1,5 +1,6 @@
 library(tidyverse)
 library(stringi)
+library(readxl)
 roxygen2::roxygenise()
 
 #Setup----
@@ -15,62 +16,37 @@ databases <- list(
   'sustainability' = readRDS('./Data/output/sharp_db.Rds')
 )
 
-#Some various datafraes to use in the cleanup
-various <- list(
-  #Units to keep in the recipes
-  'units' = c('tsp', 'tbsp', 'l', 'dl', 'g', 'kg', 'hp', 'krm', 'tins', 'cm', 'leaf', 'can',
-              'stk', 'glass', 'cup', 'box', 'pinch', 'flaske', 'portion', 'slice', '\\bclove\\b',
-              'neve', 'ml', 'cl', 'bunch', 'pack', 'plate', 'drop', 'twig', 'pound', 'ounce', 'stalk') %>%
-    #Add whitespace on both sides to only match a unit in a string
-    sapply(., function(x) {paste0('\\s', x, '\\s')}),
-  
-  #Ingredients that are countes as individual pieces/stk
-  'stk' = c('anchovy', 'anise', 'apple', 'apricot', 'avocado', 'artichoke',
-            
-            'banana', 'bay leaf', 'bean', 'baguette', 'bok choi', 'broccoli', 'broth cube', 'basil',
-            'bread',
-            
-            'cabbage', 'cardamom', 'carrot', 'cauliflower', 'Celariac root', 'celery', 'celery stalk',
-            'champignons', 'chicken', 'chicory', 'chili', 'ciabatta', 'cinnamon', 'clementine', '\\bcloves\\b', 'cod',
-            'cod fillet', 'crab', 'cracker cream', 'cucumber', 'coriander',
-            
-            'duck',
-            
-            'egg', 'entrecôtekam',
-            
-            'fennel', 'fig',
-            
-            'garlic', 'grape',
-            
-            'hen breast fillet grouse', 'herring smoked',
-            
-            'jerusalem artichoke', 'juniper berry',
-            
-            'lamb chop', 'leek', 'lemon', 'lemongrass', 'lettuce', 'lime',
-            
-            'mango', 'mushroom',
-            
-            'nori seaweed', 'nut',
-            
-            'olive', 'onion', 'orange',
-            
-            'paprika', 'pear', 'pepper', 'peppercorns', 'pineapple', 'pomegranate', 'plate', 'pork',
-            'potato', 'prawn', 'prune',
-            
-            'radish', 'roll',
-            
-            'salad', 'salmon', 'scallion', 'scallop', 'scampi', 'shallot', 'sheep', 'sheet', 'shrimp',
-            'squid', 'stock cube',
-            
-            'tenderloin', 'thyme', 'tomato', 'tortilla', 'trout', 'turkey')
-  
-)
+#Some various datafraems to use in the cleanup
+various <- list()
 
 #Read in the recipes
-raw <- list.files(path = './Data/recipes/', pattern = "*cleaned.csv", full.names = TRUE) %>% 
-  map_df(~read_csv(.)) %>%
-  #Columns to work with
-  select(`Selected Meals`, Ingredients, Source, Country)
+raw <- list(
+  
+  'norway' = list.files(path = './Data/recipes/', pattern = "*cleaned.csv", full.names = TRUE) %>% 
+    map_df(~read_csv(.)) %>%
+    #Columns to work with
+    select(`Selected Meals`, Ingredients, Source, Country),
+  
+  'uk' = read_xlsx('./Data/recipes/Data_UK_100.xlsx') %>%
+    select(`Selected Meals`, Ingredients, Source, Country) %>% drop_na(Ingredients),
+  
+  'us' = readRDS('./Data/recipes/US_clean.Rds') %>%
+    #Format like the others
+    #Remove columns
+    select(-c(ingredient_id, ingredient_amount)) %>%
+    #Add columns
+    mutate(Country = 'US',
+           Source = 'allrecipes',
+           unit = 'kg') %>%
+    #Reformat Ingredient rows, one row for each ingredient with amount before ingredient name
+    rename(temp = Ingredients) %>%
+    unite(., col = 'Ingredients', c(Amounts_kg, unit, temp), sep = ' ')
+) %>%
+
+#All together
+bind_rows(.) %>%
+  #Rename `Selected Meals` to sample_id
+  rename(sample_id = `Selected Meals`)
 
 #Clean up the recipe ingredients----
 recipes <- raw %>%
@@ -83,8 +59,8 @@ recipes <- raw %>%
   mutate(Ingredients = str_trim(Ingredients, side = 'both'),
          Ingredients = str_squish(Ingredients)) %>%
   filter(Ingredients != '' | is.na(Ingredients)) %>%
-  
-  #Change a few composite ingredient into individual ingredients----
+
+  #Change a few composite ingredient into individual ingredients
   mutate(Ingredients = Ingredients %>%
          str_replace('500 g ground pork and beef', '250 g ground pork\n250 g ground meat beef') %>%
          str_replace('1 bouquet garni \\(a bay leaf, 2 sprigs of thyme, and some parsley stems, tied together with string\\)|1 stk bouquet garni', '1 stk bay leaf\n2 twig of thyme\n2 twig parsley stems') %>% # From Hugh's River Cottage
@@ -105,45 +81,23 @@ recipes <- raw %>%
          str_replace('600 g frozen vegetable mixture|600 g of frozen stew mix', '180 g swede\n150 g carrot\n150 g celeriac root\n60 g red onion\n60 g parsnip root') %>%
          str_replace('wok-vegetables', '110 g bean green asparagus\n110 g broccoli\n100 g mango\n85 g onion\n75 g water chestnut\n10 g rapeseed oil') %>% #Thai inspired wok REMA1000
          str_replace('400 g wok mixture with asparagus beans, carrot and leek', '133.33 g asparagus beans\n133.33 g carrot\n133.33 g leek') %>%
-         str_replace('4 dl vegetables in cubes. eg. tomato, cucumber and corn', '1.33 dl tomato\n1.33 dl cucumber\n1.33 dl corn') %>%
+         str_replace('4 dl vegetables in cubes. eg. tomato, cucumber and corn', '1.33 dl tomato\n1.33 dl cucumber\n1.33 dl corn kernels') %>%
          str_replace('1 cup fresh herbs eg basil, rosemary and leaf parsley', '0.33 cup basil\n0.33 cup rosemary\n0.33 cup parsley') %>%
          str_replace('60 g of fresh herbs e.g . parsley, basil, chives and coriander', '15 g fresh parsley\n15 g fresh basil\n15 g fresh chives\n15 g fresh coriander') %>%
-         #Refrigerated buttermilk dough
-         #From https://www.finecooking.com/recipe/buttermilk-biscuit-dough
-         str_replace('refrigerated buttermilk biscuit dough', '8 ounce wheat flour
-2 tsp baking powder
-1 tsp granulated sugar
-0.5 tsp baking soda
-0.5 tsp table salt
-6 tbsp cold unsalted butter
-0.75 cup milk') %>%
          
-         #Fish cakes              
-         #From https://www.matprat.no/oppskrifter/familien/grove-fiskekaker-med-karristuede-rotgronnsaker/
-         str_replace('600 g fish cakes, coarse', '600 g haddock
-1 tsp salt
-1.5 tbsp potato starch
-1 stk egg
-1 dl milk
-0.25 tsp pepper
-2 tbsp leek
-2 tbsp butter') %>%
-         
-         #Potato flatbread
-         #From https://www.matprat.no/oppskrifter/tradisjon/potetlomper/ uses a mix of rye and wheat flour originally
-         str_replace('30 pcs lomper',
-                     '5 dl wheat flour
-         2000 g potato
-         2 tsp salt')) %>%
+        #Lomper (Potato flatbread)
+        #From https://www.matprat.no/oppskrifter/tradisjon/potetlomper/ uses a mix of rye and wheat flour originally
+        str_replace('30 pcs lomper', '5 dl wheat flour\n2000 g potato\n2 tsp salt') %>%
+           
+        #Storebought pie dough
+        #From https://oda.com/no/recipes/1075-spoon-quiche-med-spinat-sopp-og-feta/
+        str_replace('1 piece pie dough, finished', '125 g butter\n3 dl wheat flour\n3 tbsp water')) %>%
   
-  #Remove amounts for composite ingredients from the us recipes
-  #mutate(Amounts = case_when(!str_detect(Ingredients, '\n') ~ Amounts)) %>%
-  
-  #Separate again
+  #Separate rows again
   separate_rows(Ingredients, sep = '\n') %>%
   
   #Remove some unnecessary characters in the ingredients column, and make sure there is a space between numbers and words ('2 dl', not '2dl)
-  #Reformat all units to the same and fix some ingredient names for later----
+  #Reformat all units to the same and fix some ingredient names for later
   mutate(Ingredients = Ingredients %>%
          str_replace_all('["()]|possibly', '') %>%
          str_replace(' s ', '') %>%
@@ -285,318 +239,111 @@ recipes <- raw %>%
          str_replace('recao, or culantro', 'coriander') %>%
          str_replace('parlsey', 'parsley') %>%
          str_replace('mug, fresh', 'parsley, fresh') %>%
-         str_replace('broccoli peas, frozen', 'broccoli, frozen') %>%
-         str_replace('salvie', 'sage'))
+         str_replace('broccoli peas, frozen', 'broccoli, frozen') %>% #riginal recipe says it's broccoli
+         str_replace('salvie', 'sage')) %>%
+  
+  mutate(Ingredients = Ingredients %>%
+    #HP in recipes from Norway means either pack, portion, can, glass depending on recipe and ingredient.
+    #Real amounts found by looking in Kolonial's webshop
+    str_replace('1 hp egg noodles', '250 g egg noodles') %>%
+      str_replace('1 hp shimeji mushrooms in chunks', '200 g shimeji mushroom') %>%
+      str_replace('1 hp frozen frozen peas|1 hp peas, frozen', '350 g frozen peas') %>%
+      str_replace('1 hp sugar peas|1 hp sugar peas, in strips', '150 g sugar peas') %>%
+      str_replace('1 hp spinach', '200 g fresh spinach') %>%
+      str_replace('hp parsley', 'bunch parsley') %>%
+      str_replace('1 hp anchovies, can be looped', '55 g anchovies canned') %>%
+      str_replace('1 hp taco seasoning', '1 pack taco seasoning') %>%
+      str_replace('1 hp guacamole spice mix', '20 g guacamole spice mix') %>%
+      str_replace('0.75 hp peas, frozen', '263 g peas frozen') %>%
+      str_replace('1 hp toro greek moussaka', '136 g toro greek moussaka') %>%
+      str_replace('1 hp bearnaise sauce, mix|1 hp bearnaise base', '29 g bearnaise sauce base mix') %>%
+      str_replace('1 hp halloumi', '200 g halloumi') %>%
+      str_replace('0.5 hp mango chutney|1 hp mango chutney', '50 g mango chutney') %>% #Recipe says 50 g
+      str_replace('1 hp of naan bread', '120 g naan bread') %>%
+      str_replace('4 hp chickpeas', '1640 g canned chickpeas') %>%
+      str_replace('1 hp potato steps', '450 g potatoes') %>%
+      str_replace('2 hp peas, frozen', '700 g frozen peas') %>%
+      str_replace('1 hp crispy bread, coarse', '520 g cripsy bread coarse') %>%
+      str_replace('1 hp salad mix', '175 g salad mix') %>%
+      str_replace('2 hp pork chops', '1000 g pork chops') %>%
+      str_replace('2 hp asparagus', '500 g asparagus') %>%
+      str_replace('1 hp cherry tomatoes, red', '200 g cherry tomatoes') %>%
+      str_replace('1 hp jasmine rice boil-in-bag', '120 g parboiled rice jasmine') %>%
+      str_replace('1 hp heart salad', '2 stk heart salad') %>%
+      str_replace('0.5 hp radish', '65 g radish') %>%
+      str_replace('2 hp radish', '260 g radish') %>%
+      str_replace('4 hp pearl barley', '300 g pearl barley') %>% #One portion of pearl barley is default 75g
+      str_replace('0.2 hp stalk celery', '80 g celery') %>%
+      str_replace('2 hp tomatoes, chopped', '2 stk tomatoes chopped') %>%
+      str_replace('0.5 hp cherry tomatoes, red', '100 g cherry tomatoes') %>%
+      str_replace('1 hp tikka masala sauce', '360 g tikka masala sauce') %>%
+      str_replace('1 hp mango chutney', '50 g mango chutney') %>%
+      str_replace('1 hp yogurt, greek', '2 dl yoghurt greek') %>%
+      str_replace('2 hp nan bread', '240 g naan bread') %>%
+      str_replace('1 hp sour cream, light', '300 g sour cream light') %>%
+      str_replace('1 hp cherry tomatoes, canned', '400 g cherry tomatoes canned') %>%
+      str_replace('2 hp vossa sausage', '800 g vossa sausage') %>%
+      str_replace('1 hp pizza filling', '55 g pizza filling') %>%
+      str_replace('1 hp ketchup', '450 g ketchup') %>%
+      str_replace('1 hp mustard for sausages', '490 g mustard') %>%
+      str_replace('1 hp radish', '130 g radish') %>%
+      str_replace('0.25 hp stalk celery', '100 g celery') %>%
+      str_replace('2 hp tagliatelle', '400 g tagliatelle') %>%
+      str_replace('2 hp jasmine rice boil-in-bag', '240 g parboiled rice jasmine') %>%
+      str_replace('1 hp broccoli, frozen', '450 g broccoli frozen') %>%
+      str_replace('1 stk of ham, in cubes', '80 g ham') %>%
+      str_replace('2 stk of risotto rice with mushrooms', '500 g risotto rice') %>%
+      str_replace('1 pack of flatbread', '275 g flatbread') %>%
+      str_replace('1 stk strawberry basket', '400 g strawberries') %>%
+      str_replace('1 stk raspberry basket', '125 g raspberries') %>%
+      str_replace('1 stk blueberry basket', '125 g blueberries'))
   
   #Conditionals
   recipes <- recipes %>%
   mutate(Ingredients = case_when(
     str_detect(Ingredients, 'rosemary|basil|tarragon|coriander') ~ str_replace(Ingredients, 'pot|bunt', 'bunch'),
     !str_detect(Ingredients, '^[:digit:]') & (str_detect(Ingredients, 'juice') & str_detect(Ingredients, 'lemon|lime')) ~ str_replace(Ingredients, '(?<=\\d)\\s', ' stk '),
-    `Selected Meals` %in% c('Duck Breast With PasTine Pure', 'Cod With Bacon, Spinach And Rotmoss') & Ingredients == 'parsley' ~ 'parsnip root', #Mistake in translation
-    `Selected Meals` == 'Pollock with herb onion and baked potatoes' & str_detect(Ingredients, 'fish') ~ str_replace(Ingredients, 'fish fillet', 'pollock'), #It says in the name it's pollock
+    sample_id %in% c('Duck Breast With PasTine Pure', 'Cod With Bacon, Spinach And Rotmoss') & Ingredients == 'parsley' ~ 'parsnip root', #Mistake in translation
+    sample_id == 'Pollock with herb onion and baked potatoes' & str_detect(Ingredients, 'fish') ~ str_replace(Ingredients, 'fish fillet', 'pollock'), #It says in the name it's pollock
+    
     TRUE ~ Ingredients))
 
-  #Extract the amounts to their own column----
-  recipes <- recipes %>%
-  mutate(Amounts = case_when(
+  #Standardise recipe ingredients and units
+  recipes <- recipes %>%  standardiseRecipes()
     
-    #Country == 'US' & !is.na(Amounts) ~ Amounts,
-    
-    #Extract amounts with units
-    str_detect(Ingredients, paste0('(\\d+\\.\\d+|\\d+-\\d+|\\d+)', various$units, collapse = '|')) ~
-      str_extract(Ingredients, '((\\d+\\.\\d+|\\d+-\\d+|\\d+)\\s\\w+)'),
-    #Extract pure numbers
-    !str_detect(Ingredients, paste0('(\\d+\\.\\d+|\\d+-\\d+|\\d+)', various$units, collapse = '|')) &
-      str_detect(Ingredients, '^\\d+') ~ str_extract(Ingredients, '^[^\\s]+')),
-    
-    #Remove this information from Ingredients columns
-    Ingredients = case_when(
-      str_detect(Ingredients, paste0('(\\d+\\.\\d+|\\d+-\\d+|\\d+)', various$units, collapse = '|')) ~
-        str_remove(Ingredients, '((\\d+\\.\\d+|\\d+-\\d+|\\d+)\\s\\w+)'),
-      !str_detect(Ingredients, paste0('(\\d+\\.\\d+|\\d+-\\d+|\\d+)', various$units, collapse = '|')) & str_detect(Ingredients, '^\\d+') ~
-        str_remove_all(Ingredients, '^[^\\s]+'),
-      TRUE ~ Ingredients)) %>%
-  
-  #Trim and squish
-  mutate(Ingredients = Ingredients %>%
-           str_trim(side = 'both') %>%
-           str_squish()) %>%
-  
-  #Fix the 'hp' amounts from Kolonialen and Klikk, using the weights from their webstore. Hp means either 'pack' or 'portion'
-  mutate(Amounts = case_when(
-    #In the 100 previously used
-    Ingredients == 'chickpeas' & Amounts == '4 hp' ~ '1640 g', #Four cans, one can is 410 g in the recipe ingredient shopping cart they supply
-    Ingredients == 'vossa sausage' ~ '800 g', #The one sold at kolonial is 400g each
-    Ingredients == 'tomatoes, chopped' & Amounts == '2 hp' ~ '2 stk',
-    str_detect(Ingredients, 'jasmine rice') & Amounts == '2 hp' ~ '240 g',
-    Ingredients == 'halloumi' ~ '200 g',
-    Ingredients == 'toro greek moussaka' ~ '136 g', #Mostly potatoes, some tomatoes, wheat flour, cornstach and oil
-    Ingredients == 'salad mix' & Amounts == '1 hp' ~ '175 g', #Babyleaf salad mix is their default salad mix in the shoppin cart for the recipes
-    Ingredients == 'rema frozen vegetables' ~ '450 g',
-    Ingredients == 'peas, frozen' & Amounts == '0.75 hp' ~ '263 g',
-    Ingredients == 'peas, frozen' & Amounts == '1 hp' ~ '350 g',
-    Ingredients == 'mustard for sausages' ~ '490 g',
-    Ingredients %in% c('ketchup', 'tomato ketchup') & Amounts == '1 hp' ~ '450 g', #Heinz in Kolonialem recipes
-    str_detect(Ingredients, 'noodle') & Amounts == '1 hp' ~ '250 g',
-    str_detect(Ingredients, 'crispy bread') & Amounts == '1 hp' ~ '520 g', #This is a lot of crisp bread for four persons?
-    str_detect(Ingredients, 'parsley') & Amounts == '0.5 hp' ~ '10 g',
-    str_detect(Ingredients, 'parsley') & Amounts == '1 hp' ~ '20 g',
-    Ingredients == 'stalk celery' & Amounts %in% c('0.20 hp', '0.2 hp') ~ '76 g',
-    Ingredients == 'cherry tomatoes, red' & Amounts == '0.5 hp' ~ '100 g',
-    str_detect(Ingredients, 'risotto rice with mushrooms') ~ '500 g',
-    str_detect(Ingredients, 'ham, in cubes') ~ '80 g', #Smårettstopping skinke
-    Ingredients == 'of flatbread' ~ '275 g', #Tine recipe, Korni flatbread 
-    
-    #In the other 300
-    Ingredients == 'anchovies, can be looped' ~ '55 g', #One pack of anchovies is 50g
-    Ingredients == 'asparagus' & str_detect(Amounts, 'hp') ~ '500 g', #Two packs of asparagus is 250*2
-    str_detect(Ingredients, 'bearnaise') ~ '29 g', #Amount in one pack of Toro bearnaise
-    Ingredients == 'broccoli, frozen' ~ '450 g', #In Norway, frozen broccoli is typically sold in packs of either 400, 450 or 500g depending on supermarket chain.
-    Ingredients %in% c('celery stalk', 'stalk celery', 'rod celery') & Amounts == '0.25 hp' ~ '0.25 stk',
-    Ingredients == 'rod celery' & Amounts == '0.2 hp' ~ '0.2 stk',
-    Ingredients == 'celery stalk' & Amounts == '1 stk' ~ '380 g',
-    Ingredients == 'cherry tomatoes, canned' ~ '400 g',
-    Ingredients == 'cherry tomatoes, red' & Amounts == '1 hp' ~ '200 g', #It's their 200g product they show in the recipes
-    Ingredients == 'frozen frozen peas' & Amounts == '1 hp' ~ '350 g', #Rema 1000 frozen peas
-    Ingredients == 'guacamole spice mix' ~ '20 g', #Olde el paso
-    Ingredients == 'heart salad' & Amounts == '1 hp' ~ '2 stk',
-    str_detect(Ingredients, 'jasmine rice') & Amounts == '1 hp' ~ '120 g', #One boil-in-bag is 120 g
-    Ingredients == 'mango chutney' & Amounts == '1 hp' ~ '50 g', #Recipe says 50 g
-    Ingredients == 'mango chutney' & Amounts == '0.5 hp' ~ '175 g',
-    Ingredients %in% c('naan bread', 'of naan bread') & Amounts == '1 hp' ~ '120 g', #From kolonial
-    Ingredients %in% c('naan bread', 'nan bread') & Amounts == '2 hp' ~ '240 g',
-    Ingredients == 'pasta' & Amounts == '2 hp' ~ '400 g', #Default large portion of pasta for four people, as other recipes at the same site. Couldn't find the specific recipe
-    Ingredients == 'pearl barley' & Amounts == '4 hp' ~ '300 g', #One portion of pearl barley is default 75g
-    Ingredients == 'peas, frozen' & Amounts == '2 hp' ~ '700 g',
-    Ingredients == 'pizza filling' ~ '55 g', #Tomatoes, onions, corn starch, sugar, oil and spices
-    Ingredients == 'pork chops' & Amounts == '2 hp' ~ '1000 g', #One portion of pork chops is 250g, four portions in the recipe
-    Ingredients == 'mashed potatoes' ~ '800 g', #Default portion size of mashed potatoes is 200 g
-    Ingredients == 'radish' & Amounts == '0.5 hp' ~ '65 g',
-    Ingredients == 'radish' & Amounts == '1 hp' ~ '130 g',
-    Ingredients == 'radish' & Amounts == '2 hp' ~ '260 g',
-    str_detect(Ingredients, 'shimeji mushrooms') ~ '200 g', #Pack of rare mushrooms
-    Ingredients == 'sour cream, light' & Amounts == '1 hp' ~ '300 g', #Tine default
-    Ingredients == 'spinach' & Amounts == '1 hp' ~ '200 g', #BAMA
-    str_detect(Ingredients, 'sugar snap peas') & Amounts == '1 hp' ~ '200 g',
-    Ingredients == 'taco seasoning' & Amounts == '1 hp' ~ '28 g',
-    Ingredients == 'tikka masala sauce' ~ '360 g',
-    Ingredients %in% c('yoghurt, greek', 'yogurt, greek') & Amounts == '1 hp' ~ '200 g', #That's what the recipe says
-    Ingredients %in% c('blueberry basket', 'raspberry basket') ~ '125 g',
-    Ingredients == 'strawberry basket' ~ '400 g',
-    Ingredients %in% c('sugar peas', 'sugar peas, in strips') & Amounts == '1 hp' ~ '150 g',
-    Ingredients == 'potato steps' ~ '450 g',
-    Ingredients == 'tagliatelle' & Amounts == '2 hp' ~ '400 g',
-    TRUE ~ Amounts
-  ))
+#Save the orginal and cleaned up ingredient names for comparisons-----
+various$org_ingredients <- recipes %>% select(sample_id, Country, Ingredients, org_ingredients)
+various$org_amounts <- recipes %>% select(sample_id, Country, Ingredients, Amounts, unit) %>%
+  unite(., 'original_amounts', c(Amounts, unit), sep = ' ') %>%
+  mutate(original_amounts = str_replace(original_amounts, 'NA NA', '-')) #Should get the original volume amounts from US recipes as well
 
-#Standardise ingredients and units----
-recipes <- recipes %>% standardiseIngredients() %>%
-    
-  #Remove some ingredients not in recipe when checked (bacon in Turkey fillet on party bed/KALKUNFILET PÅ PARTYSENG, and 'Refractory' ingredients from Salmon Shape With Pepper Root and 'Pepper Beef With Chopped Tomato And Chevre Salad')
-  filter(!(`Selected Meals` == 'Turkey fillet on party bed' & Ingredients == 'bacon') & !str_detect(Ingredients, 'Refractory')) %>%
-    
-  #Add stk to the amounts of all the items listed in 'stk'
-  mutate(Amounts = case_when(
-    !str_detect(Amounts, '[:alpha:]') &
-      str_detect(Ingredients_standardised, regex(paste0(various$stk, collapse = '|'), ignore_case = TRUE)) ~ paste0(Amounts, ' stk'),
-    TRUE ~ Amounts)) %>%
-    
-  #Split Amounts into amounts and units
-  separate(., Amounts, c('Amounts', 'unit'), sep = ' ') %>%
-  #Turn amounts into numeric
-  mutate_at('Amounts', ~as.numeric(.)) %>%
-  #Standardise weight units to grams and volume units to dl
-  standardiseUnits() %>%
-    
-  #Rename column for later
-  rename(org_ingredients = Ingredients,
-         Ingredients = Ingredients_standardised) %>%
-    
-  #Turn juice, water, vinegar and other liquids with similar density to water from dl/l to grams as they are all about 100g/dl
-  mutate(
-    Amounts = case_when(
-      (str_detect(Ingredients, 'water|beer|madeira|marsala|cognac|cider|juice|Juice|broth|kraft|wine|vin|eddik|vinegar|fund|milk|stock|cream|Crème Fraîche|rømme|yogurt|yoghurt|sherry') &
-           unit == 'dl') &
-          !str_detect(Ingredients, 'sugar|cheese|flour') ~ Amounts * 100,
-        TRUE ~ Amounts),
-      unit = case_when(
-        (str_detect(Ingredients, 'water|beer|madeira|marsala|cognac|cider|juice|Juice|broth|wine|vin|eddik|vinegar|fund|milk|stock|cream|Crème Fraîche|rømme|yogurt|yoghurt|sherry') &
-           unit == 'dl') &
-          !str_detect(Ingredients, 'sugar|cheese|flour') ~ 'g',
-        TRUE ~ unit)) %>%
-    
-    #Turn grams into kilos 
-    mutate(
-      Amounts = case_when(
-        unit == 'g' ~ Amounts/1000,
-        TRUE ~ Amounts),
-      unit = unit %>%
-        str_replace('\\bg\\b', 'kg'))
-  
-  #Change the amount of lemon/orange/lime juice/zest from whole pieces of fruit to dl when applicable
-  temp <- recipes %>%
-    filter(str_detect(Ingredients, 'the juice|the zest')) %>%
-    
-    #If it says 'juice and zest' treat as a whole fruit
-    mutate(Ingredients = str_replace(Ingredients, ', the juice and zest', '')) %>%
-    
-    #Turn whole fruits into the equivalent amount of juice in kg and zest in dl
-    mutate(
-      Amounts = case_when(
-        #Juice (info from https://www.webstaurantstore.com/blog/2760/juice-in-citrus-fruits.html)
-        str_detect(Ingredients, 'lemon') & str_detect(Ingredients, 'juice') & str_detect(unit, 'stk') ~ (Amounts*3)*0.015,
-        str_detect(Ingredients, 'lime') & str_detect(Ingredients, 'juice') & str_detect(unit, 'stk') ~ (Amounts*2)*0.015,
-        #Zest (info from https://bakingbites.com/2017/01/how-much-zest-does-citrus-lemon-yield/)
-        str_detect(Ingredients, 'lemon') & str_detect(Ingredients, 'zest') & str_detect(unit, 'stk') ~ (Amounts*(1/3))*0.15,
-        str_detect(Ingredients, 'lime') & str_detect(Ingredients, 'zest') & str_detect(unit, 'stk') ~ (Amounts*1)*0.15,
-        str_detect(Ingredients, 'orange') & str_detect(Ingredients, 'zest') & str_detect(unit, 'stk') ~ (Amounts*1.5)*0.15,
-        
-        TRUE ~ Amounts),
-      unit = case_when(
-        str_detect(Ingredients, 'lemon|lime|orange') & str_detect(Ingredients, 'juice') & str_detect(unit, 'stk') ~ 'kg',
-        str_detect(Ingredients, 'lemon|lime|orange') & str_detect(Ingredients, 'zest') & str_detect(unit, 'stk') ~ 'dl',
-        
-        TRUE ~ unit)
-    )
-  
-  #Add back
+#Map to databases, find the amount (Weight) of each ingredient by weight,the nutritional values and environmental impact----
+  #Sum the amounts for all the ingredients with the same name for each recipe
   recipes <- recipes %>%
-    filter(!str_detect(Ingredients, 'the juice|the zest')) %>%
-    bind_rows(., temp)
-  
-  #Split rows with 'salt and pepper and oil' and similar
-  recipes <- recipes %>%
-    separate_rows(Ingredients, sep = ' and ') %>%
-    #Remove "slice" of pepper/salt, mistaken translation from Norwegian
-    mutate(unit = case_when(
-      !(Ingredients %in% c('salt', 'pepper') & unit == 'slice') ~ unit
-    ))
-  
-  #Turn cooked products into their raw equivalents, using the convertion factors from Helsedirekttortatet Mål Vekt og Porsjonsstørrelser----
-  recipes <- recipes %>%
-      mutate(
-        Amounts = case_when(
-          Ingredients == 'bacon cooked' ~ Amounts/0.31,
-          Ingredients %in% c('chicken breast cooked', 'chicken breast without skin cooked') ~ Amounts/0.8,
-          Ingredients %in% c('chicken cooked', 'turkey meat cooked') ~ Amounts/0.4,
-          Ingredients == 'lamb shoulder cooked' ~ Amounts/0.56,
-          Ingredients == 'pork tenderloin cooked' ~ Amounts/0.75,
-          Ingredients == 'pasta cooked' ~ Amounts/2.63,
-          Ingredients == 'rice cooked' ~ Amounts/2.94,
-          Ingredients == 'beetroot cooked' ~ Amounts/0.95, #Use values for parsley root
-          
-          TRUE ~ Amounts),
-        #Remove cooked from ingredient name
-        Ingredients = str_replace(Ingredients, ' cooked', '')
-      )
-  
-  #Split broth into water and broth cubes
-  #Pull out broth ingredients
-  temp <- recipes %>%
-    filter(str_detect(Ingredients, 'water broth')) %>%
-    #Add / to split the rows into two separate ingredients, and add "cube" to broth
-    mutate(Ingredients = str_replace(Ingredients, 'water broth', 'water/broth cube')) %>%
-    separate_rows(Ingredients, sep = '/') %>%
-    #Turn the broth cube amounts into number of broth cubes, 1 cube per 5 dl/0.5 kg water
-    mutate(
-      Amounts = case_when(
-        str_detect(Ingredients, 'broth cube') ~ Amounts/0.5,
-        TRUE ~ Amounts),
-      unit = case_when(
-        str_detect(Ingredients, 'broth cube') ~ 'stk',
-        TRUE ~ unit)
-    )
-  
-  #Add back to recipes
-  recipes <- recipes %>%
-    #Remove broth wthout broth cubes
-    filter(!str_detect(Ingredients, 'water broth')) %>%
-    #Add back with broth cues
-    bind_rows(., temp)
-  
-#Save the orginal and standardized ingredient names for comparisons-----
-various$org_ingredients <- recipes %>% select(`Selected Meals`, Ingredients, org_ingredients)
-  
-#Sum the amounts for all the ingredients with the same name for each recipe----
-recipes <- recipes %>%
     select(-org_ingredients) %>%
-    group_by(`Selected Meals`, Ingredients, Country, Source, unit) %>%
+    group_by(sample_id, Ingredients, Country, Source, unit) %>%
     summarise(Amounts = sum(Amounts, na.rm = TRUE)) %>% ungroup() %>%
     #Using na.rm gives ingredients with no amounts a '0' value, change back to NA
     mutate(Amounts = case_when(
       !is.na(unit) ~ Amounts
     ))
   
-#Map to databases, find the amount of each ingredient by weight,the nutritional values and environmental impact
-#Ingredients with amounts that are not in weight
-various$get_amounts_kg <- recipes %>%
-  filter(unit != 'kg')
+# Weight/volume database----  
+  #Ingredients with amounts that are not in weight
+  various$get_amounts_kg <- recipes %>%
+    filter(unit != 'kg')
   #See which ingredients have no unit or amounts whatsoever
   various$missing <- recipes %>% filter(is.na(Amounts))
-  
   #Map to volume/weight database
-  temp <- checkRef(various$get_amounts_kg %>% select(Ingredients) %>% unique(), reference = references$volume_weight)
-  
-  temp2 <- temp %>%
-    full_join(various$get_amounts_kg) %>% unique() %>%
-    filter(!is.na(Amounts)) %>%
-    
-    #Fix some errors
-    mutate(ID = case_when(
-      Ingredients == 'butter clarified ghee' ~ fixRefID(reference = references$volume_weight, 'ghee'),
-      Ingredients %in% c('cheese brie', 'cheese mascarpone') ~ fixRefID(reference = references$volume_weight, 'soft'),
-      Ingredients == 'eggplant' ~ fixRefID(reference = references$volume_weight, 'eggplant'),
-      Ingredients == 'sugar' ~ fixRefID(reference = references$volume_weight, 'sugar', 'white'),
-      Ingredients == 'almond' ~ fixRefID(reference = references$volume_weight, 'almonds'),
-      Ingredients == 'apricot dried' ~ fixRefID(reference = references$volume_weight, 'apricots', 'dried'),
-      Ingredients == 'bread flat hard' ~ fixRefID(reference = references$volume_weight, 'flatbread', 'hard'),
-      Ingredients == 'caper' ~ fixRefID(reference = references$volume_weight, 'capers'),
-      str_detect(Ingredients, 'cheddar|jarlsberg|norvegia|semi-hard') ~ fixRefID(reference = references$volume_weight, 'hard to semi-hard cheese'),
-      Ingredients == 'cheese mozzarella' ~ fixRefID(reference = references$volume_weight, 'mozzarella'),
-      Ingredients == 'parmesan cheese' ~ fixRefID(reference = references$volume_weight, 'parmesan'),
-      Ingredients %in% c('chili pepper green', 'chili pepper jalapeno') ~ fixRefID(reference = references$volume_weight, 'chili', 'red'), #Same in volume
-      Ingredients == 'mackerel tomato canned' ~ fixRefID(reference = references$volume_weight, 'mackerel', 'fillet'),
-      Ingredients == 'peas green' ~ fixRefID(reference = references$volume_weight, 'pea', 'frozen'),
-      Ingredients == 'pork neck chop' ~ fixRefID(reference = references$volume_weight, 'pork', 'neck'),
-      Ingredients == 'sweet pepper grilled' & unit == 'stk' ~ fixRefID(reference = references$volume_weight, 'sweet', 'pepper'),
-      Ingredients == 'sweet pepper grilled' ~ fixRefID(reference = references$volume_weight, 'sweet pepper', 'grilled'),
-      Ingredients == 'turkey chicken drumstick' ~ fixRefID(reference = references$volume_weight, 'turkey', 'drumstick'),
-      Ingredients == 'lemongrass' ~ fixRefID(reference = references$volume_weight, 'lemongrass'),
-      Ingredients == 'fig' ~ fixRefID(reference = references$volume_weight, 'fig'),
-      Ingredients == 'shrimp' ~ fixRefID(reference = references$volume_weight, 'shrimps', 'in'),
-      Ingredients == 'bean white canned' ~ fixRefID(reference = references$volume_weight, 'bean white', 'canned'),
-      Ingredients == 'bean kidney canned' ~ fixRefID(reference = references$volume_weight, 'bean kidney', 'canned'),
-      Ingredients == 'bean black canned' ~ fixRefID(reference = references$volume_weight, 'bean black', 'canned'),
-      Ingredients == 'chick pea canned' ~ fixRefID(reference = references$volume_weight, 'chick pea', 'canned'),
-      Ingredients == 'mustard powder' ~ fixRefID(reference = references$volume_weight, 'mustard', 'powder'),
-      Ingredients %in% c('salad', 'salad lettuce') & unit == 'stk' ~ fixRefID(reference = references$volume_weight, 'heart', 'salad'),
-      Ingredients %in% c('lettuce', 'salad lettuce') & unit == 'dl' ~ fixRefID(reference = references$volume_weight, 'iceberg', 'lettuce'),
-      Ingredients == 'chopped parsley or generous sprinkling dill fronds, or mixture optional' ~ fixRefID(reference = references$volume_weight, 'parsley', 'fresh'),
-      Ingredients == 'basil' & unit == 'twig' ~ fixRefID(reference = references$volume_weight, 'basil', 'fresh'),
-      Ingredients == 'coriander' & unit == 'twig' ~ fixRefID(reference = references$volume_weight, 'coriander', 'fresh'),
-      Ingredients %in% c('bean canned', 'bean black') ~ fixRefID(reference = references$volume_weight, 'bean black', 'canned'),
-      Ingredients == 'rice brown long grain' ~ fixRefID(reference = references$volume_weight, 'rice'),
-      str_detect(Ingredients, 'polenta') ~ fixRefID(references$volume_weight, 'cornmeal', 'polenta'),
-      Ingredients == 'corn' & unit == 'dl' ~ fixRefID(references$volume_weight, 'corn', 'kernel'),
-      Ingredients == 'cranberries jam' ~ fixRefID(references$volume_weight, 'jam', 'marmelade'),
-      Ingredients == 'hamburger bun' ~ fixRefID(references$volume_weight, 'hamburger', 'bread'),
-      Ingredients == 'mustard honey' ~ fixRefID(references$volume_weight, 'mustard'),
-      Ingredients == 'salad lollo rosso' & unit == 'leaf' ~ fixRefID(references$volume_weight, 'lettuce'),
-        
-      #Ingredients with no references
-      Ingredients %in% c('fish soup base', 'mustard powder', 'burrito spice mix', 'bolognese base',
-                         'chinese five spice', 'of lime sheet, shredded', 'of dip mix', 'of coffee lime leaf, dried, soaked in warm water 15 min') ~ 0,
-      
-      TRUE ~ ID
-    ))
-  
-  #Ingredients to turn from tbsp to dl
+  temp <- checkRef(various$get_amounts_kg, reference = references$volume_weight)
+
+  #Calculate weight in kilo
+  #Ingredients that need to have weight per dl in database
   various$to_dl <- c('pepper', 'peanøttsmør', 'olje', 'oil', 'smør', 'butter', 'margarin',
-                     'ghee', 'garlic', 'tomato paste')
+                     'ghee', 'garlic', 'tomato paste', 'baking powder', 'taco spice mix')
   
   various$weights <- databases$volume_weight %>%
-    #Set brutto as default value pr stk, as SHARP takes edible portion and cooking losses into account when calculating environmental impact
+    #Set brutto as default value pr stk, as it used in both Matvaretabellen and SHARP
     mutate(
       g = case_when(
         str_detect(Ingredients, regex(paste0(various$to_dl, collapse ='|'), ignore_case = TRUE)) &
@@ -618,20 +365,24 @@ various$get_amounts_kg <- recipes %>%
     rename(unit = unit_enhet) %>% select(ID, unit, g)
   
   #Join them together and calculate the weight in kilos
-  various$with_weights <- inner_join(temp2, various$weights, by = c('ID', 'unit')) %>%
+  various$with_weights <- inner_join(temp, various$weights, by = c('ID', 'unit')) %>%
     
     mutate(Amounts_kg = (Amounts * g) / 1000,
            unit = 'kg') %>%
     #Remove and rename columns
-    select(-c(g, ID, ref, loop, Amounts)) %>%
+    select(-c(g, ID, ref, Amounts)) %>%
     rename(Amounts = Amounts_kg)
   
-  #Add the new units to clean df
+  #What has not been picked up? Add to various$missing
+  various$missing <- various$missing %>%
+    bind_rows(., anti_join(temp %>% select(sample_id, Ingredients),
+                                        various$with_weights %>% select(sample_id, Ingredients)))
+    
+  #Add the ingredients with weights found back to recipes df
   recipes <- recipes %>%
     filter(unit == 'kg') %>%
-    full_join(various$with_weights) %>%
-    group_by(`Selected Meals`, Ingredients, Country, Source) %>%
-    
+    bind_rows(various$with_weights) %>%
+    group_by(sample_id, Ingredients, Country, Source) %>%
     summarise(Amounts = sum(Amounts, na.rm = TRUE)) %>%
     ungroup()
   
@@ -643,39 +394,40 @@ various$get_amounts_kg <- recipes %>%
   
   #Calculate the total weight of each recipe
   various$recipe_weight <- recipes %>%
-    group_by(`Selected Meals`) %>%
-    summarise(Weight = sum(Amounts))
+    group_by(sample_id) %>%
+    summarise(Weight = sum(Amounts)) %>%
+    mutate(unit = 'kg')
   
-  #Impute the mean value of the same ingredient for the missing ingredients----
-  #Calculate the mean value of each type of ingredient pr 100g of a recipe first
+  #Impute the mean value of the same ingredient for the missing ingredients
+  #Calculate the mean value of each type of ingredient normalized by recipe weight
   various$mean_values <- recipes %>%
     #Add total weight of recipe in kg
     inner_join(various$recipe_weight) %>%
-    #Amount of ingredient pr 100g of a recipe
-    mutate(value_100g = (Amounts/Weight)/10) %>%
+    #Amount of ingredient normalized by recipe weight
+    mutate(amount_normalized = (Amounts/Weight)) %>%
     #Calculate the mean value for each ingredient
     group_by(Ingredients) %>%
-    summarise(value = mean(value_100g)) %>% ungroup()
+    summarise(value = mean(amount_normalized)) %>% ungroup()
   
-  #Add to the missing amounts
+  #Add to the Ingredients with missing amounts
   temp <- various$mean_values %>%
     #Inner join with the ingredients missing amounts
     inner_join(., various$missing, by = 'Ingredients') %>%
     #Add the weight of these recipes
-    inner_join(various$recipe_weight) %>%
+    inner_join(various$recipe_weight %>% select(-unit), by = 'sample_id') %>%
     #Calculate the amounts based on weight
-    mutate(Amounts = value*Weight*10,
+    mutate(Amounts = value*Weight,
            unit = 'kg')
   
-  #Add back to clean df
+  #Add back to recipes df
   recipes <- full_join(recipes, temp) %>%
     select(-c(value, Weight, unit)) %>%
     #if a recipe has more than two occurences of a recipe (example: butter used both for frying and as part of a dough), sum them together
-    group_by(`Selected Meals`, Ingredients, Country, Source) %>%
+    group_by(sample_id, Ingredients, Country, Source) %>%
     summarise(Amounts = sum(Amounts)) %>% ungroup()
   
   #Which ingrediens still don't have amounts?
-  various$missing <- anti_join(various$missing %>% select(`Selected Meals`, Ingredients), recipes %>% select(`Selected Meals`, Ingredients))
+  various$missing <- anti_join(various$missing %>% select(sample_id, Ingredients), recipes %>% select(sample_id, Ingredients))
   
   #Fill in values for these ingredients based on similar ingredients
   temp <- various$missing %>%
@@ -696,9 +448,11 @@ various$get_amounts_kg <- recipes %>%
       Ingredients == 'pickled garlic' ~ various$mean_values %>% filter(Ingredients == 'garlic') %>% select(value) %>% as.numeric(.),
       str_detect(Ingredients, 'spice') ~ various$mean_values %>% filter(Ingredients == 'guacamole spice mix') %>% select(value) %>% as.numeric(.),
       Ingredients == 'wasabi' ~ various$mean_values %>% filter(Ingredients == 'paste chili') %>% select(value) %>% as.numeric(.),
-      Ingredients == 'sauerkraut' & `Selected Meals` == 'Christmas Ribbe' ~ various$mean_values %>% filter(Ingredients == 'cabbage red') %>% select(value) %>% as.numeric(.),
+      Ingredients == 'sauerkraut' & sample_id == 'Christmas Ribbe' ~ various$mean_values %>% filter(Ingredients == 'cabbage red') %>% select(value) %>% as.numeric(.), #Exchangeable in the meal
       Ingredients == 'potetlefse' ~ various$mean_values %>% filter(Ingredients == 'tortilla') %>% select(value) %>% as.numeric(.),
-      Ingredients == 'cheese garlic' ~ various$mean_values %>% filter(Ingredients == 'cheese semi-hard') %>% select(value) %>% as.numeric(.) 
+      Ingredients == 'cheese garlic' ~ various$mean_values %>% filter(Ingredients == 'cheese semi-hard') %>% select(value) %>% as.numeric(.),
+      Ingredients == 'ham smoked' ~ various$mean_values %>% filter(Ingredients == 'ham') %>% select(value) %>% as.numeric(.),
+      Ingredients == 'anise ground' ~ various$mean_values %>% filter(Ingredients == 'star anise') %>% select(value) %>% as.numeric(.),
       
     )) %>%
     
@@ -708,169 +462,82 @@ various$get_amounts_kg <- recipes %>%
     #Add the weight of these recipes
     inner_join(various$recipe_weight) %>%
     #Calculate the amounts based on weight
-    mutate(Amounts = value*Weight*10,
+    mutate(Amounts = value*Weight,
            unit = 'kg')
   
   #Add back to recipes df
   recipes <- full_join(recipes, temp) %>%
     select(-c(value, Weight, unit)) %>%
     #if a recipe has more than two occurences of a recipe (example_ butter used both for frying and as part of a dough), sum them together
-    group_by(`Selected Meals`, Ingredients, Country, Source) %>%
+    group_by(sample_id, Ingredients, Country, Source) %>%
     summarise(Amounts = sum(Amounts)) %>% ungroup()
   
   #Fill in missing Country and source info for the missing ingredients
   recipes <- recipes %>%
-    group_by(`Selected Meals`) %>%
+    group_by(sample_id) %>%
     fill(c(Country, Source), .direction = 'downup') %>% ungroup()
   
   #New total weight of recipes
   various$recipe_weight <- recipes %>%
-    select(`Selected Meals`, Amounts) %>%
-    group_by(`Selected Meals`) %>%
+    select(sample_id, Amounts) %>%
+    group_by(sample_id) %>%
     summarise(Weight = sum(Amounts, na.rm = TRUE)) %>%
     ungroup()
   
-  #Weight of each ingredient pr 100g
+  #Weight of each ingredient normalized by recipe weight
   various$ingredients_weight <- recipes %>%
-    select(`Selected Meals`, Ingredients, Amounts) %>%
+    select(sample_id, Source, Ingredients, Amounts) %>%
     inner_join(various$recipe_weight) %>%
-    mutate(Amounts_kg = Amounts/Weight) %>%
-    select(-c(Amounts, Weight)) %>%
-    rename(sample_id = `Selected Meals`)
+    mutate(normalized_weight = Amounts/Weight) %>%
+    select(-c(Amounts, Weight))
   
   #Still missing ingredients
   various$no_amounts <- various$missing %>%
-    select(`Selected Meals`, Ingredients) %>%
-    anti_join(temp %>% select(`Selected Meals`, Ingredients))
+    select(sample_id, Ingredients) %>%
+    anti_join(temp %>% select(sample_id, Ingredients)) 
   various$missing <- NULL
   
-# Nutrition
-  temp <- recipes %>%
-    select(Ingredients) %>% unique() %>%
-    checkRef(., reference = references$nutrients)
   
-  #See which ingredients haven't been picked up
-  t <- anti_join(recipes %>% select(Ingredients) %>% unique(), temp %>% select(Ingredients))
   
-  temp2 <- temp %>%
-    select(-loop) %>%
-    
-    full_join(., recipes) %>% unique() %>%
-    
-    #Fix some errors
-    mutate(ID = case_when(
-      
-      Ingredients == 'eggplant' ~ fixRefID(references$nutrients, 'eggplant'),
-      str_detect(Ingredients, 'vinegar') & !str_detect(ref, 'vinegar') ~ fixRefID(references$nutrients, 'vinegar'),
-      Ingredients == 'chick pea' ~ fixRefID(references$nutrients, 'chick pea'),
-      Ingredients == 'chopped parsley or generous sprinkling dill fronds, or mixture optional' ~ fixRefID(references$nutrients, 'parsley', 'fresh'),
-      Ingredients == 'cod lutefisk' ~ fixRefID(references$nutrients, 'lutefisk'),
-      ref == 'mushroom' & !str_detect(Ingredients, 'condensed cream of mushroom soup') ~ fixRefID(references$nutrients, 'mushroom'),
-      Ingredients == 'of olives' ~ fixRefID(references$nutrients, 'olive', 'green'),
-      Ingredients == 'parsley' ~ fixRefID(references$nutrients, 'parsley', 'fresh'),
-      Ingredients == 'peach' ~ fixRefID(references$nutrients, 'peach'),
-      Ingredients == 'peanut' ~ fixRefID(references$nutrients, 'peanut, raw'),
-      Ingredients == 'pork neck chop' ~ fixRefID(references$nutrients, 'pork', 'neck chop'),
-      Ingredients == 'rice white long grain' ~ fixRefID(references$nutrients, 'rice white long grain'),
-      Ingredients == 'sausage' ~  fixRefID(references$nutrients, 'sausage'),
-      Ingredients == 'sugar' ~  fixRefID(references$nutrients, 'sugar'),
-      Ingredients == 'sweet corn kernels' ~ fixRefID(references$nutrients, 'sweet corn', 'canned'),
-      Ingredients == 'sweet potato' ~ fixRefID(references$nutrients, 'sweet potato'),
-      str_detect(Ingredients, 'water broth') ~ fixRefID(references$nutrients, 'water'),
-      Ingredients == 'butter clarified ghee' ~ fixRefID(references$nutrients, 'ghee'),
-      Ingredients %in% c('cashew nut salt', 'cashew nut roasted') ~ fixRefID(references$nutrients, 'cashew', 'salt'),
-      Ingredients == 'chili pepper dried' ~ fixRefID(references$nutrients, 'chili pepper', 'red'),
-      Ingredients == 'mackerel tomato canned' ~ fixRefID(references$nutrients, 'mackerel', 'tomato canned'),
-      Ingredients %in% c('potato', 'potato boiled') ~ fixRefID(references$nutrients, 'potato'), 
-      Ingredients %in% c('bread crumb', 'bread', 'bread naan', 'breadstick') ~ fixRefID(references$nutrients, 'bread'),
-      Ingredients == 'cheese cottage low fat' ~ fixRefID(references$nutrients, 'cottage cheese', 'low fat'),
-      Ingredients == 'cheese cottage' ~ fixRefID(references$nutrients, 'cottage cheese'),
-      Ingredients == 'cheese asiago' ~  fixRefID(references$nutrients, 'parmesan'), #Can be substituted for eachother in recipes
-      Ingredients == 'cheese blue' ~ fixRefID(references$nutrients, 'gorgonzola', 'blue cheese'), #Use as standard for time being
-      Ingredients == 'cheese goat chevre white' ~ fixRefID(references$nutrients, 'chevre'),
-      Ingredients == 'cheese cream' ~ fixRefID(references$nutrients, 'cream cheese'),
-      Ingredients == 'cheese hard goat' ~ fixRefID(references$nutrients, 'hard goat cheese', 'kvitlin'), #Use as standard for time being
-      Ingredients == 'cheese jarlsberg' ~ fixRefID(references$nutrients, 'jarlsberg'), 
-      Ingredients == 'cheese manchego' ~ fixRefID(references$nutrients, 'cheddar'), #Can be substituted in recipes
-      Ingredients == 'cheese mozzarella' ~ fixRefID(references$nutrients, 'mozzarella'),
-      Ingredients == 'cheese norvegia' ~ fixRefID(references$nutrients, 'norvegia'),
-      Ingredients == 'cheese ricotta salata' ~ fixRefID(references$nutrients, 'ricotta salata'),
-      Ingredients == 'cheese port salut' ~ fixRefID(references$nutrients, 'port salut'),
-      Ingredients == 'cheese semi-hard' ~ fixRefID(references$nutrients, 'norvegia'), #Use as standard for time being
-      Ingredients == 'chicken' ~ fixRefID(references$nutrients, 'chicken', 'whole'),
-      Ingredients == 'condensed cream of celery soup' ~ fixRefID(references$nutrients, 'condensed cream of celery soup'),
-      Ingredients == 'condensed cream of chicken soup' ~ fixRefID(references$nutrients, 'condensed cream of chicken soup'),
-      Ingredients %in% c('crisp bread', 'crisp bread coarse') ~ fixRefID(references$nutrients, 'crisp bread', 'coarse'),
-      Ingredients == 'goat brown cheese' ~ fixRefID(references$nutrients, 'goat cheese brown'),
-      Ingredients == 'jerusalem artichoke' ~ fixRefID(references$nutrients, 'jerusalem artichoke'),
-      Ingredients == 'lentil' ~ fixRefID(references$nutrients, 'lentil', 'green'), #Use as standard
-      Ingredients == 'mangold' ~ fixRefID(references$nutrients, 'mangold'),
-      Ingredients == 'oil corn' ~ fixRefID(references$nutrients, 'vegetable', 'oil'),
-      Ingredients == 'onion soup mix' ~ fixRefID(references$nutrients, 'onion soup mix'),
-      Ingredients == 'sauce hot pepper' ~ fixRefID(references$nutrients, 'hot pepper sauce'),
-      Ingredients == 'sauce pasta' ~ fixRefID(references$nutrients, 'tomato', 'sauce'), #Use as substitute for time being
-      Ingredients == 'whole turkey' ~ fixRefID(references$nutrients, 'turkey', 'meat'),
-      Ingredients == 'sauce hot' ~ fixRefID(references$nutrients, 'hot pepper sauce'),
-      Ingredients == 'olive paste tapenade' ~ fixRefID(references$nutrients, 'olive paste tapenade'),
-      Ingredients == 'homemade beef gravy' ~ fixRefID(references$nutrients, 'beef gravy'),
-    
-      Ingredients %in% c('duck or goose fat for confit', 'of lime sheet, shredded',
-                         'cooking spray', 'red food coloring', 'beef fund',
-                         'pack high quality charcoal briquettes', 'pomegranate kernel', 'yeast nutritional',
-                         'salmon roe', 'spice seasoning pepper', 'toro greek moussaka'
-      ) ~ 0,
-      
-      #Substitutions or ingredients not found in Matvaretabellen
-      Ingredients %in% c('garlic oil', 'oil truffle') ~ fixRefID(references$nutrients, 'olive', 'oil'), #Garlic/truffle oil can be made by placing garlic in olive oil
-      Ingredients %in% c('frying oil', 'oil') ~ fixRefID(references$nutrients, 'vegetable', 'oil'),
-      Ingredients == 'hazelnut oil' ~ fixRefID(references$nutrients, 'walnut', 'oil'), #Another nut oil
-      Ingredients == 'bean canned' ~ fixRefID(references$nutrients, 'bean black', 'canned'),
-      Ingredients == 'scampi' ~ fixRefID(references$nutrients, 'shrimp'),
-      Ingredients == 'ciabatta' ~ fixRefID(references$nutrients, 'bread', 'white'),
-      Ingredients == 'elk shoulder' ~ fixRefID(references$nutrients, 'elk moose'),
-      
-      #Find a solution for the lemon/lime juice/zest
-      
-      TRUE ~ ID
-    )) %>%
-    
+# Map to nutrition database----
+  temp <- checkRef(recipes, reference = references$nutrients) %>%
+
     #Join with nutrient db
     inner_join(databases$nutrients %>% mutate(ID = as.numeric(ID)), by = 'ID') %>%
     select(-ref) %>%
     replace(is.na(.), 0)
   
   #See which ingredients haven't been picked up
-  t <- anti_join(recipes %>% select(`Selected Meals`, Ingredients) %>% unique(), temp2 %>% select(`Selected Meals`, Ingredients))
+  t <- anti_join(recipes %>% select(sample_id, Ingredients) %>% unique(), temp %>% select(sample_id, Ingredients))
   
   #Save the raw nutrient values in 100g recipe by ingredients
-  various$ingredients_nutrients <- temp2 %>%
+  various$ingredients_nutrients <- temp %>%
     select(Ingredients, ID) %>%
+    #Add amounts of ingredients
     inner_join(., recipes, by = 'Ingredients') %>%
     unique() %>%
-    inner_join(various$recipe_weight) %>%
     
     #Amount of each ingredient per 100 g of recipe
-    mutate(temp_amounts = Amounts/Weight) %>%
-    select(-c(Amounts, Weight)) %>%
+    inner_join(., various$ingredients_weight, by = c('sample_id', 'Source', 'Ingredients')) %>%
+    unique() %>%
     
     #Join with nutrient database
     full_join(databases$nutrients, by = 'ID') %>%
     
     #Turn wide and calculate nutrient contents
-    select(-c(ID)) %>%
+    select(-c(ID, Amounts)) %>%
     pivot_longer(
-      cols = -c(`Selected Meals`, Ingredients, Country, Source, temp_amounts),
+      cols = -c(sample_id, Ingredients, Country, Source, normalized_weight),
       names_to = 'feature',
       values_to = 'value'
     ) %>%
     
     #Calculate nutrient content pr ingredients
-    mutate(value = temp_amounts*value) %>% #Nutrient amount from each ingredient
-    select(-temp_amounts) %>%
+    mutate(value = normalized_weight*value) %>% #Nutrient amount from each ingredient
+    select(-normalized_weight) %>%
     
     #Rename for later
-    rename(sample_id = `Selected Meals`,
-           group = Country) %>%
+    rename(group = Country) %>%
     #Remove empty rowns
     drop_na(Ingredients)
   
@@ -884,13 +551,136 @@ various$get_amounts_kg <- recipes %>%
   
   #Ingredients that has not been mapped regardless of reason
   various$no_nutrient_info <- t %>%
-    inner_join(recipes %>% select(`Selected Meals`, Ingredients, Amounts)) %>%
+    inner_join(recipes %>% select(sample_id, Ingredients, Amounts)) %>%
     
     #Calculate amount pr 100 g
     inner_join(., various$recipe_weight) %>% #Total weight of recipe
     mutate(`pct_of_full_recipe` = round(Amounts/Weight*100, 2)) %>%
     select(-c(Amounts, Weight))
   
-# Sustainability
+# Sustainability database-----
+  temp <- checkRef(recipes, reference = references$sustainability) %>%
   
+    #Join with sustainability db
+    inner_join(databases$sustainability %>% mutate(ID = as.numeric(ID)), by = 'ID') %>%
+      select(-ref) %>%
+      replace(is.na(.), 0)
   
+  #See which ingredients haven't been picked up
+  t <- anti_join(recipes %>% select(sample_id, Ingredients) %>% unique(), temp %>% select(sample_id, Ingredients))
+  
+  #Save the raw environmental impact values in 100g recipe by ingredients
+  various$ingredients_sustainability <- temp %>%
+    
+    #Add the amounts of ingredients normalized to recipe weight
+    inner_join(., various$ingredients_weight) %>%
+    unique() %>%
+    
+    #Turn wide to calculate environmental impact
+    select(-c(ID, Amounts)) %>%
+    pivot_longer(
+      cols = -c(sample_id, Ingredients, Country, Source, L1, normalized_weight),
+      names_to = 'feature',
+      values_to = 'sustainability_value_kg' #SHARP has sustainability values pr 1kg of an ingredient
+    ) %>%
+    
+    #Value pr 100g
+    mutate(value = (sustainability_value_kg*normalized_weight/10)) %>% #Divide by 10 to get environmental impact per 100 g
+    select(-c(sustainability_value_kg, normalized_weight)) %>%
+    drop_na(Ingredients) %>%
+    
+    #Turn wide again
+    pivot_wider(.,
+                names_from = 'feature',
+                values_from = 'value') %>%
+    #Rename column
+    rename(CO2 = `GHGE of 1 kg food as consumed_kgCO2eq`,
+           Landuse = `Land use of 1 kg food as consumed_m2/yr`,
+           group = Country) %>%
+    
+    #Keep in long format
+    #Pivot long to do the calculations
+    pivot_longer(
+      cols = -c(sample_id, Ingredients, group, Source, L1),
+      names_to = 'feature',
+      values_to = 'value'
+    )
+    
+  
+  #Sum total envirnomental impact per 100g recipe
+  various$recipe_sustainability <- various$ingredients_sustainability %>%
+    
+    #Calculate the whole recipe
+    group_by(sample_id, group, feature) %>%
+    summarise(value = sum(value, na.rm = TRUE)) %>%
+    ungroup() 
+  
+  #Per foodgroup
+  various$foodgroup_sustainability <- various$ingredients_sustainability %>%
+    
+    #Calculate the whole recipe
+    group_by(group, L1, feature) %>%
+    summarise(value = sum(value, na.rm = TRUE)) %>%
+    ungroup() 
+  
+  #Ingredients that are still without sustainability indicators
+  various$no_sustainability_indiactors <- t %>%
+    inner_join(recipes) %>% select(sample_id, Ingredients, Amounts) %>%
+    
+    #Calculate amount pr 100 g
+    inner_join(., various$recipe_weight) %>% #Total weight of recipe
+    mutate(`pct_of_full_recipe` = round(Amounts/Weight*100, 2)) %>%
+    select(-c(Amounts, Weight))
+  
+#Save for analysis ----
+recipes_analysis <- full_join(
+  various$recipe_sustainability %>% pivot_wider(names_from = feature, values_from = value),
+  various$recipes_nutrients %>% pivot_wider(names_from = feature, values_from = value)
+)
+saveRDS(recipes_analysis, './Data/output/recipes_for_analysis.Rds') 
+
+ingredients_analysis <- full_join(
+  various$ingredients_sustainability %>% pivot_wider(names_from = feature, values_from = value),
+  various$ingredients_nutrients %>% pivot_wider(names_from = feature, values_from = value)
+) %>%
+  #Add weight of each ingredient
+  inner_join(various$ingredients_weight) %>% rename(Amounts = normalized_weight)
+saveRDS(ingredients_analysis, './Data/output/ingredients_for_analysis.Rds')
+
+missing_data <- list(
+  'no_amounts' = various$no_amounts,
+  'no_nutrient_info' = various$no_nutrient_info,
+  'no_sustainability_indicators' = various$no_sustainability_indiactors
+)
+saveRDS(missing_data, './Data/output/missing_data2.Rds')
+
+
+to_share_ingredients <- ingredients_analysis %>%
+  rename(food_group = L1) %>%
+  select(group, Source, sample_id, Ingredients, food_group, Amounts, everything())
+
+to_share_recipes <- recipes_analysis %>%
+  inner_join(., recipes %>%
+               select(sample_id, Country, Source) %>%
+               rename(group = Country) %>% unique()) %>%
+  select(group, Source, sample_id, everything())
+
+metadata <- read_xlsx('./Data/databases/matvaretabellen_metadata.xlsx') %>%
+  select(-c(starts_with('Ref'), starts_with('Food'), starts_with('C1'), starts_with('C20:3'), starts_with('C20:4'), `Edible part`, Water)) %>%
+  rename(EPA = `C20:5n-3 (EPA)`,
+         DPA = `C22:5n-3 (DPA)`,
+         DHA = `C22:6n-3 (DHA)`) %>%
+  mutate(CO2 = 'consumed_kgCO2eq',
+         Landuse = 'consumed_m2/yr',
+         Amounts = 'Normalized by total weight of recipe',
+         Weight = 'kg') %>%
+  pivot_longer(.,
+               cols = everything(),
+               names_to = 'feature',
+               values_to = 'unit')
+
+write_csv(to_share_ingredients, 'all_ingredients_100g.csv')
+write_csv(to_share_recipes, 'all_recipes_100g.csv')
+write_csv(metadata, 'metadata.csv')
+write_csv(various$recipe_weight, 'total_weight_recipe.csv')
+write_csv(various$org_ingredients, 'original_ingredients')
