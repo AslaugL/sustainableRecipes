@@ -188,7 +188,6 @@ temp <- list(
   c('carrot paste', 'dl', '101.4', 'Assumed same density as other pastes', 'english'),
   c('cayenne pepper', 'dl', '35.8', 'FoodData Central', 'english'),
   c('cherry tomato', 'neve', '65', 'Assume one handful is about one dl', 'english'),
-  #c('Coriander', 'dl', '6.7', 'FoodData Central'),
   c('Coconut milk', 'stk', '400', 'Rema 1000, kokosmelk', 'english'),
   c('Coconut milk', 'box', '400', 'Rema 1000, kokosmelk', 'english'),
   c('Coconut milk', 'can', '400', 'Rema 1000, kokosmelk', 'english'),
@@ -246,6 +245,7 @@ temp <- list(
   c('Pearl barley', 'portion', '65', 'same as other grains used for dinner', 'english'),
   c('pickled pepper', 'dl', '101.4', 'FoodData Central', 'english'),
   c('puff pastry', 'stk', '75', 'Meny, Bakeverket', 'english'),
+  c('rhubarb', 'twig', '50', 'Assume same as dl', 'english'),
   c('ruccola', 'dl/neve', '8.5', 'FoodData Central', 'english'),
   c('ruccola', 'pack', '65', 'Grønn og frisk', 'english'),
   c('Taco sauce', 'glass', '230', 'Rema1000 and Old El Paso', 'english'),
@@ -1144,7 +1144,7 @@ fromFoodDataCentral_foods <- read_csv('./Data/databases/food.csv') %>%
     'Seaweed, agar, dried', 'Soup, onion, dry, mix', 'Alcoholic beverage, rice (sake)',
     'Shortening, vegetable, household, composite', 'Pickle relish, sweet', 'Syrups, maple',
     'Sauce, ready-to-serve, pepper, TABASCO', 'Tapioca, pearl, dry', 'Molasses', 'Vital wheat gluten',
-    'Horseradish, prepared', 'Oil, coconut')) %>%
+    'Horseradish, prepared', 'Oil, coconut', 'Fat, goose')) %>%
   
   #Rename to fit ingredient names
   mutate(description = description %>%
@@ -1192,7 +1192,8 @@ fromFoodDataCentral_foods <- read_csv('./Data/databases/food.csv') %>%
            str_replace('Lime juice, raw', 'lime_juice') %>%
            str_replace('Vital wheat gluten', 'gluten') %>%
            str_replace('Horseradish, prepared', 'horseradish_prepared') %>%
-           str_replace('Oil, coconut', 'coconut_oil')
+           str_replace('Oil, coconut', 'coconut_oil') %>%
+           str_replace('Fat, goose', 'goose_fat')
          #'Tamarind nectar, canned'
   ) %>%
   
@@ -1661,6 +1662,7 @@ SHARP <- SHARP %>%
     str_detect(tolower(Ingredients), 'bovine|beef') ~ 'beef', #Beef is used in the recipes, all have the same values
     str_detect(Ingredients, 'sausage') ~ 'sausage', #All have the same values
     str_detect(Ingredients, 'chicken') ~ 'chicken',
+    str_detect(Ingredients, '\\bgoose\\b') ~ 'goose',
     str_detect(Ingredients, 'sheep') ~ 'sheep',
     str_detect(Ingredients, 'margarine') ~ 'margarine',
     str_detect(Ingredients, 'lobster') ~ 'lobster',

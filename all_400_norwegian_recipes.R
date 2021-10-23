@@ -1,8 +1,3 @@
-library(tidyverse)
-library(stringi)
-library(readxl)
-roxygen2::roxygenise()
-
 #Setup----
 #Different databases to search through to find amounts in kilos, nutrient content and sustainability measurements
 references <- list(
@@ -46,7 +41,17 @@ raw <- list(
 #All together
 bind_rows(.) %>%
   #Rename `Selected Meals` to sample_id
-  rename(sample_id = `Selected Meals`)
+  rename(sample_id = `Selected Meals`) %>%
+  #create unique names for the recipes with identical names
+  mutate(sample_id = case_when(
+  sample_id == 'Christmas Ribbe' & Source == 'Tine' ~ 'Christmas Ribbe 2',
+  sample_id == 'Spagetti Bolognese' & Source == 'Klikk' ~ 'Spagetti Bolognese 2',
+  TRUE ~ sample_id
+))
+
+#Metadata for recipes
+recipe_metadata <- raw %>% select(sample_id, Country, Source) %>% unique() %>% rename(group = Country)
+saveRDS(recipe_metadata, './Data/output/recipe_metadata.Rds')
 
 #Clean up the recipe ingredients----
 recipes <- raw %>%
@@ -238,9 +243,11 @@ recipes <- raw %>%
          str_replace('corn tortilla chips', 'nacho') %>%
          str_replace('recao, or culantro', 'coriander') %>%
          str_replace('parlsey', 'parsley') %>%
+         str_replace('finely chopped herbs', 'fresh parsley') %>% #Most common herb used
          str_replace('mug, fresh', 'parsley, fresh') %>%
          str_replace('broccoli peas, frozen', 'broccoli, frozen') %>% #riginal recipe says it's broccoli
-         str_replace('salvie', 'sage')) %>%
+         str_replace('salvie', 'sage') %>%
+         str_replace('duck or goose fat for confit', '500 g goose fat')) %>% #Goose fat is in nutrition database, duck fat is not. 500 g is a conservative estimate for fat used in confit.
   
   mutate(Ingredients = Ingredients %>%
     #HP in recipes from Norway means either pack, portion, can, glass depending on recipe and ingredient.
@@ -309,7 +316,7 @@ recipes <- raw %>%
     TRUE ~ Ingredients))
 
   #Standardise recipe ingredients and units
-  recipes <- recipes %>%  standardiseRecipes()
+  recipes <- recipes %>% standardiseRecipes()
     
 #Save the orginal and cleaned up ingredient names for comparisons-----
 various$org_ingredients <- recipes %>% select(sample_id, Country, Ingredients, org_ingredients)
@@ -448,11 +455,12 @@ various$org_amounts <- recipes %>% select(sample_id, Country, Ingredients, Amoun
       Ingredients == 'pickled garlic' ~ various$mean_values %>% filter(Ingredients == 'garlic') %>% select(value) %>% as.numeric(.),
       str_detect(Ingredients, 'spice') ~ various$mean_values %>% filter(Ingredients == 'guacamole spice mix') %>% select(value) %>% as.numeric(.),
       Ingredients == 'wasabi' ~ various$mean_values %>% filter(Ingredients == 'paste chili') %>% select(value) %>% as.numeric(.),
-      Ingredients == 'sauerkraut' & sample_id == 'Christmas Ribbe' ~ various$mean_values %>% filter(Ingredients == 'cabbage red') %>% select(value) %>% as.numeric(.), #Exchangeable in the meal
+      Ingredients == 'sauerkraut' & str_detect(sample_id, 'Christmas Ribbe') ~ various$mean_values %>% filter(Ingredients == 'cabbage red') %>% select(value) %>% as.numeric(.), #Exchangeable in the meal
       Ingredients == 'potetlefse' ~ various$mean_values %>% filter(Ingredients == 'tortilla') %>% select(value) %>% as.numeric(.),
       Ingredients == 'cheese garlic' ~ various$mean_values %>% filter(Ingredients == 'cheese semi-hard') %>% select(value) %>% as.numeric(.),
       Ingredients == 'ham smoked' ~ various$mean_values %>% filter(Ingredients == 'ham') %>% select(value) %>% as.numeric(.),
       Ingredients == 'anise ground' ~ various$mean_values %>% filter(Ingredients == 'star anise') %>% select(value) %>% as.numeric(.),
+      Ingredients == 'apricot jam' ~ various$mean_values %>% filter(Ingredients == 'cranberries jam') %>% select(value) %>% as.numeric(.)
       
     )) %>%
     
@@ -496,7 +504,6 @@ various$org_amounts <- recipes %>% select(sample_id, Country, Ingredients, Amoun
     select(sample_id, Ingredients) %>%
     anti_join(temp %>% select(sample_id, Ingredients)) 
   various$missing <- NULL
-  
   
   
 # Map to nutrition database----
@@ -545,7 +552,7 @@ various$org_amounts <- recipes %>% select(sample_id, Country, Ingredients, Amoun
   various$recipes_nutrients <- various$ingredients_nutrients %>%
     
     #Sum for each recipe
-    group_by(sample_id, group, feature) %>%
+    group_by(sample_id, group, Source, feature) %>%
     summarise(value = sum(value, na.rm = TRUE)) %>% ungroup() %>%
     drop_na(group) 
   
@@ -611,7 +618,7 @@ various$org_amounts <- recipes %>% select(sample_id, Country, Ingredients, Amoun
   various$recipe_sustainability <- various$ingredients_sustainability %>%
     
     #Calculate the whole recipe
-    group_by(sample_id, group, feature) %>%
+    group_by(sample_id, group, Source, feature) %>%
     summarise(value = sum(value, na.rm = TRUE)) %>%
     ungroup() 
   
@@ -619,7 +626,7 @@ various$org_amounts <- recipes %>% select(sample_id, Country, Ingredients, Amoun
   various$foodgroup_sustainability <- various$ingredients_sustainability %>%
     
     #Calculate the whole recipe
-    group_by(group, L1, feature) %>%
+    group_by(group, Source, L1, feature) %>%
     summarise(value = sum(value, na.rm = TRUE)) %>%
     ungroup() 
   
@@ -633,10 +640,24 @@ various$org_amounts <- recipes %>% select(sample_id, Country, Ingredients, Amoun
     select(-c(Amounts, Weight))
   
 #Save for analysis ----
+#Remove recipes with >10% missing data, either from nutrition or sustainability
+missing_data <- list(
+  'no_amounts' = various$no_amounts,
+  'no_nutrient_info' = various$no_nutrient_info,
+  'no_sustainability_indicators' = various$no_sustainability_indiactors
+  )
+  saveRDS(missing_data, './Data/output/missing_data2.Rds')
+  
+to_remove <- bind_rows(
+  missing_data$no_nutrient_info %>% filter(pct_of_full_recipe >10),
+  missing_data$no_sustainability_indicators %>% filter(pct_of_full_recipe >10)
+) %>% unique()
+ 
+#All recipes with summed nutrients and sustainability 
 recipes_analysis <- full_join(
   various$recipe_sustainability %>% pivot_wider(names_from = feature, values_from = value),
   various$recipes_nutrients %>% pivot_wider(names_from = feature, values_from = value)
-)
+) %>% filter(!sample_id %in% to_remove$sample_id) #Remove recipes with too much missing data
 saveRDS(recipes_analysis, './Data/output/recipes_for_analysis.Rds') 
 
 ingredients_analysis <- full_join(
@@ -644,15 +665,9 @@ ingredients_analysis <- full_join(
   various$ingredients_nutrients %>% pivot_wider(names_from = feature, values_from = value)
 ) %>%
   #Add weight of each ingredient
-  inner_join(various$ingredients_weight) %>% rename(Amounts = normalized_weight)
+  inner_join(various$ingredients_weight) %>% rename(Amounts = normalized_weight) %>%
+  filter(!sample_id %in% to_remove$sample_id) #Remove recipes with too much missing data
 saveRDS(ingredients_analysis, './Data/output/ingredients_for_analysis.Rds')
-
-missing_data <- list(
-  'no_amounts' = various$no_amounts,
-  'no_nutrient_info' = various$no_nutrient_info,
-  'no_sustainability_indicators' = various$no_sustainability_indiactors
-)
-saveRDS(missing_data, './Data/output/missing_data2.Rds')
 
 
 to_share_ingredients <- ingredients_analysis %>%
@@ -665,7 +680,7 @@ to_share_recipes <- recipes_analysis %>%
                rename(group = Country) %>% unique()) %>%
   select(group, Source, sample_id, everything())
 
-metadata <- read_xlsx('./Data/databases/matvaretabellen_metadata.xlsx') %>%
+features_metadata <- read_xlsx('./Data/databases/matvaretabellen_metadata.xlsx') %>%
   select(-c(starts_with('Ref'), starts_with('Food'), starts_with('C1'), starts_with('C20:3'), starts_with('C20:4'), `Edible part`, Water)) %>%
   rename(EPA = `C20:5n-3 (EPA)`,
          DPA = `C22:5n-3 (DPA)`,
@@ -681,6 +696,7 @@ metadata <- read_xlsx('./Data/databases/matvaretabellen_metadata.xlsx') %>%
 
 write_csv(to_share_ingredients, 'all_ingredients_100g.csv')
 write_csv(to_share_recipes, 'all_recipes_100g.csv')
-write_csv(metadata, 'metadata.csv')
+write_csv(features_metadata, 'features_metadata.csv')
 write_csv(various$recipe_weight, 'total_weight_recipe.csv')
 write_csv(various$org_ingredients, 'original_ingredients')
+

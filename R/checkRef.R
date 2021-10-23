@@ -154,9 +154,9 @@ checkRef <- function(df, reference, fix_errors = TRUE){
           Ingredients == 'corn flour' ~ fixRefID(reference = reference, 'cornmeal', 'polenta'),
           Ingredients == 'chicken breast' & unit == 'dl' ~ fixRefID(reference = reference, 'chicken', 'diced'),
           Ingredients == 'salad rocket' ~ fixRefID(reference = reference, 'ruccola'),
+          Ingredients == 'lime lead' ~ fixRefID(reference = reference, 'bay', 'leaf'), #Assume similar
           #Ingredients with no references
-          Ingredients %in% c('mustard powder', 'chinese five spice', 'of lime sheet, shredded',
-                             'of dip mix', 'of coffee lime leaf, dried, soaked in warm water 15 min') ~ 0,
+          Ingredients %in% c('mustard powder', 'chinese five spice', 'of dip mix') ~ 0,
           
           TRUE ~ ID
         )) 
@@ -275,7 +275,7 @@ checkRef <- function(df, reference, fix_errors = TRUE){
           Ingredients == 'pork neck' ~ fixRefID(reference = reference, 'pork', 'neck chop'),
           
           #Not in reference
-          Ingredients %in% c('duck or goose fat for confit', 'of lime sheet, shredded', 'cranberries jam',
+          Ingredients %in% c('duck or goose fat for confit', 'lime leaf', 'cranberries jam',
                              'cooking spray', 'red food coloring', 'beef fund', 'fish scraps for broth',
                              'pack high quality charcoal briquettes', 'pomegranate kernel', 'yeast nutritional',
                              'salmon roe', 'spice seasoning pepper', 'toro greek moussaka', 'paste chili',

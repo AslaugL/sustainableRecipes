@@ -24,6 +24,8 @@ standardiseIngredients <- function(df){
       str_detect(Ingredients, 'apple') & str_detect(Ingredients, 'juice') & !str_detect(Ingredients, 'pine') ~ 'apple juice',
       str_detect(Ingredients, 'apricot') & str_detect(Ingredients, 'dried') ~ 'apricot dried',
       str_detect(Ingredients, 'apricot') & str_detect(Ingredients, 'jam') ~ 'apricot jam',
+      str_detect(Ingredients, 'apricot') & str_detect(Ingredients, 'drained') ~ 'apricot canned',
+      str_detect(Ingredients, 'apricot')  ~ 'apricot',
       str_detect(Ingredients, 'artichoke') & str_detect(Ingredients, 'heart') & str_detect(Ingredients, 'drain|can') ~ 'artichoke heart canned',
       str_detect(Ingredients, 'earth shocks') ~ 'artichoke',
       str_detect(Ingredients, 'asparagus') & str_detect(Ingredients, 'white') ~ 'asparagus white',
@@ -256,6 +258,7 @@ standardiseIngredients <- function(df){
       #Herbs and spices----
       str_detect(Ingredients, 'adobo seasoning') ~ 'adobo seasoning',
       str_detect(Ingredients, 'allspice|of all kinds') ~ 'allspice',
+      str_detect(Ingredients, 'anise') &str_detect(Ingredients, 'extract') ~ 'anise extract',
       str_detect(Ingredients, 'anis') & !str_detect(Ingredients, 'star') ~ 'anise ground',
       
       str_detect(Ingredients, 'basil') & (str_detect(Ingredients, 'fresh|chop|crush|neve|twig|leaf') |
@@ -305,6 +308,7 @@ standardiseIngredients <- function(df){
       str_detect(Ingredients, 'juniper') ~ 'juniper berry',
       
       str_detect(Ingredients, 'lemon balm') ~ 'lemon balm',
+      str_detect(Ingredients, 'lime') & str_detect(Ingredients, 'leaf|leaves|sheet') ~ 'lime leaf',
       
       str_detect(Ingredients, 'mint') & (str_detect(Ingredients, 'fresh|chop|crush|neve|twig|leaf') | str_detect(Amounts, 'twig|bunch|leaf|neve|dl')) ~ 'mint fresh herbs',
       str_detect(Ingredients, 'mint') ~ 'mint dried', #Standard
@@ -354,6 +358,9 @@ standardiseIngredients <- function(df){
       str_detect(Ingredients, 'mushroom') & !str_detect(Ingredients, 'rice|condensed') ~ 'mushroom',
       
       #Flours, grains/nuts/legumes----
+      str_detect(Ingredients, 'almond') & str_detect(Ingredients, 'flour') ~ 'almond flour',
+      str_detect(Ingredients, 'almond') & str_detect(Ingredients, 'extract') ~ 'almond extract',
+      str_detect(Ingredients, 'almond') & str_detect(Ingredients, 'milk') ~ 'almond milk',
       str_detect(Ingredients, 'almond') & !str_detect(Ingredients, 'potato') ~ 'almond',
       
       str_detect(Ingredients, 'bagel') ~ 'rolls white bagel',
@@ -489,7 +496,7 @@ standardiseIngredients <- function(df){
       
       str_detect(Ingredients, 'grouse') ~ 'hen breast fillet grouse',
       
-      str_detect(Ingredients, 'turkey') & str_detect(Ingredients, 'ground') ~ 'turkey minced meat',
+      str_detect(Ingredients, 'turkey') & str_detect(Ingredients, 'ground|dough') ~ 'turkey minced meat',
       str_detect(Ingredients, 'turkey') & str_detect(Ingredients, 'breast|fillet') ~ 'turkey breast',
       str_detect(Ingredients, 'turkey') & str_detect(Ingredients, 'club') ~ 'turkey drumstick chicken', #Add chicken to use to calculate nutrition values
       str_detect(Ingredients, 'turkey') & str_detect(Ingredients, 'ham') ~ 'turkey ham canned',
@@ -523,7 +530,7 @@ standardiseIngredients <- function(df){
       str_detect(Ingredients, 'calf') & str_detect(Ingredients, 'liver') ~ 'beef calf liver',
       str_detect(Ingredients, 'calf') & str_detect(Ingredients, 'leg') ~ 'beef calf shoulder', #Actually hind leg but not in database,
       str_detect(Ingredients, 'calf') & str_detect(Ingredients, 'steak') ~ 'beef veal for roast',
-      str_detect(Ingredients, 'beef|cattle') & !str_detect(Ingredients, 'fund|broth|stock|bouilljon|bouillion') ~ 'beef chuck roll',
+      str_detect(Ingredients, 'beef|cattle') & !str_detect(Ingredients, 'fund|broth|stock|bouilljon|bouillion|bouillon') ~ 'beef chuck roll',
       str_detect(Ingredients, 'bone marrow') ~ 'marrow bone',
       
       str_detect(Ingredients, 'deer') & str_detect(Ingredients, 'ground') & !str_detect(Ingredients, 'rein|rain') ~ 'roe deer minced meat',
@@ -547,7 +554,7 @@ standardiseIngredients <- function(df){
       str_detect(Ingredients, 'lamb') & str_detect(Ingredients, 'carree') ~ 'lamb hind saddle',
       str_detect(Ingredients, 'lamb') & str_detect(Ingredients, 'chop') ~ 'lamb chop',
       str_detect(Ingredients, 'lamb') & str_detect(Ingredients, 'cooked') ~ 'lamb shoulder cooked', #Default
-      str_detect(Ingredients, 'lamb') & !str_detect(Ingredients, 'power|broth|stock') ~ 'lamb shoulder', #Default
+      str_detect(Ingredients, 'lamb') & !str_detect(Ingredients, 'power|broth|bouillon|stock') ~ 'lamb shoulder', #Default
       str_detect(Ingredients, 'sheep cabbage meat') ~ 'lamb sheep cabbage stew meat',
       str_detect(Ingredients, 'sheep head') ~ 'lamb sheep head',
       
@@ -828,20 +835,20 @@ standardiseIngredients <- function(df){
       
       str_detect(Ingredients, 'water') & !str_detect(Ingredients, 'corn|beef|tuna|coffee|chili|cream|cress|chestnut|melon') ~ 'water',
       str_detect(Ingredients, 'water to the corn') ~ 'water',
-      str_detect(Ingredients, 'stock|broth') & str_detect(Ingredients, 'cube|dice') & str_detect(Ingredients, 'vegetable') ~ 'broth cube vegetable',
-      str_detect(Ingredients, 'stock|broth') & str_detect(Ingredients, 'cube|dice') & str_detect(Ingredients, 'fish') ~ 'broth cube fish',
-      str_detect(Ingredients, 'stock|broth') & str_detect(Ingredients, 'cube|dice') & str_detect(Ingredients, 'beef|meat') ~ 'broth cube beef',
-      str_detect(Ingredients, 'stock|broth') & str_detect(Ingredients, 'cube|dice') & str_detect(Ingredients, 'chicken') ~ 'broth cube chicken',
-      str_detect(Ingredients, 'stock|broth|borth') & str_detect(Ingredients, 'cube|dice') ~ 'broth cube',
-      str_detect(Ingredients, 'stock|broth|power') & str_detect(Ingredients, 'chicken') ~ 'water broth chicken',
-      str_detect(Ingredients, 'stock|broth|bouilljon') & str_detect(Ingredients, 'beef|meat') ~ 'water broth beef',
-      str_detect(Ingredients, 'stock|broth') & str_detect(Ingredients, 'shellfish') ~ 'water broth shellfish',
-      str_detect(Ingredients, 'stock|broth|power') & str_detect(Ingredients, 'game|wild') ~ 'water broth game',
-      str_detect(Ingredients, 'stock|broth') & str_detect(Ingredients, 'turkey') ~ 'water broth turkey',
-      str_detect(Ingredients, 'stock|broth') & str_detect(Ingredients, 'vegetable') ~ 'water broth vegetable',
-      str_detect(Ingredients, 'stock|broth|power') & str_detect(Ingredients, 'lamb') ~ 'water broth lamb',
-      str_detect(Ingredients, 'stock|broth|power') & str_detect(Ingredients, 'fish') ~ 'water broth fish',
-      str_detect(Ingredients, 'stock|broth|frying pan|power') ~ 'water broth',
+      str_detect(Ingredients, 'stock|broth|bouillon') & str_detect(Ingredients, 'cube|dice') & str_detect(Ingredients, 'vegetable') ~ 'broth cube vegetable',
+      str_detect(Ingredients, 'stock|broth|bouillon') & str_detect(Ingredients, 'cube|dice') & str_detect(Ingredients, 'fish') ~ 'broth cube fish',
+      str_detect(Ingredients, 'stock|broth|bouillon') & str_detect(Ingredients, 'cube|dice') & str_detect(Ingredients, 'beef|meat') ~ 'broth cube beef',
+      str_detect(Ingredients, 'stock|broth|bouillon') & str_detect(Ingredients, 'cube|dice') & str_detect(Ingredients, 'chicken') ~ 'broth cube chicken',
+      str_detect(Ingredients, 'stock|broth|bouillon|borth') & str_detect(Ingredients, 'cube|dice') ~ 'broth cube',
+      str_detect(Ingredients, 'stock|broth|bouillon|power') & str_detect(Ingredients, 'chicken') ~ 'water broth chicken',
+      str_detect(Ingredients, 'stock|broth|bouillon|bouilljon') & str_detect(Ingredients, 'beef|meat') ~ 'water broth beef',
+      str_detect(Ingredients, 'stock|broth|bouillon') & str_detect(Ingredients, 'shellfish') ~ 'water broth shellfish',
+      str_detect(Ingredients, 'stock|broth|bouillon|power') & str_detect(Ingredients, 'game|wild') ~ 'water broth game',
+      str_detect(Ingredients, 'stock|broth|bouillon') & str_detect(Ingredients, 'turkey') ~ 'water broth turkey',
+      str_detect(Ingredients, 'stock|broth|bouillon') & str_detect(Ingredients, 'vegetable') ~ 'water broth vegetable',
+      str_detect(Ingredients, 'stock|broth|bouillon|power') & str_detect(Ingredients, 'lamb') ~ 'water broth lamb',
+      str_detect(Ingredients, 'stock|broth|bouillon|power') & str_detect(Ingredients, 'fish') ~ 'water broth fish',
+      str_detect(Ingredients, 'stock|broth|bouillon|frying pan|power') ~ 'water broth',
       str_detect(Ingredients, 'wasabi') ~ 'wasabi',
       str_detect(Ingredients, 'whisky|whiskey') ~ 'whisky spirits 40 vol-% alcohol',
       str_detect(Ingredients, 'wine') & str_detect(Ingredients, 'rice') ~ 'wine rice',
