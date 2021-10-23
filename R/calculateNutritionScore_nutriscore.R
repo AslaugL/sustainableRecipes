@@ -1,21 +1,25 @@
-#' @title calculateNutritionScore_trafficlights
+#' @title calculateNutritionScore_nutriscore
 #'
-#' @description Score a recipe unsing the UK Traffic Light System.
+#' @description Score a recipe using the Nutriscore system.
 #'
-#' @param df A dataframe with a sample_id column for recipe ID, a 'nutriscore_amounts_pct' column with the percentage of fruit/veg/legumes/nuts/healthy oils, and nutrient columns with names in line with Matvaretabellen (except kJ which is 'Kilojoules').
+#' @param df A long format dataframe with an Ingredients column, a Foodgroup column with food groups named as they are in analyses.R script, a sample_id column for recipe ID, and a feature column with nutrient names in line with Matvaretabellen (except kJ which is 'Kilojoules'), with their values in a value column.
 #' @param inverted Should the returned score be inverted or not? Either 'yes' or 'no', default 'yes'.
 #'
 #' @return A dataframe with the recipe ID and its nutriscore with corresponding letter.
 #'
 #' @export
 calculateNutritionScore_nutriscore <- function(df, inverted = 'yes'){
-  #Turn long
-  nutriscore_raw <- df %>%
-    select(sample_id, Kilojoules, Sugar, SatFa, Sodium, nutriscore_amounts_pct, `Dietary fibre`, Protein) %>%
-    pivot_longer(.,
-                 cols = -c(sample_id),
-                 names_to = 'feature',
-                 values_to = 'value') %>%
+  
+  #Find the total of all relevant nutrients in the recipe
+  total_nutrients <- df %>% filter(feature %in% c('Kilojoules', 'Sugar', 'SatFa', 'Sodium', 'Dietary fibre', 'Protein')) %>%
+    group_by(sample_id, feature) %>%
+    summarise(temp = sum(value, na.rm = TRUE)) %>% ungroup() %>% rename(value = temp)
+  
+  #Calculate pct fruit, veg, legumes, nuts and oils
+  pct <- df %>% pctOfFruitVegLegumesNutsOils(.) %>% rename(value = pct)
+  
+  #Join them together and calculate nutriscore
+  nutriscore_raw <- bind_rows(total_nutrients, pct) %>%
     
     #Calculate nutriscore
     mutate(nutriscore_raw = case_when(

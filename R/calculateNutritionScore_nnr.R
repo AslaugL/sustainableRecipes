@@ -7,6 +7,7 @@
 #' @return A dataframe with the recipe ID and its corresponding NNR score.
 #'
 #' @export
+
 calculateNutritionScore_nnr <- function(df){
   
   #first calculate energy percent
