@@ -32,14 +32,15 @@ biodiversity, increase soil degradation and pollute air, water and land
 [@Benton2021; @RodriguezEugenio2018; @Domingo2021; @Kopittke2019]. This
 is made even worse by the fact that about a third of all food produced
 in the world is either lost or wasted through the supply-chain or at the
-consumer. Food waste the third largest contributor to the world's GHGEs
-[@FoodandAgricultureOrganizationoftheUnitedNations2013], and accounts
-for 23-24% of freshwater, land and fertilizer used in food production
-[@Kummu2012]. The EAT-Lancet Commission on Food, Planet, Health states
-that food production is the largest cause of global environmental change
-[@Willett2019]. With a growing human population, if current trends in
-production and consumption patterns continue, more people will end up
-malnourished and the stress on the environment will increase.
+consumer. Food waste is the third largest contributor to the world's
+GHGEs [@FoodandAgricultureOrganizationoftheUnitedNations2013], and
+accounts for 23-24% of freshwater, land and fertilizer used in food
+production [@Kummu2012]. The EAT-Lancet Commission on Food, Planet,
+Health states that food production is the largest cause of global
+environmental change [@Willett2019]. With a growing human population, if
+current trends in production and consumption patterns continue, more
+people will end up malnourished and the stress on the environment will
+increase.
 
 This is the background for the need to develop diets that are both
 healthy and environmentally sustainable, so called "Sustainable Healthy
@@ -113,7 +114,7 @@ that are edible for humans or not) can all influence the environmental
 impact of a given food.
 
 ```{r environmental-impacts, fig.cap = "Greenhouse gas emissions, land and water footprint of various food groups."}
-knitr::include_graphics("images/environmental_impacts.jpg")
+knitr::include_graphics("images/environmental_impacts.png")
 ```
 
 ### Difference between food groups
@@ -175,7 +176,7 @@ farming, and that results may be to overestimate acidification,
 eutrophication and global warming potential while downplaying the
 benefits [@Meier2015].
 
-Included in LCAs of animal production, included farmed fish, is the
+Included in LCAs of animal production, included farmed seafood, is the
 environmental impact of growing feed. Currently a third of all crops
 grown are used to feed animals. While ruminants can be fed roughage that
 are not edible for humans, non-ruminants (pork, chicken and farmed fish)
@@ -207,7 +208,8 @@ the national context. Among other things this means taking into account
 which foods are available and culturally acceptable in that
 country/region, that can be eaten to supply the body with the nutrients
 it needs and not cause ill health. In the latest FBDG update from Brazil
-[@BrazilDietaryGuidelines2015], Denmark [@Fødevarestyrelsen], France
+[@BrazilDietaryGuidelines2015], Canada [@HealthCanada2019], Denmark
+[@Fødevarestyrelsen], France
 [@FoodandAgricultureOrganizationoftheUnitedNations], Germany
 [@Schafer2021], Netherlands [@Brink2019], Sweden [@SwedishFood], and
 Qatar [@Seed2015] individuals are not only advised on how to eat a
@@ -226,7 +228,9 @@ rich foods such as whole grain cereals, legumes and nuts, consume fish
 and dairy foods, and have a low intake of processed foods, saturated
 fat, added sugar and salt [@Herforth2019]. In high income countries, it
 is also common to include a maximum red meat intake, like \<500
-grams/week.
+grams/week. A few countries advice that home cooking and cooking skills
+are beneficial [@BrazilDietaryGuidelines2015;
+@TheJapanDieteticAssociation; @HealthCanada2019].
 
 FBDGs are often presented to consumers with images that show various
 food groups and their proportion in relation to each other in a healthy
@@ -379,147 +383,56 @@ environment, together with individual food preferences, cultural norms
 and knowledge of the relationship between diet and health all play a
 role.
 
-## Recipes as a source of food information
+## Recipes in nutritional research
 
-To avoid what is known as "nutrition confusion",
+Cooking dinners at home has been associated with improved dietary
+quality and higher adherence to healthy dietary patterns like FBDGs
+[@Tiwari2017; @Mills2017; @Wolfson2020], although clinical relevance is
+uncertain. Still, as was seen in the survey by Grunert [@Grunert2020]
+more than 40% of European consumers believe cooking at home is part of a
+sustainable diet. And while only a handful of countries include
+home-cooking in their dietary guidelines, cooking classes is researched
+for their potential use as public health interventions [@Reicks2018;
+@Garcia2016; @Begley2017], with various results.
 
--   Could potentially avoid self-censoring and other biases of food
-    diaries and 24 hour recalls
-
-To help consumers make informed, healthy dietary choices when shopping
-for foods, WHO recommends the use of front-of-pack (FOP) nutrition
-labels, that provide consumers with easy to understand nutrition
-information at a glance [@WorldHealthOrganization2014;
-@WorldHealthOrganization2013; @WorldHealthOrganizaton2016]. There also
-exists some FOP labels to help consumers make sustainable food choices
-[@Liu2016; @Cornish2020; @Meyerding2019; @Grunert2014].
-
-### 
-
-## Front of pack labels
-
-### Nutrition labels
-
-In 2019 there were over 30 countries around the world that have endorsed
-the use of FOP nutrition labels as a tool to make it easier for
-consumers to choose healthier food options [@Jones2019]. In most
-countries the use of these labels by food manufacturers and retail is
-voluntary, but a few countries including Chile, South Korea, Mexico and
-Finland have mandatory FOP nutrition labels [@Jones2019]. There are two
-groups of FOPs, summary labels and nutrient-specific labels
-[@Temple2020]. In both groups, qualifying (i.e. healthy) and
-disqualifying (i.e. unhealthy) components are used to decide on a food's
-healthiness. Summary labels use a set of criteria that can be turned
-into an algorithm to decide a food's healthiness, while
-nutrient-specific labels showcase the amount of the various
-qualifying/disqualifying components in the food per 100 g/per serving.
-Typically the nutrients fat, saturated fat, sodium (or salt) and added
-sugar are seen as disqualifying components, while protein, fibre and
-omega-3 fatty acids are seen as qualifying. The addition of fruits,
-vegetables, nuts, legumes and healthy fats such as olive and nut oils is
-also qualifying in some criteria. Some FOPs uses a mix of disqualifying
-and qualifying components to decide if a food is healthy or not, while
-others use only one or the other [@VanderBend2019; @Temple2020].
-
-There is also a difference in what message is conveyed. The Scandinavian
-Keyhole is a single mark summary label that is given to foods that are a
-healthier option in their given product category, such as ready-made
-meals or breads. For the Keyhole there are different thresholds of
-disqualifying (energy, fat, saturated fat, trans fat, sodium and sugar)
-and qualifying components (energy, fibre, fruits, vegetables, nuts,
-legumes) per 100 g for what it takes to receive the label depending on
-product category, and some product categories such as soft drinks cannot
-receive the label at all [@VanderBend2019, @Helsedirektoratet2015]. The
-Multiple Traffic Light System used in the UK is a nutrient-specific
-label that only include disqualifying components (fat, saturated fat,
-sodium and added sugar), and the same threshold values for the various
-components is used on all food categories. The Multiple Traffic Light
-System presents the consumer with the values of each disqualifying
-component per 100 g/per serving in grams and percentage of the daily
-amount one should eat, color coded with either green for "low", amber
-for "medium", or red for "high" [@VanderBend2019]. Consumers are advised
-to choose foods with more green and amber than red
-[@BritishNutritionFoundation2019]. Yet another type of FOP is the
-Nutriscore, that originated in France and is now used in many countries
-in Europe. Like the Keyhole label, the Nutriscore is a summary label
-that uses both disqualifying (energy, saturated fat, sodium, added
-sugar) and qualifying components (protein, fibre, fruits, vegetables,
-nuts, legumes, olive oil, nut oil, rapeseed oil) per 100 g/100 ml of a
-food/drink. However, where the Keyhole is a single mark given to foods
-that comply the given set of criteria, the Nutriscore is a gradient from
-A (dark green, healthy) to E (dark orange, less healthy), where the
-value of the specific food is highlighted [@VanderBend2019;
-@Chantal2017; @SantePubliqueFrance2021; @SantePubliqueFrance2021a].
-Originally the Nutriscore was used as-is on all food product categories,
-but it was changed to have specific criteria for fats and dairy. The
-design of the mentioned FOPs can be seen in **Figure**
-\@ref(fig:nutritionlabels).
-
-```{r nutritionlabels, fig.cap = "Examples of front of pack nutrition labels used in Europe, the Multiple Traffic Light System (UK), Nutriscore (France, Belgium, Spain, Portugal, Germany, the Netherlands, Switzerland and Luxembourg) and Keyhole (Scandinavia)."}
-knitr::include_graphics("images/nutritionlabels.PNG")
-```
-
-These labels provide simplified dietary information and are accessible
-to the consumer when making dietary choices while food shopping. Another
-potential consequence of the mandatory use of FOP nutrition labels, is
-that manufacturers improve the healthiness of their products to be able
-to receive a FOP label. Indeed, a recent meta analysis found that the
-use of FOP nutrition labels influence consumers to reduce their intake
-of energy and fat, and increase their intake of vegetables. At the same
-time, it was found that food manufacturers reduced the amount of
-sodium/salt in their product formulas [@Shangguan2019]. The European
-Academy of Paediatrics and the European Childhood Obesity Group have
-called for a uniform, mandatory FOP nutrition label use in the European
-Union to help mitigate the rising obesity trend in European children and
-adolescents [@Deren2021].
-
-There are of course other interventions and tools that governments,
-together with the industry and non-profit organizations use to improve
-dietary choices of general consumers, such as promotional campaigns and
-regulatory restrictions and mandates, but such interventions would be
-outside the scope of this thesis. For a review please read Russo et al
-[@Russo2020].
-
-### Sustainability labels
-
-Sustainability labels are not as much used as nutrition labels, but
-labeling schemes exist for foods that are organic, local, come from
-sustainable fisheries, have high animal welfare or worker's rights,
-and/or a low carbon footprint [@Liu2016; @Cornish2020;
-@MarineStewardshipCouncil; @Meyerding2019]. Recently, retailers in
-France have developed the Ecoscore, a sustainability label for their
-geographical region in line with the summary Nutriscore, that has both
-qualifying (environmental benefits such as organic or local production)
-and disqualifying (packaged in non--recyclable packaging, has
-ingredients with negative environmental impacts such as lowered
-biodiversity) properties [@ecoscore-criteria]. In the UK, Foundation
-Earth has developed a sustainability label after the model of
-nutrient-specific labels [@foundation-earth].
-
-There is uncertainty if sustainability labels improve the sustainability
-of consumer's food choices [@Liu2016; @DeBauw2021; @Grunert2014].
-
-## Meals, not guidelines or labels
-
-While dietary guidelines and FOP labels can help individuals make
-healthy, and perhaps sustainable, food choices, foods are seldom bought
-to be eaten in isolation. Rather, they are bought to be part of meals.
 Consumers find inspiration for what meals to cook in various sources,
-such as cookbooks and on the Internet [@Doub2016].
+such as cookbooks and on the Internet [@Doub2016]. Recipes from
+cookbooks, internet recipe sites, blogs and retailer magazines have
+garnered attention as they have a large reach and potential to influence
+food choice. Analysis of food and nutrient content in recipes have been
+suggested as a way to follow food trends and dietary patterns in a
+population [@Buisman2019; @Eidner2013], and to monitor the relationship
+between food consumption and health [@Trattner2017b]. Using recipes
+could be a less resource intensive method to gather dietary information
+than typically used food-frequency questionnaires, dietary interviews or
+diaries.
 
 Several studies have looked at how well recipes found in cookbooks
-[@Irwin2017; @Howard2012], supermarket magazines [@Wademan2020], food
-blogs [@Schneider2013; @Keogh2019; @Dickinson2018] or other Internet
-sources such as recipe sites [@Trattner2017a] compare to dietary
-guidelines and/or FOP labeling schemes. Results are sobering, as most
-recipes studied do not comply with healthy dietary principles. To date,
-I am not aware of any study on these kinds of recipes sustainability.
+[@Irwin2017; @Howard2012; @Jones2013], supermarket magazines
+[@Wademan2020], food blogs [@Schneider2013; @Keogh2019; @Dickinson2018]
+or other Internet recipe sites [@Trattner2017a; @Jones2013; @Cheng2021]
+compare to dietary guidelines and/or other classification schemes for
+healthy meals. Results are sobering, as most recipes studied do not
+comply with healthy dietary principles.
+
+As more focus is put on sustainable diets, recipes could also be used to
+find food combinations aligning with domains of sustainable diet
+principles, and to which extent these domains correlate with each other.
+Some internet based recipe sources provide the cost of each recipe
+[@OdaOppskrifter; @TescoRecipes], which show their affordability. Others
+provide a rating system [@AllrecipesHallOfFame; @OdaOppskrifter] which
+could be used as a stand in for acceptability. Together with food
+composition tables and food environmental impact databases that can be
+used to calculate the recipe's healthiness and environmental impact, all
+four domains of sustainable diets could potentially be explored.
 
 ## Thesis aims
 
-This thesis aims to look at a selection of recipes from three countries
-(UK, Norway, US), from cookbooks (UK) and the Internet (Norway, US), and
-compare their health and sustainability.
+This thesis aims to look at a selection of recipes from the three
+countries United Kingdom (UK), Norway, United States of America (US),
+from cookbooks (UK) and the Internet (Norway, US), and compare two
+domains of sustainable diets, namely health and environmental
+sustainability.
 
 RQ1: How sustainable are recipes from these countries?
 

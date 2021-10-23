@@ -20,48 +20,21 @@ bibliography: library.bib
 
 ### Missing amounts
 
-There were five recipes, all from Norway, that included ingredients where the amount in kilos could not be found. These ingredients were herbs (1), spices (1), wasabi (2) and duck fat used for confit (1).
+One recipe from Norway contained no amounts, and were not included in the analyses.
 
-### Missing nutrition information and sustainability indicators
+### Missing nutrition and environmental impact information
 
-For all three countries, the median percentage of the weight of the recipe that was mapped to a nutrient database or the SHARP Indicators database was 0, and the interquartile range was 100, 100. See **Figure** \@ref(fig:data-completeness)A and B.
+For all three countries, the median percentage of the weight of the recipe that was not mapped to a nutrient database or the SHARP Indicators database was 100, and the interquartile range was 100, 100. See **Figure** \@ref(fig:data-completeness)A and B.
 
-```{r data-completeness, fig.cap = "Percentage of the recipe in weight not mapped to a nutrient database (A) and SHARP Indicators database (B).", fig.width=10, fig.asp=0.45}
-#Nutrient plot
-nutrients_completeness <- plotViolinBox(data_completeness$no_nutrient_info) +
-    scale_color_manual(values = group_colors) +
-    labs(
-      color = 'Country',
-      x = 'Country',
-      y = '% of recipe weight with nutrient information'
-    ) + ylim(0,100)
-#Sustainability plot
-sustainability_completeness <- plotViolinBox(data_completeness$no_sustainability_indicators) +
-    scale_color_manual(values = group_colors) +
-    labs(
-      color = 'Country',
-      x = 'Country',
-      y = '% of recipe weight with sustainability indicators'
-    ) + ylim(0,100)
-#Legend, right
-legend <- get_legend(
-  nutrients_completeness  + 
-    guides(color = guide_legend(nrow = 3)) +
-    theme(legend.position = "right")
-)
-
-#plot
-plot_grid(nutrients_completeness + theme(legend.position  = 'none'),
-          sustainability_completeness + theme(legend.position = 'none'),
-          legend,
-          
-          #Labels, number of rows and relative width of plots
-          labels = c('A', 'B', ''),
-          nrow = 1,
-          rel_widths = c(1,1,0.3))
+```{r data-completeness, fig.cap = "Percentage of the recipe in weight not mapped to a nutrient database (A) and SHARP Indicators environmental impact database (B)."}
+knitr::include_graphics("images/data_completenes_plot.png")
 ```
 
-Two recipes from the US had \>10% of their ingredients in weight not mapped to the SHARP Indicators database. The ingredients that contributed to this was plantains and pure gluten flour. All other recipes had \<10% of their ingredients in weight not mapped to the database.
+Eight recipes (six Norwegian, two US) were not included as they had \>10% of their ingredients in weight not mapped to the food composition table or SHARP Indicators database. The ingredients that contributed to this were sheep head, marrow bones, fish bones, bananas, plantains, pure gluten flour and tamarind juice.
+
+Four additional Norwegian recipes were excluded as they were not dinner recipes.
+
+## Recipes healthiness and environmental impact
 
 ## Between countries comparison
 
@@ -125,58 +98,15 @@ Per 100 g, meat products followed by seafood, fats and oils (including butter) a
 
 The PCA score plot (**Figure** \@ref(fig:PCA-data)A) showed no clustering of recipes from the different countries. The loading plot (**Figure** \@ref(fig:PCA-data)B) showed that vitamin B12 and vitamin A contributed the most to the first principal component, while kilocalories, fat and protein contributed the most to the second principal component.
 
-```{r PCA-data, message=FALSE, fig.cap= "Principal component analysis score plot (A) and loadings plot (B).", fig.width = 6, fig.asp = 1.5}
-#Create a feature_anno column to color features by
-temp <- run_stats %>%
-  mutate(feature_anno = case_when(
-    feature %in% c("Kilojoules", "Kilocalories") ~ "Energy",
-    feature %in% minerals ~ 'Minerals',
-    feature %in% vitamins ~ 'Vitamins',
-    feature %in% energy_contributing ~ 'Macronutrient',
-    feature %in% sustainability ~ 'Sustainability indicators',
-    feature %in% health ~ 'Health indicators'
-  ))
-
-#Score plot
-score_plot <- createPCA(temp) +
-  #Legend at bottom
-  theme(legend.position = 'bottom') +
-  #Fix lab
-  labs(color = 'Country')
-#Loading plot with labels
-loading_plot <- createPCA(temp, plots = 'loadings', cutoff = 0.043) +
-  #Legend at bottom
-  theme(legend.position = 'bottom') 
-
-#Plot the scores and loadings
-plot_grid(score_plot,
-          loading_plot,
-          #Labels, relative width/height of plots and number of grid columns
-          labels = "AUTO",
-          ncol = 1,
-          rel_heights = c(1,1.1))
-
+```{r PCA-data, message=FALSE, fig.cap= "Principal component analysis score plot (A) and loadings plot (B)."}
+knitr::include_graphics("images/pca_plots.png")
 ```
 
 The angle between the loading vectors of vitamin B12 and vitamin A, suggests these nutrients are positively correlated. The angle between the loading vectors of kilocalories, fat and protein, suggests a positive correlation between kilocalories in a recipe and its fat content, and a negative correlation between kilocalories and fat with protein content.
 
 ## Correlation analyses
 
-```{r Correlation-data}
-#Wide df with the variables
-temp <- run_stats %>%
-  #Make feature names more presentable
-  mutate(feature = feature %>%
-           str_replace('inverted_nutriscore', 'Inv. Nutriscore') %>%
-           str_replace('inverted_traffic_score', 'Inv. Traffic Light') %>%
-           str_replace('who_score', 'WHO Score') %>%
-           str_replace('nnr_score', 'NNR Score')
-  ) %>%
-  pivot_wider(., names_from = 'feature', values_from = 'value')
-
-```
-
-### Healthiness indicators and sustainability indicators
+### Healthiness indicators and environmental impact indicators
 
 Results from the Spearman correlation showed a significant (Holm adjusted p value \<0.001) positive correlation between the four healthiness indicators. Correlation was strongest between the most similar healthiness indicators, such that the two dietary guidelines were more strongly correlated to each other than with either the multiple traffic light model or the Nutriscore, and vice versa. The two sustainability indicators were significantly (Holm adjusted p value \<0.001) positively correlated with each other.
 
@@ -184,16 +114,8 @@ All four healthiness indicators were significantly (Holm adjusted p\<0.001) nega
 
 See **Figure** \@ref(fig:Correlation-healthVSsustainability).
 
-```{r Correlation-healthVSsustainability, fig.asp = 0.7, fig.width = 11, fig.cap = "Spearman's Rho between CO2 equivalents (kg), landuse (m2/year) and health indicators.", fig.width = 12, fig.asp = 0.75}
-#Health indicators with sustainability indicators
-ggpairs(temp %>% select(-sample_id),
-        mapping = ggplot2::aes(color=group, alpha = 0.6),
-        columns = 29:34,
-        upper = list(continuous = myCorrelations),
-        lower = list(continuous = wrap("smooth", alpha = 0.3, size=0.1, se = FALSE))) +
-  scale_color_manual(values = group_colors) +
-  scale_fill_manual(values = group_colors)
-
+```{r Correlation-healthVSsustainability, fig.cap = "Spearman's Rho between CO2 equivalents (kg), landuse (m2/year) and health indicators.", fig.width = 12, fig.asp = 0.75}
+knitr::include_graphics("images/healthVSsustainability.png")
 ```
 
 ### Sustainability indicators and energy providing nutrients
@@ -208,24 +130,8 @@ In line with the PCA results, energy content was negatively correlated with prot
 
 See **Figure** \@ref(fig:Correlation-energyVSsustainability) for details.
 
-```{r Correlation-energyVSsustainability, fig.cap = "Spearman's Rho between CO2 equivalents (kg), landuse (m2/year), energy content and energy providing nutrients.", fig.width = 18, fig.asp = 0.75}
-ggpairs(temp %>% select(-sample_id) %>%
-          #Rename some column names
-          rename(
-            `Carbohydrates E%` = Carbo,
-            `Sugar E%` = Sugar,
-            `Protein E%` = Protein,
-            `Saturated Fat E%` = SatFa,
-            `Fat E%` = Fat,
-            `Dietary fibre g/MJ` = `Dietary fibre`,
-            `kcal/100g` = Kilocalories
-          ),
-        mapping = ggplot2::aes(color=group, alpha = 0.6),
-        columns = c(22:28, 33,34),
-        upper = list(continuous = myCorrelations_textsize),
-        lower = list(continuous = wrap("smooth", alpha = 0.3, size=0.1, se = FALSE))) +
-  scale_color_manual(values = group_colors) +
-  scale_fill_manual(values = group_colors)
+```{r Correlation-energyVSsustainability, fig.cap = "Spearman's Rho between CO2 equivalents (kg), landuse (m2/year), energy content and energy providing nutrients."}
+knitr::include_graphics("images/energyVSsustainability.png")
 ```
 
 ### Sustainability indicators and mineral content
@@ -236,16 +142,14 @@ There was a weak negative correlation between copper, a mineral often found in p
 
 Landuse had a weak negative correlation (rho -0.16) with calcium, interestingly this was not visible in the Norwegian recipes, iodine (rho -0.17, Holm adjusted p value \<0.01) and copper (rho -0.21, Holm adjusted p value \<0.001). The correlation between landuse and copper were like the correlation between copper and GHGE driven by recipes from the US. Iron, phosphorus and zinc were positively correlated with landuse. As with the correlations with GHGE, the correlation between landuse and both iron and zinc, were weaker in the UK recipes.
 
-See **Figure** \@ref(fig:Correlation-mineralsVSsustainability).
+See **Figure** \@ref(fig:Correlation-mineralsVSsustainability1) and Figure \@ref(fig:Correlation-mineralsVSsustainability2)
 
-```{r Correlation-mineralsVSsustainability, fig.cap = "Spearman's Rho between CO2 equivalents (kg), landuse (m2/year) and mineral content (\\% of required daily intake).", fig.align='center', fig.width = 24, fig.asp = 0.75}
-ggpairs(temp %>% select(-sample_id),
-        mapping = ggplot2::aes(color=group, alpha = 0.6),
-        columns = c(2,3, 5:7, 9, 10, 12, 13, 21, 33,34),
-        upper = list(continuous = myCorrelations_textsize),
-        lower = list(continuous = wrap("smooth", alpha = 0.3, size=0.1, se = FALSE))) +
-  scale_color_manual(values = group_colors) +
-  scale_fill_manual(values = group_colors)
+```{r Correlation-mineralsVSsustainability1, fig.cap = "Spearman's Rho between CO2 equivalents (kg), landuse (m2/year) and mineral content (\\% of required daily intake).", fig.align='center'}
+knitr::include_graphics("images/mineralsVSsustainability1.png")
+```
+
+```{r Correlation-mineralsVSsustainability2, fig.cap = "Spearman's Rho between CO2 equivalents (kg), landuse (m2/year) and mineral content (\\% of required daily intake).", fig.align='center'}
+knitr::include_graphics("images/mineralsVSsustainability2.png")
 ```
 
 ### Sustainability indicators and vitamin content
@@ -256,16 +160,14 @@ GHGE had a weak negative correlation with folate (rho -0.28, Holm adjusted p val
 
 Correlation between the different vitamins and landuse generally followed the same pattern. Vitamin B12 were not significantly correlated with landuse in the Norwegian recipes, and the correlation for the pooled recipes were lower than it was for GHGE. There was also a weak negative correlation between landuse and vitamin D content (rho -0.19, Holm adjusted p value \<0.01), but not in the US recipes alone.
 
-See **Figure** \@ref(fig:Correlation-vitaminsVSsustainability).
+See **Figure** \@ref(fig:Correlation-vitaminsVSsustainability1) and **Figure** \@ref(fig:Correlation-vitaminsVSsustainability2).
 
-```{r Correlation-vitaminsVSsustainability, fig.cap = "Spearman's Rho between CO2 equivalents (kg), landuse (m2/year) and vitamin content (\\% of required daily intake).", fig.align='center', fig.width = 24, fig.asp = 0.75, out.extra = 'angle = 90'}
-ggpairs(temp %>% select(-sample_id),
-        mapping = ggplot2::aes(color=group, alpha = 0.6),
-        columns = c(4,8,11,14:20,33,34),
-        upper = list(continuous = myCorrelations_textsize),
-        lower = list(continuous = wrap("smooth", alpha = 0.3, size=0.1, se = FALSE))) +
-  scale_color_manual(values = group_colors) +
-  scale_fill_manual(values = group_colors)
+```{r Correlation-vitaminsVSsustainability1, fig.cap = "Spearman's Rho between CO2 equivalents (kg), landuse (m2/year) and vitamin content (\\% of required daily intake).", fig.align='center', fig.width = 24, fig.asp = 0.75, out.extra = 'angle = 90'}
+knitr::include_graphics("images/vitaminsVSsustainability1.png")
+```
+
+```{r Correlation-vitaminsVSsustainability2, fig.cap = "Spearman's Rho between CO2 equivalents (kg), landuse (m2/year) and vitamin content (\\% of required daily intake).", fig.align='center', fig.width = 24, fig.asp = 0.75, out.extra = 'angle = 90'}
+knitr::include_graphics("images/vitaminsVSsustainability2.png")
 ```
 
 # Appendix
