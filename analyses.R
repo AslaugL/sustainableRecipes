@@ -1,23 +1,29 @@
-library(tidyverse)
-library(rstatix)
-library(stringi)
-library(thesisToolsOmics)
-library(kableExtra)
-library(psych)
-library(GGally)
-roxygen2::roxygenise()
+devtools::load_all(path = '.')
+
+
+## Setup ----
+#Empty list to fill with plots and plot legends
+plots <- list()
+plot_legends <- list()
+plots$final <- list() #For plots that needs extra tweaking   
 
 #GGplot theme
 theme_set(theme_bw())
 
 #Read data
-data_recipes <- readRDS('./Data/output/recipes_for_analysis.Rds') #Nutrient content/sustainability indicators pr 100g recipe
+data_recipes <- readRDS('./Data/output/recipes_for_analysis.Rds') %>% #Nutrient content/sustainability indicators pr 100g recipe
+  #Remove non-dinner recipes
+  filter(!sample_id %in% c('Baklava (Turkey)', 'Sausage Lunch', 'Half-fermented trout', 'Straight trout'))
+
 data_ingredients <- readRDS('./Data/output/ingredients_for_analysis.Rds') %>% #Nutrient content/sustainability indicators for every ingredient pr 100g recipe
-  rename(Foodgroup = L1)
+  rename(Foodgroup = L1) %>%
+  #Remove non-dinner recipes
+  filter(!sample_id %in% c('Baklava (Turkey)', 'Sausage Lunch', 'Half-fermented trout', 'Straight trout'))
+
 #Turn tidy
 tidy_recipes <- data_recipes %>%
   pivot_longer(.,
-               cols = -c(sample_id, group),
+               cols = -c(sample_id, group, Source),
                names_to = 'feature',
                values_to = 'value')
 
@@ -45,6 +51,11 @@ tidy_ingredients <- data_ingredients %>%
            str_replace('Water and water-based beverages', 'Water-based\nbeverages')
   ) %>% replace_na(list(Foodgroup = 'Unknown'))
 
+#Recipe metadata
+metadata <- readRDS('./Data/output/recipe_metadata.Rds')
+#remove Source from df
+data_recipes <- data_recipes %>% select(-Source)
+
 #Various to keep environment clean
 various <- list(
   
@@ -61,7 +72,7 @@ various <- list(
 #Select colors for the different countries for plots where color is not pre-coded
 various$country_colors <- groupColors(tidy_recipes)
 
-#data completeness
+## Data completeness----
 temp <- readRDS('./Data/output/missing_data2.Rds') #Read data from cleanup script
 
   #Fix some column names
@@ -73,152 +84,121 @@ temp <- readRDS('./Data/output/missing_data2.Rds') #Read data from cleanup scrip
       group_by(sample_id) %>% summarise(value = sum(value, na.rm = TRUE)) %>% ungroup() %>%
       
       #Add country/group and the recipes with 100% nutrient info
-      full_join(., data_recipes %>% select(sample_id, group)) %>%
-      replace_na(list(value = 0)) %>% #Reipes added have 0 nutrient information missing %>%
+      full_join(., metadata) %>%
+      replace_na(list(value = 0)) %>% #Recipes added have 0 nutrient information missing %>%
     
       #Make it so that value is the % of ingredients mapped to database, not the % of ingredients NOT mapped to db
-      mutate(value = 100-value),
+      mutate(value = 100-value) %>%
+      filter(sample_id != 'Fresh mackerel'), #Remove the Fresh mackerel that has no ingredients
     
-    'no_sustainability_indicators' = temp$no_sustainability_indicators %>% rename(value = pct_of_full_recipe) %>%
+    'no_env_info' = temp$no_sustainability_indicators %>% rename(value = pct_of_full_recipe) %>%
       #If any recipe has more than one ingredient missing sustainability indicators, sum the amounts together
       group_by(sample_id) %>% summarise(value = sum(value, na.rm = TRUE)) %>% ungroup() %>%
       #Add country/group and the recipes with 100% sustainability indicators calculates
-      full_join(., data_recipes %>% select(sample_id, group)) %>%
+      full_join(., metadata) %>%
       replace_na(list(value = 0)) %>% #Recipes added have 0 sustainability indicators missing
       
       #Make it so that value is the % of ingredients mapped to database, not the % of ingredients NOT mapped to db
-      mutate(value = 100-value)
+      mutate(value = 100-value) %>%
+      filter(sample_id != 'Fresh mackerel') #Remove the Fresh mackerel that has no ingredients
   )
-
-#Calculate health scores----
-#Prep----
-#Calculate percentage of fruit, vegetables, nuts, legumes and healthy oils to calculate nutriscore and Keyhole
-various$KHNS_relevant_amounts <- tidy_ingredients %>%
   
-  #Only weight is important, not features
-  select(-c(feature, value)) %>% unique() %>%
-  
-  #Nutriscore and keyhole relevant foodgroups and ingredients
-  mutate(
-    nutriscore_foods = case_when(
-      (Foodgroup %in% c('Vegetables and vegetable products', 'Fruit and fruit products',
-                        'Fruit and vegetable juices and nectars \\(including concentrates\\)',
-                        'Legumes, nuts, oilseeds and spices') &
-         !str_detect(Ingredients, 'mushroom|coconut milk|sesame seed|pine')) |
-        str_detect(Ingredients, 'olive oil|rapeseed oil|walnut oil') ~ 'nutriscore_fruit_veg_legumes_nuts_oils'),
-    keyhole_foods = case_when(
-      Foodgroup %in% c('Vegetables and vegetable products', 'Fruit and fruit products',
-                       'Legumes, nuts, oilseeds and spices') & !str_detect(Ingredients, 'peanut') ~ 'keyhole_fruit_veg_legumes')
-  ) %>%
-  
-  #Keep relevant amounts, remove the rest
-  mutate(
-    nutriscore_amounts_pct = case_when(
-      #Dried fruit/veg and ketchup/purees should be doubled
-      !is.na(nutriscore_foods) & str_detect(Ingredients, 'paste|ketchup|dried|raisin|prune') ~ Amounts*2,
-      !is.na(nutriscore_foods) ~ Amounts),
-    keyhole_amounts_pct = case_when(
-      !is.na(keyhole_foods) ~ Amounts)
-  ) %>%
-  select(-c(Amounts, Foodgroup, nutriscore_foods, keyhole_foods)) %>%
-  
-  #Calculate total amounts for each recipe
-  #Turn longer, since amounts are pr 100 g the % of vegetables etc is found by multiplying with 100
-  pivot_longer(.,
-               cols = c(nutriscore_amounts_pct, keyhole_amounts_pct),
-               names_to = 'feature',
-               values_to = 'value') %>%
-  group_by(sample_id, feature, group) %>%
-  summarise(pct = sum(value, na.rm = TRUE)*100) %>%
-  ungroup() #%>%
-
-#Which recipes comply with the whole grain requirement for the keyhole certification
-various$recipe_keyhole_req <- tidy_ingredients %>%
-  
-  #Find recipes with whole grain ingredients
-  group_by(sample_id) %>%
-  mutate(whole_grain_requirement = case_when(
+  #Plot
+  plots$data_completeness <- list(
     
-    #If recipe contains grain-products, is it whole grain? If so it fullfills requirement, if they are white it doesn't. Recipes without grains fullfill this requirement by default
-    str_detect(Ingredients, 'pasta|rice|bread|tortilla|wheat flour|puff pastry') & str_detect(Ingredients, 'whole grain|coarse') ~ 'yes',
-    str_detect(Ingredients, 'pasta|rice|bread|tortilla|wheat flour|puff pastry') & !str_detect(Ingredients, 'whole grain|coarse') ~ 'no',
+    'nutrients' = plotViolinBox(data_completeness$no_nutrient_info) +
+      scale_color_manual(values = various$country_colors$sample_group) +
+      labs(
+        color = 'Country',
+        x = 'Country',
+        y = '% of recipe weight with nutrient information'
+      ) + ylim(0,100),
+    'environment' = plotViolinBox(data_completeness$no_env_info) +
+      scale_color_manual(values = various$country_colors$sample_group) +
+      labs(
+        color = 'Country',
+        x = 'Country',
+        y = '% of recipe weight with env. impact indicators'
+      ) + ylim(0,100)
     
-    TRUE ~ 'yes'
-  )) %>%
-  #Keep only relevant columns
-  select(sample_id, group, whole_grain_requirement) %>% unique() %>%
-  #If any 'no' is found in whole_grain_requirement column, keep it and remove yes
-  mutate(whole_grain_requirement = case_when(
-    any(whole_grain_requirement == 'no') ~ 'no',
-    TRUE ~ 'yes'
-  )) %>% unique() %>% ungroup() %>%
-  
-  #Type of recipe
-  mutate(
-    recipe_type = case_when(
-      str_detect(sample_id, 'soup|stew|\\bpot\\b|casserole') ~ 'soups_and_stews',
-      str_detect(sample_id, 'pizza|\\bpie\\b|\\bPies\\b|\\btart\\b') ~ 'pizza_and_pies',
-      str_detect(sample_id, 'wraps') ~ 'wraps',
-      TRUE ~ 'ready_meals_27' #Use the ready meal with either a carbohydrate or a protein part, description 27 in Forskrift om frivillig merking med Nøkkelhullet
-    )
   )
-
-
-#Health indicator calculations----
+  #Capture legens
+  plot_legends$data_completeness <- get_legend(
+    plots$data_completeness$nutrients +  
+      guides(color = guide_legend(nrow = 3)) +
+      theme(legend.position = "right")
+  )
+  #Final plot
+  plots$final$data_completeness <- plot_grid(plots$data_completeness$nutrients + theme(legend.position  = 'none'),
+                                             plots$data_completeness$environment + theme(legend.position = 'none'),
+                                             plot_legends$data_completeness,
+                                             
+                                             #Labels, number of rows and relative width of plots
+                                             labels = c('A', 'B', ''),
+                                             nrow = 1,
+                                             rel_widths = c(1,1,0.3))
+  #Save
+  save_plot('./thesis/images/data_completenes_plot.png', plots$final$data_completeness,
+            base_height = 5, base_width = 12)
+  
+  
+## Calculate health indicator scores----
 temp <- list(
   
-  'nutriscore' = data_recipes %>%
-    #Add percentage of recipe that is vegetables/fruit/legumes/nuts/healthy oils
-    inner_join(various$KHNS_relevant_amounts %>% pivot_wider(names_from = feature, values_from = pct)) %>%
-    calculateNutritionScore_nutriscore() %>%
-    inner_join(data_recipes %>% select(sample_id, group)),
+  'nutriscore' = tidy_ingredients %>% calculateNutritionScore_nutriscore() %>%
+    inner_join(metadata %>% select(sample_id, group)),
   
   'multiple_traffic_light' = data_recipes %>%
     select(-group) %>%
     calculateNutritionScore_trafficlights() %>%
-    inner_join(data_recipes %>% select(sample_id, group)),
+    inner_join(metadata %>% select(sample_id, group)),
   
-  'Keyhole' = data_recipes %>%
-    #Add percentage of recipe that is vegetables/fruit/legumes/nuts
-    inner_join(various$KHNS_relevant_amounts %>% pivot_wider(names_from = feature, values_from = pct)) %>%
-    #See if recipes fullfill whole grain criteria
-    inner_join(various$recipe_keyhole_req) %>%
-    keyholeCertification(),
+  'Keyhole' = tidy_ingredients %>% calculateNutritionScore_keyhole() %>%
+    inner_join(metadata %>% select(sample_id, group)) %>%
+    #Turn keyhole certified to 1 for certified and 0 for not certified
+    mutate(keyhole_certified = case_when(
+      keyhole_certified == 'No Keyhole' ~ 0,
+      keyhole_certified == 'Keyhole' ~ 1)),
   
   'who_score' = data_recipes %>%
     calculateNutritionScore_who() %>%
-    inner_join(data_recipes %>% select(sample_id, group)),
+    inner_join(metadata %>% select(sample_id, group)),
   
   'nnr_score' = data_recipes %>%
     calculateNutritionScore_nnr() %>%
-    inner_join(data_recipes %>% select(sample_id, group))
+    inner_join(metadata %>% select(sample_id, group))
 )
 
 health_indicators <- temp %>% reduce(full_join, by = c('sample_id', 'group')) %>%
   #Turn tidy except for nutriscore letters and keyhole classification
   pivot_longer(
-    cols = -c(sample_id, group, nutriscore_letter, keyhole_certified),
+    cols = -c(sample_id, group, nutriscore_letter),
     names_to = 'feature',
     values_to = 'value'
-  )
+  ) %>%
+  #Add back Source metadata
+  inner_join(., metadata)
 
-#Statistical analyses----
+## Statistical analyses----
+#Prep
 #Turn micronutrients into % of RDI for a woman 18-30 yo
 various$RDI <- tibble(
-  'feature' = c('Vitamin A', 'Vitamin D', 'Vitamin E',
-                'Thiamin', 'Riboflavin', 'Niacin',
-                'Vitamin B6', 'Folate', 'Vitamin B12',
-                'Vitamin C', 'Calcium', 'Iron',
-                'Sodium', 'Potassium', 'Magnesium',
-                'Zinc', 'Selenium', 'Copper',
-                'Phosphorus', 'Iodine'),
-  'rdi' = c(700, 10, 8,
-            1.1, 1.3, 15,
-            1.2, 400, 2,
-            75, 800, 15,
-            2300, 3100, 280,
-            7, 50, 0.9,
-            600, 150)
+  'feature' = c('Vitamin A', 'Retinol', 'Beta-carotene',
+                'Vitamin D','Vitamin E', 'Thiamin',
+                'Riboflavin','Niacin', 'Vitamin B6',
+                'Folate', 'Vitamin B12', 'Vitamin C',
+                'Calcium', 'Iron', 'Sodium',
+                'Potassium', 'Magnesium', 'Zinc',
+                'Selenium', 'Copper', 'Phosphorus',
+                'Iodine'),
+  'rdi' = c(700, 700, 8400,
+            10, 8, 1.1,
+            1.3, 15, 1.2,
+            400, 2, 75,
+            800, 15, 2300,
+            3100, 280, 7,
+            50, 0.9, 600,
+            150)
 )
 
 #% of RDI for the various micronutrients that can be found in each recipe
@@ -244,35 +224,24 @@ various$with_energy_pct_densityMJ <- data_recipes %>%
 run_stats <- bind_rows(various$with_RDI, various$with_energy_pct_densityMJ) %>%
   #Add kilocalories per 100g
   full_join(data_recipes %>% select(sample_id, group, Kilocalories) %>% pivot_longer(., cols = Kilocalories, names_to = 'feature', values_to = 'value')) %>%
-  #Add health indicators
-  full_join(health_indicators %>% select(-c(nutriscore_letter, keyhole_certified))) %>%
+  #Add health indicators, except nutriscore letters
+  full_join(health_indicators %>% select(-c(nutriscore_letter))) %>%
   #Add sustainability indicators
   full_join(tidy_recipes %>% filter(feature %in% c('CO2', 'Landuse'))) %>%
-  #Add country where missing
-  group_by(sample_id) %>% fill(group, .direction = "downup") %>% ungroup()
+  #Add country and where missing
+  group_by(sample_id) %>% fill(group, .direction = "downup") %>% fill(Source, .direction = "downup") %>% ungroup()
 
-#Some descriptive stats----
-getDescriptiveStats <- function(df, column){
-  #Get descriptive stats of a named column in a df grouped by 'group'
-  
-  stats <- df %>%
-    group_by(group) %>% 
-    summarize(min = min(!!sym(column)),
-              q1 = quantile(!!sym(column), 0.25),
-              median = median(!!sym(column)),
-              mean = mean(!!sym(column)),
-              q3 = quantile(!!sym(column), 0.75),
-              max = max(!!sym(column))) %>% ungroup()
-  
-}
 
-descriptive_stats <- sapply(as.vector(run_stats$feature %>% unique()),
-                            getDescriptiveStats,
-                            df = run_stats %>% pivot_wider(names_from = 'feature', values_from = 'value'),
-                            simplify = FALSE,USE.NAMES = TRUE) %>%
-  bind_rows(., .id = 'feature')
+# Some descriptive stats----
+descriptive_stats <- run_stats %>%
+  group_by(group, feature) %>%
+  summarise(min = min(value),
+            q1 = quantile(value, 0.25),
+            median = median(value),
+            q3 = quantile(value, 0.75),
+            max = max(value))
 
-#Descriptive stats of missng data
+#Descriptive stats of missing data
 temp <- data_completeness$no_nutrient_info %>%
   group_by(group) %>%
   summarise(min = min(value),
@@ -291,12 +260,13 @@ temp <- data_completeness$no_sustainability_indicators %>%
             q3 = quantile(value, 0.75),
             max = max(value)) %>% ungroup()
 
-#Kruskal Wallis and dunn----
+# Kruskal Wallis and dunn----
 stats <- list(
   
   'kruskal_wallis' = run_stats %>%
     group_by(feature) %>%
-    kruskal_test(., value ~ group),
+    kruskal_test(., value ~ group) %>%
+    adjust_pvalue(., method = 'BH'),
   
   'kruskal_wallis_effectsize' = run_stats %>%
     group_by(feature) %>%
@@ -304,84 +274,13 @@ stats <- list(
   
   'dunn_test' = run_stats %>%
     group_by(feature) %>%
-    dunn_test(value ~ group, detailed = TRUE)
+    dunn_test(value ~ group, detailed = TRUE) %>%
+    adjust_pvalue(., method = 'BH')
   
 )
 
-#Correlation analysis----
-#Functions
-#Helper function tp get results from corr.test
-collectCorr <- function(corr_test_results) {
-  #Create a df with group, adjusted p.value and symbols for showing the significance of the p value from a corr.test result
-  correlations <- tibble(
-    'estimate' = round(corr_test_results$r[1,2], 3),
-    'pvalue' = corr_test_results$p.adj,
-  ) %>%
-    mutate(pvalue_star = as.character(symnum(pvalue, corr = FALSE, na = FALSE, 
-                                             cutpoints = c(0, 0.001, 0.01, 0.05, 0.1, 1), 
-                                             symbols = c("***", "**", "*", "'", " "))))
-}
-#Fix the colors on the correlation scores in the upper segment, slight alteration of code from Isaac Zhao on statexchange
-myCorrelations <- function(data,mapping,...){
-  
-  #Get the data to use for correlation analysis
-  data2 = data
-  data2$x = as.numeric(data[,as_label(mapping$x)])
-  data2$y = as.numeric(data[,as_label(mapping$y)])
-  data2$group = data[,as_label(mapping$colour)]
-  
-  #Split into separate datasets based on group and run corr.test each + all groups combined
-  to_correlate <- data2 %>%
-    select(group, x, y) %>%
-    #Split into individual df's and remove group column as it's numeric
-    split(f = as.factor(.$group)) %>%
-    lapply(., select, ... = -group)
-  #Add the df with all groups to the list  
-  to_correlate$`Overall Corr` <- data2 %>%
-    select(x,y)
-  
-  #Run correlation analysis on each list element, and turn into a single df before plotting
-  correlations <- lapply(to_correlate, corr.test, method = 'spearman') %>%
-    #Get the estimate, p.value and create a column with symbols that show stat.sig. og p value
-    lapply(., collectCorr) %>%
-    #Bind together
-    bind_rows(., .id = 'group')
-  
-  ggplot(data = correlations, aes(x = 1, y = factor(group, levels = c('Overall Corr', 'US', 'Norway', 'UK')), color = group)) +
-    geom_text(aes(label=paste0(group, ": ", estimate, pvalue_star)))
-  
-}
-#One with altered textsize
-myCorrelations_textsize <- function(data,mapping,...){
-  
-  #Get the data to use for correlation analysis
-  data2 = data
-  data2$x = as.numeric(data[,as_label(mapping$x)])
-  data2$y = as.numeric(data[,as_label(mapping$y)])
-  data2$group = data[,as_label(mapping$colour)]
-  
-  #Split into separate datasets based on group and run corr.test each + all groups combined
-  to_correlate <- data2 %>%
-    select(group, x, y) %>%
-    #Split into individual df's and remove group column as it's numeric
-    split(f = as.factor(.$group)) %>%
-    lapply(., select, ... = -group)
-  #Add the df with all groups to the list  
-  to_correlate$`Overall Corr` <- data2 %>%
-    select(x,y)
-  
-  #Run correlation analysis on each list element, and turn into a single df before plotting
-  correlations <- lapply(to_correlate, corr.test, method = 'spearman') %>%
-    #Get the estimate, p.value and create a column with symbols that show stat.sig. og p value
-    lapply(., collectCorr) %>%
-    #Bind together
-    bind_rows(., .id = 'group')
-  
-  ggplot(data = correlations, aes(x = 1, y = factor(group, levels = c('Overall Corr', 'US', 'Norway', 'UK')), color = group)) +
-    geom_text(aes(label=paste0(group, ": ", estimate, pvalue_star)), size = 3.5)
-  
-}
-
+## Correlation analysis----
+plots$correlations <- list()
 #Wide df with the variables
 temp <- run_stats %>%
   #Make feature names more presentable
@@ -389,93 +288,136 @@ temp <- run_stats %>%
            str_replace('inverted_nutriscore', 'Inv. Nutriscore') %>%
            str_replace('inverted_traffic_score', 'Inv. Traffic Light') %>%
            str_replace('who_score', 'WHO Score') %>%
-           str_replace('nnr_score', 'NNR Score')
+           str_replace('nnr_score', 'NNR Score') %>%
+           str_replace('keyhole_certified', 'Keyhole')
   ) %>%
+  inner_join(., metadata) %>%
   pivot_wider(., names_from = 'feature', values_from = 'value')
 
 #Health indicators with sustainability indicators
-ggpairs(temp %>% select(-sample_id),
+plots$correlations$healthVSsustainability <- ggpairs(temp %>% select(-sample_id),
         mapping = ggplot2::aes(color=group, alpha = 0.6),
-        columns = 29:34,
-        upper = list(continuous = myCorrelations),
+        columns = 32:38,
+        upper = list(continuous = myCorrelations_textsize),
         lower = list(continuous = wrap("smooth", alpha = 0.3, size=0.1, se = FALSE))) +
   scale_color_manual(values = various$country_colors$sample_group) +
   scale_fill_manual(values = various$country_colors$sample_group)
+  
+  #Save
+  save_plot('./thesis/images/healthVSsustainability.png', plots$correlations$healthVSsustainability,
+            ncol = 2.2, nrow = 2.2)
 
 #Sustainability vs energy contributing macros
-ggpairs(temp %>% select(-sample_id) %>%
+plots$correlations$energyVSsustainability <- ggpairs(temp %>% select(-sample_id) %>%
           #Rename some column names
           rename(
-            `Carbohydrates E%` = Carbo,
+            `Carbs E%` = Carbo,
             `Sugar E%` = Sugar,
             `Protein E%` = Protein,
-            `Saturated Fat E%` = SatFa,
+            `Sat. Fat E%` = SatFa,
             `Fat E%` = Fat,
-            `Dietary fibre g/MJ` = `Dietary fibre`,
+            `Fibre g/MJ` = `Dietary fibre`,
             `kcal/100g` = Kilocalories
           ),
         mapping = ggplot2::aes(color=group, alpha = 0.6),
-        columns = c(22:28, 33,34),
+        columns = c(25:31, 37,38),
         upper = list(continuous = myCorrelations_textsize),
         lower = list(continuous = wrap("smooth", alpha = 0.3, size=0.1, se = FALSE))) +
   scale_color_manual(values = various$country_colors$sample_group) +
   scale_fill_manual(values = various$country_colors$sample_group)
 
-#Sustainability vs mineral content
-ggpairs(temp %>% select(-sample_id),
+  #Save
+  save_plot('./thesis/images/energyVSsustainability.png', plots$correlations$energyVSsustainability,
+             ncol = 2.3, nrow = 2.3)
+
+#Sustainability vs mineral content, split in two 
+plots$correlations$mineralsVSsustainability1 <- ggpairs(temp %>% select(-sample_id),
         mapping = ggplot2::aes(color=group, alpha = 0.6),
-        columns = c(2,3, 5:7, 9, 10, 12, 13, 21, 33,34),
+        columns = c(4,5, 7:9, 37,38),
         upper = list(continuous = myCorrelations_textsize),
         lower = list(continuous = wrap("smooth", alpha = 0.3, size=0.1, se = FALSE))) +
   scale_color_manual(values = various$country_colors$sample_group) +
   scale_fill_manual(values = various$country_colors$sample_group)
 
-#Sustainability vs vitamin content
-ggpairs(temp %>% select(-sample_id),
+plots$correlations$mineralsVSsustainability2 <- ggpairs(temp %>% select(-sample_id),
+                                                        mapping = ggplot2::aes(color=group, alpha = 0.6),
+                                                        columns = c(11, 12, 15, 16, 24, 37,38),
+                                                        upper = list(continuous = myCorrelations_textsize),
+                                                        lower = list(continuous = wrap("smooth", alpha = 0.3, size=0.1, se = FALSE))) +
+  scale_color_manual(values = various$country_colors$sample_group) +
+  scale_fill_manual(values = various$country_colors$sample_group)
+
+  #Save
+  save_plot('./thesis/images/mineralsVSsustainability1.png', plots$correlations$mineralsVSsustainability1,
+             ncol = 2.2, nrow = 2.2)
+  save_plot('./thesis/images/mineralsVSsustainability2.png', plots$correlations$mineralsVSsustainability2,
+            ncol = 2.2, nrow = 2.2)
+
+
+#Sustainability vs vitamin content, split in two
+plots$correlations$vitaminsVSsustainability1 <- ggpairs(temp %>% select(-sample_id),
         mapping = ggplot2::aes(color=group, alpha = 0.6),
-        columns = c(4,8,11,14:20,33,34),
+        columns = c(18,3,13,22,23, 21, 37,38),
         upper = list(continuous = myCorrelations_textsize),
         lower = list(continuous = wrap("smooth", alpha = 0.3, size=0.1, se = FALSE))) +
   scale_color_manual(values = various$country_colors$sample_group) +
   scale_fill_manual(values = various$country_colors$sample_group)
 
-#Principal Component Analysis----
+plots$correlations$vitaminsVSsustainability2 <- ggpairs(temp %>% select(-sample_id),
+                                                        mapping = ggplot2::aes(color=group, alpha = 0.6),
+                                                        columns = c(17,14,10,20,6,19, 37,38),
+                                                        upper = list(continuous = myCorrelations_textsize),
+                                                        lower = list(continuous = wrap("smooth", alpha = 0.3, size=0.1, se = FALSE))) +
+  scale_color_manual(values = various$country_colors$sample_group) +
+  scale_fill_manual(values = various$country_colors$sample_group)
+
+
+  #Save
+  save_plot('./thesis/images/vitaminsVSsustainability1.png', plots$correlations$vitaminsVSsustainability1,
+            ncol = 2.2, nrow = 2.2)
+  save_plot('./thesis/images/vitaminsVSsustainability2.png', plots$correlations$vitaminsVSsustainability2,
+            ncol = 2.2, nrow = 2.2)
+
+## Principal Component Analysis----
+plots$pca <- list()
 #Create a feature_anno column to color features by
 temp <- run_stats %>%
-  mutate(feature_anno = case_when(
-    feature %in% various$minerals ~ 'Minerals',
-    feature %in% various$vitamins ~ 'Vitamins',
-    feature %in% various$energy_contributing ~ 'Macronutrient',
-    feature %in% various$sustainability ~ 'Sustainability',
-    feature %in% various$health ~ 'Health score'
-  ))
-PCA_scores <- createPCA(temp)
-PCA_loadings <- createPCA(temp, plots = 'loadings') +
-  geom_label_repel(aes(label = feature))
+    mutate(feature_anno = case_when(
+      feature %in% c("Kilojoules", "Kilocalories") ~ "Energy",
+      feature %in% minerals ~ 'Minerals',
+      feature %in% vitamins ~ 'Vitamins',
+      feature %in% energy_contributing ~ 'Macronutrient',
+      feature %in% sustainability ~ 'Sustainability indicators',
+      feature %in% health ~ 'Health indicators'
+    ))
 
-PCA_scores
-PCA_loadings
+#Score plot
+plots$pca$scores <- createPCA(temp %>% filter(sample_id != 'Homemade stick meat'),
+                        interesting_samples = c(
+                          #Samples driving pc1
+                          'Calf liver with bulgur',
+                          'Liver and bacon, onion gravy, smashed potato, dressed greens', "Pig's liver with sage and onions")) +
+  #Legend at bottom
+  theme(legend.position = 'bottom') +
+  #Fix lab
+  labs(color = 'Country')
 
-#Plots----
-#Violin boxplots----
-#Data completeness
-  #Nutrients
-  plotViolinBox(data_completeness$no_nutrient_info) +
-    scale_color_manual(values = various$country_colors$sample_group) +
-    labs(
-      color = 'Country',
-      x = 'Country',
-      y = 'Percentage of recipe in weight with nutrient information'
-    )
-  #Sustainability indicators
-  plotViolinBox(data_completeness$no_sustainability_indicators) +
-    scale_color_manual(values = various$country_colors$sample_group) +
-    labs(
-      color = 'Country',
-      x = 'Country',
-      y = 'Percentage of recipe in weight with sustainability indicators'
-    )
+#Loadings plot
+plots$pca$loadings <- createPCA(temp, plots = 'loadings', cutoff = 0.043) +
+  theme(legend.position = 'bottom')
 
+plots$final$pca <- plot_grid(plots$pca$scores,
+            plots$pca$loadings,
+            #Labels, relative width/height of plots and number of grid columns
+            labels = "AUTO",
+            ncol = 1,
+            rel_heights = c(1,1.1))
+
+  #Save
+  save_plot('./thesis/images/pca_plots.png', plots$final$pca,
+            nrow = 2)
+
+## Violin boxplots----
 #Sustainability
 plotViolinBox(run_stats %>%
                 filter(feature %in% various$sustainability) %>%
