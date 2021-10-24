@@ -103,17 +103,21 @@ preparation and waste removal is less important [@Crippa2021;
 @Ledgard2010; @EulalioNeto2021].
 
 There are however huge variations both within and between the same foods
-and food groups (see **Figure** \@ref(fig:environmental-impacts)). A
-food could also be sustainable when looking at one type of environmental
-impact, but harmful when looking at another. Details such as
-geographical location and available local resources, seasonality, herd
-size and production capacity for animals, outdoor or indoor production
-system, energy sources used for production, type of fertilizer and/or
-pest control used for crops and type of feed used for animals (crops
-that are edible for humans or not) can all influence the environmental
-impact of a given food.
+and food groups (see **Figure** \@ref(fig:environmental-impacts)).
+Details such as geographical location and available local resources,
+seasonality, herd size and production capacity for animals, outdoor or
+indoor production system, energy sources used for production, type of
+fertilizer and/or pest control used for crops and type of feed used for
+animals (crops that are edible for humans or not) can all influence the
+environmental impact of a given food. For example, vegetables produced
+locally may have lower environmental impact than imported produce when
+in season and grown in fields, but out of season it might be grown in
+heated greenhouses that has a higher environmental cost than transport
+from a region where the produce is in season. A food could also be
+sustainable when looking at one type of environmental impact, but
+harmful when looking at another.
 
-```{r environmental-impacts, fig.cap = "Greenhouse gas emissions, land and water footprint of various food groups."}
+```{r environmental-impacts, out.width = "95%", fig.cap = "Greenhouse gas emissions, land and water footprint of various food groups."}
 knitr::include_graphics("images/environmental_impacts.png")
 ```
 
@@ -237,7 +241,7 @@ food groups and their proportion in relation to each other in a healthy
 diet. An example is the Norwegian "diet circle" that can be seen in
 **Figure** \@ref(fig:kostholdssirkelen).
 
-```{r kostholdssirkelen, fig.cap = "The Norwegian diet circle, an illustration of how various food groups should contribute to a healthy Norwegian diet[@Helsedirektoratetb]."}
+```{r kostholdssirkelen, out.width = "80%", fig.cap = "The Norwegian diet circle, an illustration of how various food groups should contribute to a healthy Norwegian diet[@Helsedirektoratetb]."}
 knitr::include_graphics("images/kostsirkelen.PNG")
 ```
 

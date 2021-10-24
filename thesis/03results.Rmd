@@ -24,181 +24,151 @@ One recipe from Norway contained no amounts, and were not included in the analys
 
 ### Missing nutrition and environmental impact information
 
-For all three countries, the median percentage of the weight of the recipe that was not mapped to a nutrient database or the SHARP Indicators database was 100, and the interquartile range was 100, 100. See **Figure** \@ref(fig:data-completeness)A and B.
-
-```{r data-completeness, fig.cap = "Percentage of the recipe in weight not mapped to a nutrient database (A) and SHARP Indicators environmental impact database (B)."}
-knitr::include_graphics("images/data_completenes_plot.png")
-```
+For all three countries, the median percentage of the weight of the recipe that was not mapped to a nutrient database or the SHARP Indicators database was 100, and the interquartile range was 100, 100. See **Appendix Figure** \@ref(fig:data-completeness).
 
 Eight recipes (six Norwegian, two US) were not included as they had \>10% of their ingredients in weight not mapped to the food composition table or SHARP Indicators database. The ingredients that contributed to this were sheep head, marrow bones, fish bones, bananas, plantains, pure gluten flour and tamarind juice.
 
 Four additional Norwegian recipes were excluded as they were not dinner recipes.
 
-## Recipes healthiness and environmental impact
+## Recipes' healthiness and environmental impact
 
-## Between countries comparison
+For all recipes, the median and interquartile range for the continuous healthiness and environmental impact indicators can be seen in **Table** \@ref(tab:descriptive-stats-total).
 
-Of the total 33 nutrients, healthiness and sustainability indicators assessed, 17 were significantly different (adjusted p value \<0.05) between at least two countries.
-
-Recipes from UK scored significantly better than recipes from Norway and the US on all of the healthiness indicators except the multiple traffic light model **Figure** \@ref(fig:violinbox-health-sustainability)A. The UK recipes also had significantly less environmental impact than recipes from the US, but not Norway. See **Figure** \@ref(fig:violinbox-health-sustainability)B.
-
-```{r violinbox-health-sustainability, fig.cap = "Violin/boxplot of how the recipew from each country scored on the healthiness indicators (A), and sustainability indicators (B).", fig.width = 7, fig.asp = 1.5}
-health_plot <- plotViolinBox(health_indicators %>%
-                filter(feature %in% c('inverted_nutriscore', 'nutriscore_letter', 'inverted_traffic_score', 'who_score', 'nnr_score', 'keyhole_certified')) %>%
-                mutate(feature = feature %>%
-                         str_replace('inverted_nutriscore', 'Inverted Nutriscore') %>%
-                         str_replace('nnr_score', 'Nordic Nutritional\nRecommendations') %>%
-                         str_replace('who_score', 'World Health Organization\nRecommendations') %>%
-                         str_replace('inverted_traffic_score', 'Inverted Multiple\nTraffic Light Model'))) +
-    facet_wrap(~feature, scales = 'free') +
-  labs(
-    color = 'Country',
-    x = 'Country'
-  )
-sustainability_plot <- plotViolinBox(run_stats %>%
-                filter(feature %in% c('CO2', 'Landuse')) %>%
-                mutate(feature = feature %>%
-                         str_replace('CO2', 'Kilo CO2 equivalents\nper 100g') %>%
-                         str_replace('Landuse', 'm2 per year\nper 100g'))) +
-  facet_wrap(~feature, scale = 'free', nrow = 1) +
-  labs(
-    color = 'Country',
-    x = 'Country',
-    y = 'Value'
-  )
-#Extract legend to use in plot so that the size of each facet is the same
-legend <- get_legend(
-  health_plot + 
-    guides(color = guide_legend(nrow = 1)) +
-    theme(legend.position = "bottom")
-)
-
-plot_grid(
-  health_plot + theme(legend.position="none"), #Without legend
-  sustainability_plot + theme(legend.position="none"), #without legend
-  legend,
-  #Add labels
-  labels = c('A', 'B', ''),
-  #Number of columns and relative height of the plots in the grid
-  ncol = 1,
-  rel_heights = c(2,1,.1)
-)
-
+```{r descriptive-stats-total}
+descriptive_stats_total %>%
+  select(feature, median, IQR) %>%
+  mutate(value = paste0(median, ', ', IQR)) %>%
+  select(-c(median, IQR)) %>%
+  filter(str_detect(feature, 'nutriscore|traffic|who|nnr|CO2|Landuse')) %>%
+  mutate(feature = feature %>%
+           str_replace('CO2', 'Kilo CO2 equivalents/100g') %>%
+           str_replace('Landuse', 'm2/100g') %>%
+           str_replace('inverted_nutriscore', 'Inverted Nutriscore') %>%
+           str_replace('inverted_traffic_score', 'Inverted Multiple Traffic Light Model') %>%
+           str_replace('nnr_score', 'Nordic Nutritional Recommendations') %>%
+           str_replace('who_score', 'World Health Organization Recommendations')) %>%
+           rename(` ` = feature,
+                  `Median (IQR)` = value) %>%
+  kbl(booktabs = TRUE, linesep = "", caption = "Median and interquartile range of healthiness and environmental impact indicators of all recipes.", escape = FALSE) %>%
+           kable_classic_2(full_width = FALSE) %>%
+           kable_styling(latex_options = c("hold_position"))
 ```
 
-For the macro- and micronutrients, the UK recipes were significantly higher in copper, folate, vitamin C and dietary fibre than Norwegian and US recipes. Norwegian recipes were significantly higher in iodine than both UK and US recipes, while US recipes were significantly higher in sugar and protein than recipes from Norway and UK.
+Recipes scored better on the meal/food-specific scoring criteria than the dietary guidelines. Only three recipes complied with all six WHO guidelines and five complied with all NNR guidelines, while 403 received a Nutriscore of A or B, all but six recipes scored seven or better on the inverted multiple traffic light system and 18 qualified for a Keyhole label.
+
+The median kg CO~2~ equivalent emissions were 0.5 (IQR 0.3, 0.9) and the median m^2^ land used per year were 0.6 (IQR 0.3, 1.2).
+
+### Between countries comparison
+
+Of the total 36 nutrients, healthiness and environmental sustainability indicators assessed, 19 were significantly different (BH adjusted p value \<0.05) between at least two countries.
+
+Recipes from UK scored significantly better than recipes from Norway (BH adjusted p-value \<0.05) and the US (BH adjusted p-value \<0.001) on the NNR guidelines, and significantly better than the US recipes on the WHO guidelines (BH adjusted p-value \<0.05). Norway scored significantly better than the US recipes in the inverted multiple traffic light model (BH adjusted p-value \<0.05) **Figure** \@ref(fig:violinbox-healthiness). The UK recipes had significantly less CO~2~ emissions than recipes from both the US (BH adjusted p-value \<0.001) and Norway (BH adjusted p-value \<0.05), while US recipes had significantly higher land requirements than both Norwegian and UK recipes (BH adjusted p-value \<0.05) **Figure** \@ref(fig:violinbox-env-sustainability).
+
+```{r violinbox-env-sustainability, fig.cap = "Violin/boxplot showing the environmental impact of the recipes, by country.", out.width = "60%"}
+knitr::include_graphics("images/violinbox_env_impact.png")
+```
+
+```{r violinbox-healthiness, fig.cap = "Violin/boxplot showing how the recipes score on the five healthiness indicators, by country.", out.width="60%"}
+knitr::include_graphics("images/violinbox_health_indicators.png")
+```
+
+For the macro- and micronutrients, the UK recipes were significantly higher in dietary fibre than both the US and Norwegian recipes (BH adjusted p-value \<0.001) and vitamin C (BH adjusted p-value \<0.01 for Norway and BH adjusted p-value \<0.001 for US) and significantly lower than the US recipes in protein content (BH adjusted p-value \<0.05).
 
 See **Appendix** **Table** \@ref(tab:stats-data) for the full details.
 
-## Contribution of different food groups to environmental impact of recipes
+### Contribution of different food groups
 
 Per 100 g, meat products followed by seafood, fats and oils (including butter) and dairy products were the ingredients that contributed most to a recipes environmental impact. Recipes from the UK tended to include less meat and dairy than recipes from Norway and the US (**Appendix Figure** \@ref(fig:percent-foodgroups-weight).
 
 ## Principal component analysis
 
-The PCA score plot (**Figure** \@ref(fig:PCA-data)A) showed no clustering of recipes from the different countries. The loading plot (**Figure** \@ref(fig:PCA-data)B) showed that vitamin B12 and vitamin A contributed the most to the first principal component, while kilocalories, fat and protein contributed the most to the second principal component.
+The PCA score plot (**Figure** \@ref(fig:PCA-data)A) showed no clustering of recipes from the different countries. The loading plot (**Figure** \@ref(fig:PCA-data)B) showed that vitamin B12, vitamin A and retinol contributed the most to the first principal component, while kilocalories, fat and protein contributed the most to the second principal component.
 
-```{r PCA-data, message=FALSE, fig.cap= "Principal component analysis score plot (A) and loadings plot (B)."}
+```{r PCA-data, message=FALSE, out.width = "80%", fig.cap = "Principal component analysis score plot (A) and loadings plot (B)."}
 knitr::include_graphics("images/pca_plots.png")
 ```
 
-The angle between the loading vectors of vitamin B12 and vitamin A, suggests these nutrients are positively correlated. The angle between the loading vectors of kilocalories, fat and protein, suggests a positive correlation between kilocalories in a recipe and its fat content, and a negative correlation between kilocalories and fat with protein content.
+The angle between the loading vectors of vitamin B12, vitamin A and the sub-type of vitamin A retinol, suggests these nutrients are positively correlated. The three recipes that contributed most to PC1 all included liver as a main ingredient. The angle between the loading vectors of kilocalories, fat and protein, suggests a positive correlation between kilocalories in a recipe and its fat content, and a negative correlation between kilocalories and fat with protein content. The loading vectors of kilocalories and sodium also suggest a negative correlation between a recipe's energy content and its sodium content.
 
 ## Correlation analyses
 
 ### Healthiness indicators and environmental impact indicators
 
-Results from the Spearman correlation showed a significant (Holm adjusted p value \<0.001) positive correlation between the four healthiness indicators. Correlation was strongest between the most similar healthiness indicators, such that the two dietary guidelines were more strongly correlated to each other than with either the multiple traffic light model or the Nutriscore, and vice versa. The two sustainability indicators were significantly (Holm adjusted p value \<0.001) positively correlated with each other.
+Results from the Spearman correlation showed a significant (BH adjusted p value \<0.001) positive correlation between the four healthiness indicators. Correlation was strongest between the most similar healthiness indicators, such that the two dietary guidelines were more strongly correlated to each other than with either the multiple traffic light model or the Nutriscore, and vice versa. The two sustainability indicators were significantly (BH adjusted p value \<0.001) positively correlated with each other.
 
-All four healthiness indicators were significantly (Holm adjusted p\<0.001) negatively correlated with the two sustainability indicators, with the two dietary guidelines being more strongly correlated with both GHGE and landuse than the multiple traffic light model and Nutriscore were.
+All four healthiness indicators were significantly (BH adjusted p\<0.001) negatively correlated with the two sustainability indicators, with the two dietary guidelines being more strongly correlated with both GHGE and landuse than the multiple traffic light model and Nutriscore were.
 
 See **Figure** \@ref(fig:Correlation-healthVSsustainability).
 
-```{r Correlation-healthVSsustainability, fig.cap = "Spearman's Rho between CO2 equivalents (kg), landuse (m2/year) and health indicators.", fig.width = 12, fig.asp = 0.75}
+```{=tex}
+\begin{landscape}
+
+```{r Correlation-healthVSsustainability, out.width = "100%", fig.cap = "Spearman's Rho between CO2 equivalents (kg), landuse (m2/year) and health indicators."}
 knitr::include_graphics("images/healthVSsustainability.png")
 ```
 
+\end{landscape}
+```
 ### Sustainability indicators and energy providing nutrients
 
-There was a weak positive correlation between total energy content in kilocalories, fat, saturated fat, protein and sustainability indicators when all recipes were pooled together (Holm adjusted p value \<0.001). This association did not reach statistical significance in all countries separately. There was a stronger correlation between saturated fat and sustainability indicators than for total fat and sustainability indicators (rho 0.47/0.5 vs rho 0.35/0.36 CO2/Landuse).
+There was a weak positive correlation between total energy content in kilocalories, fat, saturated fat, protein and sustainability indicators when all recipes were pooled together (BH adjusted p value \<0.001). This association did not reach statistical significance in all countries separately. There was a stronger correlation between saturated fat and sustainability indicators than for total fat and sustainability indicators (rho 0.47/0.5 vs rho 0.35/0.36 CO2/Landuse).
 
-Sugar was positively correlated with both sustainability indicators in the pooled recipe data (Holm adjusted p value \<0.01). In both cases this was driven by recipes from the US, where sugar was used in many meat-based recipes as part of a conditment (not shown). There was a trend that sugar was positively correlated with GHGE but not landuse in the UK recipes, while the Norwegian recipes show a trend towards a weak negative correlation with both sustainability indicators. In the Norwegian recipes, sugar was used mainly as a part of a dough.
+Sugar was positively correlated with both sustainability indicators in the pooled recipe data (BH adjusted p value \<0.01). In both cases this was driven by recipes from the US, where sugar was used in many meat-based recipes as part of a conditment (not shown). There was a trend that sugar was positively correlated with GHGE but not landuse in the UK recipes, while the Norwegian recipes show a trend towards a weak negative correlation with both sustainability indicators. In the Norwegian recipes, sugar was used mainly as a part of a dough.
 
-Landuse had a weak negative correlation with carbohydrates (rho -0.47, Holm adjusted p value \<0.001) and dietary fibre (rho -0.42, Holm adjusted p value \<0.001). GHGE had a moderate negative correlation with carbohydrates (rho -0.53, Holm adjusted p value \<0.001) and a weak negative correlation with dietary fibre (rho -0.48, Holm adjusted p value \<0.001).
+Landuse had a weak negative correlation with carbohydrates (rho -0.47, BH adjusted p value \<0.001) and dietary fibre (rho -0.42, BH adjusted p value \<0.001). GHGE had a moderate negative correlation with carbohydrates (rho -0.53, BH adjusted p value \<0.001) and a weak negative correlation with dietary fibre (rho -0.48, BH adjusted p value \<0.001).
 
 In line with the PCA results, energy content was negatively correlated with protein content, and positively correlated with fat and saturated fat.
 
 See **Figure** \@ref(fig:Correlation-energyVSsustainability) for details.
 
-```{r Correlation-energyVSsustainability, fig.cap = "Spearman's Rho between CO2 equivalents (kg), landuse (m2/year), energy content and energy providing nutrients."}
+```{=tex}
+\begin{landscape}
+
+```{r Correlation-energyVSsustainability, out.width = "100%", fig.cap = "Spearman's Rho between CO2 equivalents (kg), landuse (m2/year), energy content and energy providing nutrients."}
 knitr::include_graphics("images/energyVSsustainability.png")
 ```
 
+\end{landscape}
+```
 ### Sustainability indicators and mineral content
 
 Many minerals were correlated with the sustainability indicators, but the strength and significance of the correlations varied between countries.
 
-There was a weak negative correlation between copper, a mineral often found in plant based foods, and GHGE (rho -0.14, Holm adjusted p value \<0.05). GHGE were positively correlated with Iron (rho 0.34, Holm adjusted p value \<0.001), phoshporus (rho 0.24, Holm adjusted p value \<0.001), selenium (rho 0.16, Holm adjusted p value \<0.01) and zinc (rho 0.64, Holm adjusted p value \<0.001). With copper the correlation was driven by recipes from the US. With iron and zinc, the correlation was weaker for recipes from the UK, and for iron this correlation was not statistically significant in the UK recipes.
+There was a weak negative correlation between copper, a mineral often found in plant based foods, and GHGE (rho -0.14, BH adjusted p value \<0.05). GHGE were positively correlated with Iron (rho 0.34, BH adjusted p value \<0.001), phoshporus (rho 0.24, BH adjusted p value \<0.001), selenium (rho 0.16, BH adjusted p value \<0.01) and zinc (rho 0.64, BH adjusted p value \<0.001). With copper the correlation was driven by recipes from the US. With iron and zinc, the correlation was weaker for recipes from the UK, and for iron this correlation was not statistically significant in the UK recipes.
 
-Landuse had a weak negative correlation (rho -0.16) with calcium, interestingly this was not visible in the Norwegian recipes, iodine (rho -0.17, Holm adjusted p value \<0.01) and copper (rho -0.21, Holm adjusted p value \<0.001). The correlation between landuse and copper were like the correlation between copper and GHGE driven by recipes from the US. Iron, phosphorus and zinc were positively correlated with landuse. As with the correlations with GHGE, the correlation between landuse and both iron and zinc, were weaker in the UK recipes.
+Landuse had a weak negative correlation (rho -0.16) with calcium, interestingly this was not visible in the Norwegian recipes, iodine (rho -0.17, BH adjusted p value \<0.01) and copper (rho -0.21, BH adjusted p value \<0.001). The correlation between landuse and copper were like the correlation between copper and GHGE driven by recipes from the US. Iron, phosphorus and zinc were positively correlated with landuse. As with the correlations with GHGE, the correlation between landuse and both iron and zinc, were weaker in the UK recipes.
 
-See **Figure** \@ref(fig:Correlation-mineralsVSsustainability1) and Figure \@ref(fig:Correlation-mineralsVSsustainability2)
+See **Figure** \@ref(fig:Correlation-mineralsVSsustainability1) and Figure \@ref(fig:Correlation-mineralsVSsustainability2).
 
-```{r Correlation-mineralsVSsustainability1, fig.cap = "Spearman's Rho between CO2 equivalents (kg), landuse (m2/year) and mineral content (\\% of required daily intake).", fig.align='center'}
+```{=tex}
+\begin{landscape}
+```{r Correlation-mineralsVSsustainability1, out.width = "100%", fig.cap = "Spearman's Rho between CO2 equivalents (kg), landuse (m2/year) and mineral content (\\% of required daily intake).", fig.align='center'}
 knitr::include_graphics("images/mineralsVSsustainability1.png")
 ```
 
-```{r Correlation-mineralsVSsustainability2, fig.cap = "Spearman's Rho between CO2 equivalents (kg), landuse (m2/year) and mineral content (\\% of required daily intake).", fig.align='center'}
+```{r Correlation-mineralsVSsustainability2, out.width = "100%", fig.cap = "Spearman's Rho between CO2 equivalents (kg), landuse (m2/year) and mineral content (\\% of required daily intake).", fig.align='center'}
 knitr::include_graphics("images/mineralsVSsustainability2.png")
 ```
-
+\end{landscape}
+```
 ### Sustainability indicators and vitamin content
 
 As with minerals, there were many vitamins that correlated with the sustainability indicators, to various degrees of strength and significance.
 
-GHGE had a weak negative correlation with folate (rho -0.28, Holm adjusted p value \<0.001) in the pooled recipe data, but this did not reach significance in the recipes from Norway. This was the same with vitamin C (rho -0.29, Holm adjusted p value \<0.001). In all countries, there was a weak positive correlation between GHGE and niacin (rho 0.32, Holm adjusted p value \<0.001), riboflavin (rho 0.38, Holm adjusted p value \<0.38) and vitamin B12 (rho 0.49, Holm adjusted p value \<0.001). There was also a weak positive correlation between GHGE vitamin B6 (rho 0.13, Holm adjusted p value \<0.05). For the individual countries, this correlation only reached significance in the recipe data from the US, but there was a trend of the correlation moving in the same direction in the recipes from the UK, but not Norway.
+GHGE had a weak negative correlation with folate (rho -0.28, BH adjusted p value \<0.001) in the pooled recipe data, but this did not reach significance in the recipes from Norway. This was the same with vitamin C (rho -0.29, BH adjusted p value \<0.001). In all countries, there was a weak positive correlation between GHGE and niacin (rho 0.32, BH adjusted p value \<0.001), riboflavin (rho 0.38, BH adjusted p value \<0.38) and vitamin B12 (rho 0.49, BH adjusted p value \<0.001). There was also a weak positive correlation between GHGE vitamin B6 (rho 0.13, BH adjusted p value \<0.05). For the individual countries, this correlation only reached significance in the recipe data from the US, but there was a trend of the correlation moving in the same direction in the recipes from the UK, but not Norway.
 
-Correlation between the different vitamins and landuse generally followed the same pattern. Vitamin B12 were not significantly correlated with landuse in the Norwegian recipes, and the correlation for the pooled recipes were lower than it was for GHGE. There was also a weak negative correlation between landuse and vitamin D content (rho -0.19, Holm adjusted p value \<0.01), but not in the US recipes alone.
+Correlation between the different vitamins and landuse generally followed the same pattern. Vitamin B12 were not significantly correlated with landuse in the Norwegian recipes, and the correlation for the pooled recipes were lower than it was for GHGE. There was also a weak negative correlation between landuse and vitamin D content (rho -0.19, BH adjusted p value \<0.01), but not in the US recipes alone.
 
 See **Figure** \@ref(fig:Correlation-vitaminsVSsustainability1) and **Figure** \@ref(fig:Correlation-vitaminsVSsustainability2).
 
-```{r Correlation-vitaminsVSsustainability1, fig.cap = "Spearman's Rho between CO2 equivalents (kg), landuse (m2/year) and vitamin content (\\% of required daily intake).", fig.align='center', fig.width = 24, fig.asp = 0.75, out.extra = 'angle = 90'}
+```{=tex}
+\begin{landscape}
+```{r Correlation-vitaminsVSsustainability1, out.width = "100%", fig.cap = "Spearman's Rho between CO2 equivalents (kg), landuse (m2/year) and vitamin content (\\% of required daily intake)."}
 knitr::include_graphics("images/vitaminsVSsustainability1.png")
 ```
 
-```{r Correlation-vitaminsVSsustainability2, fig.cap = "Spearman's Rho between CO2 equivalents (kg), landuse (m2/year) and vitamin content (\\% of required daily intake).", fig.align='center', fig.width = 24, fig.asp = 0.75, out.extra = 'angle = 90'}
+```{r Correlation-vitaminsVSsustainability2, out.width = "100%", fig.cap = "Spearman's Rho between CO2 equivalents (kg), landuse (m2/year) and vitamin content (\\% of required daily intake)."}
 knitr::include_graphics("images/vitaminsVSsustainability2.png")
 ```
-
-# Appendix
-
-```{r stats-data}
-stat_table %>%
-  #Escape % for LaTeX
-  mutate(Feature = str_replace(Feature, "%", "\\\\%")) %>%
-  #Format table
-  kbl(booktabs = TRUE, linesep = "", caption = "Kruskal Wallis and 
-      Dunn test results.", escape = FALSE) %>%
-  kable_classic_2(full_width = FALSE)  %>%
-  kable_styling(latex_options = c("scale_down", "hold_position")) %>%
-      add_header_above(c(" " = 1, "Median (IQR)" = 3, "Kruskal-Wallis test" = 2, "Dunn test, Holm corrected" = 2))
-```
-
-```{r percent-foodgroups-weight, fig.cap = "How much various food groups contributed to the weight of the recipes.", fig.width = 10, fig.asp = 0.75}
-#Percentage of weight from each foodgroup
-temp <- tidy_ingredients %>% group_by(group, sample_id, Foodgroup) %>%
-  summarise(value = sum(Amounts, na.rm = TRUE))
-
-#Plot
-plotViolinBox(temp) + facet_wrap(~Foodgroup) +
-  #Labs
-  labs(
-    y = 'Percentage of recipe weight',
-    x = 'Country',
-    color = 'Country'
-  ) +
-  #Fix country colors
-  scale_color_manual(values = group_colors) +
-  theme(legend.position = 'bottom')
-
+\end{landscape}
 ```
