@@ -559,7 +559,7 @@ temp <- health_indicators %>%
   add_row(group = 'Norway', feature = 'Nutriscore', value = 'E', pct = 0) %>%
   add_row(group = 'UK', feature = 'Nutriscore', value = 'E', pct = 0)
 
-plots$violinbox$healthCat <- ggplot(temp, aes(x = value, y = pct, fill = group)) +
+plots$violinbox$healthCat <- ggplot(temp %>% filter(feature != 'Nutriscore'), aes(x = value, y = pct, fill = group)) +
   geom_bar(stat="identity", position = 'dodge') +
   scale_fill_manual(values = group_colors) +
   facet_wrap(~feature, scales = 'free_x') +
@@ -569,11 +569,22 @@ plots$violinbox$healthCat <- ggplot(temp, aes(x = value, y = pct, fill = group))
     x = 'Score',
     fill = 'Country'
   )
+
+  #Legend
+  plot_legends$healthCat <- get_legend(plots$violinbox$healthCat, position = 'right')
+
+temp_plot <- plot_grid(plots$violinbox$healthCat + theme(legend.position = 'none'), plot_legends$healthCat, NULL,
+                       nrow = 1,
+                       rel_widths = c(0.44, 0.1, 0.46))
+
 #Blot both together
 plots$final$health_indicators <- plot_grid(plots$violinbox$healthNum,
-                                           plots$violinbox$healthCat,
-                                           nrow = 2,
-                                           rel_heights = c(2:1))
+                                           temp_plot,
+                                           ncol = 1,
+                                           rel_heights = c(2:1),
+                                           labels = "AUTO")
+
+plots$final$health_indicators
 
   #Save
   save_plot('./thesis/images/violinbox_health_indicators.png', plots$final$health_indicators,
@@ -806,5 +817,24 @@ standardKbl(various$RDI %>%
 #Save objects to be used in RMarkdown
 save(stat_table, tidy_ingredients, guidelines_trafficlights,
      nutriscore_points, descriptive_stats_total, file = './Data/results_allrecipes.RData')
+
+#Descriptive stats table for results chapter
+descriptive_stats_total %>%
+  select(feature, median, IQR) %>%
+  mutate(value = paste0(median, ', ', IQR)) %>%
+  select(-c(median, IQR)) %>%
+  filter(str_detect(feature, 'nutriscore|traffic|who|nnr')) %>%
+  mutate(feature = feature %>%
+           str_replace('CO2', 'Kilo CO2 equivalents/100g') %>%
+           str_replace('Landuse', 'm2/100g') %>%
+           str_replace('inverted_nutriscore', 'Inverted Nutriscore') %>%
+           str_replace('inverted_traffic_score', 'Inverted Multiple Traffic Light Model') %>%
+           str_replace('nnr_score', 'Nordic Nutritional Recommendations') %>%
+           str_replace('who_score', 'World Health Organization Recommendations')) %>%
+           rename(` ` = feature,
+                  `Median (IQR)` = value) %>%
+  kbl(booktabs = TRUE, linesep = "", caption = "Median and interquartile range of healthiness and environmental impact indicators of all recipes.", escape = FALSE) %>%
+           kable_classic_2(full_width = FALSE) %>%
+           kable_styling(latex_options = c("hold_position"))
 
 
