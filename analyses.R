@@ -233,13 +233,23 @@ run_stats <- bind_rows(various$with_RDI, various$with_energy_pct_densityMJ) %>%
 
 
 # Some descriptive stats----
-descriptive_stats <- run_stats %>%
+descriptive_stats_country <- run_stats %>%
   group_by(group, feature) %>%
   summarise(min = min(value),
             q1 = quantile(value, 0.25),
             median = median(value),
             q3 = quantile(value, 0.75),
             max = max(value))
+
+descriptive_stats_total <- run_stats %>%
+  group_by(feature) %>%
+  summarise(min = min(value),
+            q1 = quantile(value, 0.25),
+            median = median(value),
+            q3 = quantile(value, 0.75),
+            max = max(value)) %>%
+  mutate(IQR = paste0('(', round(q1, 1), ', ', round(q3, 1), ')'),
+         median = round(median, 1))
 
 #Descriptive stats of missing data
 temp <- data_completeness$no_nutrient_info %>%
@@ -251,7 +261,7 @@ temp <- data_completeness$no_nutrient_info %>%
             q3 = quantile(value, 0.75),
             max = max(value)) %>% ungroup()
 
-temp <- data_completeness$no_sustainability_indicators %>%
+temp <- data_completeness$no_env_info %>%
   group_by(group) %>%
   summarise(min = min(value),
             q1 = quantile(value, 0.25),
@@ -259,6 +269,20 @@ temp <- data_completeness$no_sustainability_indicators %>%
             mean = mean(value),
             q3 = quantile(value, 0.75),
             max = max(value)) %>% ungroup()
+
+#Count the number of recipes in each healthiness category
+temp <- health_indicators %>%
+  filter(feature != 'inverted_nutriscore') %>%
+  mutate(value = as.character(value)) %>%
+  pivot_wider(.,
+              names_from = feature,
+              values_from = value) %>%
+  pivot_longer(.,
+               cols = -c(sample_id, group, Source),
+               names_to = 'feature',
+               values_to = 'value') %>%
+  group_by(feature, value) %>%
+  summarise(n = n())
 
 # Kruskal Wallis and dunn----
 stats <- list(
@@ -275,7 +299,10 @@ stats <- list(
   'dunn_test' = run_stats %>%
     group_by(feature) %>%
     dunn_test(value ~ group, detailed = TRUE) %>%
-    adjust_pvalue(., method = 'BH')
+    adjust_pvalue(., method = 'BH') %>%
+    #Add ** markings for significance leven, and y position to create p-value brackets in plots later
+    add_significance() %>%
+    add_y_position(scales = 'free_y')
   
 )
 
@@ -398,13 +425,13 @@ plots$pca$scores <- createPCA(temp %>% filter(sample_id != 'Homemade stick meat'
                           'Calf liver with bulgur',
                           'Liver and bacon, onion gravy, smashed potato, dressed greens', "Pig's liver with sage and onions")) +
   #Legend at bottom
-  theme(legend.position = 'bottom') +
+  theme(legend.position = 'bottom') %>% changeGGplotTxtSize(., 10) +
   #Fix lab
-  labs(color = 'Country')
+  labs(color = 'Country') #%>% changeGGplotTxtSize(.)
 
 #Loadings plot
 plots$pca$loadings <- createPCA(temp, plots = 'loadings', cutoff = 0.043) +
-  theme(legend.position = 'bottom')
+  theme(legend.position = 'bottom') %>% changeGGplotTxtSize(., 10)
 
 plots$final$pca <- plot_grid(plots$pca$scores,
             plots$pca$loadings,
@@ -413,23 +440,46 @@ plots$final$pca <- plot_grid(plots$pca$scores,
             ncol = 1,
             rel_heights = c(1,1.1))
 
+plots$final$pca
+
   #Save
   save_plot('./thesis/images/pca_plots.png', plots$final$pca,
-            nrow = 2)
+            nrow = 2.5)
 
 ## Violin boxplots----
-#Sustainability
-plotViolinBox(run_stats %>%
+plots$violinbox <- list()
+#Environmental sustainability
+plots$violinbox$env_impact <- plotViolinBox(run_stats %>%
                 filter(feature %in% various$sustainability) %>%
                 mutate(feature = feature %>%
                          str_replace('CO2', 'Kilo CO2 equivalents\nper 100g') %>%
                          str_replace('Landuse', 'm2 per year\nper 100g'))) +
-  facet_wrap(~feature, scale = 'free', nrow = 2) +
+  facet_wrap(~feature, scale = 'free', ncol = 2) +
   labs(
     color = 'Country',
     x = 'Country',
     y = 'Value'
-  )
+  ) +
+  #Add line and p value significance
+  stat_pvalue_manual(stats$dunn_test %>%
+                       filter(feature %in% various$sustainability) %>%
+                       mutate(feature = feature %>%
+                                str_replace('CO2', 'Kilo CO2 equivalents\nper 100g') %>%
+                                str_replace('Landuse', 'm2 per year\nper 100g')) %>%
+                       #Make some adjustments to the position of the pvalues
+                       mutate(y.position = case_when(
+                                  group1 == 'UK' & feature == 'm2 per year\nper 100g' ~ y.position + 0.4,
+                                  group1 == 'UK' & feature == 'Kilo CO2 equivalents\nper 100g' ~ y.position + 0.1,
+                                  TRUE ~ y.position
+                                )),
+                     label = "p.adj.signif", tip.length = 0.01, hide.ns = TRUE, bracket.nudge.y = 0.2) +
+  scale_y_continuous(expand = expansion(mult = c(0.1, 0.1)))
+
+plots$violinbox$env_impact
+
+  #Save
+  save_plot('./thesis/images/violinbox_env_impact.png', plots$violinbox$env_impact,
+            ncol = 1.7)
 
 #Per foodgroup
 temp <- tidy_ingredients %>%
@@ -454,8 +504,10 @@ plotViolinBox(temp %>% filter(feature == 'Landuse')) +
   )
 
 #Health scores
-plotViolinBox(health_indicators %>%
+#numerical
+plots$violinbox$healthNum <- plotViolinBox(health_indicators %>%
                 filter(feature %in% various$health) %>%
+                filter(feature != 'keyhole_certified') %>%
                 mutate(feature = feature %>%
                          str_replace('inverted_nutriscore', 'Inverted Nutriscore') %>%
                          str_replace('nnr_score', 'Nordic Nutritional\nRecommendations') %>%
@@ -464,7 +516,69 @@ plotViolinBox(health_indicators %>%
   labs(
     color = 'Country',
     x = 'Country'
+  ) +
+  #Add lines and p-value significance
+  stat_pvalue_manual(stats$dunn_test %>% 
+                       filter(feature %in% various$health) %>%
+                       filter(feature != 'keyhole_certified') %>%
+                       mutate(feature = feature %>%
+                                str_replace('inverted_nutriscore', 'Inverted Nutriscore') %>%
+                                str_replace('nnr_score', 'Nordic Nutritional\nRecommendations') %>%
+                                str_replace('who_score', 'World Health Organization\nRecommendations') %>%
+                                str_replace('inverted_traffic_score', 'Inverted Multiple\nTraffic Light Model')
+                              ) %>%
+                       #Make some adjustments to pvalue position
+                       mutate(y.position = case_when(
+                         feature == 'Nordic Nutritional\nRecommendations' & group1 == 'UK' ~ y.position + 0.4,
+                         TRUE ~ y.position
+                       )),
+                     label = "p.adj.signif", tip.length = 0.01, hide.ns = TRUE, bracket.nudge.y = 0.5) +
+  scale_y_continuous(expand = expansion(mult = c(0.1, 0.1)))
+
+plots$violinbox$healthNum
+
+#categorical, first format data
+temp <- health_indicators %>%
+  filter(feature == 'keyhole_certified') %>%
+  mutate(value = case_when(
+    value == 0 ~ 'No keyhole',
+    TRUE ~ 'Keyhole'
+  )) %>%
+  rename(Keyhole = value,
+         Nutriscore = nutriscore_letter) %>%
+  select(sample_id, Nutriscore, Keyhole) %>%
+  pivot_longer(.,
+               cols = -sample_id,
+               names_to = 'feature',
+               values_to = 'value') %>% unique() %>% inner_join(., metadata) %>%
+  group_by(group, feature, value) %>%
+  #pct of recipe with each score
+  summarise(n = n()) %>%
+  mutate(pct = n / sum(n)*100) %>% ungroup() %>% select(-n) %>%
+  #Add that Norway and UK have 0 recipes with nutriscore E for plot
+  add_row(group = 'Norway', feature = 'Nutriscore', value = 'E', pct = 0) %>%
+  add_row(group = 'UK', feature = 'Nutriscore', value = 'E', pct = 0)
+
+plots$violinbox$healthCat <- ggplot(temp, aes(x = value, y = pct, fill = group)) +
+  geom_bar(stat="identity", position = 'dodge') +
+  scale_fill_manual(values = group_colors) +
+  facet_wrap(~feature, scales = 'free_x') +
+  
+  labs(
+    y = '% of recipes',
+    x = 'Score',
+    fill = 'Country'
   )
+#Blot both together
+plots$final$health_indicators <- plot_grid(plots$violinbox$healthNum,
+                                           plots$violinbox$healthCat,
+                                           nrow = 2,
+                                           rel_heights = c(2:1))
+
+  #Save
+  save_plot('./thesis/images/violinbox_health_indicators.png', plots$final$health_indicators,
+            ncol = 1.7, nrow = 3)
+
 #Minerals
 plotViolinBox(run_stats %>%
                 filter(feature %in% various$minerals)) + facet_wrap(~feature, scales = 'free') +
@@ -472,7 +586,13 @@ plotViolinBox(run_stats %>%
     color = 'Country',
     x = 'Country',
     y = 'Percentage of RDI'
-  ) + theme(legend.position="bottom")
+  ) + theme(legend.position="bottom") +
+  #Add lines and p-value significance
+  stat_pvalue_manual(stats$dunn_test %>% filter(feature %in% various$minerals),
+                     label = "p.adj.signif", tip.length = 0.01, hide.ns = TRUE, bracket.nudge.y = 0.5) +
+  scale_y_continuous(expand = expansion(mult = c(0.1, 0.1)))
+
+
 #Vitamins
 plotViolinBox(run_stats %>%
                 filter(feature %in% various$vitamins)) +
@@ -531,19 +651,27 @@ stat_table <- list(
   
   #Get the chi square statistic and p value for each feature
   'kruskal_wallis' = stats$kruskal_wallis %>% filter(feature %in% temp$feature) %>%
-    select(feature, statistic, p) %>%
-    #Turn p value to scientific notation in text and round chisquare stat
-    mutate(p = formatC(p, format = "e", digits = 2),
-           statistic = round(statistic, 1)) %>%
+    select(feature, statistic, p.adj) %>%
+    #Use <0.05, <0.01 and <0.001 from p value
+    mutate(p.adj = case_when(
+      p.adj < 0.001 ~ '<0.001',
+      p.adj < 0.01 ~ '<0.01',
+      p.adj < 0.05 ~ '<0.05',
+      TRUE ~ paste0(as.character(round(p.adj, digits = 2)))
+    )) %>%
     rename(`Chi square` = statistic,
-           `p-value` = p),
+           `Adj. p-value` = p.adj),
   
   #Get the pairwise comparison and adjusted p value for each feature
   'dunn' = stats$dunn_test %>% filter(p.adj <0.05) %>%
     mutate(Pairwise = paste0(group1, ' - ', group2)) %>%
     select(feature, Pairwise, p.adj) %>%
-    #Turn p value to scientific notation in text
-    mutate(p.adj = formatC(p.adj, format = "e", digits = 2)) %>%
+    #Use <0.05, <0.01 and <0.001 from p value
+    mutate(p.adj = case_when(
+      p.adj < 0.001 ~ '<0.001',
+      p.adj < 0.01 ~ '<0.01',
+      p.adj < 0.05 ~ '<0.05'
+    )) %>%
     rename(`Adj. p-value` = p.adj) %>%
     #One row for each feature
     group_by(feature) %>%
@@ -674,20 +802,9 @@ standardKbl(various$RDI %>%
                 Feature == 'Niacin' ~ 'NE'
               )))
 
-group_colors <- various$country_colors$sample_group
-RDI <- various$RDI
-minerals <- various$minerals
-energy_contributing <- various$energy_contributing
-vitamins <- various$vitamins
-sustainability <- various$sustainability
-health <- various$health
 
 #Save objects to be used in RMarkdown
-save(data_ingredients, data_ingredients, tidy_recipes,
-     tidy_ingredients, run_stats, stat_table, health_indicators,
-     RDI, group_colors, minerals, vitamins, sustainability,
-     health, energy_contributing, guidelines_trafficlights,
-     nutriscore_points, data_completeness, file = './Data/results_allrecipes.RData')
-
+save(stat_table, tidy_ingredients, guidelines_trafficlights,
+     nutriscore_points, descriptive_stats_total, file = './Data/results_allrecipes.RData')
 
 
