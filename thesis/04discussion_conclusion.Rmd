@@ -7,7 +7,43 @@ output:
 bibliography: library.bib
 ---
 
-## Choosing ingredients with low environmental impact
+# Discussion
+
+-   The results
+
+    -   Health wise in line with previous studies :(
+
+-   Which ingredients in the recipes explain the various correlations and differences between countries
+
+    -   Vitamins and minerals found in seafood associated with lower land use
+
+    -   Vitamins, minerals and macros found in plant based foods associated with lower environmental impact
+
+    -   Nutrients found in ruminants and animal sourced foods associated with higher environmental impact
+
+    -   Thiamine associated with lower CO2 but increased landuse? Grains? Pork?
+
+-   Choosing ingredients with low environmental impact
+
+    -   Plants, local when in season
+
+    -   Seafood, with caveats
+
+        -   Overfishing, I don't understand how SHARP codes many fish with no land used, farmed fish causes major environmental damage...
+
+    -   Non-ruminants, with caveats
+
+        -   Animal welfare issues, dependencies on grains for feed
+
+    -   If eating ruminants, look for farms with grazing strategies that improve soil carbon sequestration, and other soil quality markers
+
+        -   Ruminants are also important many places where human edible crops can't be grown and other animals will be unable to feed on what is found locally
+
+-   Low environmental impact, high nutritional value foods
+
+    -   Full grains over rice. Local tubers instead of rice and pasta for dinner
+
+## 
 
 ## Low environmental impact, high nutritional value
 
