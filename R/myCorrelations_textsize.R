@@ -30,7 +30,7 @@ myCorrelations_textsize <- function(data,mapping,...){
     select(x,y)
   
   #Run correlation analysis on each list element, and turn into a single df before plotting
-  correlations <- lapply(to_correlate, corr.test, method = 'spearman') %>%
+  correlations <- lapply(to_correlate, corr.test, method = 'spearman', adjust = 'BH') %>%
     #Get the estimate, p.value and create a column with symbols that show stat.sig. og p value
     lapply(., collectCorr) %>%
     #Bind together
