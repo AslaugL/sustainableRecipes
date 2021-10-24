@@ -1,16 +1,36 @@
 Package: sustainableRecipes
-Title: What the Package Does (One Line, Title Case)
+Title: sustainableRecipes
 Version: 0.0.0.9000
 Authors@R: 
-    person(given = "First",
-           family = "Last",
+    person(given = "Aslaug",
+           family = "Angelsen",
            role = c("aut", "cre"),
-           email = "first.last@example.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
+           email = "wez027@uib.no"
+Description: Calculating the environmental impact and healthiness of various recipes.
 License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
     license
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
+Depends:
+  cowplot,
+  dplyr,
+  forcats,
+  GGally,
+  ggbeeswarm,
+  ggforce,
+  gghalves,
+  ggplot2,
+  ggpubr,
+  ggrepel,
+  kableExtra,
+  psych,
+  purrr,
+  readr,
+  readxl,
+  rstatix,
+  stringi,
+  stringr,
+  tibble,
+  tidyr
