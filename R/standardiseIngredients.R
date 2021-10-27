@@ -546,6 +546,7 @@ standardiseIngredients <- function(df){
       str_detect(Ingredients, 'ham') & !str_detect(Ingredients, 'bacon|tenderloin|hamburger|champignon|pork from|turkey|steak|bone') ~ 'ham',
       
       str_detect(Ingredients, 'lamb') & str_detect(Ingredients, 'shoulder|in slice|neck|with bone') ~ 'lamb shoulder', #Shoulder and neck meat can be interchanged
+      str_detect(Ingredients, 'lamb') & str_detect(Ingredients, 'breast and skirt') ~ 'lamb breast and skirt',
       str_detect(Ingredients, 'lamb') & str_detect(Ingredients, 'rib') ~ 'lamb cured rib',
       str_detect(Ingredients, 'lamb') & str_detect(Ingredients, 'leg|thigh') & str_detect(Ingredients, 'smoke') ~ 'lamb leg smoked',
       str_detect(Ingredients, 'lamb') & str_detect(Ingredients, 'leg|thigh') ~ 'lamb leg roast',
