@@ -4,7 +4,8 @@ devtools::load_all(path = '.')
 ## Setup ----
 #Empty list to fill with plots and plot legends
 plots <- list()
-plot_legends <- list()
+plot_legends <- list() #For shared legends
+plot_titles <- list() #For shared titles
 plots$final <- list() #For plots that needs extra tweaking   
 
 #GGplot theme
@@ -122,7 +123,7 @@ temp <- readRDS('./Data/output/missing_data2.Rds') #Read data from cleanup scrip
       ) + ylim(0,100)
     
   )
-  #Capture legens
+  #Capture legends
   plot_legends$data_completeness <- get_legend(
     plots$data_completeness$nutrients +  
       guides(color = guide_legend(nrow = 3)) +
@@ -168,7 +169,7 @@ temp <- list(
     calculateNutritionScore_nnr() %>%
     inner_join(metadata %>% select(sample_id, group))
 )
-
+  
 health_indicators <- temp %>% reduce(full_join, by = c('sample_id', 'group')) %>%
   #Turn tidy except for nutriscore letters and keyhole classification
   pivot_longer(
@@ -177,7 +178,9 @@ health_indicators <- temp %>% reduce(full_join, by = c('sample_id', 'group')) %>
     values_to = 'value'
   ) %>%
   #Add back Source metadata
-  inner_join(., metadata)
+  inner_join(., metadata) %>%
+  #Remove keyhole
+  filter(feature != 'keyhole_certified')
 
 ## Statistical analyses----
 #Prep
@@ -294,9 +297,15 @@ stats <- list(
   
   'kruskal_wallis_effectsize' = run_stats %>%
     group_by(feature) %>%
-    kruskal_effsize(value ~ group),
-  
-  'dunn_test' = run_stats %>%
+    kruskal_effsize(value ~ group)
+  )
+
+#Filter out features that were significantly different in the kruskal wallis
+temp <- stats$kruskal_wallis %>%
+  filter(p.adj <0.05) %>%
+  select(feature) %>% inner_join(run_stats)
+
+stats$dunn_test <- temp %>%
     group_by(feature) %>%
     dunn_test(value ~ group, detailed = TRUE) %>%
     adjust_pvalue(., method = 'BH') %>%
@@ -304,7 +313,6 @@ stats <- list(
     add_significance() %>%
     add_y_position(scales = 'free_y')
   
-)
 
 ## Correlation analysis----
 plots$correlations <- list()
@@ -324,7 +332,7 @@ temp <- run_stats %>%
 #Health indicators with sustainability indicators
 plots$correlations$healthVSsustainability <- ggpairs(temp %>% select(-sample_id),
         mapping = ggplot2::aes(color=group, alpha = 0.6),
-        columns = 32:38,
+        columns = 32:37,
         upper = list(continuous = myCorrelations_textsize),
         lower = list(continuous = wrap("smooth", alpha = 0.3, size=0.1, se = FALSE))) +
   scale_color_manual(values = various$country_colors$sample_group) +
@@ -347,7 +355,7 @@ plots$correlations$energyVSsustainability <- ggpairs(temp %>% select(-sample_id)
             `kcal/100g` = Kilocalories
           ),
         mapping = ggplot2::aes(color=group, alpha = 0.6),
-        columns = c(25:31, 37,38),
+        columns = c(25:31, 36,37),
         upper = list(continuous = myCorrelations_textsize),
         lower = list(continuous = wrap("smooth", alpha = 0.3, size=0.1, se = FALSE))) +
   scale_color_manual(values = various$country_colors$sample_group) +
@@ -360,7 +368,7 @@ plots$correlations$energyVSsustainability <- ggpairs(temp %>% select(-sample_id)
 #Sustainability vs mineral content, split in two 
 plots$correlations$mineralsVSsustainability1 <- ggpairs(temp %>% select(-sample_id),
         mapping = ggplot2::aes(color=group, alpha = 0.6),
-        columns = c(4,5, 7:9, 37,38),
+        columns = c(4,5, 7:9, 36,37),
         upper = list(continuous = myCorrelations_textsize),
         lower = list(continuous = wrap("smooth", alpha = 0.3, size=0.1, se = FALSE))) +
   scale_color_manual(values = various$country_colors$sample_group) +
@@ -368,7 +376,7 @@ plots$correlations$mineralsVSsustainability1 <- ggpairs(temp %>% select(-sample_
 
 plots$correlations$mineralsVSsustainability2 <- ggpairs(temp %>% select(-sample_id),
                                                         mapping = ggplot2::aes(color=group, alpha = 0.6),
-                                                        columns = c(11, 12, 15, 16, 24, 37,38),
+                                                        columns = c(11, 12, 15, 16, 24, 36,37),
                                                         upper = list(continuous = myCorrelations_textsize),
                                                         lower = list(continuous = wrap("smooth", alpha = 0.3, size=0.1, se = FALSE))) +
   scale_color_manual(values = various$country_colors$sample_group) +
@@ -384,7 +392,7 @@ plots$correlations$mineralsVSsustainability2 <- ggpairs(temp %>% select(-sample_
 #Sustainability vs vitamin content, split in two
 plots$correlations$vitaminsVSsustainability1 <- ggpairs(temp %>% select(-sample_id),
         mapping = ggplot2::aes(color=group, alpha = 0.6),
-        columns = c(18,3,13,22,23, 21, 37,38),
+        columns = c(18,3,13,22,23, 21, 36,37),
         upper = list(continuous = myCorrelations_textsize),
         lower = list(continuous = wrap("smooth", alpha = 0.3, size=0.1, se = FALSE))) +
   scale_color_manual(values = various$country_colors$sample_group) +
@@ -392,7 +400,7 @@ plots$correlations$vitaminsVSsustainability1 <- ggpairs(temp %>% select(-sample_
 
 plots$correlations$vitaminsVSsustainability2 <- ggpairs(temp %>% select(-sample_id),
                                                         mapping = ggplot2::aes(color=group, alpha = 0.6),
-                                                        columns = c(17,14,10,20,6,19, 37,38),
+                                                        columns = c(17,14,10,20,6,19, 36,37),
                                                         upper = list(continuous = myCorrelations_textsize),
                                                         lower = list(continuous = wrap("smooth", alpha = 0.3, size=0.1, se = FALSE))) +
   scale_color_manual(values = various$country_colors$sample_group) +
@@ -430,8 +438,10 @@ plots$pca$scores <- createPCA(temp %>% filter(sample_id != 'Homemade stick meat'
   labs(color = 'Country') #%>% changeGGplotTxtSize(.)
 
 #Loadings plot
-plots$pca$loadings <- createPCA(temp, plots = 'loadings', cutoff = 0.043) +
+plots$pca$loadings <- createPCA(temp, plots = 'loadings', cutoff = 0.06) +
   theme(legend.position = 'bottom') %>% changeGGplotTxtSize(., 10)
+
+plots$pca$loadings
 
 plots$final$pca <- plot_grid(plots$pca$scores,
             plots$pca$loadings,
@@ -448,173 +458,272 @@ plots$final$pca
 
 ## Violin boxplots----
 plots$violinbox <- list()
-#Environmental sustainability
-plots$violinbox$env_impact <- plotViolinBox(run_stats %>%
-                filter(feature %in% various$sustainability) %>%
-                mutate(feature = feature %>%
-                         str_replace('CO2', 'Kilo CO2 equivalents\nper 100g') %>%
-                         str_replace('Landuse', 'm2 per year\nper 100g'))) +
-  facet_wrap(~feature, scale = 'free', ncol = 2) +
-  labs(
-    color = 'Country',
-    x = 'Country',
-    y = 'Value'
-  ) +
-  #Add line and p value significance
-  stat_pvalue_manual(stats$dunn_test %>%
-                       filter(feature %in% various$sustainability) %>%
-                       mutate(feature = feature %>%
-                                str_replace('CO2', 'Kilo CO2 equivalents\nper 100g') %>%
-                                str_replace('Landuse', 'm2 per year\nper 100g')) %>%
-                       #Make some adjustments to the position of the pvalues
-                       mutate(y.position = case_when(
-                                  group1 == 'UK' & feature == 'm2 per year\nper 100g' ~ y.position + 0.4,
-                                  group1 == 'UK' & feature == 'Kilo CO2 equivalents\nper 100g' ~ y.position + 0.1,
-                                  TRUE ~ y.position
-                                )),
-                     label = "p.adj.signif", tip.length = 0.01, hide.ns = TRUE, bracket.nudge.y = 0.2) +
-  scale_y_continuous(expand = expansion(mult = c(0.1, 0.1)))
 
-plots$violinbox$env_impact
-
-  #Save
-  save_plot('./thesis/images/violinbox_env_impact.png', plots$violinbox$env_impact,
-            ncol = 1.7)
-
-#Per foodgroup
-temp <- tidy_ingredients %>%
-  filter(feature %in% c('CO2', 'Landuse')) %>%
-  group_by(sample_id, group, feature, Foodgroup) %>%
-  summarise(value = sum(value, na.rm = TRUE))
-#CO2
-plotViolinBox(temp %>% filter(feature == 'CO2')) +
-  facet_wrap(~Foodgroup, scale = 'free') +
-  labs(
-    color = 'Country',
-    x = 'Country',
-    y = 'Kilo CO2 equivalents'
-  )
-#Landuse
-plotViolinBox(temp %>% filter(feature == 'Landuse')) +
-  facet_wrap(~Foodgroup, scale = 'free') +
-  labs(
-    color = 'Country',
-    x = 'Country',
-    y = 'm2 per year'
-  )
-
-#Health scores
-#numerical
-plots$violinbox$healthNum <- plotViolinBox(health_indicators %>%
-                filter(feature %in% various$health) %>%
-                filter(feature != 'keyhole_certified') %>%
-                mutate(feature = feature %>%
-                         str_replace('inverted_nutriscore', 'Inverted Nutriscore') %>%
-                         str_replace('nnr_score', 'Nordic Nutritional\nRecommendations') %>%
-                         str_replace('who_score', 'World Health Organization\nRecommendations') %>%
-                         str_replace('inverted_traffic_score', 'Inverted Multiple\nTraffic Light Model'))) + facet_wrap(~feature, scales = 'free') +
-  labs(
-    color = 'Country',
-    x = 'Country'
-  ) +
-  #Add lines and p-value significance
-  stat_pvalue_manual(stats$dunn_test %>% 
-                       filter(feature %in% various$health) %>%
-                       filter(feature != 'keyhole_certified') %>%
-                       mutate(feature = feature %>%
-                                str_replace('inverted_nutriscore', 'Inverted Nutriscore') %>%
-                                str_replace('nnr_score', 'Nordic Nutritional\nRecommendations') %>%
-                                str_replace('who_score', 'World Health Organization\nRecommendations') %>%
-                                str_replace('inverted_traffic_score', 'Inverted Multiple\nTraffic Light Model')
-                              ) %>%
-                       #Make some adjustments to pvalue position
-                       mutate(y.position = case_when(
-                         feature == 'Nordic Nutritional\nRecommendations' & group1 == 'UK' ~ y.position + 0.4,
-                         TRUE ~ y.position
-                       )),
-                     label = "p.adj.signif", tip.length = 0.01, hide.ns = TRUE, bracket.nudge.y = 0.5) +
-  scale_y_continuous(expand = expansion(mult = c(0.1, 0.1)))
-
-plots$violinbox$healthNum
-
-#categorical, first format data
-temp <- health_indicators %>%
-  filter(feature == 'keyhole_certified') %>%
-  mutate(value = case_when(
-    value == 0 ~ 'No keyhole',
-    TRUE ~ 'Keyhole'
-  )) %>%
-  rename(Keyhole = value,
-         Nutriscore = nutriscore_letter) %>%
-  select(sample_id, Nutriscore, Keyhole) %>%
-  pivot_longer(.,
-               cols = -sample_id,
-               names_to = 'feature',
-               values_to = 'value') %>% unique() %>% inner_join(., metadata) %>%
-  group_by(group, feature, value) %>%
-  #pct of recipe with each score
-  summarise(n = n()) %>%
-  mutate(pct = n / sum(n)*100) %>% ungroup() %>% select(-n) %>%
-  #Add that Norway and UK have 0 recipes with nutriscore E for plot
-  add_row(group = 'Norway', feature = 'Nutriscore', value = 'E', pct = 0) %>%
-  add_row(group = 'UK', feature = 'Nutriscore', value = 'E', pct = 0)
-
-plots$violinbox$healthCat <- ggplot(temp %>% filter(feature != 'Nutriscore'), aes(x = value, y = pct, fill = group)) +
-  geom_bar(stat="identity", position = 'dodge') +
-  scale_fill_manual(values = group_colors) +
-  facet_wrap(~feature, scales = 'free_x') +
+  #Color-free plotviolinbox function with outlier allowed
+  plotViolinBox2 <- function(df, x = 'group', color = TRUE, r_statix = NULL) {
+    
+    if(!is.null(r_statix)){
+      data <- inner_join(df, extractStats(r_statix, filterp = 'no'))
+    }else{data <- df}
+    
+    #Color by color column if color is a column name in df, the mean-bars are positioned for when there is three groups
+    if(is.character(color) & color %in% names(df)){
+      
+      #Color manual to color group by
+      color_manual <- colorManuals(df = df, group = TRUE, feature_anno = FALSE)
+      
+      plot <- ggplot(data, aes(x = !!ensym(x), y = value, color = !!ensym(color))) +
+        scale_color_manual(values = color_manual$sample_group) +
+        
+        #Add mock linetypes for the legend
+        #geom_line(aes(linetype = 'dashed')) +
+        geom_line(aes(linetype = 'solid')) +
+        
+        #Build the jitterplot or dotplot, half violin and half boxplot
+        geom_half_violin(side = 'l') +
+        geom_half_boxplot(side = 'r', outlier.size = 1) +
+        #geom_quasirandom(width = 0.2, alpha = 0.5) +
+        
+        #Add the stippled line for the mean
+        #stat_summary(fun = mean, geom = 'errorbar',
+        #             aes(ymax = ..y.., ymin = ..y..),
+        #             linetype = 'dashed',
+        #             width = 0.7,
+        #             position = position_dodge2(padding = 0.5, width = 15)) + #Add dashed line to indicate mean
+        
+        #Make it nicer
+        labs(
+          #x = !!ensym(x),
+          y = 'Value',
+        ) +
+        
+        scale_linetype_manual(name = 'Boxplot summary',
+                              values = c('solid', 'dashed'),
+                              labels = c('Median', 'Mean')) +
+        
+        #Set legend to the right
+        theme(legend.position = 'right') +
+        
+        labs(
+          color = color
+        )
+      
+    } else if(is.character(color) & !color %in% names(df)){
+      
+      stop("Color must be a column in the dataframe")
+      
+    } else {
+      
+      plot <- ggplot(data, aes(x = !!ensym(x), y = value)) +
+        
+        #Add mock linetypes for the legend
+        geom_line(aes(linetype = 'dashed')) +
+        geom_line(aes(linetype = 'solid')) +
+        
+        #Build the jitterplot or dotplot, half violin and half boxplot
+        geom_half_violin(side = 'l') +
+        geom_half_boxplot(side = 'r', outlier.size = 1) +
+        #geom_quasirandom(width = 0.2, alpha = 0.5) +
+        
+        #Add the stippled line for the mean
+        stat_summary(fun = mean, geom = 'errorbar',
+                     aes(ymax = ..y.., ymin = ..y..),
+                     linetype = 'dashed',
+                     width = 0.38, position = position_nudge(x = 0.185)) + #Add dashed line to indicate mean
+        
+        #Make it nicer
+        labs(
+          #x = !!ensym(x),
+          y = 'Value',
+        ) +
+        
+        scale_linetype_manual(name = 'Boxplot summary',
+                              values = c('solid', 'dashed'),
+                              labels = c('Median', 'Mean')) +
+        
+        #Set legend to the right
+        theme(legend.position = 'right')
+      
+    }
+    
+    #Facet wrap if using r_statix results as names for each facet
+    if(!is.null(r_statix)){
+      plot <- plot + facet_wrap(~string, scales = 'free_y')
+    }else{plot}
+  }
   
-  labs(
-    y = '% of recipes',
-    x = 'Score',
-    fill = 'Country'
-  )
+# Differences between countries----
+  # Environmental sustainability
+  plots$violinbox$env_impact <- plotViolinBox(run_stats %>%
+                  filter(feature %in% various$sustainability) %>%
+                  mutate(feature = feature %>%
+                           str_replace('CO2', 'Kilo CO2 equivalents\nper 100g') %>%
+                           str_replace('Landuse', 'm2 per year\nper 100g'))) +
+    facet_wrap(~feature, scale = 'free', ncol = 2) +
+    labs(
+      color = 'Country',
+      x = 'Country',
+      y = 'Value'
+    ) +
+    #Add line and p value significance
+    stat_pvalue_manual(stats$dunn_test %>%
+                         filter(feature %in% various$sustainability) %>%
+                         mutate(feature = feature %>%
+                                  str_replace('CO2', 'Kilo CO2 equivalents\nper 100g') %>%
+                                  str_replace('Landuse', 'm2 per year\nper 100g')) %>%
+                         #Make some adjustments to the position of the pvalues
+                         mutate(y.position = case_when(
+                                    group1 == 'UK' & feature == 'm2 per year\nper 100g' ~ y.position + 0.4,
+                                    group1 == 'UK' & feature == 'Kilo CO2 equivalents\nper 100g' ~ y.position + 0.4,
+                                    group1 == 'Norway' & group2 == 'US' & feature == 'Kilo CO2 equivalents\nper 100g' ~ y.position + 0.2,
+                                    TRUE ~ y.position
+                                    )),
+                     label = "p.adj.signif", tip.length = 0.01, hide.ns = TRUE, bracket.nudge.y = 0.2) +
+    scale_y_continuous(expand = expansion(mult = c(0.1, 0.1)))
+  
+    #Save
+    save_plot('./thesis/images/violinbox_env_impact.png', plots$violinbox$env_impact,
+              ncol = 1.7)
 
-  #Legend
-  plot_legends$healthCat <- get_legend(plots$violinbox$healthCat, position = 'right')
+  #Per foodgroup
+  temp <- tidy_ingredients %>%
+    filter(feature %in% c('CO2', 'Landuse')) %>%
+    group_by(sample_id, group, feature, Foodgroup) %>%
+    summarise(value = sum(value, na.rm = TRUE))
+  #CO2
+  plotViolinBox(temp %>% filter(feature == 'CO2')) +
+    facet_wrap(~Foodgroup, scale = 'free') +
+    labs(
+      color = 'Country',
+      x = 'Country',
+      y = 'Kilo CO2 equivalents'
+    )
+  #Landuse
+    plotViolinBox(temp %>% filter(feature == 'Landuse')) +
+      facet_wrap(~Foodgroup, scale = 'free') +
+      labs(
+        color = 'Country',
+        x = 'Country',
+        y = 'm2 per year'
+      )
 
-temp_plot <- plot_grid(plots$violinbox$healthCat + theme(legend.position = 'none'), plot_legends$healthCat, NULL,
-                       nrow = 1,
-                       rel_widths = c(0.44, 0.1, 0.46))
+  # Health scores
+    #numerical
+    plots$violinbox$healthNum <- plotViolinBox(health_indicators %>%
+                    filter(feature %in% various$health) %>%
+                    filter(feature != 'keyhole_certified') %>%
+                    mutate(feature = feature %>%
+                           str_replace('inverted_nutriscore', 'Inverted Nutriscore') %>%
+                           str_replace('nnr_score', 'Nordic Nutritional\nRecommendations') %>%
+                           str_replace('who_score', 'World Health Organization\nRecommendations') %>%
+                           str_replace('inverted_traffic_score', 'Inverted Multiple\nTraffic Light Model'))) + facet_wrap(~feature, scales = 'free') +
+    labs(
+      color = 'Country',
+      x = 'Country'
+    ) +
+    #Add lines and p-value significance
+    stat_pvalue_manual(stats$dunn_test %>% 
+                        filter(feature %in% various$health) %>%
+                        filter(feature != 'keyhole_certified') %>%
+                        mutate(feature = feature %>%
+                                  str_replace('inverted_nutriscore', 'Inverted Nutriscore') %>%
+                                  str_replace('nnr_score', 'Nordic Nutritional\nRecommendations') %>%
+                                  str_replace('who_score', 'World Health Organization\nRecommendations') %>%
+                                  str_replace('inverted_traffic_score', 'Inverted Multiple\nTraffic Light Model')
+                                ) %>%
+                         #Make some adjustments to pvalue position
+                         mutate(y.position = case_when(
+                           feature == 'Nordic Nutritional\nRecommendations' & group1 == 'UK' ~ y.position + 0.8,
+                           feature == 'Nordic Nutritional\nRecommendations' & group1 == 'Norway' & group2 == 'US' ~ y.position + 0.4,
+                           
+                           TRUE ~ y.position
+                         )),
+                       label = "p.adj.signif", tip.length = 0.01, hide.ns = TRUE, bracket.nudge.y = 0.5) +
+    scale_y_continuous(expand = expansion(mult = c(0.1, 0.1)))
+    
+    #Save
+    save_plot('./thesis/images/violinbox_health_numerical.png', plots$violinbox$healthNum,
+              ncol = 1.7, nrow = 2)
 
-#Blot both together
-plots$final$health_indicators <- plot_grid(plots$violinbox$healthNum,
-                                           temp_plot,
-                                           ncol = 1,
-                                           rel_heights = c(2:1),
-                                           labels = "AUTO")
+  # categorical, first format data
+  temp <- health_indicators %>%
+    filter(feature == 'keyhole_certified') %>%
+    mutate(value = case_when(
+      value == 0 ~ 'No keyhole',
+      TRUE ~ 'Keyhole'
+    )) %>%
+    rename(Keyhole = value,
+           Nutriscore = nutriscore_letter) %>%
+    select(sample_id, Nutriscore, Keyhole) %>%
+    pivot_longer(.,
+                 cols = -sample_id,
+                 names_to = 'feature',
+                 values_to = 'value') %>% unique() %>% inner_join(., metadata) %>%
+    group_by(group, feature, value) %>%
+    #pct of recipe with each score
+    summarise(n = n()) %>%
+    mutate(pct = n / sum(n)*100) %>% ungroup() %>% select(-n) %>%
+    #Add that Norway and UK have 0 recipes with nutriscore E for plot
+    add_row(group = 'Norway', feature = 'Nutriscore', value = 'E', pct = 0) %>%
+    add_row(group = 'UK', feature = 'Nutriscore', value = 'E', pct = 0)
+  #plot
+  plots$violinbox$healthCat <- ggplot(temp, aes(x = value, y = pct, fill = group)) +
+    geom_bar(stat="identity", position = 'dodge') +
+    scale_fill_manual(values = group_colors) +
+    facet_wrap(~feature, scales = 'free_x') +
+  
+    labs(
+      y = '% of recipes',
+      x = 'Score',
+      fill = 'Country'
+    )
 
-plots$final$health_indicators
+    #Legend, if only plotting keyhole value, not nutriscore
+    plot_legends$healthCat <- get_legend(plots$violinbox$healthCat, position = 'right')
+    #Temp plot positioning plot and legend if only plotting keyhole 
+    temp_plot <- plot_grid(plots$violinbox$healthCat + theme(legend.position = 'none'), plot_legends$healthCat, NULL,
+                           nrow = 1,
+                           rel_widths = c(0.44, 0.1, 0.46))
 
-  #Save
-  save_plot('./thesis/images/violinbox_health_indicators.png', plots$final$health_indicators,
-            ncol = 1.7, nrow = 3)
+  #Plot both together
+  plots$final$health_indicators <- plot_grid(plots$violinbox$healthNum,
+                                             #plots$violinbox$healthCat, #Remove # to include in final plot
+                                             temp_plot,
+                                             ncol = 1,
+                                             rel_heights = c(2:1), #Must be tweaked if healthcat is included
+                                             labels = "AUTO")
 
-#Minerals
-plotViolinBox(run_stats %>%
-                filter(feature %in% various$minerals)) + facet_wrap(~feature, scales = 'free') +
-  labs(
-    color = 'Country',
-    x = 'Country',
-    y = 'Percentage of RDI'
-  ) + theme(legend.position="bottom") +
-  #Add lines and p-value significance
-  stat_pvalue_manual(stats$dunn_test %>% filter(feature %in% various$minerals),
-                     label = "p.adj.signif", tip.length = 0.01, hide.ns = TRUE, bracket.nudge.y = 0.5) +
-  scale_y_continuous(expand = expansion(mult = c(0.1, 0.1)))
+  plots$final$health_indicators
 
+    #Save
+    save_plot('./thesis/images/violinbox_health_indicators.png', plots$final$health_indicators,
+              ncol = 1.7, nrow = 3)
 
-#Vitamins
-plotViolinBox(run_stats %>%
+  # Minerals
+  plotViolinBox(run_stats %>%
+                  filter(feature %in% various$minerals)) + facet_wrap(~feature, scales = 'free') +
+    labs(
+      color = 'Country',
+      x = 'Country',
+      y = 'Percentage of RDI'
+    ) + theme(legend.position="bottom") +
+    #Add lines and p-value significance
+    stat_pvalue_manual(stats$dunn_test %>% filter(feature %in% various$minerals),
+                       label = "p.adj.signif", tip.length = 0.01, hide.ns = TRUE, bracket.nudge.y = 0.5) +
+    scale_y_continuous(expand = expansion(mult = c(0.1, 0.1)))
+
+  # Vitamins
+  plotViolinBox(run_stats %>%
                 filter(feature %in% various$vitamins)) +
-  facet_wrap(~feature, scales = 'free') +
-  labs(
-    color = 'Country',
-    x = 'Country',
-    y = 'Percentage of RDI'
-  ) + theme(legend.position="bottom")
-#Energy
-plotViolinBox(run_stats %>%
+    facet_wrap(~feature, scales = 'free') +
+    labs(
+      color = 'Country',
+      x = 'Country',
+      y = 'Percentage of RDI'
+    ) + theme(legend.position="bottom")
+  
+  # Energy
+  plotViolinBox(run_stats %>%
                 filter(feature %in% various$energy_contributing) %>%
                 mutate(feature = feature %>%
                          str_replace('Carbo', 'Carbohydrates E%') %>%
@@ -624,35 +733,457 @@ plotViolinBox(run_stats %>%
                          str_replace('Protein', 'Protein E%') %>%
                          str_replace('Dietary fibre', 'Dietary fibre g/MJ') %>%
                          str_replace('Kilocalories', 'Kilocalories/100g')
-                )) +
-  facet_wrap(~factor(feature, levels = c('Kilocalories/100g', 'Dietary fibre g/MJ', 'Protein E%',
+                   )) +
+      facet_wrap(~factor(feature, levels = c('Kilocalories/100g', 'Dietary fibre g/MJ', 'Protein E%',
                                          'Carbohydrates E%', 'Sugar E%', 'Fat E%', 'Saturated Fat E%')) ,scale = 'free') +
-  labs(
-    color = 'Country',
-    x = 'Country',
-    y = 'Value'
-  )
+      labs(
+        color = 'Country',
+        x = 'Country',
+        y = 'Value'
+      )
 
-#Percentage of different foodgroups in the different countries recipes
-temp <- tidy_ingredients %>% group_by(group, sample_id, Foodgroup) %>%
-  summarise(value = sum(Amounts, na.rm = TRUE))
+# All countries, all nutrients, healthiness indicators and environmental impact scores----
+plots$all_values <- list()
 
-plotViolinBox(temp) + facet_wrap(~Foodgroup) +
-  labs(
-    y = 'Percentage of recipe weight',
-    x = 'Country'
-  ) + scale_color_manual(values = various$country_colors$sample_group)
+  #minerals
+  plots$all_values$minerals <- plotViolinBox2(run_stats %>% filter(feature %in% various$minerals) %>%
+                                                #Change the order of some minerals so the names are readable in the plot
+                                                mutate(feature = factor(feature, levels = c('Calcium', 'Copper', 'Iodine', 'Iron', 'Magnesium', 'Zinc', 'Potassium', 'Selenium', 'Sodium', 'Phosphorus')))
+                                                , x = feature, color = FALSE) +
+    coord_cartesian(ylim = c(0,100)) + labs(x = '', y = '') + theme(axis.title.x = element_blank())
 
+  #Vitamins
+  plots$all_values$vitamins <- plotViolinBox2(run_stats %>% filter(feature %in% various$vitamins) %>%
+                                                #Make long names go over two rows
+                                                mutate(feature = feature %>%
+                                                         str_replace('Vitamin ', 'Vitamin\n') %>%
+                                                         str_replace('Beta-carotene', 'Beta\ncarotene')) %>%
+                                                #Set order of vitamins to fat-soluble then water soluble
+                                                mutate(feature = factor(feature, levels = c('Vitamin\nA', 'Beta\ncarotene', 'Retinol', 'Vitamin\nD', 'Vitamin\nE', 'Vitamin\nC', 'Thiamin', 'Riboflavin', 'Niacin', 'Vitamin\nB6', 'Folate', 'Vitamin\nB12')))
+                                                , x = feature, color = FALSE) +
+    coord_cartesian(ylim = c(0,100)) + labs(x = '', y = '') + theme(axis.title.x = element_blank())
 
-#Tables----
-#Stats----
+    #Title for plot_grid
+    plots$titles$mineral_vitamin <- ggdraw() + 
+      draw_label(
+        "Micronutrients in % of recommended daily intake",
+        fontface = 'bold',
+        x = 0,
+        hjust = 0
+      ) +
+      theme(
+        # add margin on the left of the drawing canvas,
+        # so title is aligned with left edge of first plot
+        plot.margin = margin(0, 0, 0, 7)
+      )
+  
+    #Legend
+    plot_legends$all_values <- get_legend(plots$all_values$vitamins, position = 'bottom')
+
+    #Both together
+    plots$final$mineral_vitamin <- plot_grid(#plots$titles$mineral_vitamin,
+                                             plots$all_values$minerals + theme(legend.position="none"),
+                                             plots$all_values$vitamins+ theme(legend.position="none"),
+                                             plot_legends$all_values,
+                                             ncol = 1,
+                                             rel_heights = c(#0.1,
+                                                             0.45, 0.45, 0.1)) +
+      #Shared y label
+      draw_label("% of recommended daily intake", x =  0, y =0.5, vjust= 1.5, angle=90)
+  
+    #Save
+    save_plot('./thesis/images/all_minerals_vitamins.png', plots$final$mineral_vitamin,
+              nrow = 1.5, ncol = 1.5)
+    
+    plots$final$mineral_vitamin
+
+  #Energy providing nutrients
+    #Kilocalories
+    plots$all_values$energy_kilocalories <- plotViolinBox2(run_stats %>% filter(feature == 'Kilocalories'),
+                                                           x = feature, color = FALSE) + labs(x = '', y = 'Kilocalories/100g') +
+      theme(axis.title.x = element_blank())
+  
+    #Fibre
+    plots$all_values$energy_fibre <- plotViolinBox2(run_stats %>% filter(feature == 'Dietary fibre'),
+                                                    x = feature, color = FALSE) + labs(y = 'g/mJ', x = '') +
+      theme(axis.title.x = element_blank())
+  
+    #Macros
+    plots$all_values$energy_macros <- plotViolinBox2(run_stats %>% filter(feature %in% various$energy_contributing) %>%
+                                                     #Only macros
+                                                     filter(!feature %in% c('Dietary fibre', 'Kilocalories')) %>%
+                                                     #Change order and names
+                                                     mutate(feature = feature %>%
+                                                              str_replace('Carbo', 'Carbohydrates') %>%
+                                                              str_replace('SatFa', 'Saturated Fat')) %>%
+                                                     mutate(feature = factor(feature, level = c('Carbohydrates', 'Sugar', 'Fat', 'Saturated Fat', 'Protein'))),
+                                                     x = feature, color = FALSE) +
+      labs(y = '% of energy', x = '') +
+      theme(axis.title.x = element_blank())
+  
+    #Title
+    plots$titles$energy <- ggdraw() + 
+      draw_label(
+        "Energy and macronutrient content",
+        fontface = 'bold',
+        x = 0,
+        hjust = 0
+      ) +
+      theme(
+        # add margin on the left of the drawing canvas,
+        # so title is aligned with left edge of first plot
+        plot.margin = margin(0, 0, 0, 7)
+      )
+  
+    #All together, first without title or legend
+    plots$final$energy1 <- plot_grid(plots$all_values$energy_kilocalories + theme(legend.position = "none"),
+                                     plots$all_values$energy_macros + theme(legend.position = "none"),
+                                     plots$all_values$energy_fibre + theme(legend.position = "none"),
+                                     nrow = 1,
+                                     rel_widths = c(0.2, 0.6, 0.2))
+    
+    #With title and/or legend
+    plots$final$energy <- plot_grid(#plots$titles$energy, #Remove # to include title
+                                    plots$final$energy1,
+                                    plot_legends$all_values,
+                                    ncol = 1,
+                                    rel_heights = c(#0.1, #Remove # to include title
+                                                    0.9,
+                                                    0.1))
+    #Save
+    save_plot('./thesis/images/all_macros_cal.png', plots$final$energy,
+              ncol = 1.5)
+  
+
+  #Health indicators
+  plots$all_values$health <- plotViolinBox2(run_stats %>% filter(feature %in% various$health) %>%
+                                              #Clean up names
+                                              mutate(feature = feature %>%
+                                                       str_replace('inverted_nutriscore', 'Inverted Nutriscore') %>%
+                                                       str_replace('inverted_traffic_score', 'Inverted Multiple\nTraffic Light Model') %>%
+                                                       str_replace('nnr_score', 'Nordic Nutritional\nRecommendations') %>%
+                                                       str_replace('who_score', 'World Health Organization\nRecommendations')),
+                                                x = feature, color = FALSE) + facet_wrap(~feature, scales = 'free') + labs(x = '', y = '') +
+    theme(axis.text.x=element_blank(),
+          axis.title.x = element_blank())
+
+  #Environmental impact
+  plots$all_values$env <- plotViolinBox2(run_stats %>% filter(feature %in% various$sustainability) %>%
+                                           #Clean up names
+                                           mutate(feature = feature %>%
+                                                    str_replace('CO2', 'Kilo CO2 equivalents\nper 100g') %>%
+                                                    str_replace('Landuse', 'm2 per year\nper 100g')),
+                                         x = feature, color = FALSE) + facet_wrap(~feature, scales = 'free', ncol = 1) + labs(x = '', y = '') +
+    theme(axis.text.x=element_blank(),
+          axis.title.x = element_blank())
+
+    #Title
+    plots$titles$health_env <- ggdraw() + 
+      draw_label(
+        "Healthiness indicators and environmental impact",
+        fontface = 'bold',
+        x = 0,
+        hjust = 0
+      ) +
+      theme(
+        # add margin on the left of the drawing canvas,
+        # so title is aligned with left edge of first plot
+        plot.margin = margin(0, 0, 0, 7)
+      )
+  
+    #Both together, first without title and legend
+    plots$final$health_env1 <- plot_grid(plots$all_values$health + theme(legend.position = "none"),
+                                         plots$all_values$env + theme(legend.position = "none"),
+                                         rel_widths = c(2/3, 1/3),
+                                         labels = "AUTO")
+    #With legend and title
+    plots$final$health_env <- plot_grid(#plots$titles$health_env, #Remove # to include title
+                                        plots$final$health_env1,
+                                        plot_legends$all_values,
+                                        ncol = 1,
+                                        rel_heights = c(
+                                          #0.1, #remove # to include title
+                                          0.9,0.1))
+  
+      #Save
+      save_plot('./thesis/images/all_health_env.png', plots$final$health_env,
+                ncol = 1.5,
+                nrow = 1.5)
+  
+  
+  #All together
+  plots$final$all_values <- plot_grid(plots$final$energy,
+                                      plots$final$health_env,
+                                      plots$final$mineral_vitamin,
+                                      ncol = 1,
+                                      rel_heights = c(1/5, 2/5, 2/5))
+
+  plots$final$all_values
+  
+# How the different countries scored on the healthiness indicators----
+plots$raw_scores <- list()
+  
+  # Nutriscore
+  #Get the raw Nutriscore points for each category
+  temp <- tidy_ingredients %>% calculateNutritionScore_nutriscore(., raw_score = TRUE)
+  temp <- temp$raw_scores %>%
+    #Add metadata for the recipes
+    inner_join(., metadata) %>%
+    #Clean up names and set order of values on the x axis of the plot
+    mutate(feature = feature %>%
+             str_replace('nutriscore_amounts_pct', '% of fruit, vegetables,\noils, legumes and nuts') %>%
+             str_replace('SatFa', 'Saturated\nFat') %>%
+             str_replace('Dietary fibre', 'Dietary\nfibre')) %>%
+    #Create facets based on if features are qualifying or disqualifying
+    mutate(quali = case_when(
+      str_detect(feature, 'legumes|fibre|Protein') ~ 'Qualifying',
+                 TRUE ~ 'Disqualifying'
+      
+    )) %>%
+    #Factor and releven
+    mutate(feature = factor(feature, levels = c('Kilojoules', 'Sugar', 'Saturated\nFat', 'Sodium', '% of fruit, vegetables,\noils, legumes and nuts', 'Dietary\nfibre', 'Protein')))
+   
+  #Diqualyfing 
+  plots$raw_scores$nutriscore_disq <- ggplot(temp %>% filter(quali == 'Disqualifying'), aes(x = feature, y = nutriscore_raw, color = group)) +
+    geom_boxplot(position = position_dodge(1)) +
+    #geom_half_boxplot(side = 'r') + geom_half_violin() +
+    scale_color_manual(values = group_colors) +
+    scale_fill_manual(values = group_colors) +
+    
+    #Fix labs and axis
+    labs(
+      y = 'Points',
+      color = 'Country'
+    ) +
+    theme(axis.title.x = element_blank(),
+          legend.position = 'bottom') +
+    scale_y_continuous(breaks = seq(0, 10, by = 1)) + facet_wrap(~quali)
+  
+  #Qualifying
+  plots$raw_scores$nutriscore_qual <- ggplot(temp %>% filter(quali == 'Qualifying'), aes(x = feature, y = nutriscore_raw, color = group)) +
+    geom_boxplot(position = position_dodge(1)) +
+    #geom_half_boxplot(side = 'r') + geom_half_violin() +
+    scale_color_manual(values = group_colors) +
+    scale_fill_manual(values = group_colors) +
+    
+    #Fix labs and axis
+    labs(
+      y = 'Points',
+      color = 'Country'
+    ) +
+    theme(axis.title.x = element_blank(),
+          legend.position = 'bottom') +
+    scale_y_continuous(breaks = seq(0, 10, by = 1)) + facet_wrap(~quali)
+  
+  #Together
+  #Create a mock grid to make qualifying plot half of diqualifying in height
+  temp <- plot_grid(plots$raw_scores$nutriscore_qual + theme(axis.title.y = element_blank()),
+                    NULL,
+                    ncol = 1,
+                    rel_heights = c(3/4, 1/4))
+  
+  plots$final$raw_nutriscore <- plot_grid(plots$raw_scores$nutriscore_disq + theme(legend.position = 'none'),
+            temp,
+            nrow = 1,
+            rel_widths = c(1.66,1))
+  
+    #Save
+    save_plot('./thesis/images/raw_nutriscores.png', plots$final$raw_nutriscore,
+              ncol = 1.7)
+    
+  #Multiple traffic light
+  temp <- data_recipes %>% select(-group) %>% calculateNutritionScore_trafficlights(., raw_scores = TRUE)
+  temp <- temp$raw_scores %>% inner_join(., metadata) #Add metadata
+    
+  plots$raw_scores$mtl <- ggplot(temp, aes(x = feature, y = inverted_traffic_light_rating, color = group)) +
+    geom_boxplot(position = position_dodge(1)) +
+    #geom_half_boxplot(side = 'r') + geom_half_violin() +
+    scale_color_manual(values = group_colors) +
+    scale_fill_manual(values = group_colors) +
+    
+    #Fix labs and axis
+    labs(
+      y = 'Points',
+      color = 'Country'
+    ) +
+    theme(axis.title.x = element_blank(),
+          legend.position = 'bottom') +
+    scale_y_continuous(breaks = seq(0, 3, by = 1))
+  
+  save_plot('./thesis/images/raw_scores_mtl.png', plots$raw_scores$mtl, ncol = 1.7)
+  
+  #Guidelines
+  #WHO
+  temp <- data_recipes %>% calculateNutritionScore_who(., raw_scores = TRUE)
+  temp <- temp$raw %>% inner_join(., metadata) %>%
+    #Calculate the percentage of recipes from the different countries that get scores for the different categories
+    #Count the number of recipes that get a point for each category
+    group_by(group, feature, who_recommendation) %>%
+    summarise(n = n()) %>% ungroup() %>%
+    pivot_wider(.,
+                names_from = who_recommendation,
+                values_from = n) %>%
+    #Calculate percentage
+    mutate(pct = round(`1`/(`0` + `1`)*100, 1)) %>%
+    #Set order and change names
+    mutate(feature = feature %>%
+             str_replace('Carbo', 'Carbohydrates') %>%
+             str_replace('SatFa', 'Saturated\nFat') %>%
+             str_replace('Dietary fibre', 'Dietary\nFibre')) %>%
+    mutate(feature = factor(feature, levels = c('Carbohydrates', 'Sugar', 'Dietary\nFibre', 'Fat', 'Saturated\nFat', 'Protein')))
+  
+  #Barplot
+  plots$raw_scores$who <- ggplot(temp, aes(x = feature, y = pct, fill = group)) +
+    geom_bar(stat="identity", position = position_dodge(0.95)) +
+    
+    #Fix colors and labs
+    scale_fill_manual(values = group_colors) +
+    labs(fill = 'Country',
+         y = 'Percentage of recipes that fulfill criteria') + theme(axis.title.x = element_blank()) +
+    #Add % to y axis, and increase y axis to allow for text on top of bars
+    scale_y_continuous(limits = c(0,103), labels = function(x) paste0(x, "%")) +
+    #Add text to show the percentage for each country
+    geom_text(position = position_dodge(0.95), aes(label = paste0(pct, ' %')), vjust = -0.7, size = 3)
+
+  #NNR
+  temp <- data_recipes %>% calculateNutritionScore_nnr(., raw_scores = TRUE)
+  temp <- temp$raw %>% inner_join(., metadata) %>%
+    #Calculate the percentage of recipes from the different countries that get scores for the different categories
+    #Count the number of recipes that get a point for each category
+    group_by(group, feature, nnr_recommendation) %>%
+    summarise(n = n()) %>% ungroup() %>%
+    pivot_wider(.,
+                names_from = nnr_recommendation,
+                values_from = n) %>%
+    #Calculate percentage
+    mutate(pct = round(`1`/(`0` + `1`)*100, 1)) %>%
+    #Set order and change names
+    mutate(feature = feature %>%
+             str_replace('Carbo', 'Carbohydrates') %>%
+             str_replace('SatFa', 'Saturated\nFat') %>%
+             str_replace('Dietary fibre', 'Dietary\nFibre')) %>%
+    mutate(feature = factor(feature, levels = c('Carbohydrates', 'Sugar', 'Dietary\nFibre', 'Fat', 'Saturated\nFat', 'Protein')))
+  
+  #Barplot
+  plots$raw_scores$nnr <- ggplot(temp, aes(x = feature, y = pct, fill = group)) +
+    geom_bar(stat="identity", position = position_dodge(0.95)) +
+    
+    #Fix colors and labs
+    scale_fill_manual(values = group_colors) +
+    labs(fill = 'Country',
+         y = 'Percentage of recipes that fulfill criteria') + theme(axis.title.x = element_blank()) +
+    #Add % to y axis, and increase y axis to allow for text on top of bars
+    scale_y_continuous(limits = c(0,103), labels = function(x) paste0(x, "%")) +
+    #Add text to show the percentage for each country
+    geom_text(position = position_dodge(0.95), aes(label = paste0(pct, ' %')), vjust = -0.7, size = 3)
+  
+  #The two guidelines together, with shared y axis
+  plots$final$raw_guidelines <- plot_grid(plots$raw_scores$who + theme(legend.position = 'none') + labs(y=' ', title = 'World Health Organization dietary guidelines'),
+                                          plots$raw_scores$nnr + theme(legend.position = 'bottom') + labs(y=' ', title = 'Nordic Nutritional Recommendations dietary guidelines'),
+                                          ncol = 1,
+                                          rel_heights = c(1,1.2)) +
+   #Shared label
+    draw_label("Percentage of recipes that fulfill criteria", x =  0, y =0.5, vjust= 1.5, angle=90)
+
+  save_plot('./thesis/images/raw_scores_guidelines.png', plots$final$raw_guidelines, nrow = 1.7, ncol = 1.7)
+  
+# How the different foodgroups contribute to each environmental impact----
+plots$violinbox$foodgroups <- list()
+
+  #Animal sourced
+  temp <- tidy_ingredients %>%
+    filter(Foodgroup %in% c('Meat and\nmeat products', 'Dairy', 'Eggs', 'Seafood')) %>%
+    #pivot wider to get CO2 and landuse columns
+    pivot_wider(names_from = feature,
+                values_from = value) %>%
+    group_by(group, sample_id, Foodgroup) %>%
+    summarise(value = sum(Amounts, na.rm = TRUE)) %>% ungroup() %>%
+                #Turn into grams, not fraction per 100 g
+                mutate(value = value*100) %>%
+    #Set factor level for plot
+    mutate(Foodgroup = factor(Foodgroup, levels = c('Meat and\nmeat products', 'Seafood', 'Dairy', 'Eggs')))
+  
+  #Plot
+  plots$violinbox$foodgroups$animal_sourced <- ggplot(temp, aes(x = Foodgroup, y = value, color = group)) +
+      geom_half_violin() + 
+      geom_half_boxplot(side = 'r') +
+      scale_color_manual(values = group_colors) +
+      labs(y = ' ') +
+      theme(axis.title.x = element_blank(),
+          #axis.title.y = element_blank(),
+          legend.position = "none")
+  
+  #Plant based
+  temp <- tidy_ingredients %>%
+    filter(Foodgroup %in% c('Vegetables and\nvegetable products', 'Roots and tubers', 'Fruit and\nfruit products', 'Fruit/vegetable juice\n and nectar', 'Grains and grain\nbased products', 'Legumes, nuts, seeds')) %>%
+    #pivot wider to get CO2 and landuse columns
+    pivot_wider(names_from = feature,
+                values_from = value) %>%
+    group_by(group, sample_id, Foodgroup) %>%
+    summarise(value = sum(Amounts, na.rm = TRUE)) %>% ungroup() %>%
+    #Turn into grams, not fraction per 100 g
+    mutate(value = value*100) %>%
+    #Set factor level for plot
+    mutate(Foodgroup = factor(Foodgroup, levels = c('Vegetables and\nvegetable products', 'Roots and tubers', 'Fruit and\nfruit products', 'Fruit/vegetable juice\n and nectar', 'Grains and grain\nbased products', 'Legumes, nuts, seeds')))
+  
+    #Plot
+    plots$violinbox$foodgroups$plant_based <- ggplot(temp, aes(x = Foodgroup, y = value, color = group)) +
+      geom_half_violin() + 
+      geom_half_boxplot(side = 'r') +
+      scale_color_manual(values = group_colors) +
+      labs(y = ' ') +
+      theme(axis.title.x = element_blank(),
+            #axis.title.y = element_blank(),
+            legend.position = "none")
+    
+    #Other
+    temp <- tidy_ingredients %>%
+      filter(!Foodgroup %in% c('Meat and\nmeat products', 'Dairy', 'Eggs', 'Seafood', 'Vegetables and\nvegetable products', 'Roots and tubers', 'Fruit and\nfruit products', 'Fruit/vegetable juice\n and nectar', 'Grains and grain\nbased products', 'Legumes, nuts, seeds')) %>%
+      filter(Foodgroup != 'Food imitates') %>% #Only one
+      #pivot wider to get CO2 and landuse columns
+      pivot_wider(names_from = feature,
+                  values_from = value) %>%
+      group_by(group, sample_id, Foodgroup) %>%
+      summarise(value = sum(Amounts, na.rm = TRUE)) %>% ungroup() %>%
+      #Turn into grams, not fraction per 100 g
+      mutate(value = value*100) %>%
+      #Set factor level for plot
+      mutate(Foodgroup = factor(Foodgroup, levels = c('Water-based\nbeverages', 'Fats and oils', 'Seasoning, sauces\nand conditments', 'Sugar and\n confectionary', 'Alcoholic beverages', 'Unknown')))
+    
+    #Plot
+    plots$violinbox$foodgroups$others <- ggplot(temp, aes(x = Foodgroup, y = value, color = group)) +
+      geom_half_violin() + 
+      geom_half_boxplot(side = 'r') +
+      scale_color_manual(values = group_colors) +
+      labs(y = ' ') +
+      theme(axis.title.x = element_blank(),
+            #axis.title.y = element_blank(),
+            legend.position = "none")
+    
+    
+    #All together
+    plots$final$foodgroups <- plot_grid(plots$violinbox$foodgroups$animal_sourced %>% changeGGplotTxtSize(txt_size = 8),
+                                        plots$violinbox$foodgroups$plant_based %>% changeGGplotTxtSize(txt_size = 8),
+                                        plots$violinbox$foodgroups$others %>% changeGGplotTxtSize(txt_size = 8),
+                                        ncol = 1
+    ) + 
+    #Add shared y label
+    draw_label("%", x =  0, y =0.5, vjust= 1.5, angle=90)
+    plots$final$foodgroups
+    
+    save_plot('./thesis/images/foodgroups.png', plots$final$foodgroups,
+              nrow = 1.5, ncol = 1.3)
+  
+  
+## Tables----
+# Stats----
 #Significantly differences from dunn test
 temp <- stats$dunn_test %>% filter(p.adj <0.05)
 
 #Format the relevant data
 stat_table <- list(
   
-  'descriptive_stats' = descriptive_stats %>% filter(feature %in% temp$feature) %>%
+  'descriptive_stats' = descriptive_stats_country %>% filter(feature %in% temp$feature) %>%
     #Create one row for each feature, with the median + interquartile range for each country
     mutate(median_iqr = paste0(round(median, 1), ' (', round(q1, 1), ', ', round(q3, 1), ')')) %>%
     select(feature, group, median_iqr) %>%
@@ -708,45 +1239,7 @@ stat_table <- list(
            str_replace('Dietary fibre', 'Dietary fibre g/MJ') %>%
            str_replace('Kilocalories', 'Kilocalories/100g'))
 
-#KableExtra formatting
-formatKableStat <- function(df, features = NULL, caption = NULL){
-  
-  #Filter out features of interest or show all?
-  if(!is.null(features)){
-    dt <- df %>% filter(Feature %in% features)
-  } else {
-    dt <- df
-  }
-  
-  #Add a caption or not
-  if(!is.null(caption)){
-    kbl(dt, 'html', escape = FALSE) %>%
-      kable_classic_2() %>%
-      kable_styling(full_width = FALSE) %>%
-      add_header_above(c(" " = 1, "Median (IQR)" = 3, "Kruskal-Wallis test" = 2, "Dunn test, BH corrected" = 2))
-  } else {
-    kbl(dt, 'html', caption = caption, escape = FALSE) %>%
-      kable_classic_2() %>%
-      kable_styling(full_width = FALSE) %>%
-      add_header_above(c(" " = 1, "Median (IQR)" = 3, "Kruskal-Wallis test" = 2, "Dunn test, BH corrected" = 2))
-  }
-  
-}
-
-#All
-formatKableStat(stat_table)
-#Sustainability indicators
-formatKableStat(stat_table, c('CO2', 'Landuse'))
-#Health indicators
-formatKableStat(stat_table, c('Inv. Nutriscore', 'Inv. Traffic Light', 'WHO Score', 'NNR Score'))
-#Energy
-formatKableStat(stat_table, c('Carbohydrates E%', 'Sugar E%', 'Fat E%', 'Saturated Fat E%', 'Dietary fibre g/MJ', 'Protein E%'))
-#Minerals
-formatKableStat(stat_table, various$minerals)
-#Vitamins
-formatKableStat(stat_table, various$vitamins)
-
-#Others----
+## Other data ----
 standardKbl <- function(df, caption = NULL){
   #df = dataframe to turn into kableExtra table, caption = caption for the table
   
@@ -814,7 +1307,7 @@ standardKbl(various$RDI %>%
               )))
 
 
-#Save objects to be used in RMarkdown
+## Save objects to be used in RMarkdown----
 save(stat_table, tidy_ingredients, guidelines_trafficlights,
      nutriscore_points, descriptive_stats_total, file = './Data/results_allrecipes.RData')
 
