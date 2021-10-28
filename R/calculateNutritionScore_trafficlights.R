@@ -4,11 +4,12 @@
 #'
 #' @param df A dataframe with a sample_id column for recipe ID, a salt column with salt in gram/100g recipe, and nutrient columns with names in line with Matvaretabellen.
 #' @param inverted Should the returned score be inverted or not? Either 'yes' or 'no', default 'yes'.
+#' @param raw_scores Include raw scores in the ouput. TRUE/FALSE, default FALSE.
 #'
-#' @return A dataframe with the recipe ID and its total traffic light score.
+#' @return A dataframe with the recipe ID and its total traffic light score. If raw_score = TRUE, a list with the total score dataframe in addition to a raw_score dataframe.
 #'
 #' @export
-calculateNutritionScore_trafficlights <- function(df, inverted = 'yes'){
+calculateNutritionScore_trafficlights <- function(df, inverted = 'yes', raw_scores = FALSE){
   #Traffic light recommendations
   #Turn df long
   temp <- df %>%
@@ -21,7 +22,7 @@ calculateNutritionScore_trafficlights <- function(df, inverted = 'yes'){
   #Inverted or not?
   if(inverted == 'yes'){
     
-    traffic_lights <- temp %>%
+    traffic_lights_raw <- temp %>%
       
       #Score values
       mutate(inverted_traffic_light_rating = case_when(
@@ -46,7 +47,7 @@ calculateNutritionScore_trafficlights <- function(df, inverted = 'yes'){
       ))
     
     #Sum scores together
-    traffic_lights <- traffic_lights %>%
+    traffic_lights <- traffic_lights_raw %>%
       select(sample_id, inverted_traffic_light_rating) %>%
       group_by(sample_id) %>%
       summarise(inverted_traffic_score = sum(inverted_traffic_light_rating, na.rm = TRUE)) %>%
@@ -55,7 +56,7 @@ calculateNutritionScore_trafficlights <- function(df, inverted = 'yes'){
     
   } else if (inverted == 'no'){
     
-    traffic_lights <- temp %>%
+    traffic_lights_raw <- temp %>%
       #Score values
       mutate(traffic_light_rating = case_when(
         
@@ -79,7 +80,7 @@ calculateNutritionScore_trafficlights <- function(df, inverted = 'yes'){
       ))
     
     #Sum scores together
-    traffic_lights <- traffic_lights %>%
+    traffic_lights <- traffic_lights_raw %>%
       select(sample_id, traffic_light_rating) %>%
       group_by(sample_id) %>%
       summarise(traffic_score = sum(traffic_light_rating, na.rm = TRUE)) %>%
@@ -87,6 +88,22 @@ calculateNutritionScore_trafficlights <- function(df, inverted = 'yes'){
     
   }
   
-  traffic_lights
+  #Include raw scores or not
+  if(isTRUE(raw_scores)) {
+    
+    output <- list(
+      'total_scores' = traffic_lights,
+      'raw_scores' = traffic_lights_raw %>% drop_na(ends_with('rating'))
+    )
+    
+    output
+    
+  } else {
+    
+    traffic_lights
+    
+  }
+  
+  
   
 }

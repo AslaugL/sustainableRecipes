@@ -4,11 +4,12 @@
 #'
 #' @param df A long format dataframe with an Ingredients column, a Foodgroup column with food groups named as they are in analyses.R script, a sample_id column for recipe ID, and a feature column with nutrient names in line with Matvaretabellen (except kJ which is 'Kilojoules'), with their values in a value column.
 #' @param inverted Should the returned score be inverted or not? Either 'yes' or 'no', default 'yes'.
+#' @param raw_scores Should the raw scores for each qualifying/disqualifying element be included in the results? TRUE/FALSE.
 #'
-#' @return A dataframe with the recipe ID and its nutriscore with corresponding letter.
+#' @return A dataframe with the recipe ID and its nutriscore with corresponding letter. If raw_scores is true, a list with two dataframes, one with the Nutriscore and one with the raw scores used for calculating it.
 #'
 #' @export
-calculateNutritionScore_nutriscore <- function(df, inverted = 'yes'){
+calculateNutritionScore_nutriscore <- function(df, inverted = 'yes', raw_scores = FALSE){
   
   #Find the total of all relevant nutrients in the recipe
   total_nutrients <- df %>% filter(feature %in% c('Kilojoules', 'Sugar', 'SatFa', 'Sodium', 'Dietary fibre', 'Protein')) %>%
@@ -163,5 +164,21 @@ calculateNutritionScore_nutriscore <- function(df, inverted = 'yes'){
   }
   
   nutriscore %>% select(-c(N, P, Fibre, FruitVegLegumesNutsOils, Protein))
+  
+  #Include raw scores in the output or not
+  if(isTRUE(raw_scores)){
+    
+    output <- list(
+      'nutriscore' = nutriscore,
+      'raw_scores' = nutriscore_raw)
+      
+    output
+    }else{
+      
+      nutriscore
+      
+    }
+    
+  
   
 }
