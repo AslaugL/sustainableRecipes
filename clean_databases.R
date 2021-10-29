@@ -744,7 +744,7 @@ mutate(Ingredients = case_when(
   
   #lamb----
   food_item == 'lamb, for stewing, raw' ~ 'lamb_stew meat',
-  food_item == 'lamb, breast and skirt, with bone, raw' ~ 'lamb_breast and skirt',
+  food_item == 'lamb, breast and skirt, with bone, raw' ~ 'lamb_breast skirt',
   food_item == 'lamb, shoulder, for roast, raw' ~ 'lamb_shoulder',
   food_item == 'lamb, for mutton and cabbage stew (fårikål), raw' ~ 'lamb_cabbage stew meat',
   food_item == 'lamb, chops, with fat, raw' ~ 'lamb_chop',
