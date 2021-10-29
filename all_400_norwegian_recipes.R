@@ -1,4 +1,6 @@
 #Setup----
+devtools::load_all(path = '.')
+
 #Different databases to search through to find amounts in kilos, nutrient content and sustainability measurements
 references <- list(
   'volume_weight' = readRDS('./Data/output/food_weight_ref.Rds') %>% filter(language == 'english'),
@@ -89,7 +91,8 @@ recipes <- raw %>%
          str_replace('4 dl vegetables in cubes. eg. tomato, cucumber and corn', '1.33 dl tomato\n1.33 dl cucumber\n1.33 dl corn kernels') %>%
          str_replace('1 cup fresh herbs eg basil, rosemary and leaf parsley', '0.33 cup basil\n0.33 cup rosemary\n0.33 cup parsley') %>%
          str_replace('60 g of fresh herbs e.g . parsley, basil, chives and coriander', '15 g fresh parsley\n15 g fresh basil\n15 g fresh chives\n15 g fresh coriander') %>%
-         
+         str_replace('0.406 kg diced tomatoes with green chile peppers, drained', '0.406 g canned tomatoes') %>%
+           
         #Lomper (Potato flatbread)
         #From https://www.matprat.no/oppskrifter/tradisjon/potetlomper/ uses a mix of rye and wheat flour originally
         str_replace('30 pcs lomper', '5 dl wheat flour\n2000 g potato\n2 tsp salt') %>%
@@ -323,6 +326,8 @@ various$org_ingredients <- recipes %>% select(sample_id, Country, Ingredients, o
 various$org_amounts <- recipes %>% select(sample_id, Country, Ingredients, Amounts, unit) %>%
   unite(., 'original_amounts', c(Amounts, unit), sep = ' ') %>%
   mutate(original_amounts = str_replace(original_amounts, 'NA NA', '-')) #Should get the original volume amounts from US recipes as well
+
+t <- various$org_ingredients %>% select(Ingredients, org_ingredients) %>% unique()
 
 #Map to databases, find the amount (Weight) of each ingredient by weight,the nutritional values and environmental impact----
   #Sum the amounts for all the ingredients with the same name for each recipe
