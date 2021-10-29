@@ -163,7 +163,7 @@ calculateNutritionScore_nutriscore <- function(df, inverted = 'yes', raw_scores 
     
   }
   
-  nutriscore %>% select(-c(N, P, Fibre, FruitVegLegumesNutsOils, Protein))
+  nutriscore <- nutriscore %>% select(-c(N, P, Fibre, FruitVegLegumesNutsOils, Protein))
   
   #Include raw scores in the output or not
   if(isTRUE(raw_scores)){
