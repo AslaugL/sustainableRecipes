@@ -750,7 +750,9 @@ plots$all_values <- list()
                                                 #Change the order of some minerals so the names are readable in the plot
                                                 mutate(feature = factor(feature, levels = c('Calcium', 'Copper', 'Iodine', 'Iron', 'Magnesium', 'Zinc', 'Potassium', 'Selenium', 'Sodium', 'Phosphorus')))
                                                 , x = feature, color = FALSE) +
-    coord_cartesian(ylim = c(0,100)) + labs(x = '', y = '') + theme(axis.title.x = element_blank())
+    coord_cartesian(ylim = c(0,100)) + labs(x = '', y = '') + theme(axis.title.x = element_blank()) +
+    #Set y axis scale to percent
+    scale_y_continuous(labels = function(x) paste0(x, "%"))
 
   #Vitamins
   plots$all_values$vitamins <- plotViolinBox2(run_stats %>% filter(feature %in% various$vitamins) %>%
@@ -761,7 +763,9 @@ plots$all_values <- list()
                                                 #Set order of vitamins to fat-soluble then water soluble
                                                 mutate(feature = factor(feature, levels = c('Vitamin\nA', 'Beta\ncarotene', 'Retinol', 'Vitamin\nD', 'Vitamin\nE', 'Vitamin\nC', 'Thiamin', 'Riboflavin', 'Niacin', 'Vitamin\nB6', 'Folate', 'Vitamin\nB12')))
                                                 , x = feature, color = FALSE) +
-    coord_cartesian(ylim = c(0,100)) + labs(x = '', y = '') + theme(axis.title.x = element_blank())
+    coord_cartesian(ylim = c(0,100)) + labs(x = '', y = '') + theme(axis.title.x = element_blank()) +
+    #Set y axis scale to percent
+    scale_y_continuous(labels = function(x) paste0(x, "%"))
 
     #Title for plot_grid
     plots$titles$mineral_vitamin <- ggdraw() + 
@@ -789,7 +793,7 @@ plots$all_values <- list()
                                              rel_heights = c(#0.1,
                                                              0.45, 0.45, 0.1)) +
       #Shared y label
-      draw_label("% of recommended daily intake", x =  0, y =0.5, vjust= 1.5, angle=90)
+      draw_label("Percentage of recommended daily intake", x =  0, y =0.5, vjust= 1.5, angle=90)
   
     #Save
     save_plot('./thesis/images/all_minerals_vitamins.png', plots$final$mineral_vitamin,
@@ -818,8 +822,10 @@ plots$all_values <- list()
                                                               str_replace('SatFa', 'Saturated Fat')) %>%
                                                      mutate(feature = factor(feature, level = c('Carbohydrates', 'Sugar', 'Fat', 'Saturated Fat', 'Protein'))),
                                                      x = feature, color = FALSE) +
-      labs(y = '% of energy', x = '') +
-      theme(axis.title.x = element_blank())
+      labs(y = 'Percentage of energy', x = '') +
+      theme(axis.title.x = element_blank()) +
+      #Set y axis scale to percent
+      scale_y_continuous(limits = c(0,100), labels = function(x) paste0(x, "%"))
   
     #Title
     plots$titles$energy <- ggdraw() + 
@@ -993,7 +999,10 @@ plots$raw_scores <- list()
     
   #Multiple traffic light
   temp <- data_recipes %>% select(-group) %>% calculateNutritionScore_trafficlights(., raw_scores = TRUE)
-  temp <- temp$raw_scores %>% inner_join(., metadata) #Add metadata
+  temp <- temp$raw_scores %>% inner_join(., metadata) %>% #Add metadata
+    #Rename and fix order of features
+    mutate(feature = str_replace(feature, 'SatFa', 'Saturated\nFat')) %>%
+    mutate(feature = factor(feature, levels = c('Fat', 'Saturated\nFat', 'Sugar', 'Salt')))
     
   plots$raw_scores$mtl <- ggplot(temp, aes(x = feature, y = inverted_traffic_light_rating, color = group)) +
     geom_boxplot(position = position_dodge(1)) +
@@ -1111,7 +1120,9 @@ plots$violinbox$foodgroups <- list()
       labs(y = ' ') +
       theme(axis.title.x = element_blank(),
           #axis.title.y = element_blank(),
-          legend.position = "none")
+          legend.position = "none") +
+    #Set y axis scale to percent
+    scale_y_continuous(labels = function(x) paste0(x, "%"))
   
   #Plant based
   temp <- tidy_ingredients %>%
@@ -1134,7 +1145,9 @@ plots$violinbox$foodgroups <- list()
       labs(y = ' ') +
       theme(axis.title.x = element_blank(),
             #axis.title.y = element_blank(),
-            legend.position = "none")
+            legend.position = "none")+
+      #Set y axis scale to percent
+      scale_y_continuous(labels = function(x) paste0(x, "%"))
     
     #Other
     temp <- tidy_ingredients %>%
@@ -1158,17 +1171,19 @@ plots$violinbox$foodgroups <- list()
       labs(y = ' ') +
       theme(axis.title.x = element_blank(),
             #axis.title.y = element_blank(),
-            legend.position = "none")
+            legend.position = "none")+
+      #Set y axis scale to percent
+      scale_y_continuous(limits = c(0,100), labels = function(x) paste0(x, "%"))
     
     
-    #All together
+    #All together, change y axis to %
     plots$final$foodgroups <- plot_grid(plots$violinbox$foodgroups$animal_sourced %>% changeGGplotTxtSize(txt_size = 8),
                                         plots$violinbox$foodgroups$plant_based %>% changeGGplotTxtSize(txt_size = 8),
                                         plots$violinbox$foodgroups$others %>% changeGGplotTxtSize(txt_size = 8),
                                         ncol = 1
     ) + 
     #Add shared y label
-    draw_label("%", x =  0, y =0.5, vjust= 1.5, angle=90)
+    draw_label("Percentage of recipe in weight", x =  0, y =0.5, vjust= 1.5, angle=90)
     plots$final$foodgroups
     
     save_plot('./thesis/images/foodgroups.png', plots$final$foodgroups,
