@@ -196,7 +196,7 @@ checkRef <- function(df, reference, fix_errors = TRUE){
           Ingredients == 'butter clarified ghee' ~ fixRefID(reference = reference, 'ghee'),
           Ingredients == 'cheese cottage low fat' ~ fixRefID(reference = reference, 'cottage cheese', 'low fat'),
           Ingredients == 'cheese cottage' ~ fixRefID(reference = reference, 'cottage cheese'),
-          Ingredients == 'cheese asiago' ~  fixRefID(reference = reference, 'parmesan'), #Can be substituted for eachother in recipes
+          Ingredients %in% c('cheese asiago', 'cheese cotija') ~  fixRefID(reference = reference, 'parmesan'), #Can be substituted for eachother in recipes
           Ingredients == 'cheese blue' ~ fixRefID(reference = reference, 'gorgonzola', 'blue cheese'), #Use as standard for time being
           Ingredients == 'cheese goat chevre white' ~ fixRefID(reference = reference, 'chevre'),
           Ingredients == 'cheese cream' ~ fixRefID(reference = reference, 'cream cheese'),
@@ -391,7 +391,7 @@ checkRef <- function(df, reference, fix_errors = TRUE){
           Ingredients == 'refrigerated buttermilk biscuit dough' ~ fixRefID(reference = reference, 'refrigerated buttermilk biscuit dough'),
           
           #Dairy
-          str_detect(Ingredients, 'cheddar|romano|parmigiano-reggiano|parmesan|parmigiano-reggiano|cheese hard goat') ~ fixRefID(reference = reference, 'hard cheese'),
+          str_detect(Ingredients, 'cheddar|romano|parmigiano-reggiano|parmesan|parmigiano-reggiano|cheese hard goat|cotija') ~ fixRefID(reference = reference, 'hard cheese'),
           str_detect(Ingredients, 'halloumi|manchego|havarti|swiss|monterey jack|pepperjack|asiago|mozzarella|goat brown cheese|jarlsberg|cheese semi-hard|provolone|norvegia') ~ fixRefID(reference = reference, 'hard to semi-hard cheese'),
           str_detect(Ingredients, 'ricotta|cheese blue|camembert|chevre|neufchatel|port salut|brie|mascarpone') ~ fixRefID(reference = reference, 'soft-ripened cheese'),
           Ingredients == 'cheese american' ~ fixRefID(reference = reference, 'processed cheese and spreads'),
