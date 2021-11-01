@@ -1,6 +1,5 @@
-library(tidyverse)
-library(readxl)
-library(stringi)
+devtools::load_all(path = '.')
+
 
 #Databases used to get weight of ingredients with volume/pieces amounts, 
 #the nutrient content and sustainability indicators of each ingredient.
