@@ -9,27 +9,65 @@ bibliography: library.bib
 
 # Discussion
 
--   The results
+The purpose of this thesis was to explore the healthiness and environmental impact of recipes found on Internet recipe sites or in recipe books, from three different countries, and the correlation between a recipe's healthiness and environmental impact. To our knowledge, this is the first study to look at environmental impact of recipes from either the Internet or recipe books, the first study to look at the healthiness of recipes from Norwegian Internet recipe sites, and the first study on healthiness of recipes to include a wide range of micronutrients.
 
-    -   Health wise in line with previous studies :(
+In line with previous studies on recipe healthiness, the results from this thesis showed that only a small percentage of recipes complied fully with dietary guidelines. There were fewer recipes that were compliant with the WHO than the NNR guidelines, that allows for less carbohydrates and more fat. However, when looking at the food-specific indicators for healthiness, the Multiple Traffic Light System and the Nutriscore, the majority of recipes classified as foods that could be consumed often as part of a healthy diet. That the food-specific indicators showed that most recipes could be consumed often, while the same recipes were not compliant with the dietary guidelines, is likely due to the different design and purpose of these indicators, that will be discussed later. There were statistically significant differences between countries on the total score of the healthiness indicators, but these differences are deemed to be of low clinical relevance. When looking at the individual components of the score, that the recipes from the UK scored better on vegetables, fruit and healthy sources of fat, in addition to being lower in meat, might indicate they are more beneficial for long-term health than the recipes sampled from Norway and the US. It also likely explains why the UK recipes scored better on the Nutriscore, that awards high content of vegetables, fruit and healthy sources of fats and dietary fibre.
+
+Without portion sizes it is difficult to say how much of the RDI of a given nutrient a serving would have provided. Whether this would be adequate or not would also depend on the rest of the diet. Regardless, a standard dinner serving size of about 350 grams raw weight would contribute substantially to vitamin B12 intake, but also vitamin B6, niacin, vitamin A, zinc, selenium and copper. The generally low amount of iodine reflects that few recipes included white lean fish, one of the few dietary sources of this mineral [@Matvaretabellen2020]. If the low use of fish as an ingredient in this sample is reflective of dinner recipes from these sources overall, it is unfortunate as mild to moderate iodine deficiency could be a problem for vulnerable groups, especially pregnant women, in the three countries the recipes are sourced from [@Meltzer2016; @Woodside20201; @Panth2019]. Vitamin A was provided mostly from animal sources, in the form of retinol, than from plant based sources in the form of beta-carotene.
+
+While many nutrients in the recipes were statistically significantly different between countries, the differences were not clinically relevant, at least per 100 g of the recipes. Again, if comparisons had been done per portion size this might have been different. The lower amount of protein, and higher amount of dietary fibre and vitamin C in the UK recipes are in agreement with the lower amount of meat and higher amount of vegetables and fruit in these recipes.
+
+Recipes that complied with the two dietary guidelines were more strongly correlated with low environmental impact than recipes that complied with the multiple traffic light system or the Nutriscore.
+
+That the different types of healthiness indicators classified foods differently, and that the guidelines were more strongly correlated with environmental impact than the multiple traffic light system and the Nutriscore, and that the Nutriscore had the lowest correlation with environmental impact, is not very surprising due to the way these scores are designed.
+
+## Differences between the front of pack labeling schemes and the dietary guidelines
+
+All of the healthiness indicators had upper limits for saturated fat content in the recipes, which is likely to effect recipes with a higher content of animal sourced foods as these are the primary sources of saturated fats. The dietary guidelines is different from the multiple traffic light system and the Nutriscore in that they award both carbohydrates and fibre content. This means recipes that contained foods such as fruit and vegetables, tubers, grains and legumes, with a low environmental impact, would get a higher score. On the other hand Nutriscore only awards fibre content, and high-carbohydrate low-fibre low-environmental impact foods such as rice and pasta would not give a better score. Additionally, the dietary guideline scores would punish high protein recipes, whereas there is no higher boundary for protein content in the Nutriscore. Nearly 50% of all recipes from the three countries had the highest score for protein in the Nutriscore, and this protein likely comes from animal based sources with a high environmental impact. The multiple traffic light system does not provide boundaries for either carbohydrates, fibre or protein content, so while a higher score is not associated with a higher content of low-environmental ingredients, it is neither associated with a higher content of high-environmental ingredients.
+
+Surprisingly, adherence to the NNR guidelines, with its lower carbohydrate and higher fat allowances, was slightly stronger correlated to reduced environmental impact than adherence to the WHO guidelines. This could be because more recipes were awarded points for carbohydrate content with NNR than WHO.
+
+The difference healthiness scores between the guidelines, and between dietary guidelines and food-specific indicators, could be important for designing future studies on the healthiness of recipes.
+
+## Micronutrient content and environmental impact
+
+For individual nutrients...
+
+-   Vitamins and minerals found in seafood associated with lower land use, but not necessarily GHGE
+
+-   Vitamins, minerals and macros found in plant based foods associated with lower environmental impact
+
+-   Nutrients found in ruminants and animal sourced foods associated with higher environmental impact
+
+-   Thiamine associated with lower CO2 but increased landuse? Grains? Pork?
+
+-   Saturated fat comes mainly from animal sources, more or less exclusively for dinner recipes (exception palm oil and coconut oil)
+
+<!-- -->
+
+-   Health wise in line with previous studies :(
 
 -   Which ingredients in the recipes explain the various correlations and differences between countries
 
-    -   Vitamins and minerals found in seafood associated with lower land use
+### 
 
-    -   Vitamins, minerals and macros found in plant based foods associated with lower environmental impact
+## Making more sustainable choices
 
-    -   Nutrients found in ruminants and animal sourced foods associated with higher environmental impact
+A study in Sweden found that if consumers reduced their meat intake to \<500 g/week in accordance with the Swedish FBDG,
 
-    -   Thiamine associated with lower CO2 but increased landuse? Grains? Pork?
+Small changes in ingredients can have a huge impact on the sustainability of the resulting meal. A study done in the UK, found that if British consumers
 
--   Choosing ingredients with low environmental impact
+When it comes to starchy staples in dinner recipes, such as potatoes, rice and pasta,
+
+However, while GHGE and landuse decrease with reduced intake of animal sourced foods, this is not necessarily the case for blue water [@Harris2020].
+
+-   Choosing ingredients with low environmental impact, consumers got some things right
 
     -   Plants, local when in season
 
     -   Seafood, with caveats
 
-        -   Overfishing, I don't understand how SHARP codes many fish with no land used, farmed fish causes major environmental damage...
+        -   Overfishing, farmed fish causes major environmental damage... While SHARP ID does not include land use for many marine fish species, this is not completely true
 
     -   Non-ruminants, with caveats
 
@@ -39,39 +77,38 @@ bibliography: library.bib
 
         -   Ruminants are also important many places where human edible crops can't be grown and other animals will be unable to feed on what is found locally
 
--   Low environmental impact, high nutritional value foods
+    -   Low environmental impact food packaging
 
-    -   Full grains over rice. Local tubers instead of rice and pasta for dinner
+        -   Plastic has many advantages over glass and tin on the production and transportation side, but causes an enormous amount of environmental pollution
 
-## 
+    -   Discuss how the ecoscore is calculated
 
-## Low environmental impact, high nutritional value
+        -   Takes most of what is discussed previously into account, in addition to biodiversity
 
--   Indias water stress could be reduced by swapping rice with other cereals, this could also improve nutrition status as cereals such as millet, sorghum and wheat have more iron
+### Low environmental impact, but high nutritional value
 
-    -   <https://www.science.org/doi/10.1126/sciadv.aao1108>
+-   Low environmental impact, high nutritional value diets \> recipes can be improved at home
 
-    -   <https://journals.sagepub.com/doi/full/10.1177/0379572118783492>
+    -   Whole grains over rice. Local tubers instead of rice and pasta for dinner where applicable
 
--   Mekonnen et al. found that if Americans change their diet to be in line with the American dietary guidelines, it will increase the water footprint of the diet by about 7% despite a lower intake of meat. However, if American shifted to a vegetarian or vegan diet it could reduce the water footprint by 20% and 37% respectively [@Mekonnen2018]. At the same time they found that if food waste was eliminated, the water footprint of the current American diet could be reduced by 49%, 12% more than changing to a vegan diet. It is interesting to note that the blue water increased for both vegetarian and vegan diets, and that the reduction in water footprint came from a lower use of green water. Another study by Tom et al. found that if calories were kept the same, a change in food consumption of Americans to be in line with their dietary guidelines would lead to an increase in energy use by 43 %, blue water footprint by 16 %, and GHG emissions by 11 % [@Tom2015].
+    -   Vegetables, vegetables, vegetables
 
-    -   Only a small amount of the water footprint of animals comes from drinking and serving water, while 98% comes from the growing of their feed [@Mekonnen2012]. Ruminant animals that can eat roughage has a lower blue water footprint than non-ruminants that feed on crops
-    -   While 98% of the water footprint of animals comes from the growing of their feed, less than 14% of the water footprint from crops is for feed crops [@Mekonnen2011] \#Check reference. Found here directly after referencing mekonnen2011: <https://www.mdpi.com/2073-4441/12/10/2696/htm#B37-water-12-02696>
+    -   Limit discretionary foods
 
--   While ruminants can be fed roughage that are not edible for humans, non-ruminant (pork, chicken and farmed fish) feed consists of cereals that could feed humans [@Makkar2018].
+    -   Consume adequate calories
 
-    -   Producing one kilo bone free meat of non ruminants uses more human edible crops than one kilo of bone free meat from ruminants, sans in intensive cattle feedlot systems [@Mottet2017] \#Read study again, a lot of information
+    -   Reduce food waste
 
-    -   57% of the land used in animal production for feed cannot be used for other food production [@Mottet2017].
+        -   Recipes can be a useful tool when meal planning, but can also contribute to food waste by making consumers buy products that are not needed in large amounts, where everything not used in the recipe eventually gets thrown away
 
--   The blue water footprint of food is more important than green water, as it competes with other blue water demands. It is also important to look at grey water (pollution from runoff). While the average total water footprint of beef is higher than that of pork and chicken, the average blue and gray water footprint is similar. If the cattle is allowed to graze, the blue and gray water footprint of beef is less than that of pork and chicken [@Gerbens-Leenes2013]
+## Limitations and strengths
 
--   Fresh water, which is a limited resource many places in the world is believed to be even more scarce in the face of climate change [@UnitedNationsWater2019].
+There are several limitations of the data and methods used in this thesis. It was discovered that some online recipes would include additional ingredients in their description to be served with the recipe, not included in the ingredients list that had been added to the database used to calculate nutrient content and environmental impact. For example "serve with potatoes, rice or salad". These are ingredients that would have altered the healthiness scores and lowered the environmental impact, by providing more carbohydrate and/or fibre rich foods, had they been included in the analyses. This could possibly explain why recipes from the UK, which were from chef's recipe books and possibly were more detailed, performed better on the healthiness indicators. Future studies that base their analyses on online recipes should take this into account and not solely rely on collected ingredient lists that may be lacking. Another issue with the online recipes were that not all recipes were classified correctly by meal type, as both desert, lunch and appetizers were found classified as dinner recipes.
 
-It is possible to produce food in a more sustainable manner. For example for ruminant meat, mitigation strategies for GHGE include the use of pasture and grazing techniques that improve soil carbon sequestration [@Godde2020; @Willett2019; @Byrnes2018; @Cusack2021; @DeFigueiredo2017]. In some studies it is even shown that grazing management could lead to net negative carbon emissions of the livestock at farm level [@Stanley2018; @Viglizzo2019; @Salvador2017; @Gutierrez-Pena2019]. Finding sustainable ways to keep ruminants is especially important in countries such as Norway where only three percent of the land is used as farmland, and an even smaller area can be used for crops fit for human consumption [@Knutsen2020]. Norway also has an abundance of green water [@Schyns2019], which is the main source of water for grazing cattle.
+Some ingredients that contributed to the nutrient calculations, and thus influenced healthiness scores, were not ingredients that would be eaten in full in the final recipe. For example oil in marinades or vegetables is soup bases. This is only relevant for the healthiness, and not environmental impact, as the environmental impact of these ingredients are the same regardless of if they are eaten or not. The final weight of soups, stews and recipes with certain sauces are likely inflated due to the inclusion of high amounts of water, that would have diluted the other ingredients when calculating nutrient content and environmental impact per 100 g.
 
-When it comes to plants, locally field grown products are the most sustainable. There are possible strategies to improve field growing even further, such as intercropping or a rotating crop system. Intercropping, growing two or more crops in close proximity such as legumes and oats [@Tidaker2021] or lettuce and cucumbers [@Pereira2021], could reduce GHGE of both species. Introducing legumes in a rotating crop system reduce the subsequent crop's need for fertilizer [@Nemecek2008; @Costa2020]. This could decrease climate impact by 12-21% [@Tidaker2021]. However, field growing is not always possible due to seasonal climate, and the use of heated greenhouses can increase GHGE of a fruit or vegetable substantially. In such cases, importing the produce from a region where it is in season might be the better option. Tomatoes, aubergine, peppers and cucumbers grown locally in a heated greenhouse could have up to a 100 times the GHGE than if they had been imported from a country where they are in season and grown in fields [@Theurl2014; @Frankowska2019; @Davis2011; @Ntinas2017]. It is however important to think about how the produce is transported. For example long haul air-freighting of peas into UK from non European countries has nearly 59 times higher GHGE than the use of heavy goods vehicles to transport peas to UK from EU countries [@Michalsky2015a].
+Using portion sizes instead of 100 g of a recipe to calculate nutrient content and environmental impact may have provided answers with more relevance to the real world, but many recipes did not contain this information.
 
-Production of nuts has higher GHGE than cereals and legumes, but still considerably less than animal based foods. However there are limited studies on the GHGE of nut production [@Clune2017]. Besides GHGE, nuts have a large water footprint and 74 % of nuts produced today are produced under blue water stress, 63 % under severe water stress [@Vanham2020]. Per kilo produced, almonds, pistachios, hazelnuts and walnuts have the same water footprint as meat from beef [@Vanham2020].
+The only environmental impact that was assessed were emissions in kilo CO~2~ equivalents, which included acidification, and land use. It would have been interesting to include different types of water use and indicators for how the ingredients influence biodiversity and pollution. The use of the SHARP database, that is based on LCAs from a handful of European countries, means that the results may not be relevant to inhabitants of the countries the recipes in this study comes from. Further, it was discovered during the calculation of nutrient content that the then downloadable version of Matvaretabellen [@NorwegianFoodSafetyAuthority2020] had switched the content in the columns for retinol and beta-carotene. This was quickly fixed, but illustrate that these databases are not infallible. Nutrient content in these databases may also not accurately depict the nutrient content of foods (**SOURCE**), which could influence results of nutrient content analyses.
 
-For seafood, fish caught offshore by trawling or long line fishing has higher GHGE than fish caught closer to the coast [@Clune2017]. Lobsters, shrimp and prawn may under certain circumstances have as high an impact as ruminants, while pollock and herring on the other end is comparable to tree-nuts and cereals [@Clune2017]. The majority of marine fish comes from sustainable fished stocks without overfishing, but there are geographical differences [@FoodandAgricultureOrganizationoftheUnitedNations2020] (p7-8). About 50 % of seafood consumed globally comes from aquaculture, and production is expanding [@FoodandAgricultureOrganizationoftheUnitedNations2020] p6). Feed for aquaculture are primarily based on wild caught forage fish, and this has raised concerns about overfishing and the collapse of aquatic food webs [@Naylor2009]. Farming of Atlantic Salmon has especially high demands of marine feed sources [@Naylor2009]. Alternative feed sources are crops, but this will increase pressure on freshwater resources [@Pahlow2015], and compete with crop production for human consumption [@Makkar2018].
+There were also some strengths. The inclusion of other micronutrients than sodium is unique in the field of recipe healthiness, and the multiple healthiness indicators included are used in many different countries, so the results have a wide range. All analyses and ingredient-to-database mapping are available as R scripts, and can easily be reproduced.

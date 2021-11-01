@@ -70,13 +70,13 @@ Most research that has been done on the environmental impact of
 different foods have focused on GHGE. Increased GHGE cause climate
 change, which with various degrees of certainty will result in sea level
 rise, ocean acidification, increased temperature and more extreme
-weather events such as floods and droughts [@Masson-Delmotte2021]. This
-in turn can have consequences on the yield and nutrition value of crops
-and livestock products, and worsen nutrition status of humans
-[@Hatfield2011; @Rojas-Downing2017]. Sustainability is now an important
-consideration for food security, the physical and economical access
-individuals have to nutritious and safe foods [@Shukla2019 ;
-@Gustafson2016].
+weather events such as floods and droughts [@Masson-Delmotte2021]. Among
+the many issues this can cause, is poorer yield and nutrition value of
+crops and livestock products, and in turn worse nutrition status of
+humans [@Hatfield2011; @Rojas-Downing2017]. With this in mind,
+sustainability is now an important consideration for food security, the
+physical and economical access individuals have to nutritious and safe
+foods [@Shukla2019 ; @Gustafson2016].
 
 The environmental impact of foods are commonly found through life cycle
 assessments (LCAs), a "compilation and evaluation of the inputs,
@@ -112,10 +112,10 @@ animals (crops that are edible for humans or not) can all influence the
 environmental impact of a given food. For example, vegetables produced
 locally may have lower environmental impact than imported produce when
 in season and grown in fields, but out of season it might be grown in
-heated greenhouses that has a higher environmental cost than transport
-from a region where the produce is in season. A food could also be
-sustainable when looking at one type of environmental impact, but
-harmful when looking at another.
+heated greenhouses that has a higher environmental cost than
+transportation from a region where it is produced in season. A food
+could also be environmentally sustainable when looking at one type of
+environmental impact, but harmful when looking at another.
 
 ```{r environmental-impacts, out.width = "95%", fig.cap = "Greenhouse gas emissions, land and water footprint of various food groups."}
 knitr::include_graphics("images/environmental_impacts.png")
@@ -233,7 +233,7 @@ and dairy foods, and have a low intake of processed foods, saturated
 fat, added sugar and salt [@Herforth2019]. In high income countries, it
 is also common to include a maximum red meat intake, like \<500
 grams/week. A few countries advice that home cooking and cooking skills
-are beneficial [@BrazilDietaryGuidelines2015;
+are beneficial for healthy dietary habits [@BrazilDietaryGuidelines2015;
 @TheJapanDieteticAssociation; @HealthCanada2019].
 
 FBDGs are often presented to consumers with images that show various
@@ -260,19 +260,23 @@ legumes, nuts, fruit and vegetables with low to moderate consumption of
 animal sourced foods is an advice commonly given to consumers that want
 to be environmentally friendly, while still eating healthy
 [@Willett2019; @SwedishFood; @Fødevarestyrelsen; @Brink2019; @Seed2015].
-Although in the case of nuts concerns are raised due to the high water
-footprint of nuts, made worse by the fact that most nuts are grown in
-areas with water scarcity [@Vanham2020]. Animal sourced foods are
-generally nutrient dense, and they are not required in large amounts in
-the diet to provide necessary nutrients for good health [@Willett2019].
-If eliminating animal sourced foods completely, as when following a
-vegan diet, special focus must be placed on vitamin B12, vitamin B2,
-vitamin D, iodine, zinc, calcium and selenium as these nutrients are
-either not present in plant-based foods (vitamin B12) or more difficult
-to obtain [@Bakaloudi2021]. Other advice presented in FBDGs that include
-environmental impact is to eat local, seasonal produce and choose
-organic if possible, and to reduce intake of nutrient poor foods such as
-confectionery.
+Although in the case of water footprint it might be that reducing animal
+sourced foods lead to a lower total water footprint, but not necessarily
+a lower blue water footprint [@Harris2020]. This is especially true when
+animal sourced foods is reduced while intake of nuts is increased, made
+worse by the fact that most nuts are grown in areas with water scarcity
+[@Vanham2020].
+
+Animal sourced foods are generally nutrient dense, and they are not
+required in large amounts in the diet to provide necessary nutrients for
+good health [@Willett2019]. If eliminating animal sourced foods
+completely, as when following a vegan diet, special focus must be placed
+on vitamin B12, vitamin B2, vitamin D, iodine, zinc, calcium and
+selenium as these nutrients are either not present in plant-based foods
+(vitamin B12) or more difficult to obtain [@Bakaloudi2021]. Other advice
+presented in FBDGs that include environmental impact is to eat local,
+seasonal produce and choose organic if possible, and to reduce intake of
+discretionary and nutrient poor foods such as confectionery.
 
 By following national FBDGs, an individual should meet their recommended
 dietary intake (RDI) of all nutrients, and thus support their good
@@ -323,6 +327,12 @@ impact, especially as consumers tend to associate healthiness with
 environmental sustainability [@VanLoo2017; @Grunert2020; @Barone2019;
 @Verain2016].
 
+### Consumer beliefs about sustainable diets
+
+Many studies have shown that few consumers are aware of the
+environmental impact of meat, and to the extent a plant-based diet can
+reduce environmental impact [@Sanchez-Sabate2019].
+
 A 2020 survey of over 27000 consumers in 27 EU member states found that
 66% participants claim to "always" or "most of the time" eat a healthy
 and sustainable diet [@Grunert2020]. This is in stark contrast with
@@ -347,18 +357,18 @@ locally produced food is most beneficial to the environment, while
 eating organic or reducing meat intake was seen as the least beneficial
 contribution they could make [@Austgulen2018]. This is similar to UK
 consumers, who consider reduced consumption of air freighted foods,
-reduced food waste and increased local produce to have a high
+reduced food waste and increased use of local produce to have a high
 environmental benefit (believed by \>75%), while only 42% and 27%
 believe that is the case for plant-based protein and organic produce
 respectively [@Culliford2020]. Spaniards associate food sustainability
 with environmental impacts, biodiversity, local foods and GHGE. The
 majority of Spanish consumers have a negative view of the sustainability
-of processed foods (\~85), while the opposite is true for fruit and
+of processed foods (\~85%), while the opposite is true for fruit and
 vegetables. Meat is seen as positive for sustainability by about 50%
 [@Garcia-Gonzalez2020].
 
 Brazilian consumers share many beliefs with Europeans when it comes to
-food sustainability. Sustainable diets in Brazil are associated with
+food sustainability. Sustainable diets in Brazil were associated with
 healthiness, plant-based and organic foods, environmental preservation
 and little food waste [@Barone2019]. There is a lack of studies on
 consumer perception and beliefs when it comes to sustainable diets in
@@ -366,16 +376,14 @@ low-middle income countries, and countries outside of Europe. It is also
 difficult to compare studies and surveys on the topic as different
 themes and questions are explored.
 
-While consumers might know that eating more plants are beneficial for
-the environment, many studies have shown that few consumers are aware of
-the environmental impact of meat, and to the extent a plant-based diet
-can reduce environmental impact [@Sanchez-Sabate2019]. Studies also show
-that environmental impact often ranks below other concerns such as
-taste, price, healthiness and animal welfare when consumers decide which
-food to buy [@Grunert2014; @Grunert2020; @Mann2018; @Clonan2015]. Still,
-in the health survey of the Norwegian population performed in 2020, 62%
-stated they had changed their diets to a lesser or greater degree in the
-last three years to improve its environmental impact [@HopeAbel2021].
+While consumers may have some conceptions of what a sustainable diet is,
+studies show that environmental impact often ranks below other concerns
+such as taste, price, healthiness and animal welfare when consumers
+decide which food to buy [@Grunert2014; @Grunert2020; @Mann2018;
+@Clonan2015]. Still, in the health survey of the Norwegian population
+performed in 2020, 62% stated they had changed their diets to a lesser
+or greater degree in the last three years to lower its environmental
+impact [@HopeAbel2021].
 
 It is beyond the scope of this thesis to include a comprehensive review
 of the literature on the systemic and individual factors that underlie
@@ -432,14 +440,15 @@ four domains of sustainable diets could potentially be explored.
 
 ## Thesis aims
 
-This thesis aims to look at a selection of recipes from the three
-countries United Kingdom (UK), Norway, United States of America (US),
-from cookbooks (UK) and the Internet (Norway, US), and compare two
-domains of sustainable diets, namely health and environmental
-sustainability.
+This thesis aims to look at a selection of recipes from the United
+Kingdom (UK), Norway and United States of America (US), from cookbooks
+(UK) and the Internet (Norway, US), and compare two domains of
+sustainable diets, namely health and environmental sustainability. To
+build on previous research on recipe's healthiness, micronutrient
+content will also be included in the analyses.
 
-RQ1: How sustainable are recipes from these countries?
+RQ1: To what extent does a recipe's healthiness and environmental impact
+depend on country of origin?
 
-RQ2: Do sustainability indicators correlate with healthiness indicators?
-
-RQ3: Do sustainability indicators correlate with micronutrient content?
+RQ2: To what extent does environmental impact correlate with
+healthiness?
