@@ -4,13 +4,15 @@
 \alias{calculateNutritionScore_nnr}
 \title{calculateNutritionScore_nnr}
 \usage{
-calculateNutritionScore_nnr(df)
+calculateNutritionScore_nnr(df, raw_scores = FALSE)
 }
 \arguments{
 \item{df}{A dataframe with a sample_id column for recipe ID, and macronutrient names in line with Matvaretabellen.}
+
+\item{raw_scores}{Should raw scores be included in the output? TRUE/FALSE.}
 }
 \value{
-A dataframe with the recipe ID and its corresponding NNR score.
+A dataframe with the recipe ID and its corresponding NNR score. If raw_scores is TRUE, a list with the total scores in one dataframe and the raw scores in another.
 }
 \description{
 Score a recipe on how well it adheres to Nordic Nutritional Recommendations macronutrient recommendations.

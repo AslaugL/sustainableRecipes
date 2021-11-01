@@ -4,15 +4,17 @@
 \alias{calculateNutritionScore_trafficlights}
 \title{calculateNutritionScore_trafficlights}
 \usage{
-calculateNutritionScore_trafficlights(df, inverted = "yes")
+calculateNutritionScore_trafficlights(df, inverted = "yes", raw_scores = FALSE)
 }
 \arguments{
 \item{df}{A dataframe with a sample_id column for recipe ID, a salt column with salt in gram/100g recipe, and nutrient columns with names in line with Matvaretabellen.}
 
 \item{inverted}{Should the returned score be inverted or not? Either 'yes' or 'no', default 'yes'.}
+
+\item{raw_scores}{Include raw scores in the ouput. TRUE/FALSE, default FALSE.}
 }
 \value{
-A dataframe with the recipe ID and its total traffic light score.
+A dataframe with the recipe ID and its total traffic light score. If raw_score = TRUE, a list with the total score dataframe in addition to a raw_score dataframe.
 }
 \description{
 Score a recipe unsing the UK Traffic Light System.

@@ -2,18 +2,20 @@
 % Please edit documentation in R/calculateNutritionScore_nutriscore.R
 \name{calculateNutritionScore_nutriscore}
 \alias{calculateNutritionScore_nutriscore}
-\title{calculateNutritionScore_trafficlights}
+\title{calculateNutritionScore_nutriscore}
 \usage{
-calculateNutritionScore_nutriscore(df, inverted = "yes")
+calculateNutritionScore_nutriscore(df, inverted = "yes", raw_scores = FALSE)
 }
 \arguments{
-\item{df}{A dataframe with a sample_id column for recipe ID, a 'nutriscore_amounts_pct' column with the percentage of fruit/veg/legumes/nuts/healthy oils, and nutrient columns with names in line with Matvaretabellen (except kJ which is 'Kilojoules').}
+\item{df}{A long format dataframe with an Ingredients column, a Foodgroup column with food groups named as they are in analyses.R script, a sample_id column for recipe ID, and a feature column with nutrient names in line with Matvaretabellen (except kJ which is 'Kilojoules'), with their values in a value column.}
 
 \item{inverted}{Should the returned score be inverted or not? Either 'yes' or 'no', default 'yes'.}
+
+\item{raw_scores}{Should the raw scores for each qualifying/disqualifying element be included in the results? TRUE/FALSE.}
 }
 \value{
-A dataframe with the recipe ID and its nutriscore with corresponding letter.
+A dataframe with the recipe ID and its nutriscore with corresponding letter. If raw_scores is true, a list with two dataframes, one with the Nutriscore and one with the raw scores used for calculating it.
 }
 \description{
-Score a recipe unsing the UK Traffic Light System.
+Score a recipe using the Nutriscore system.
 }
