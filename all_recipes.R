@@ -352,7 +352,8 @@ t <- various$org_ingredients %>% select(Ingredients, org_ingredients) %>% unique
   #Calculate weight in kilo
   #Ingredients that need to have weight per dl in database
   various$to_dl <- c('pepper', 'peanøttsmør', 'olje', 'oil', 'smør', 'butter', 'margarin',
-                     'ghee', 'garlic', 'tomato paste', 'baking powder', 'taco spice mix')
+                     'ghee', 'garlic', 'tomato paste', 'baking powder', 'taco spice mix',
+                     'tahini')
   
   various$weights <- databases$volume_weight %>%
     #Set brutto as default value pr stk, as it used in both Matvaretabellen and SHARP
