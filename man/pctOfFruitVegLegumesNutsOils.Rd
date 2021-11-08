@@ -7,10 +7,10 @@
 pctOfFruitVegLegumesNutsOils(df)
 }
 \arguments{
-\item{df}{A tidy dataframe with a sample_id column for recipe names, an Ingredient column with ingredients in rows, a Foodgroup column and an Amounts column (with the amounts in weight).}
+\item{df}{A tidy dataframe with a sample_id column for recipe names, an Ingredients column with ingredients in rows, a Foodgroup column and an Amounts column (with the amounts in weight).}
 }
 \value{
-The dataframe with a a fature column with two features: one with the pct of fruit, vegetables, legumes, nuts and oils used to calculate Nutriscore, and one with fruit, vegetables, legumes and nuts to calculate Keyhole score.
+The dataframe with a a feature column with two features: one with the pct of fruit, vegetables, legumes, nuts and oils used to calculate Nutriscore, and one with fruit, vegetables, legumes and nuts to calculate Keyhole score.
 }
 \description{
 Find the amounts in percent of fruit, vegetables, legumes, nuts and oils in a recipe.
