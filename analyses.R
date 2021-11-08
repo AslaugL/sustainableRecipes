@@ -1189,6 +1189,48 @@ plots$violinbox$foodgroups <- list()
     save_plot('./thesis/images/foodgroups.png', plots$final$foodgroups,
               nrow = 1.5, ncol = 1.3)
   
+# Number of recipes from each country with various protein sources
+#Number of recipes with the ingredients
+  temp <- tidy_ingredients %>%
+    select(Ingredients, group, Foodgroup, sample_id) %>% unique() %>%
+    
+    #Separate into beef, lamb, pork, poultry, lean fish, oily fish, shellfish, vegetarian, vegan
+    #Animal sourced foods
+    mutate(protein = case_when(
+      
+      str_detect(Ingredients, 'beef') & !str_detect(Ingredients, 'fund|broth|gravy') ~ 'beef',
+      str_detect(Ingredients, 'lamb') & !str_detect(Ingredients, 'broth|salad') ~ 'lamb',
+      str_detect(Ingredients, 'pork|bacon') & !str_detect(Ingredients, 'lard') ~ 'pork',
+      str_detect(Ingredients, 'chicken|turkey') & !str_detect(Ingredients, 'broth|soup') ~ 'poultry',
+      
+      str_detect(Ingredients, 'pollock|cod|anglerfish|fish cake coarse|haddock|grouper|catfish|sea bass|halibut|tuna') ~ 'lean fish', #The fishcakes are made out of mostly haddock
+      str_detect(Ingredients, 'salmon|trout|arctic char|mackerel|herring|sardine|anchovy') & !str_detect(Ingredients, 'roe') ~ 'oily fish',
+      str_detect(Ingredients, 'squid|prawn|shrimp|mussel|crab|lobster|shellfish|scampi|clam') & !str_detect(Ingredients, 'paste') ~ 'shellfish'
+      
+    )) %>%
+    #Vegetarian or vegan foods
+    group_by(group, sample_id, Foodgroup) %>%
+    mutate(protein = case_when(
+      
+      !any(Foodgroup %in% c('Seafood', 'Eggs', 'Dairy', 'Meat and\nmeat products')) &
+        !str_detect(Ingredients, 'lamb|game|fish|beef|chicken|turkey|shrimp|cheese|condensed cream|egg\\b|duck|honey|pork|mayonnaise|barbeque|oyster|worcestershire|sausage|shortening') &
+        !Ingredients %in% c('butter', 'unsalted butter', 'butter clarified ghee', 'butter for cooking',
+                            'buttermilk', 'refrigerated buttermilk biscuit dough', 'spice butter') ~ 'vegan',
+      !any(Foodgroup %in% c('Seafood', 'Meat and\nmeat products')) & !str_detect(Ingredients, 'condensed cream|beef|fish|shrimp|duck|sausage|shortening') ~ 'vegetarian',
+      
+      TRUE ~ protein
+    )) %>%
+    
+    #The whole recipe
+    summarise(final_protein = any(protein == 'beef') ~ beef,
+              all(protein == 'vegan') ~ 'vegan'
+              )
+    
+    
+    
+    group_by(group, Ingredients, Foodgroup) %>%
+    summarise(n = n())
+    
   
 ## Tables----
 # Stats----
