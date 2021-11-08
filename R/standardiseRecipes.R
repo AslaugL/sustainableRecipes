@@ -13,7 +13,8 @@ standardiseRecipes <- function(df){
   #Different units to use
   units = c('tsp', 'tbsp', 'l', 'dl', 'g', 'kg', 'hp', 'krm', 'tins', 'cm', 'leaf', 'can',
             'stk', 'glass', 'cup', 'box', 'pinch', 'flaske', 'portion', 'slice', '\\bclove\\b',
-            'neve', 'ml', 'cl', 'bunch', 'pack', 'plate', 'drop', 'twig', 'pound', 'ounce', 'stalk') %>%
+            'neve', 'ml', 'cl', 'bunch', 'pack', 'plate', 'drop', 'twig', 'pound', 'ounce', 'stalk',
+            'quart') %>%
     #Add whitespace on both sides to only match a unit in a string
     sapply(., function(x) {paste0('\\s', x, '\\s')}) 
   
@@ -35,13 +36,13 @@ standardiseRecipes <- function(df){
               
               'garlic', 'grape',
               
-              'hen breast fillet grouse', 'herring smoked',
+              'hamburger bun', 'hen breast fillet grouse', 'herring smoked',
               
               'jerusalem artichoke', 'juniper berry',
               
               'lamb chop', 'leek', 'lemon', 'lemongrass', 'lettuce', 'lime',
               
-              'mango', 'mushroom',
+              'mango', 'marshmallow', 'mushroom',
               
               'nori seaweed', 'nut',
               

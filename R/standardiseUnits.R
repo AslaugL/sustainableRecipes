@@ -17,6 +17,7 @@
      unit == 'l' ~ Amounts * 10,
      unit == 'ml' ~ Amounts / 100,
      unit == 'cl' ~ Amounts / 10,
+     unit == 'quart' ~ Amounts * 9.46,
      unit == 'tbsp' ~ Amounts / 6.67,
      unit == 'tsp' ~ Amounts / 20,
      unit == 'krm' ~ Amounts / 100,
