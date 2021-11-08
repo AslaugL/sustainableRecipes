@@ -12,8 +12,8 @@ editor_options:
 ```{r abbreviations}
 library(tibble)
 Abbreviations <- tibble(
-  'Abbreviation' = c('DALY', 'FBDG', 'LMIC', 'HIC', 'NNR', 'WHO', 'FAO', 'NCD', 'RDI', 'FOP', 'LCA', 'FV'),
-  'Explanation' = c('Disability Adjusted Life Years', 'Food Based Dietary Guideline', 'Low- Middle-Income Countries', 'High Income Countries', 'Nordic Nutritional Recommendations', 'World Health Organization', 'Food and Agriculture Organization of the United Nations', 'Non-communicable disease', 'Recommended Dietary Intake', 'Front of Pack', 'Life Cycle Assesment', 'Fruit and Vegetables')
+  'Abbreviation' = c('DALY', 'FBDG', 'NNR', 'WHO', 'FAO', 'NCD', 'RDI', 'FOP', 'LCA', 'MTL'),
+  'Explanation' = c('Disability Adjusted Life Years', 'Food Based Dietary Guideline', 'Nordic Nutritional Recommendations', 'World Health Organization', 'Food and Agriculture Organization of the United Nations', 'Non-communicable disease', 'Recommended Dietary Intake', 'Front of Pack', 'Life Cycle Assesment', 'Multiple Traffic Light')
 )
 ```
 
@@ -224,16 +224,19 @@ in the Nordic and Baltic countries [@Helsedirektoratetc]. It is likely
 that even more countries are working on this.
 
 Even though there are differences between countries and regions, FBDGs
-around the world share similarities such as recommendations to eat high
-quality whole foods within one's energy requirements, include a variety
-of colorful vegetables (starchy roots and tubers are generally not
-counted as a vegetable in these instances) and fruit and other fiber
-rich foods such as whole grain cereals, legumes and nuts, consume fish
-and dairy foods, and have a low intake of processed foods, saturated
-fat, added sugar and salt [@Herforth2019]. In high income countries, it
-is also common to include a maximum red meat intake, like \<500
-grams/week. A few countries advice that home cooking and cooking skills
-are beneficial for healthy dietary habits [@BrazilDietaryGuidelines2015;
+around the world share similarities such as qualitative recommendations
+to eat high quality whole foods within one's energy requirements,
+include a variety of colorful vegetables (starchy roots and tubers are
+generally not counted as a vegetable in these instances) and fruit and
+other fiber rich foods such as whole grain cereals, legumes and nuts,
+consume fish and dairy foods, and have a low intake of processed foods,
+saturated fat, added sugar and salt [@Herforth2019]. These
+recommendations can also be quantitative by defining number of portions
+and/or portion sizes. A well known example is to eat five portions of
+fruits and vegetables a day. In high income countries, it is also common
+to include a maximum red meat intake, like \<500 grams/week. A few
+countries advice that home cooking and cooking skills are beneficial for
+healthy dietary habits [@BrazilDietaryGuidelines2015;
 @TheJapanDieteticAssociation; @HealthCanada2019].
 
 FBDGs are often presented to consumers with images that show various
@@ -297,18 +300,21 @@ malnutrition in the world could be as high as US \$3.5 trillion
 There is wide consensus that a higher adherence to healthy dietary
 habits such as following national FBDGs would lower disease burden of
 individuals globally and substantially decrease health costs
-[@Schulze2018; @McCullough2014; @USDA2014]. The Institute for Health
+[@Schulze2018; @McCullough2014; @USDA2014], but also reduce
+environmental impact of our diet [@Kovacs2021]. The Institute for Health
 Metrics and Evaluation has in their Global Burden of Disease series
 quantified how low adherence to different advice found in FBDGs
-contribute to mortality and disease risk in 195 countries [@Afshin2019].
-Both globally and in most of the included countries, the leading causes
-of diet related mortality and DALYs were high salt intake and low intake
-of whole grain cereals, fruit, nuts and seeds and vegetables.
-Additionally, on a global level the consumption of meat is higher than
-what is needed for good health [@Leme2021], but while many high-income
-countries would benefit from a lower intake, in other parts of the world
-an increase in meat intake could be beneficial due to poor nutritional
-status in the population [@Willett2019].
+contribute to mortality and disease risk in 195 countries [@Afshin2019],
+and the results also show dietary patterns with a negative environmental
+impact. Both globally and in most of the included countries, the leading
+causes of diet related mortality and DALYs were high salt intake and low
+intake of whole grain cereals, fruit, nuts and seeds and vegetables that
+have a low environmental impact. Additionally, on a global level the
+consumption of high environmental impact meat is higher than what is
+needed for good health [@Leme2021]. However, while many high-income
+countries would benefit from a lower intake of meat, in other parts of
+the world an increase in meat intake could be beneficial due to poor
+nutritional status in the population [@Willett2019].
 
 There are several sources of dietary information available to the
 general consumer. Concerns have been raised that contradictory messaging
