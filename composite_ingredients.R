@@ -1,6 +1,4 @@
-library(tidyverse)
-library(stringi)
-roxygen2::roxygenise()
+devtools::load_all(path = '.')
 
 #Run twice to get the nutrient amounts/sustainability indicators for mango chutney in the worcestershire sauce recipe
 
@@ -32,7 +30,9 @@ Name = c('condensed cream of mushroom soup', 'condensed cream of chicken soup',
          'horseradish_sauce', 'olive paste tapenade', 'beef gravy', 'tortilla_corn',
          'miso_paste', 'potetlefse', 'meatball', 'garam masala', 'sauce piri-piri',
          'sauce pad thai', 'sauce tikka masala', 'fajita spice mix', 'kimchi', 'sauce_teriyaki',
-         'mire_poix')
+         'mire_poix', 'graham_cracker', 'amaretti cookie', 'brownie_mix', 'yellow cake_mix',
+         'chocolate pudding_mix', 'german chocolate cake_mix', 'marshmallow', 'biscuit_digestive',
+         'caramel', 'sweet green pickle relish')
 Ingredients = c(
   #Concentrated cream of soups
   #From https://onceamonthmeals.com/blog/recipe-roundups/homemade-cream-of-something-soup/
@@ -536,7 +536,98 @@ Salt',
 #From https://www.masterclass.com/articles/complete-guide-to-mirepoix-the-aromatic-vegetable-base#5-common-mirepoix-variations
 '100 g carrot
 100 g celery
-200 g onion'
+200 g onion',
+
+#Graham cracker
+#From https://www.biggerbolderbaking.com/homemade-graham-crackers/
+'284 g whole wheat flour
+170 g light brown sugar
+1 tsp cinnamon
+1 tsp baking soda
+0.75 tsp salt
+100 g butter, room temperature
+3 tbsp whole milk
+85 g honey
+2 tsp vanilla extract',
+
+#Amaretti cookie
+#From https://www.shelovesbiscotti.com/soft-amaretti-cookies/
+'250 g almonds
+200 g sugar
+1 lemon the zest
+3 stk egg whites
+1 tsp almond extract
+0.33 cup sugar',
+
+#Homemade brownie mix
+#From https://iambaker.net/homemade-brownie-mix/
+'200 g granulated sugar
+40 g unsweetened cocoa powder sifted
+64 g all-purpose flour
+0.25 tsp kosher salt
+0.25 tsp baking powder',
+
+#Yellow cake mix
+#From https://www.food.com/recipe/homemade-yellow-cake-mix-subtitute-18-25oz-betty-crocker-box-472383
+'2 cup all-purpose flour
+1.5 cup sugar
+1 tbsp baking powder
+0.5 cup non-fat powdered milk',
+
+#Chocolate pudding mix
+#From https://www.countrycleaver.com/2014/04/diy-instant-chocolate-pudding-mix.html
+'1.25 cup sugar
+1 cup cornstarch
+1 cup milk powder
+0.15 cup cocoa powder
+1 pinch of salt',
+
+#German chocolate cake mix
+#Dry ingredients from https://www.cookingclassy.com/german-chocolate-cake/
+'248 g all-purpose flour
+400 g granulated sugar
+68 g unsweetened cocoa powder
+2 tsp baking powder
+1.5 tsp baking soda
+1 tsp salt',
+
+#Marshmallows
+#From https://www.foodiewithfamily.com/homemade-marshmallows-foodie-christmas-gift-4/
+'0.75 ounce unflavored gelatin
+0.5 cup cold water
+2 cup granulated sugar
+0.66 cup light corn syrup
+0.25 cup water
+0.25 tsp salt
+1 tbsp pure vanilla extract',
+
+#Digestive biscuit
+#From https://www.biggerbolderbaking.com/homemade-digestive-biscuits/
+'236 g whole wheat flour
+1 tsp baking powder
+0.5 tsp salt
+85 g powdered sugar
+115 g butter 
+57 ml milk',
+
+#Caramel
+#From https://tastesbetterfromscratch.com/homemade-caramels/
+'1 cup butter
+4 cup granulated sugar
+2 cup light corn syrup
+24 ounce evaporated milk
+1 tsp vanilla extract',
+
+#Sweet green pickle relish
+#From https://www.healthycanning.com/sweet-green-relish
+'3.5 kg pickling cucumbers 
+175 g pickling salt
+1 litre white vinegar
+450 g sugar 
+1 tablespoon celery seed
+1 tablespoon mustard seed
+325 g onion'
+
 )
 
 composite_ingredients <- tibble(Name = Name, Ingredients = Ingredients)
@@ -640,7 +731,7 @@ temp <- checkRef(various$ingredients_weight, references$sustainability)
 
 #Final df with co2/landuse pr kg
 final <- full_join(temp, various$ingredients_weight) %>% left_join(., databases$sustainability, by ='ID') %>%
-  select(Name, Ingredients.x, Amounts_kg, `GHGE of 1 kg food as consumed_kgCO2eq`, `Land use of 1 kg food as consumed_m2/yr`) %>%
+  select(Name, Ingredients, Amounts_kg, `GHGE of 1 kg food as consumed_kgCO2eq`, `Land use of 1 kg food as consumed_m2/yr`) %>%
   
   #CO2/Landuse by each ingredient in the composite ingredient
   mutate(CO2 = `GHGE of 1 kg food as consumed_kgCO2eq`*Amounts_kg,
@@ -667,9 +758,11 @@ final <- full_join(temp, various$ingredients_weight) %>% left_join(., databases$
     str_detect(Ingredients, 'salsa|soup|sauce|chutney|guacamole|pesto|paste|spice|seasoning|gravy|garam') ~ 'Seasoning, sauces and condiments',
     str_detect(Ingredients, 'fish') ~ 'Fish, seafood, amphibians, reptiles and invertebrates',
     str_detect(Ingredients, 'meatball') ~ 'Meat and meat products',
-    str_detect(Ingredients, 'kimchi|mire_poix') ~ 'Vegetables and vegetable products',
-    str_detect(Ingredients, 'dough|bread|pastry|lefse|tortilla') ~ 'Grains and grain-based products',
-    Ingredients %in% c('shrimp_salad', 'omelet') ~ 'Composite dishes'
+    str_detect(Ingredients, 'kimchi|mire_poix|sweet green pickle relish') ~ 'Vegetables and vegetable products',
+    str_detect(Ingredients, 'dough|bread|pastry|lefse|tortilla|graham|biscuit_digestive') ~ 'Grains and grain-based products',
+    Ingredients %in% c('shrimp_salad', 'omelet') ~ 'Composite dishes',
+    Ingredients %in% c('amaretti cookie', 'marshmallow','brownie_mix', 'yellow cake_mix',
+                       'chocolate pudding_mix', 'german chocolate cake_mix', 'caramel')  ~ 'Sugar and similar, confectionery and water-based sweet desserts',
   ))
 
 #Save
