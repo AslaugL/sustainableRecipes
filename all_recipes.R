@@ -49,7 +49,15 @@ bind_rows(.) %>%
   sample_id == 'Christmas Ribbe' & Source == 'Tine' ~ 'Christmas Ribbe 2',
   sample_id == 'Spagetti Bolognese' & Source == 'Klikk' ~ 'Spagetti Bolognese 2',
   TRUE ~ sample_id
-))
+)) %>%
+  
+  #Turn ingredients to lowercase
+  mutate(Ingredients = stri_trans_tolower(Ingredients)) %>%
+  #Separate ingredients to separate rows, trim whitespace and remove empty rows
+  separate_rows(., Ingredients, sep = '\n') %>%
+  mutate(Ingredients = str_trim(Ingredients, side = 'both'),
+         Ingredients = str_squish(Ingredients)) %>%
+  filter(Ingredients != '' | is.na(Ingredients))
 
 #Metadata for recipes
 recipe_metadata <- raw %>% select(sample_id, Country, Source) %>% unique() %>% rename(group = Country)
@@ -57,15 +65,6 @@ saveRDS(recipe_metadata, './Data/output/recipe_metadata.Rds')
 
 #Clean up the recipe ingredients----
 recipes <- raw %>%
-  
-  #Turn ingredients to lowercase
-  mutate(Ingredients = stri_trans_tolower(Ingredients)) %>%
-  
-  #Separate ingredients into separate rows, trim whitespace and remove empty rows
-  separate_rows(., Ingredients, sep = '\n') %>%
-  mutate(Ingredients = str_trim(Ingredients, side = 'both'),
-         Ingredients = str_squish(Ingredients)) %>%
-  filter(Ingredients != '' | is.na(Ingredients)) %>%
 
   #Change a few composite ingredient into individual ingredients
   mutate(Ingredients = Ingredients %>%
@@ -590,9 +589,10 @@ t <- various$org_ingredients %>% select(Ingredients, org_ingredients) %>% unique
     unique() %>%
     
     #Turn wide to calculate environmental impact
+    #First turn long
     select(-c(ID, Amounts)) %>%
     pivot_longer(
-      cols = -c(sample_id, Ingredients, Country, Source, L1, normalized_weight),
+      cols = -c(sample_id, Ingredients, Country, Source, L1, normalized_weight, FoodEx2),
       names_to = 'feature',
       values_to = 'sustainability_value_kg' #SHARP has sustainability values pr 1kg of an ingredient
     ) %>%
@@ -614,13 +614,13 @@ t <- various$org_ingredients %>% select(Ingredients, org_ingredients) %>% unique
     #Keep in long format
     #Pivot long to do the calculations
     pivot_longer(
-      cols = -c(sample_id, Ingredients, group, Source, L1),
+      cols = -c(sample_id, Ingredients, group, Source, L1, FoodEx2),
       names_to = 'feature',
       values_to = 'value'
     )
     
   
-  #Sum total envirnomental impact per 100g recipe
+  #Sum total environmental impact per 100g recipe
   various$recipe_sustainability <- various$ingredients_sustainability %>%
     
     #Calculate the whole recipe
@@ -676,9 +676,16 @@ ingredients_analysis <- full_join(
 saveRDS(ingredients_analysis, './Data/output/ingredients_for_analysis.Rds')
 
 
+#Share ingredients, only sustainability
 to_share_ingredients <- ingredients_analysis %>%
   rename(food_group = L1) %>%
-  select(group, Source, sample_id, Ingredients, food_group, Amounts, everything())
+  select(group, Source, sample_id, Ingredients, FoodEx2, food_group, Amounts, CO2, Landuse) %>%
+  rename(Amounts_hectograms = Amounts)
+
+#With nutrients
+to_share_ingredients <- ingredients_analysis %>%
+  rename(food_group = L1) %>%
+  select(group, Source, sample_id, Ingredients, FoodEx2, food_group, Amounts, everything())
 
 to_share_recipes <- recipes_analysis %>%
   inner_join(., recipes %>%
