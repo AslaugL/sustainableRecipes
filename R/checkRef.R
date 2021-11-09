@@ -286,7 +286,7 @@ checkRef <- function(df, reference, fix_errors = TRUE){
                              'pack high quality charcoal briquettes', 'pomegranate kernel', 'yeast nutritional',
                              'salmon roe', 'spice seasoning pepper', 'toro greek moussaka', 'paste chili',
                              'fish soup base', 'guacamole spice mix', 'lamb sheep head', 'lemon balm',
-                             'lingonberry jam', 'marrow bone', 'rhubarb juice',
+                             'lingonberry jam', 'marrow bone', 'rhubarb juice', 'beef bones',
                              '20 pound pack high quality charcoal briquettes', 'wine rice'
                              
           ) ~ 0,
@@ -418,15 +418,17 @@ checkRef <- function(df, reference, fix_errors = TRUE){
                              'rolls white', 'cracker cream', 'bread naan', 'bread flat hard') | str_detect(Ingredients, 'rolls white') ~ fixRefID(reference = reference, 'wheat bread and rolls', 'white'),
           
           #Herbs and spices
-          str_detect(Ingredients, 'saffron|fenugreek seed|mint fresh herbs|lemon balm|turmeric|anise|marjoram|sazon seasoning|ginger|caraway|lemongrass|basil|rosemary|thyme|tarragon|pepper|sage|masala|oregano|spice mix|nutmeg|cloves|coriander|cumin|dill|fenugreek leaf|juniper berry|cinnamon|chives|chervil|cardamom|caper|allspice|bay leaf|paprika powder|fennel seed') &
-            !str_detect(Ingredients, 'sauce|paste|sweet|chili') | str_detect(Ingredients, 'chili') & !str_detect(Ingredients, 'pepper|paste|sauce') ~ fixRefID(reference = reference, 'mixed', 'herbs'),
+          str_detect(Ingredients, 'saffron|fenugreek seed|mint fresh herbs|mint dried|lemon balm|turmeric|anise|marjoram|sazon seasoning|ginger|caraway|lemongrass|basil|rosemary|thyme|tarragon|pepper|sage|masala|oregano|spice mix|nutmeg|cloves|coriander|cumin|dill|fenugreek leaf|juniper berry|cinnamon|chives|chervil|cardamom|caper|allspice|bay leaf|paprika powder|fennel seed') &
+            !str_detect(Ingredients, 'sauce|paste|sweet|chili') |
+            str_detect(Ingredients, 'chili') & !str_detect(Ingredients, 'pepper|paste|sauce') |
+            Ingredients %in% c('herbs', 'different spices', 'spices') ~ fixRefID(reference = reference, 'mixed', 'herbs'),
           
           #Not in ref
           Ingredients %in% c('yeast nutritional', 'paste chili', 'agar', 'gluten',
                              'corn starch', 'nori seaweed','salmon roe',
                              'plantain', 'tabasco', 'tapioca', 'sake', 'wine rice', 'liquid smoke flavoring',
                              'pack high quality charcoal briquettes', 'cooking spray', 'quinoa', 'paste carrot',
-                             'red food coloring', 'toro greek moussaka', 'asparagus white', 'banana',
+                             'red food coloring', 'toro greek moussaka', 'banana', 'paste curry',
                              'fish scraps for broth', 'fish soup base', 'paste garlic',
                              'pomegranate kernel', 'sauce white', 'celery seed',
                              'sauce bearnaise', 'wine rice', 'onion soup mix') ~ 0,

@@ -168,6 +168,7 @@ temp <- list(
   
   #Vegetables/plant based
   c('Asparagus', 'bunch', '250', 'Meny', 'english'),
+  c('asparagus white', 'dl', '35.93', 'FoodData Central', 'english'),
   c('Asparagus beans', 'dl', '80', 'Assumed similar to other beans in database', 'english'),
   c('corn baby', 'stk', '10', 'BAMA, mais mini', 'english'),
   c('bagel', 'stk', '85', 'Meny, Hatting', 'english'),
@@ -381,8 +382,7 @@ temp <- list(
   c('Einebær/juniper berry', 'stk', '', '', 'norwegian/english'),
   c('Einebær/juniper berry', 'dl', '', '', 'norwegian/english'),
   c('pickled onion', 'dl', '', '', 'english'),
-  c('salmon roe', 'dl', '', '', 'english'),
-  c('asparagus white', 'dl', '', '', 'english')
+  c('salmon roe', 'dl', '', '', 'english')
   
 )
 
@@ -1763,7 +1763,7 @@ SHARP <- SHARP %>%
   #Create unique ID for each item
   mutate(ID = seq_along(Ingredients)) %>%
   #Add a FoodEx2 code for the composite ingredients not in SHARP
-  replace_na(list(FoodEx2 = 'Not in SHARP'))
+  replace_na(list(FoodEx2 = 'Composite ingredient not in SHARP'))
 #Save
 saveRDS(SHARP %>%
           select(-Ingredients), './Data/output/sharp_db.Rds')
