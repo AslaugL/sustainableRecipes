@@ -48,6 +48,7 @@ guidelines_trafficlights %>% select(Feature, `World Health Organization`, `Nordi
   mutate_at(c("World Health Organization", "Nordic Nutritional Recommendation"), ~str_replace(., "E%", "E\\\\%")) %>%
   
   filter(Feature != "Salt") %>%
+  rename(Nutrient = Feature) %>%
   kbl(booktabs = TRUE, linesep = "", caption = "Scoring system for the dietary guidelines from World Health Organization and the Nordic countries.", escape = FALSE) %>%
   kable_classic_2(full_width = FALSE) %>%
   kable_styling(latex_options = "hold_position") %>%
@@ -66,11 +67,15 @@ guidelines_trafficlights %>%
       filter(!Feature %in% c('Carbohydrate', 'Dietary fibre', 'Protein')) %>%
   #LaTeX less than or equal to sign
   mutate_at(c("Green/low", "Amber/medium", "Red/high"), ~str_replace(., "≤", "$\\leq$")) %>%
+  rename(Nutrient = Feature,
+         `Healthier choice` = `Green/low`,
+         `Can be eaten most of the time` = `Amber/medium`,
+         `Eat less often` = `Red/high`) %>%
   
-  kbl(booktabs = TRUE, linesep = "", escape = FALSE, caption = "Scoring system for the multiple traffic light system") %>%
+  kbl(booktabs = TRUE, linesep = "", escape = FALSE, caption = "Scoring system for the UK Food Standard Agency multiple traffic light system") %>%
+  add_header_above(c(" ", "Green/Low" = 1, "Amber/Medium" = 1, "Red/High" = 1)) %>%
   kable_classic_2(full_width = FALSE) %>%
-  kable_styling(latex_options = "hold_position") %>%
-  add_header_above(c(' ' = 1, 'Multiple traffic light system' = 3))
+  kable_styling(latex_options = "hold_position")
 ```
 
 The Nutriscore is similar, but it builds on the MTL by also taking into account the amount of energy and protein in a food, in addition to the amount of fibre, fruit, vegetables, pulses and nuts and the healthy fats olive oil, rapeseed oil and walnut oil [@Chantal2017; @Hercberg2021]. In the Nutriscore system, a food can receive between 0-10 points for each of the "disqualifying" categories energy, added sugar, saturated fat and sodium, and 0-5 points for the "qualifying" categories of protein, fibre, and the percentage of fruit, vegetables, pulses and nuts and the healthy fats olive oil, rapeseed oil and walnut oil per 100 g of the food. In contrast from the MTL, the Nutriscore is a summary score and does not provide the consumer with the individual scores from each category.
@@ -106,7 +111,7 @@ Ingredients with no amounts were replaced with the mean value of that ingredient
 
 ### Significant differences between countries
 
-Significant differences in energy per 100 g, macronutrient content in percentage of energy, micronutrient content in percentage of required daily intake of an adult woman, healthiness scores and sustainability indicators between recipes from the different countries were assessed using the Kruskal-Wallis test. A Dunn's test was performed post-hoc, and to account for multiple testing the Benjamini Hochberg (BH) method was used. An adjusted p value \< 0.05 was considered significant. 
+Significant differences in energy per 100 g, macronutrient content in percentage of energy, micronutrient content in percentage of required daily intake of an adult woman, healthiness scores and sustainability indicators between recipes from the different countries were assessed using the Kruskal-Wallis test. A Dunn's test was performed *post-hoc*, and to account for multiple testing the Benjamini Hochberg (BH) method was used. An adjusted p value \< 0.05 was considered significant. 
 
 All tests were done using the rstatix package v. 0.7.0 [@Kassambara2021].
 

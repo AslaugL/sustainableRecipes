@@ -18,27 +18,21 @@ bibliography: library.bib
 
 ## Data completeness
 
-### Missing amounts
-
-One Norwegian recipe was excluded from analysis as it contained no ingredients for which the amount in kilos could be obtained. This was a recipe for "Fresh mackerel".
-
-### Missing nutrition and environmental impact information
+One Norwegian recipe was excluded from analysis as it contained no ingredients for which the amount in weight could be obtained. This was a recipe for "Fresh mackerel". Four additional Norwegian recipes were excluded as they were not dinner recipes.
 
 For all three countries, the median percentage of the weight of the recipe that was mapped to a nutrient database or the SHARP Indicators database was 100, and the interquartile range was 100, 100. See **Appendix Figure** \@ref(fig:data-completeness).
 
 Eight recipes (six Norwegian, two US) were not included in the analysis as \>10% of their ingredients in weight could not be mapped to the nutrient or SHARP Indicators database. The ingredients that contributed to this were sheep head, marrow bones, fish bones, bananas, plantains, pure gluten flour and tamarind juice, ingredients which would be expected to impact either the health or environmental sustainability outcomes.
 
-Four additional Norwegian recipes were excluded as they were not dinner recipes.
-
 ## Recipes healthiness and environmental impact
 
-Recipes scored better on the meal/food-specific scoring criteria than the dietary guidelines. Only 0.5% recipes complied with all six WHO guidelines and 0.8% complied with all NNR guidelines, while 71.2% received a Nutriscore \> -2 and 98.8% scored \>7 on the inverted multiple traffic light system. The median score for WHO guideline compliance was 1 (IQR 1, 2), for NNR 2 (IQR 1, 3), inverted Nutriscore 0 (IQR -3, 2) and for the inverted traffic light 9 (IQR 8, 10), see **Figure** \@ref(fig:all-health-env)A. The median kg CO~2~ equivalent emissions were 0.5 (IQR 0.3, 0.9) and the median m^2^ land used per year were 0.6 (IQR 0.3, 1.2), see **Figure** \@ref(fig:all-health-env)B.
+Recipes scored better on the front of pack labeling criteria than the dietary guidelines. Only 0.5% recipes complied with all six WHO guidelines and 0.9% complied with all NNR guidelines, while 70.7% received a Nutriscore \> -2 and 98.6% scored \>7 on the inverted FSA MTL. The median score for WHO guideline compliance was 1 (IQR 1, 2), for NNR 2 (IQR 1, 3), inverted Nutriscore 0 (IQR -3, 2) and for the inverted MTL 9 (IQR 8, 10), see **Figure** \@ref(fig:all-health-env)A. The median kg CO~2~ equivalent emissions were 0.5 (IQR 0.3, 0.9) and the median m^2^ land used per year were 0.6 (IQR 0.3, 1.2), see **Figure** \@ref(fig:all-health-env)B.
 
 ```{r all-health-env, fig.cap="(A) The recipe's scores on the healthiness indicators the inverted French Nutriscore and UK Multiple Traffic Light system, in addition to the dietary guidelines from the World Health Organization and the Nordic Nutrition Recommendations. (B) The environmental impact of the recipes in kilo CO2 equivalents and m2 per year. All values are per 100g of the recipes."}
 knitr::include_graphics("images/all_health_env.png")
 ```
 
-**Figure** \@ref(fig:all-macros-cal) show the variables used to calculate the guideline scores: energy content, percentage of energy from each macronutrient and the amount of dietary fibre in g/megajoule for the recipes. For all but sugar content, these nutrients were outside the recommended intake range for both the WHO and NNR guidelines. The median energy content in kilocalories per 100g were 141.4 (IQR 104.8, 184). The macronutrient that contributed most to energy content was total fat, with a median percentage of energy of 47.8 (IQR 35.0, 58.7), followed by protein (median 23.3, IQR 18.1, 30.7) and carbohydrates (median 22.1, IQR 12.4, 35.8). The median percentage of energy from saturated fat was 16.3 (IQR 9.8, 22.9).
+**Figure** \@ref(fig:all-macros-cal) show the variables used to calculate the guideline scores: energy content, percentage of energy from each macronutrient and the amount of dietary fibre in g/megajoule for the recipes. For all but sugar content, the median percentage of energy or density per megajoule of these nutrients were outside the recommended intake range for both the WHO and NNR guidelines. The median energy content in kilocalories per 100g were 142.3 (IQR 105.2, 185.6). The macronutrient that contributed most to energy content was total fat, with a median percentage of energy of 48.0 (IQR 35.1, 58.8), followed by protein (median 23.2, IQR 18.1, 30.2) and carbohydrates (median 22.1, IQR 12.6, 35.7). The median percentage of energy from saturated fat was 16.4 (IQR 9.8, 23.0).
 
 The energy contribution of added sugar was negligible in most recipes, but were \>25% in a handful, while the median dietary fibre in grams/megajoule were 1.9 (IQR 1.1, 3.0). In regards to fiber, few recipes that had grains as an ingredient specified that whole grains should be used (not shown).
 
@@ -46,7 +40,7 @@ The energy contribution of added sugar was negligible in most recipes, but were 
 knitr::include_graphics("images/all_macros_cal.png")
 ```
 
-In terms of micronutrients, per 100g the recipes contributed most to percentage of RDI of vitamin B12 (median 26, IQR 10, 48), phosphorus (median 19, IQR 15, 23) and vitamin B6 (median 14, IQR 9, 20). On the other end, recipes contributed least to percentage of RDI of vitamin D (median 2, IQR 1, 7), iodine (median, 3 IQR 1, 5) and calcium (median 3, IQR 2, 7). Recipes contained more vitamin A in the form of retinol than beta-carotene. See **Figure** \@ref(fig:all-micros). For the micronutrients copper, iodine, selenium, sodium, phosphorus, vitamin A, D, E B2 (riboflavin), B9 (folate and B12 handful of recipes could deliver more than the RDI per 100 g.
+In terms of micronutrients, per 100g the recipes contributed most to percentage of RDI of vitamin B12 (median 25, IQR 10, 49.8), phosphorus (median 19, IQR 15, 23) and vitamin B6 (median 14, IQR 9, 20). On the other end, recipes contributed least to percentage of RDI of vitamin D (median 2, IQR 1, 7), iodine (median, 3 IQR 1, 5) and calcium (median 3, IQR 2, 7). Recipes contained more vitamin A in the form of retinol than beta-carotene. See **Figure** \@ref(fig:all-micros). For the micronutrients copper, iodine, selenium, sodium, phosphorus, vitamin A, D, E B2 (riboflavin), B9 (folate and B12 handful of recipes could deliver more than the RDI per 100 g.
 
 ```{r all-micros, fig.cap="Micronutrient content in the recipes per 100g, in percentage of recommended daily intake."}
 knitr::include_graphics("images/all_minerals_vitamins.png")
@@ -74,9 +68,9 @@ descriptive_stats_total %>%
 
 ### Between countries comparison
 
-Of the total 35 nutrients, healthiness and environmental sustainability indicators assessed, 18 were significantly different (BH adjusted *p*-value \<0.05) between at least two countries in the Kruskal-Wallis test, so a *post-hoc* Dunn test was performed.
+Of the total 35 nutrients, healthiness and environmental sustainability indicators assessed, 20 were significantly different (BH adjusted *p*-value \<0.05) between at least two countries in the Kruskal-Wallis test, so a *post-hoc* Dunn test was performed.
 
-Recipes from the UK scored significantly better than recipes from Norway (BH adjusted *p*-value \<0.05) and the US (BH adjusted *p*-value \<0.001) on the NNR guidelines and the inverted Nutriscore (BH adjusted *p*-value \<0.05). Norway scored significantly better than the US recipes in the inverted multiple traffic light model (BH adjusted *p*-value \<0.05) and the NNR guidelines **Figure** \@ref(fig:violinbox-healthiness). To which components of the recipes that contributed to their final healthiness scores, see **Appendix Figure** \@ref(fig:raw-score-guidelines), **Appendix Figure** \@ref(fig:raw-score-nutriscore) and **Appendix Figure** \@ref(fig:raw-score-trafficlights) for the guidelines, Nutriscore and Multiple Traffic Light respectively.
+Recipes from the UK scored significantly better than recipes from Norway (BH adjusted *p*-value \<0.05) and the US (BH adjusted *p*-value \<0.001) on the NNR guidelines and the inverted Nutriscore (BH adjusted *p*-value \<0.05). Norway scored significantly better than the US recipes in the inverted multiple traffic light model (BH adjusted *p*-value \<0.05) and the NNR guidelines **Figure** \@ref(fig:violinbox-healthiness). To which components of the recipes that contributed to their final healthiness scores, see **Appendix Figure** \@ref(fig:raw-score-guidelines), **Appendix Figure** \@ref(fig:raw-score-nutriscore) and **Appendix Figure** \@ref(fig:raw-score-trafficlights) for the guidelines, Nutriscore and the MTL respectively.
 
 Recipes from Norway caused significantly (BH adjusted *p*-value \<0.05) more CO~2~ emissions than recipes from the UK, while The US recipes had significantly higher CO~2~ emissions than recipes from both the UK (BH adjusted *p*-value \<0.001) and Norway (BH adjusted *p*-value \<0.05). The UK recipes also had significantly higher land requirements than both the Norwegian (BH adjusted *p*-value \<0.05) and the UK (BH adjusted *p*-value \<0.01) **Figure** \@ref(fig:violinbox-env-sustainability).
 
@@ -88,13 +82,23 @@ knitr::include_graphics("images/violinbox_health_numerical.png")
 knitr::include_graphics("images/violinbox_env_impact.png")
 ```
 
-In terms of individual nutrients, the UK recipes were significantly higher in dietary fibre and vitamin C than both the US and Norwegian recipes (BH adjusted *p*-value \<0.001 and \<0.01 respectively) and significantly lower than the US recipes in protein content (BH adjusted *p*-value \<0.05). While there were other statistically significantly different micronutrients, the actual difference between countries were negligible.
+In terms of individual nutrients, the UK recipes were significantly higher in dietary fibre and vitamin C than both the US and Norwegian recipes (BH adjusted *p*-value \<0.001 and \<0.01 respectively) and significantly lower than the US recipes in protein content (BH adjusted *p*-value \<0.05). Norwegian recipes were significantly higher in vitamin B12 than both the US and the UK (BH adjusted *p*-value \<0.05). While there were other statistically significantly different micronutrients, in absolute numbers the difference between countries were negligible.
 
 See **Appendix** **Table** \@ref(tab:stats-data) for the full details.
 
-## Different food groups used in the recipes.
+## Protein sources and amounts of different ingredients
 
-Meat products followed by seafood and vegetables (including roots and tubers) made up most of the weight of the recipes. Recipes from the UK tended to include less meat and more vegetables and fruits than recipes from Norway and the US (**Appendix Figure** \@ref(fig:percent-foodgroups-weight).
+Red meat (beef, lamb, game and pork) were the most used sources of protein in the recipes from all countries, while seafood (lean fish, oily fish and shellfish) were the second most used in the recipes from the UK and Norway and white meat (poultry) the second most used in the recipes from the US. Few recipes were vegan, and the UK had the most vegetarian recipes (**Figure** \@ref(fig:protein-sources).
+
+```{r protein-sources, fig.cap = "Percentage of recipes that used various animal protein sources, or were vegan or vegetarian."}
+knitr::include_graphics("images/protein_source.png")
+```
+
+Meat products followed by seafood, vegetables and starchy roots and tubers made up most of the weight of the recipes in which they were included. Recipes from the UK tended to include less meat and more vegetables than recipes from Norway and the US **Figure** \@ref(fig:percent-foodgroups-weight).
+
+```{r percent-foodgroups-weight, fig.cap = "How much various food groups contributed to the weight of the recipes in percent.", fig.width = 10, fig.asp = 0.75}
+knitr::include_graphics('./images/foodgroups.png')
+```
 
 ## Principal component analysis
 

@@ -304,12 +304,11 @@ individuals globally and substantially decrease health costs
 environmental impact of our diet [@Kovacs2021]. The Institute for Health
 Metrics and Evaluation has in their Global Burden of Disease series
 quantified how low adherence to different advice found in FBDGs
-contribute to mortality and disease risk in 195 countries [@Afshin2019],
-and the results also show dietary patterns with a negative environmental
-impact. Both globally and in most of the included countries, the leading
-causes of diet related mortality and DALYs were high salt intake and low
-intake of whole grain cereals, fruit, nuts and seeds and vegetables that
-have a low environmental impact. Additionally, on a global level the
+contribute to mortality and disease risk in 195 countries [@Afshin2019].
+Both globally and in most of the included countries, the leading causes
+of diet related mortality and DALYs were high salt intake and low intake
+of whole grain cereals, fruit, nuts and seeds and vegetables that have a
+low environmental impact. Additionally, on a global level the
 consumption of high environmental impact meat is higher than what is
 needed for good health [@Leme2021]. However, while many high-income
 countries would benefit from a lower intake of meat, in other parts of

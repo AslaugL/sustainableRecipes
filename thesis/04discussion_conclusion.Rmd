@@ -9,15 +9,19 @@ bibliography: library.bib
 
 # Discussion
 
-The purpose of this thesis was to explore the healthiness and environmental impact of recipes found on Internet recipe sites or in recipe books, from three different countries, and if origin country influenced a recipe's healthiness or environmental impact, in addition to the correlation between a recipe's healthiness and environmental impact. To our knowledge, this is the first study to look at environmental impact of recipes from either the Internet or recipe books, the first study to look at the healthiness of recipes from Norwegian Internet recipe sites, and the first study on healthiness of recipes to include a wide range of micronutrients.
+The purpose of this thesis was to explore the healthiness and environmental impact of recipes found on Internet recipe sites or in recipe books, from three different countries, and to see if origin country influenced a recipe's healthiness or environmental impact, in addition to the correlation between a recipe's healthiness and environmental impact. To our knowledge, this is the first study to look at environmental impact of recipes from either the Internet or recipe books, the first study to look at the healthiness of recipes from Norwegian Internet recipe sites, and the first study on healthiness of recipes to include a wide range of micronutrients and to use the NNR and Nutriscore.
 
 ## Healthiness and environmental impact
 
-In line with previous studies on recipe healthiness [@Irwin2017; @Howard2012; @Jones2013; @Wademan2020; @Schneider2013; @Keogh2019; @Dickinson2018; @Trattner2017a; @Jones2013; @Cheng2021], the results from this thesis showed that only a small percentage of recipes complied fully with dietary guidelines. There were fewer recipes that were compliant with the WHO than the NNR guidelines, that allows for less carbohydrates and more fat. However, when looking at the front of pack labels, the MTL and the Nutriscore, the majority of recipes were classified as foods that could be consumed often as part of a healthy diet. That the front of pack labels showed that most recipes could be consumed often, while the same recipes were not compliant with the dietary guidelines, is likely due to the different design and purpose of these indicators, that will be discussed in more detail later. There were statistically significant differences between countries on the total score of the healthiness indicators, but these differences are deemed to be of low clinical relevance.
+In line with previous studies on recipe healthiness that looked at compliance with dietary guidelines [@Howard2012; @Jones2013; @Schneider2013; @Keogh2019; @Dickinson2018; @Trattner2017a; @Cheng2021], the results from this thesis showed that only a small percentage of recipes complied fully with dietary guidelines. There were fewer recipes that were compliant with the WHO than the NNR guidelines, that allows for less carbohydrates and more fat. When looking at the front of pack labels, the MTL and the Nutriscore, the majority of recipes were classified as foods that could be consumed most of the time as part of a healthy diet. That the front of pack labels showed that most recipes could be consumed often, while the same recipes were not compliant with the dietary guidelines, is likely due to the different design and purpose of these indicators, that will be discussed in more detail later. There were statistically significant differences between countries on the total score of the healthiness indicators, but these differences are deemed to be of low clinical relevance.
 
-That the UK recipes had lower environmental impact than recipes from the US and Norway is in line with their lower amounts of the high environmental impact ingredient meat, and high to medium amounts of low environmental impact ingredients such as vegetables including roots and tubers, fruits, grains, legumes and nuts. This also likely explains why the UK recipes scored slightly better on the Nutriscore, that awards high content of vegetables, fruit and dietary fibre, in addition to protein.
+The MTL findings from this thesis are different than other studies that have used a traffic light system to classify recipes and found that their nutritional qualities are low [@Dickinson2018; @Irwin2017; @Wademan2020]. This is likely due to a difference in interpretation of the FSA MTL, and the use of other traffic light systems with different threshold values for nutrients and different interpretations of the traffic light colors. Dickinson et al. [@Dickinson2018] found that recipes on clean eating blogs did not comply well with WHO criteria, and that this was reflected in the recipes also having amber-red lights on the FSA MTL. In this thesis if a recipe had mostly amber, which could mean three amber and one red, were considered a food that could be eaten "most of the time". This is in line with the guidance provided by the FSA for interpretation of the amber colored lights [@BritishNutritionFoundation2019]. Irwin et al. [@Irwin2017] also found that few recipes were healthy when using the Australian Healthy Eating Advisory Service traffic light system where an amber light does not mean "can be eaten most of the time" as in the FSA MTL, but rather "consume in moderation" [@HEAStrafficlights]. The same is true for the study by Wademan et al. [@Wademan2020] that used the Australian LiveLighter traffic light system, where amber means the food is "okay sometimes". Additionally these traffic light systems also has more stringent nutrients criteria than the FSA MTL.
+
+That the UK recipes had lower environmental impact than recipes from the US and Norway is in line with their lower amounts of the high environmental impact ingredient meat from ruminants, and high to medium amounts of low environmental impact ingredients such as vegetables including roots and tubers, fruits, grains, legumes and nuts. This also likely explains why the UK recipes scored slightly better on the Nutriscore, that awards high content of vegetables, fruits and dietary fibre, in addition to protein.
 
 Without portion sizes it is difficult to say how much of the RDI of a given nutrient a serving would have provided. Whether this would be adequate or not would also depend on the rest of the diet. Regardless, a standard dinner serving size of about 350 grams raw weight would contribute substantially to vitamin B12 intake, but also vitamin B6, niacin, vitamin A, zinc, selenium and copper. The generally low amount of iodine reflects that few recipes included white lean fish, one of the few dietary sources of this mineral [@NorwegianFoodSafetyAuthority2020]. If the low use of lean fish as an ingredient in this sample is reflective of dinner recipes from these sources overall, it is unfortunate as mild to moderate iodine deficiency could be a problem for vulnerable groups, especially pregnant women, in the three countries the recipes are sourced from [@Meltzer2016; @Woodside2021; @Panth2019].
+
+For the Norwegian recipes, the percentage of recipes with fish is in line with the national FBDG, that advises consumption of two-three fish dinners a week, corresponding to 28-43%. The ratio between lean and oily fish should be about 1:1 [@norskekostraad]. For the UK recipes the percentage of recipes is below the recommended two portions of fish a week [@fishNHS]. Also in the UK the ratio between lean and oily fish should be 1:1. Unlike the Norwegian and UK FBDGs, the US FBDG do not give specific advice for fish intake, but rather group fish and shellfish together into a seafood category an advice an intake of 8 ounces/week [@U.S.DepartmentofAgriculture2020], corresponding to 1.2-1.7 portions from the UK or Norway. It should be mentioned that for lean fish, there is no upper limit on intake in the FBDGs. In contrast, both Norway and the UK advice that intake of red meat should be \<500 g/week, corresponding to two-three dinners and some meat based cold-cuts according to the Norwegian FBDG [@norskekostraad]. The US FBDG does not have individual guidelines for red meat intake.
 
 While many nutrients in the recipes were statistically significantly different between countries, the differences were not clinically relevant, at least per 100 g of the recipes. The lower amount of protein, and higher amount of dietary fibre and vitamin C in the UK recipes are in agreement with the lower amount of meat and higher amount of vegetables and fruit in these recipes.
 
@@ -31,7 +35,7 @@ While the recipes defined as healthy or a meal that could be eaten often as part
 
 The differences between how the scores are calculated also likely explain why the dietary guidelines had a stronger correlation with environmental impact than the MTL and the Nutriscore. All the healthiness indicators penalize a high content of saturated fats, found almost exclusively in high environmental impact animal sourced foods, but also a few vegetable fats such as coconut and palm oil [@NorwegianFoodSafetyAuthority2020]. All but the MTL reward higher dietary fibre content, found in low environmental foods such as whole grains, fruits and vegetables including starchy roots and tubers, legumes and nuts. The most important difference is likely between how total carbohydrates and protein content is scored. The dietary guidelines reward a moderate to high total carbohydrate content and penalize too high protein content, while Nutriscore does not include total carbohydrates and protein is a qualifying component of the score with no upper limit penalty.
 
-Effectively this means recipes with a higher score on the dietary guidelines would have a higher content of low environmental impact foods such as starchy roots and tubers, grains, legumes and fruit, rich in total carbohydrates, while penalizing those recipes that contained a high amount of high environmental impact meat that is rich in protein. On the other hand, a recipe with a high score on the Nutriscore could still include high amounts of meat, as long as it was a cut low in saturated fat, which would give these recipes a higher environmental impact. For the specific recipes in this study, the qualifying score from protein alone outweighed or neutralized the disqualifying scores.
+Effectively this means recipes with a higher score on the dietary guidelines would have a higher content of low environmental impact foods such as starchy roots and tubers, grains, legumes and fruit, rich in total carbohydrates, while penalizing those recipes that contained a high amount of high environmental impact meat that is rich in protein. On the other hand, a recipe with a high score on the Nutriscore could still include high amounts of meat, as long as it was a cut low in saturated fat, which would give these recipes a higher environmental impact. For the specific recipes in this study, the qualifying score from protein alone outweighed or neutralized the disqualifying scores on the Nutriscore.
 
 As the MTL does not provide boundaries for either carbohydrates, fibre or protein content, a higher score is not as tied to a high content of low environmental ingredients as the dietary guidelines, but it is neither associated with a higher content of high environmental ingredients that could happen with the Nutriscore.
 
@@ -41,73 +45,17 @@ The difference healthiness scores between the guidelines, and between dietary gu
 
 ## Nutrient content and environmental impact
 
-Not surprisingly, nutrients found in high amounts in animal sourced foods, like saturated fat, protein, iron, zinc, phosphorus, retinol, vitamin B12 and riboflavin were the nutrients positively correlated with environmental impact. Interestingly, this varied a little by country. For zinc and iron, the correlation with GHGE were lower in the UK recipes than recipes from Norway and the US, suggesting that more zinc and iron in the UK recipes came from plant based foods rather than animal sourced foods. While iron were significantly higher in the UK than the Norwegian recipes, this difference was clinically irrelevant. For zinc there were no significant difference between countries. While the UK recipes provided more iron and zinc at a lower environmental cost, these minerals have lower bioavailability when they come from plant based sources rather than animal sourced foods and can not be directly compared **SOURCES**. There are however ways to increase the bioavailability of the nutrients in plants, which will be discussed later. For vitamin B12, the correlation was stronger for GHGE than landuse, likely due to some of the B12 coming from seafood that has a lower land requirement than meat, but could still have the same GHGE. This could also explain the different correlation scores for the different countries, as different seafood species are used.
+Not surprisingly, nutrients found in high amounts in animal sourced foods, like saturated fat, protein, iron, zinc, phosphorus, retinol, vitamin B12 and riboflavin were the nutrients that were positively correlated with environmental impact. Interestingly, this varied a little by country. For zinc and iron, the correlation with GHGE were lower in the UK recipes than recipes from Norway and the US, suggesting that more zinc and iron in the UK recipes came from plant based foods rather than animal sourced foods with a higher environmental impact. While iron were significantly higher in the UK than the Norwegian recipes, this difference was clinically irrelevant. For zinc there were no significant difference between countries. While the UK recipes provided more iron and zinc at a lower environmental cost, these minerals have lower bioavailability when they come from plant based sources rather than animal sourced foods and can not be directly compared [@Platel2016]. There are however ways to increase the bioavailability of the nutrients in plants, such as soaking, sprouting and combining plants with different nutrients that improve absorption, for example plant-based iron is easier absorbed if consumed together with an acid like vitamin C. For vitamin B12 and protein, the correlation was stronger for GHGE than landuse, likely due to these nutrients being provided by not only meat but also seafood that has a lower land requirement than meat, but could still have the same GHGE in the SHARP database. This could also explain the different correlation scores for the different countries, as different types of seafood are used in the recipes.
 
-For the nutrients vitamin D and iodine, there was a negative correlation with landuse but not GHGE. This is also likely due to these ingredients being found in seafood.
+For the nutrients vitamin D and iodine, there was a negative correlation with landuse but not GHGE. This is also likely due to these nutrients being found in seafood.
 
-For nutrients found exclusively in plants, such as beta-carotene, vitamin C (can be found in animal's adrenal glands), carbohydrates and fibre (can be found in insects and shrimp/prawns) there was not surprisingly a negative correlation with environmental impact. This was also the case for folate, but to a lesser extent. Likely because folate is not exclusive to plants but can also be found in animal sourced foods, especially liver.
+For nutrients found exclusively in plants, such as beta-carotene, vitamin C (**can be found in animal's adrenal glands**), carbohydrates and fibre (**can be found in insects and shrimp/prawns**) there was not surprisingly a negative correlation with environmental impact. This was also the case for folate, but to a lesser extent. Likely because folate is not exclusive to plants but can also be found in animal sourced foods, like liver and eggs.
 
-While increasing intake of plant based foods would lower environmental impact of our diets, substituting meat for plant based alternatives could lead to nutrient deficiencies.
+While increasing intake of plant based foods would lower environmental impact of our diets, substituting animal sourced foods for plant based alternatives could lead to nutrient deficiencies if the diet is not planned properly as not all plant based alternatives replace the nutrients found in animal sourced foods. Additionally plant based sources of vitamin A and the minerals iron, magnesium, zinc and to some extent calcium have lower bioavailability than their meat based counterparts [@Platel2016].
 
-As has been pointed out in previous studies, optimizing diets for low environmental impact could lead to inadequate nutrition
+## Low environmental impact, but high nutritional value foods
 
-For individual nutrients...
-
--   Vitamins and minerals found in seafood associated with lower land use, but not necessarily GHGE
-
--   Vitamins, minerals and macros dominantly found in plant based foods associated with lower environmental impact
-
-    -   Plant based sources of vitamin A and the minerals iron, magnesium, zinc and to some extent calcium have lower bioavailability than their meat based counterparts [@Platel2016]. Globally, iron deficiency is one of the five leading causes of morbidity, vitamin A deficiency a leading cause of preventable childhood blindness, and zinc deficiency was i 2004 estimated to contribute to 4.4% of deaths of children below the age of five in ...
-
--   Nutrients found in ruminants and animal sourced foods associated with higher environmental impact
-
--   Thiamine associated with lower CO2 but increased landuse? Grains? Pork?
-
--   Saturated fat comes mainly from animal sources, more or less exclusively for dinner recipes (exception palm oil and coconut oil)
-
--   Which ingredients in the recipes explain the various correlations and differences between countries
-
-### 
-
-## Making more sustainable choices
-
-Both nutrition content and environmental impact must be taken into account when planning a sustainable diet. As illustrated with the Nutriscore, a lean cut of beef low in saturated fats could contribute positively to the healthiness score, but a fatty cut of beef has the same environmental impact as the leaner cut.
-
-As illustrated with the Nutriscore, healthy ingredients are not necessarily the most environmentally friendly.
-
-A study in Sweden found that if consumers reduced their meat intake to \<500 g/week in accordance with the Swedish FBDG,
-
-Small changes in ingredients can have a huge impact on the sustainability of the resulting meal. A study done in the UK, found that if British consumers
-
-When it comes to starchy staples in dinner recipes, such as potatoes, rice and pasta,
-
-However, while GHGE and landuse decrease with reduced intake of animal sourced foods, this is not necessarily the case for blue water [@Harris2020].
-
--   Choosing ingredients with low environmental impact, consumers got some things right
-
-    -   Plants, local when in season
-
-    -   Seafood, with caveats
-
-        -   Overfishing, farmed fish causes major environmental damage... While SHARP ID does not include land use for many marine fish species, this is not completely true
-
-    -   Non-ruminants, with caveats
-
-        -   Animal welfare issues, dependencies on grains for feed
-
-    -   If eating ruminants, look for farms with grazing strategies that improve soil carbon sequestration, and other soil quality markers
-
-        -   Ruminants are also important many places where human edible crops can't be grown and other animals will be unable to feed on what is found locally
-
-    -   Low environmental impact food packaging
-
-        -   Plastic has many advantages over glass and tin on the production and transportation side, but causes an enormous amount of environmental pollution
-
-    -   Discuss how the ecoscore is calculated
-
-        -   Takes most of what is discussed previously into account, in addition to biodiversity
-
-### Low environmental impact, but high nutritional value
+There are room for improvements of the recipes at home to increase nutritional qualities while lowering environmental impact. As previously mentioned, a low intake of fruit, vegetables and whole grains are a
 
 -   Low environmental impact, high nutritional value diets \> recipes can be improved at home
 
@@ -131,6 +79,8 @@ Some ingredients that contributed to the nutrient calculations, and thus influen
 
 Using portion sizes instead of 100 g of a recipe to calculate nutrient content and environmental impact may have provided answers with more relevance to the real world, but many recipes did not contain this information.
 
-The only environmental impact that was assessed were emissions in kilo CO~2~ equivalents, which included acidification, and land use. It would have been interesting to include different types of water use and indicators for how the ingredients influence biodiversity and pollution. The use of the SHARP database, that is based on LCAs from a handful of European countries, means that the results may not be relevant to inhabitants of the countries the recipes in this study comes from. Further, it was discovered during the calculation of nutrient content that the then downloadable version of Matvaretabellen [@NorwegianFoodSafetyAuthority2020] had switched the content in the columns for retinol and beta-carotene. This was quickly fixed, but illustrate that these databases are not infallible. Nutrient content in these databases may also not accurately depict the nutrient content of foods (**SOURCE**), which could influence results of nutrient content analyses.
+The only environmental impact that was assessed were emissions in kilo CO~2~ equivalents, which included acidification, and land use. It would have been interesting to include different types of water use and indicators for how the ingredients influence biodiversity and pollution. The use of the SHARP database, that is based on LCAs from a handful of European countries, means that the results may not be relevant to inhabitants of the countries the recipes in this study comes from. Further, it was discovered during the calculation of nutrient content that the then downloadable version of Matvaretabellen [@NorwegianFoodSafetyAuthority2020] had switched the content in the columns for retinol and beta-carotene. This was quickly fixed, but illustrate that these databases are not infallible. Nutrient content in these databases may also not accurately depict the nutrient content of foods, which could influence results of nutrient content analyses.
 
 There were also some strengths. The inclusion of other micronutrients than sodium is unique in the field of recipe healthiness, and the multiple healthiness indicators included are used in many different countries, so the results have a wide range. All analyses and ingredient-to-database mapping are available as R scripts, and can easily be reproduced.
+
+## Conclusion
