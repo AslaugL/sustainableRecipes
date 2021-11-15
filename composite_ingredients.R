@@ -32,7 +32,7 @@ Name = c('condensed cream of mushroom soup', 'condensed cream of chicken soup',
          'sauce pad thai', 'sauce tikka masala', 'fajita spice mix', 'kimchi', 'sauce_teriyaki',
          'mire_poix', 'graham_cracker', 'amaretti cookie', 'brownie_mix', 'yellow cake_mix',
          'chocolate pudding_mix', 'german chocolate cake_mix', 'marshmallow', 'biscuit_digestive',
-         'caramel', 'sweet green pickle relish')
+         'caramel', 'sweet green pickle relish', 'saltine_cracker')
 Ingredients = c(
   #Concentrated cream of soups
   #From https://onceamonthmeals.com/blog/recipe-roundups/homemade-cream-of-something-soup/
@@ -626,7 +626,16 @@ Salt',
 450 g sugar 
 1 tablespoon celery seed
 1 tablespoon mustard seed
-325 g onion'
+325 g onion',
+
+#Saltine cracker
+#From https://www.restlesschipotle.com/saltines/
+'4 cup all-purpose flour
+1 tbsp baking powder
+0.25 cup unsalted butter
+1.33 cup milk
+1 stk egg white
+1 tbsp water'
 
 )
 
@@ -759,7 +768,7 @@ final <- full_join(temp, various$ingredients_weight) %>% left_join(., databases$
     str_detect(Ingredients, 'fish') ~ 'Fish, seafood, amphibians, reptiles and invertebrates',
     str_detect(Ingredients, 'meatball') ~ 'Meat and meat products',
     str_detect(Ingredients, 'kimchi|mire_poix|sweet green pickle relish') ~ 'Vegetables and vegetable products',
-    str_detect(Ingredients, 'dough|bread|pastry|lefse|tortilla|graham|biscuit_digestive') ~ 'Grains and grain-based products',
+    str_detect(Ingredients, 'dough|bread|pastry|lefse|tortilla|graham|saltine|biscuit_digestive') ~ 'Grains and grain-based products',
     Ingredients %in% c('shrimp_salad', 'omelet') ~ 'Composite dishes',
     Ingredients %in% c('amaretti cookie', 'marshmallow','brownie_mix', 'yellow cake_mix',
                        'chocolate pudding_mix', 'german chocolate cake_mix', 'caramel')  ~ 'Sugar and similar, confectionery and water-based sweet desserts',

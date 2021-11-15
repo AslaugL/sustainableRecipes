@@ -28,7 +28,7 @@
      TRUE ~ Amounts
    )) %>%
      mutate(unit = case_when(
-       unit %in% c('cup', 'l', 'ml', 'cl', 'tsp', 'tbsp', 'krm', 'drop', 'pinch') | str_detect(Ingredients, 'cider') & unit == 'glass' ~ 'dl',
+       unit %in% c('cup', 'l', 'ml', 'cl', 'tsp', 'tbsp', 'krm', 'drop', 'pinch', 'quart') | str_detect(Ingredients, 'cider') & unit == 'glass' ~ 'dl',
        unit %in% c('ounce', 'pound') ~ 'g',
        Ingredients %in% c('shrimp', 'salad rocket') ~ str_replace(unit, 'neve', 'dl'),
        str_detect(Ingredients, 'beef') & !str_detect(Ingredients, 'tongue|cube') ~ str_replace(unit, 'stk|slice', 'portion'),
@@ -47,12 +47,12 @@
          Amounts = case_when(
             (str_detect(Ingredients, 'water|kefir|spirits|beer|madeira|marsala|cognac|cider|juice|Juice|broth|kraft|wine|vin|eddik|vinegar|fund|milk|stock|cream|Crème Fraîche|rømme|yogurt|yoghurt|sherry') &
                 unit == 'dl') &
-               !str_detect(Ingredients, 'sugar|cheese|flour') ~ Amounts * 100,
+               !str_detect(Ingredients, 'sugar|cheese|flour|\\bice\\b') ~ Amounts * 100,
             TRUE ~ Amounts),
          unit = case_when(
             (str_detect(Ingredients, 'water|kefir|spirits|beer|madeira|marsala|cognac|cider|juice|Juice|broth|wine|vin|eddik|vinegar|fund|milk|stock|cream|Crème Fraîche|rømme|yogurt|yoghurt|sherry') &
                 unit == 'dl') &
-               !str_detect(Ingredients, 'sugar|cheese|flour') ~ 'g',
+               !str_detect(Ingredients, 'sugar|cheese|flour|\\bice\\b') ~ 'g',
             TRUE ~ unit)) %>%
       
       #From grams into kilos 

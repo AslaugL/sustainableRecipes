@@ -161,6 +161,9 @@ temp <- list(
   c('pork hock', 'stk', '1000', 'Fjellgris', 'english'),
   c('grouse breast', 'stk', '100', 'https://ultimateupland.com/skewering-meathunters-the-true-cost-of-a-pound-of-game-bird/', 'english'),
   c('marrow bone', 'stk', '113.4', 'https://grassrunfarms.com/blog/benefits-of-grass-fed-beef-marrow-bones/', 'english'), #Really per serving
+  c('smoke-cured ham', 'dl', '113.9', 'FoodData Central', 'english'),
+  c('cured ham', 'dl', '113.9', 'FoodData Central', 'english'),
+  c('boiled ham', 'dl', '113.9', 'FoodData Central', 'english'),
   
   #Bread
   c('Naan bread', 'stk', '130', 'Santa Maria', 'english'),
@@ -314,6 +317,8 @@ temp <- list(
   c('toenjang', 'dl', '202.88', 'FoodData Central', 'english'),
   c('broccoli', 'dl', '47.9', 'FoodData Central', 'english'),
   c('vanilla extract', 'dl', '87.92', 'FoodData Central', 'english'),
+  c('kale', 'bunch', '150', 'Meny', 'english'),
+  c('spinach, raw', 'neve', '12', 'same as dl', 'english'),
   
   #Seafood
   c('Anchovies, canned', 'box', '55', 'Abba', 'english'),
@@ -548,7 +553,7 @@ various$not_needed <- all_weights %>%
   filter(!Ingredients %in% c('crisp bread', 'flatbread, hard','smoke-cured ham', 'cured ham', 'spekeskinke', 'boiled ham', 'honning', 'sukker, brunt',
                              'sukker hvitt', 'anchovies, canned', 'anchovy fillets, canned', 'salmon, smoked, dry salted',
                              'mackerel fillet, in tomato sauce, canned', 'cod roe', 'tuna canned', 'ground meat, raw', 'bread, semi-coarse', 'bread, white',
-                             'cream cracker', 'salami', 'rice parboiled', 'caramels', 'marshmallows'))
+                             'cream cracker', 'salami', 'rice parboiled', 'caramels', 'marshmallows', 'ice cream'))
 
 #Remove the not needed ingredients, add cloves
 all_weights <- all_weights %>%
@@ -661,6 +666,7 @@ ref <- all_weights %>% select(-c(g, unit_enhet, reference)) %>% unique() %>% #On
       Ingredients == 'cream sauce base' ~ 'cream sauce base',
       Ingredients == 'fish soup base' ~ 'fish soup base',
       Ingredients == 'sausage turkey chicken' ~ 'sausage turkey chicken',
+      Ingredients == 'ice cream' ~ 'ice cream',
       TRUE ~ first_word),
     
     second_word = case_when(
@@ -704,6 +710,7 @@ ref <- all_weights %>% select(-c(g, unit_enhet, reference)) %>% unique() %>% #On
       Ingredients == 'bean kidney canned' ~ 'canned',
       Ingredients == 'bean black canned' ~ 'canned',
       Ingredients == 'sausage turkey chicken' ~ '\\',
+      Ingredients == 'ice cream' ~ '\\',
       TRUE ~ second_word
     )
   ) %>%
@@ -1473,7 +1480,7 @@ various$sharp_to_remove <- SHARP %>%
                                      #Milk products
                                      'buttermilk', 'coconut milk cocos nucifera liquid', 'cow milk', 'yoghurt, cow milk',
                                      'evaporated milk liquid, unsweetened', 'cream, plain', 'cr�me fraiche and other mild variants of sour cream',
-                                     'sour cream, plain', 'milk powder, skimmed', 'milk powder',
+                                     'sour cream, plain', 'milk powder, skimmed', 'milk powder', 'ice cream, milk-based',
                                      
                                      #Egg products
                                      'hen eggs', 'boiled eggs', 'hen egg white', 'hen egg yolk', 'fried eggs',
@@ -1511,7 +1518,8 @@ SHARP <- SHARP %>%
                          "A007G", "A007M", "A007J", "A007V", "A007P",
                          #Soyabean Sprouts
                          "A00SY",
-                         
+                         #Dairy
+                         "A02YE",
                          #Pork products
                          "A026R",
                          #Pigeon
@@ -1559,7 +1567,8 @@ SHARP <- SHARP %>%
            str_replace('sour cream, plain', 'sour cream') %>%
            str_replace('cr�me fraiche and other mild variants of sour cream', 'crème fraîche') %>%
            str_replace('cow milk', 'milk') %>%
-           str_replace('milk powder, skimmed', 'milk powder nonfat') %>% 
+           str_replace('milk powder, skimmed', 'milk powder nonfat') %>%
+           str_replace('ice cream, milk-based', 'ice cream') %>%
            
            #Plants
            str_replace('aubergines', 'eggplant') %>%
@@ -1856,6 +1865,7 @@ sharp_ref <- SHARP %>%
       Ingredients == 'milk powder' ~ 'milk powder',
       Ingredients == 'marrow bone beef' ~ 'marrow bone',
       Ingredients == 'sweet green pickle relish' ~ 'sweet green pickle relish',
+      Ingredients == 'ice cream' ~ 'ice cream',
       TRUE ~ first_word),
     
     second_word = case_when(
@@ -1923,6 +1933,7 @@ sharp_ref <- SHARP %>%
       Ingredients == 'milk powder nonfat' ~ 'nonfat',
       Ingredients == 'marrow bone beef' ~ 'beef',
       Ingredients == 'sweet green pickle relish' ~ '\\',
+      Ingredients == 'ice cream' ~ '\\',
       TRUE ~ second_word
     )
   ) %>%

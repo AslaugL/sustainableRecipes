@@ -409,7 +409,7 @@ standardiseIngredients <- function(df){
       str_detect(Ingredients, 'bean') & str_detect(Ingredients, 'green|french|break') ~ 'bean green',
       str_detect(Ingredients, 'bean') & str_detect(Ingredients, 'horse|broad|fava|brew') ~ 'bean broad',
       str_detect(Ingredients, 'bean') & str_detect(Ingredients, 'tomat') ~ 'bean white tomato',
-      str_detect(Ingredients, 'bean') & str_detect(Ingredients, 'pork') & str_detect(Ingredients, 'canned') ~ 'bean and pork canned',
+      str_detect(Ingredients, 'bean') & str_detect(Ingredients, 'pork') & str_detect(Ingredients, 'can') ~ "beans'n'pork canned",
       str_detect(Ingredients, 'bean') & str_detect(Ingredients, 'can') ~ 'bean canned',
       
       str_detect(Ingredients, 'biscuit') & str_detect(Ingredients, 'digestive') ~ 'biscuit digestive',

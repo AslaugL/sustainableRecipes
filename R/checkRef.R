@@ -92,6 +92,8 @@ checkRef <- function(df, reference, fix_errors = TRUE){
   
   results <- lapply(df$Ingredients %>% unique(), temp, reference = reference) %>% bind_rows()
   
+  #print(results %>% filter(str_detect(Ingredients, 'cheese')))
+  
   #Fix some known errors
   if(isTRUE(fix_errors)){
     
@@ -111,7 +113,7 @@ checkRef <- function(df, reference, fix_errors = TRUE){
           Ingredients == 'sugar' ~ fixRefID(reference = reference, 'sugar', 'white'),
           Ingredients == 'bread flat hard' ~ fixRefID(reference = reference, 'flatbread', 'hard'),
           Ingredients == 'caper' ~ fixRefID(reference = reference, 'capers'),
-          str_detect(Ingredients, 'cheddar|jarlsberg|norvegia|semi-hard') ~ fixRefID(reference = reference, 'hard to semi-hard cheese'),
+          str_detect(Ingredients, 'cheddar|jarlsberg|norvegia|semi-hard|cheese romano') ~ fixRefID(reference = reference, 'hard to semi-hard cheese'),
           Ingredients == 'cheese mozzarella' ~ fixRefID(reference = reference, 'mozzarella'),
           Ingredients == 'parmesan cheese' ~ fixRefID(reference = reference, 'parmesan'),
           Ingredients %in% c('chili pepper green', 'chili pepper jalapeno') ~ fixRefID(reference = reference, 'chili', 'red'), #Same in volume
@@ -158,7 +160,7 @@ checkRef <- function(df, reference, fix_errors = TRUE){
           Ingredients == 'oat quick' ~ fixRefID(reference = reference, 'rolled', 'oats'),
           Ingredients == 'agave nectar' ~ fixRefID(reference = reference, 'honey'),
           Ingredients %in% c('shortening', 'shortening vegetable') ~ fixRefID(reference = reference, 'margarine'),
-          Ingredients == 'onion seed' ~ fixRefID(reference = reference, 'poppy', 'seed'), #Both are small seeds
+          Ingredients %in% c('onion seed', 'chia seeds') ~ fixRefID(reference = reference, 'poppy', 'seed'), #Both are small seeds
           #Ingredients with no references
           Ingredients %in% c('mustard powder', 'chinese five spice', 'of dip mix', 'asafoetida powder',
                              'sauce browning') ~ 0,
@@ -281,7 +283,7 @@ checkRef <- function(df, reference, fix_errors = TRUE){
           Ingredients == 'pork neck' ~ fixRefID(reference = reference, 'pork', 'neck chop'),
           
           #Not in reference
-          Ingredients %in% c('duck or goose fat for confit', 'lime leaf', 'cranberries jam',
+          Ingredients %in% c('duck or goose fat for confit', 'lime leaf', 'cranberries jam', "beans'n'pork canned",
                              'cooking spray', 'red food coloring', 'beef fund', 'fish scraps for broth',
                              'pack high quality charcoal briquettes', 'pomegranate kernel', 'yeast nutritional',
                              'salmon roe', 'spice seasoning pepper', 'toro greek moussaka', 'paste chili',
@@ -317,10 +319,10 @@ checkRef <- function(df, reference, fix_errors = TRUE){
       #Add ingredient metadata, what meal it comes from
       temp <- results %>%
         full_join(., df) %>%
-        unique() %>%
-        
+        unique() #%>%
+      
         #Fix errors
-        mutate(ID = case_when(
+        temp <- temp %>% mutate(ID = case_when(
           
           #Grains, nuts, seeds, legumes
           Ingredients == 'almond' ~ fixRefID(reference = reference, 'almonds', 'sweet'),
@@ -419,13 +421,13 @@ checkRef <- function(df, reference, fix_errors = TRUE){
           
           #Herbs and spices
           str_detect(Ingredients, 'saffron|fenugreek seed|mint fresh herbs|mint dried|lemon balm|turmeric|anise|marjoram|sazon seasoning|ginger|caraway|lemongrass|basil|rosemary|thyme|tarragon|pepper|sage|masala|oregano|spice mix|nutmeg|cloves|coriander|cumin|dill|fenugreek leaf|juniper berry|cinnamon|chives|chervil|cardamom|caper|allspice|bay leaf|paprika powder|fennel seed') &
-            !str_detect(Ingredients, 'sauce|paste|sweet|chili') |
-            str_detect(Ingredients, 'chili') & !str_detect(Ingredients, 'pepper|paste|sauce') |
+            !str_detect(Ingredients, 'sauce|paste|sweet|chili|sausage') |
+            str_detect(Ingredients, 'chili') & !str_detect(Ingredients, 'pepper|paste|sauce|sausage') |
             Ingredients %in% c('herbs', 'different spices', 'spices') ~ fixRefID(reference = reference, 'mixed', 'herbs'),
           
           #Not in ref
-          Ingredients %in% c('yeast nutritional', 'paste chili', 'agar', 'gluten',
-                             'corn starch', 'nori seaweed','salmon roe',
+          Ingredients %in% c('yeast nutritional', 'paste chili', 'agar', 'gluten', 'corn meal mix',
+                             'nori seaweed','salmon roe', "beans'n'pork canned",
                              'plantain', 'tabasco', 'tapioca', 'sake', 'wine rice', 'liquid smoke flavoring',
                              'pack high quality charcoal briquettes', 'cooking spray', 'quinoa', 'paste carrot',
                              'red food coloring', 'toro greek moussaka', 'banana', 'paste curry',
