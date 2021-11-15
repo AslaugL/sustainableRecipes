@@ -18,6 +18,7 @@ data_recipes <- readRDS('./Data/output/recipes_for_analysis.Rds') %>% #Nutrient 
 
 data_ingredients <- readRDS('./Data/output/ingredients_for_analysis.Rds') %>% #Nutrient content/sustainability indicators for every ingredient pr 100g recipe
   rename(Foodgroup = L1) %>%
+  select(-FoodEx2) %>%
   #Remove non-dinner recipes
   filter(!sample_id %in% c('Baklava (Turkey)', 'Sausage Lunch', 'Half-fermented trout', 'Straight trout'))
 
@@ -113,14 +114,18 @@ temp <- readRDS('./Data/output/missing_data2.Rds') #Read data from cleanup scrip
         color = 'Country',
         x = 'Country',
         y = '% of recipe weight with nutrient information'
-      ) + ylim(0,100),
+      )  +
+      #Set y label to percent
+      scale_y_continuous(limits = c(0,100), labels = function(x) paste0(x, "%")),
     'environment' = plotViolinBox(data_completeness$no_env_info) +
       scale_color_manual(values = various$country_colors$sample_group) +
       labs(
         color = 'Country',
         x = 'Country',
         y = '% of recipe weight with env. impact indicators'
-      ) + ylim(0,100)
+      ) +
+      #Set y label to percent
+      scale_y_continuous(limits = c(0,100), labels = function(x) paste0(x, "%"))
     
   )
   #Capture legends
@@ -285,7 +290,11 @@ temp <- health_indicators %>%
                names_to = 'feature',
                values_to = 'value') %>%
   group_by(feature, value) %>%
-  summarise(n = n())
+  summarise(n = n()) %>%
+  #In pct
+  mutate(sum = sum(n)) %>%
+  ungroup() %>%
+  mutate(pct = round(n/sum*100, 1))
 
 # Kruskal Wallis and dunn----
 stats <- list(
@@ -440,8 +449,6 @@ plots$pca$scores <- createPCA(temp %>% filter(sample_id != 'Homemade stick meat'
 #Loadings plot
 plots$pca$loadings <- createPCA(temp, plots = 'loadings', cutoff = 0.06) +
   theme(legend.position = 'bottom') %>% changeGGplotTxtSize(., 10)
-
-plots$pca$loadings
 
 plots$final$pca <- plot_grid(plots$pca$scores,
             plots$pca$loadings,
@@ -1189,7 +1196,7 @@ plots$violinbox$foodgroups <- list()
     save_plot('./thesis/images/foodgroups.png', plots$final$foodgroups,
               nrow = 1.5, ncol = 1.3)
   
-# Number of recipes from each country with various protein sources
+# Number of recipes from each country with various protein sources----
 #Number of recipes with the ingredients
   temp <- tidy_ingredients %>%
     select(Ingredients, group, Foodgroup, sample_id) %>% unique() %>%
@@ -1198,40 +1205,82 @@ plots$violinbox$foodgroups <- list()
     #Animal sourced foods
     mutate(protein = case_when(
       
-      str_detect(Ingredients, 'beef') & !str_detect(Ingredients, 'fund|broth|gravy') ~ 'beef',
+      str_detect(Ingredients, 'beef|meatball') & !str_detect(Ingredients, 'fund|broth|gravy|elk|deer|venison') ~ 'beef',
+      str_detect(Ingredients, 'reindeer|elk|rabbit|grouse|roe deer|venison') ~ 'game',
       str_detect(Ingredients, 'lamb') & !str_detect(Ingredients, 'broth|salad') ~ 'lamb',
-      str_detect(Ingredients, 'pork|bacon') & !str_detect(Ingredients, 'lard') ~ 'pork',
-      str_detect(Ingredients, 'chicken|turkey') & !str_detect(Ingredients, 'broth|soup') ~ 'poultry',
+      str_detect(Ingredients, 'pork|bacon|sausage|ham|salami') & !str_detect(Ingredients, 'lard|beef|burger') ~ 'pork',
+      str_detect(Ingredients, 'chicken|turkey|duck|goose') & !str_detect(Ingredients, 'broth|fat|sauce') ~ 'poultry',
       
       str_detect(Ingredients, 'pollock|cod|anglerfish|fish cake coarse|haddock|grouper|catfish|sea bass|halibut|tuna') ~ 'lean fish', #The fishcakes are made out of mostly haddock
       str_detect(Ingredients, 'salmon|trout|arctic char|mackerel|herring|sardine|anchovy') & !str_detect(Ingredients, 'roe') ~ 'oily fish',
-      str_detect(Ingredients, 'squid|prawn|shrimp|mussel|crab|lobster|shellfish|scampi|clam') & !str_detect(Ingredients, 'paste') ~ 'shellfish'
+      str_detect(Ingredients, 'squid|prawn|shrimp|mussel|crab|lobster|shellfish|scampi|clam|scallop') & !str_detect(Ingredients, 'paste') ~ 'shellfish'
       
     )) %>%
     #Vegetarian or vegan foods
     group_by(group, sample_id, Foodgroup) %>%
-    mutate(protein = case_when(
+    mutate(
+      protein = case_when(
       
-      !any(Foodgroup %in% c('Seafood', 'Eggs', 'Dairy', 'Meat and\nmeat products')) &
-        !str_detect(Ingredients, 'lamb|game|fish|beef|chicken|turkey|shrimp|cheese|condensed cream|egg\\b|duck|honey|pork|mayonnaise|barbeque|oyster|worcestershire|sausage|shortening') &
-        !Ingredients %in% c('butter', 'unsalted butter', 'butter clarified ghee', 'butter for cooking',
-                            'buttermilk', 'refrigerated buttermilk biscuit dough', 'spice butter') ~ 'vegan',
-      !any(Foodgroup %in% c('Seafood', 'Meat and\nmeat products')) & !str_detect(Ingredients, 'condensed cream|beef|fish|shrimp|duck|sausage|shortening') ~ 'vegetarian',
+        !any(Foodgroup %in% c('Seafood', 'Eggs', 'Dairy', 'Meat and\nmeat products')) &
+          !str_detect(Ingredients, 'lamb|game|fish|beef|chicken|turkey|shrimp|cheese|condensed cream|egg\\b|duck|honey|pork|mayonnaise|barbeque|oyster|worcestershire|sausage|shortening') &
+          !Ingredients %in% c('butter', 'unsalted butter', 'butter clarified ghee', 'butter for cooking',
+                              'buttermilk', 'refrigerated buttermilk biscuit dough', 'spice butter', 'puff pastry',
+                              'shop-bought shortcrust pastry') ~ 'plants',
+        !any(Foodgroup %in% c('Seafood', 'Meat and\nmeat products')) & !str_detect(Ingredients, 'condensed cream|beef|fish|shrimp|duck|sausage|shortening') ~ 'vegetarian',
       
-      TRUE ~ protein
-    )) %>%
-    
-    #The whole recipe
-    summarise(final_protein = any(protein == 'beef') ~ beef,
-              all(protein == 'vegan') ~ 'vegan'
-              )
-    
-    
-    
-    group_by(group, Ingredients, Foodgroup) %>%
-    summarise(n = n())
-    
+        TRUE ~ protein),
+      vegetarian = case_when(
+        protein %in% c('plants', 'vegetarian') ~ 'vegetarian',
+        TRUE ~ protein
+      )
+    ) %>% group_by(group, sample_id) %>%
+    #Count the number of times the different protein sources are used by country
+    summarise(type = case_when(
+      any(protein == 'beef') ~ 'Beef',
+      any(protein == 'game') ~ 'Game',
+      any(protein == 'lamb') ~ 'Lamb',
+      any(protein == 'poultry') ~ 'Poultry',
+      any(protein == 'lean fish') ~ 'Lean fish',
+      any(protein == 'oily fish') ~ 'Oily fish',
+      any(protein == 'shellfish') ~ 'Shellfish',
+      any(protein == 'pork') ~ 'Pork',
+      all(protein == 'plants') ~ 'Vegan',
+      all(vegetarian == 'vegetarian') ~ 'Vegetarian'
+      )) %>% ungroup() %>%
+    #Count by country
+    group_by(group, type) %>%
+    summarise(n = n()) %>% ungroup() %>% drop_na(type) %>%
   
+  #Calculate % of recipes
+  #Add number of recipes from each country
+  inner_join(., metadata %>% group_by(group) %>% summarise(number_of_recipes = n()) %>% ungroup) %>%
+  mutate(pct = n/number_of_recipes*100) %>%
+  #Add empty 'game' row for US to use in ggplot
+  add_row(group = 'US', type = 'Game', pct = 0) %>%
+      #Set order for plot
+      mutate(type = factor(type, levels = c('Beef', 'Lamb', 'Game', 'Pork', 'Poultry', 'Lean fish', 'Oily fish', 'Shellfish', 'Vegan', 'Vegetarian')))
+
+    plots$barplots <- list()
+    
+plots$barplots$protein_source <- ggplot(temp, aes(x = type, fill = group, y = pct)) +
+    geom_bar(stat = 'Identity', position = position_dodge2(width = 0.9, preserve = "single")) +
+    geom_text(aes(label = paste0(round(pct, 0), '%')), position = position_dodge2(width = 0.9, preserve = "single"), vjust = -0.2, size = 3) +
+    scale_fill_manual(values = group_colors) +
+    #Set y label to percent
+    scale_y_continuous(limits = c(0,50), labels = function(x) paste0(x, "%")) +
+    labs(
+      fill = 'Country',
+      x = '',
+      y = 'Percentage of recipes',
+      title = 'Protein sources used in the recipes') +
+    theme(legend.position = c(0.1,0.85), 
+          legend.background = element_rect(color = "black"))
+
+plots$barplots$protein_source
+
+save_plot('./thesis/images/protein_source.png', plots$barplots$protein_source, nrow = 1.7, ncol = 1.7)
+  
+
 ## Tables----
 # Stats----
 #Significantly differences from dunn test
