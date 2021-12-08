@@ -12,8 +12,8 @@ editor_options:
 ```{r abbreviations}
 library(tibble)
 Abbreviations <- tibble(
-  'Abbreviation' = c('DALY', 'FBDG', 'NNR', 'WHO', 'FAO', 'NCD', 'RDI', 'FOP', 'LCA', 'MTL'),
-  'Explanation' = c('Disability Adjusted Life Years', 'Food Based Dietary Guideline', 'Nordic Nutritional Recommendations', 'World Health Organization', 'Food and Agriculture Organization of the United Nations', 'Non-communicable disease', 'Recommended Dietary Intake', 'Front of Pack', 'Life Cycle Assesment', 'Multiple Traffic Light')
+  'Abbreviation' = c('DALY', 'FBDG', 'NNR', 'WHO', 'FAO', 'NCD', 'RDI', 'FOP', 'LCA', 'MTL', 'E%', 'MJ', 'HEAS', 'LL'),
+  'Explanation' = c('Disability Adjusted Life Years', 'Food Based Dietary Guideline', 'Nordic Nutritional Recommendations', 'World Health Organization', 'Food and Agriculture Organization of the United Nations', 'Non-communicable disease', 'Recommended Dietary Intake', 'Front of Pack', 'Life Cycle Assesment', 'Multiple Traffic Light', 'Percentage of energy', 'Megajoule', 'Australian Healthy Eating Advisory Service traffic light system', 'Australian LiveLighter traffic light system')
 )
 ```
 
@@ -60,11 +60,11 @@ aspects of sustainability included in this concept.
 
 ## The environmental impact of food
 
-An environmentally sustainable food system is defined as a system which
-effect "on the surrounding natural environment are neutral or positive,
-taking into consideration biodiversity, water, soil, animal and plant
-health, the carbon footprint, the water footprint, food loss and waste,
-and toxicity."
+An environmentally sustainable food system is defined by FAO as a system
+which effect "on the surrounding natural environment are neutral or
+positive, taking into consideration biodiversity, water, soil, animal
+and plant health, the carbon footprint, the water footprint, food loss
+and waste, and toxicity." [@Food2018]
 
 Most research that has been done on the environmental impact of
 different foods have focused on GHGE. Increased GHGE cause climate
@@ -111,11 +111,12 @@ fertilizer and/or pest control used for crops and type of feed used for
 animals (crops that are edible for humans or not) can all influence the
 environmental impact of a given food. For example, vegetables produced
 locally may have lower environmental impact than imported produce when
-in season and grown in fields, but out of season it might be grown in
-heated greenhouses that has a higher environmental cost than
-transportation from a region where it is produced in season. A food
+in season and grown in fields, but out of season the vegetables might be
+grown in heated greenhouses that has a higher environmental cost than
+transportation from a region where they are produced in season. A food
 could also be environmentally sustainable when looking at one type of
-environmental impact, but harmful when looking at another.
+environmental impact, but harmful when looking at another. For example,
+nuts have a high water footprint while their GHGE is relatively low.
 
 ```{r environmental-impacts, out.width = "95%", fig.cap = "Greenhouse gas emissions, land and water footprint of various food groups."}
 knitr::include_graphics("images/environmental_impacts.png")
@@ -161,30 +162,36 @@ fish, 19.6 times more than nuts, 15.5 times that of poultry, 14 times
 that of pulses, 12.7 that of pork and 1.3 times that of lamb
 [@Poore2018a].
 
+It should be kept in mind that when looking at environmental impact per
+kilo of food produced, the amount and type of various nutrients the food
+provide to the diet is not taken into account. A food could have a high
+environmental impact per kilo, but only be needed in small amounts to
+supply the necessary nutrients for good health.
+
 Turning natural land into croplands or pasture is the principal cause of
 habitat loss of wild species, which in turn is associated with loss of
-biodiversity [@Benton2021]. The expanding use of natural lands may lead
-to an increased exposure to infectious pathogens from animals, in worst
-case leading to future pandemics [@Wilkinson2018; @Patz2004; @Wolfe2007;
-@Dobson2020]. Water used for farming also shunts water away from natural
-ecosystems. Runoff, excess nutrients from fertilizer, can end up in
-rivers and other water systems leading to eutrophication, the overgrowth
-of algae at the expense of other species. Pesticide use is also
-associated with loss of biodiversity [@Benton2021]. Organic farming
-practices have been shown to be less damaging to biodiversity than
-conventional farming, but produce lower yields so that per functional
-unit produced GHGE, water footprint and land use is higher
-[@Reganold2016]. However, concerns have been raised that typical LCAs
-fail to adequately assess the full environmental impact of organic
-farming, and that results may be to overestimate acidification,
-eutrophication and global warming potential while downplaying the
-benefits [@Meier2015].
+biodiversity \[@Benton2021\]. The expanding use of natural lands may
+lead to an increased exposure to infectious pathogens from animals, in
+worst case leading to future pandemics \[@Wilkinson2018; @Patz2004;
+@Wolfe2007; @Dobson2020\]. Water used for farming also shunts water away
+from natural ecosystems. Runoff, excess nutrients from fertilizer, can
+end up in rivers and other water systems leading to eutrophication, the
+overgrowth of algae at the expense of other species. The use of
+pesticides to grow crops is also associated with loss of biodiversity
+[@Benton2021]. Organic farming practices have been shown to be less
+damaging to biodiversity than conventional farming, but produce lower
+yields so that per functional unit produced GHGE, water footprint and
+land use is higher [@Reganold2016]. However, concerns have been raised
+that typical LCAs fail to adequately assess the full environmental
+impact of organic farming, and that results may be to overestimate
+acidification, eutrophication and global warming potential while
+downplaying the benefits [@Meier2015].
 
-Included in LCAs of animal production, included farmed seafood, is the
-environmental impact of growing feed. Currently a third of all crops
-grown are used to feed animals. While ruminants can be fed roughage that
-are not edible for humans, non-ruminants (pork, chicken and farmed fish)
-feed consists of cereals that could feed humans [@Makkar2018;
+Included in LCAs of livestock production, including farmed seafood, is
+the environmental impact of growing feed. Currently a third of all crops
+grown are used to feed livestock. While ruminants can be fed roughage
+that are not edible for humans, non-ruminants (pork, chicken and farmed
+fish) feed consists of cereals that could feed humans [@Makkar2018;
 @Pahlow2015]. The rise of fish farming means that more crops will be
 grown for fish feed in the future, likely leading to an increase of
 farmed fish's water and land footprint [@Pahlow2015]. However, the
@@ -262,12 +269,13 @@ Following a predominantly plant-based diet rich in whole grains,
 legumes, nuts, fruit and vegetables with low to moderate consumption of
 animal sourced foods is an advice commonly given to consumers that want
 to be environmentally friendly, while still eating healthy
-[@Willett2019; @SwedishFood; @Fødevarestyrelsen; @Brink2019; @Seed2015].
-Although in the case of water footprint it might be that reducing animal
-sourced foods lead to a lower total water footprint, but not necessarily
-a lower blue water footprint [@Harris2020]. This is especially true when
-animal sourced foods is reduced while intake of nuts is increased, made
-worse by the fact that most nuts are grown in areas with water scarcity
+\[@Willett2019; @SwedishFood; @Fødevarestyrelsen; @Brink2019;
+@Seed2015\]. Although in the case of water footprint it might be that
+reducing animal sourced foods lead to a lower total water footprint, but
+not necessarily a lower blue water footprint \[@Harris2020\], putting
+strain on water scarce areas. This is especially true when animal
+sourced foods is reduced while intake of nuts is increased, made worse
+by the fact that most nuts are grown in areas with water scarcity
 [@Vanham2020].
 
 Animal sourced foods are generally nutrient dense, and they are not
@@ -301,19 +309,19 @@ There is wide consensus that a higher adherence to healthy dietary
 habits such as following national FBDGs would lower disease burden of
 individuals globally and substantially decrease health costs
 [@Schulze2018; @McCullough2014; @USDA2014], but also reduce
-environmental impact of our diet [@Kovacs2021]. The Institute for Health
-Metrics and Evaluation has in their Global Burden of Disease series
-quantified how low adherence to different advice found in FBDGs
-contribute to mortality and disease risk in 195 countries [@Afshin2019].
-Both globally and in most of the included countries, the leading causes
-of diet related mortality and DALYs were high salt intake and low intake
-of whole grain cereals, fruit, nuts and seeds and vegetables that have a
-low environmental impact. Additionally, on a global level the
-consumption of high environmental impact meat is higher than what is
+environmental impact of our diet [@Kovacs2021; @Steenson2021]. The
+Institute for Health Metrics and Evaluation has in their Global Burden
+of Disease series quantified how low adherence to different advice found
+in FBDGs contribute to mortality and disease risk in 195 countries
+[@Afshin2019]. Both globally and in most of the included countries, the
+leading causes of diet related mortality and DALYs were high salt intake
+and low intake of low environmental foods such as whole grain cereals,
+fruit, nuts and seeds and vegetables. Additionally, on a global level
+the consumption of high environmental impact meat is higher than what is
 needed for good health [@Leme2021]. However, while many high-income
 countries would benefit from a lower intake of meat, in other parts of
 the world an increase in meat intake could be beneficial due to poor
-nutritional status in the population [@Willett2019].
+nutritional status in the population [@Willett2019; @Adesogan2020].
 
 There are several sources of dietary information available to the
 general consumer. Concerns have been raised that contradictory messaging
@@ -404,13 +412,14 @@ role.
 
 Cooking dinners at home has been associated with improved dietary
 quality and higher adherence to healthy dietary patterns like FBDGs
-[@Tiwari2017; @Mills2017; @Wolfson2020], although clinical relevance is
-uncertain. Still, as was seen in the survey by Grunert [@Grunert2020]
-more than 40% of European consumers believe cooking at home is part of a
-sustainable diet. And while only a handful of countries include
-home-cooking in their dietary guidelines, cooking classes is researched
-for their potential use as public health interventions [@Reicks2018;
-@Garcia2016; @Begley2017], with various results.
+\[@Tiwari2017; @Mills2017; @Wolfson2020\], although clinical relevance
+is uncertain. Still, as was seen in the survey by Grunert
+\[@Grunert2020\] more than 40% of European consumers believe cooking at
+home is part of a sustainable diet. And while only a handful of
+countries include home-cooking in their dietary guidelines, cooking
+classes is researched for their potential use as public health
+interventions in several countries \[@Reicks2018; @Garcia2016;
+@Begley2017\], with various results.
 
 Consumers find inspiration for what meals to cook in various sources,
 such as cookbooks and on the Internet [@Doub2016]. Recipes from
@@ -425,23 +434,20 @@ than typically used food-frequency questionnaires, dietary interviews or
 diaries.
 
 Several studies have looked at how well recipes found in cookbooks
-[@Irwin2017; @Howard2012; @Jones2013], supermarket magazines
-[@Wademan2020], food blogs [@Schneider2013; @Keogh2019; @Dickinson2018]
-or other Internet recipe sites [@Trattner2017a; @Jones2013; @Cheng2021]
-compare to dietary guidelines and/or other classification schemes for
-healthy meals. Results are sobering, as most recipes studied do not
-comply with healthy dietary principles.
+\[@Irwin2017; @Howard2012; @Jones2013\], supermarket magazines
+\[@Wademan2020\], food blogs \[@Schneider2013; @Keogh2019;
+@Dickinson2018\] or other Internet recipe sites \[@Trattner2017a;
+@Jones2013; @Cheng2021\] compare to dietary guidelines and/or other
+classification schemes for healthy meals such as various front of pack
+nutrition labeling systems. Results are sobering, as most recipes
+studied do not comply with healthy dietary principles.
 
 As more focus is put on sustainable diets, recipes could also be used to
 find food combinations aligning with domains of sustainable diet
 principles, and to which extent these domains correlate with each other.
-Some internet based recipe sources provide the cost of each recipe
-[@OdaOppskrifter; @TescoRecipes], which show their affordability. Others
-provide a rating system [@AllrecipesHallOfFame; @OdaOppskrifter] which
-could be used as a stand in for acceptability. Together with food
-composition tables and food environmental impact databases that can be
-used to calculate the recipe's healthiness and environmental impact, all
-four domains of sustainable diets could potentially be explored.
+This is important when many consumers are inspired by recipes, believe
+home cooking is beneficial for their health and the environment, and
+also associate healthiness with lower environmental impact.
 
 ## Thesis aims
 
@@ -450,10 +456,12 @@ Kingdom (UK), Norway and United States of America (US), from cookbooks
 (UK) and the Internet (Norway, US), and compare two domains of
 sustainable diets, namely health and environmental sustainability. To
 build on previous research on recipe's healthiness, micronutrient
-content will also be included in the analyses.
+content will also be included in the analyses. The following research
+questions are asked:
 
-RQ1: To what extent does a recipe's healthiness and environmental impact
+1: ...
+
+2: To what extent does a recipe's healthiness and environmental impact
 depend on country of origin?
 
-RQ2: To what extent does environmental impact correlate with
-healthiness?
+3: To what extent does environmental impact correlate with healthiness?
