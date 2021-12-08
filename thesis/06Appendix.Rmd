@@ -1,0 +1,46 @@
+# (APPENDIX) Appendix {.unnumbered}
+
+# Appendix
+
+```{r data-completeness, fig.cap = "Percentage of the recipe in weight not mapped to a nutrient database (A) and SHARP Indicators environmental impact database (B).", out.width = '80%'}
+knitr::include_graphics("images/data_completenes_plot.png")
+```
+
+```{r stats-data}
+tbl <- stat_table %>%
+  #Round chi square column
+  mutate(`Chi square` = round(`Chi square`, 2)) %>%
+  #Escape % for LaTeX
+  mutate(Feature = str_replace(Feature, "%", "\\\\%")) %>%
+  rename(`Adj. p-value` = `Adj. p-value.x`,
+         `Adj. p-value ` = `Adj. p-value.y`,
+         ` ` = Feature) %>%
+  #Format table
+  kbl(booktabs = TRUE, linesep = "", caption = "Kruskal Wallis and 
+      Dunn test results.", escape = FALSE) %>%
+  kable_classic_2(full_width = FALSE)  %>%
+  kable_styling(latex_options = c("scale_down", "hold_position")) %>%
+      add_header_above(c(" " = 1, "Median (IQR)" = 3, "Kruskal-Wallis test" = 2, "Dunn test, BH corrected" = 2)) %>%
+  #Group rows together
+  pack_rows(., 'Environmental impact', 1, 2) %>%
+  pack_rows(., 'Healthiness indicators', 3, 6) %>%
+  pack_rows(., 'Macronutrients', 7, 9) %>%
+  pack_rows(., 'Vitamins', 10, 15) %>%
+  pack_rows(., 'Minerals', 16, 21) %>%
+  #Add footnote explaining abreviations
+  footnote(general = "Abbreviations used: Inv = Inverted, NNR = New Nordic Nutritional Recommendations, WHO = World Health Organization, E% = Percentage of energy, MJ = Megajoule, RDI = Recommended daily intake.")
+
+tbl
+```
+
+```{r raw-score-nutriscore, fig.cap = "The recipes' raw scores on disqualifying (1-10) and qualifying (1-5) components of the Nutriscore, by country."}
+knitr::include_graphics('./images/raw_nutriscores.png')
+```
+
+```{r raw-score-guidelines, fig.cap = "The percentage of recipes that adhered to each of the criteria that made up the World Health Organization (top) and Nordic Nutritional Recommendations (bottom) dietary guidelines, by country."}
+knitr::include_graphics('./images/raw_scores_guidelines.png')
+```
+
+```{r raw-score-trafficlights, fig.cap = "The (inverted) individual scores from each component of the multiple traffic light system, by country."}
+knitr::include_graphics('./images/raw_scores_mtl.png')
+```
