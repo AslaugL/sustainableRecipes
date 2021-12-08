@@ -14,13 +14,13 @@ theme_set(theme_bw())
 #Read data
 data_recipes <- readRDS('./Data/output/recipes_for_analysis.Rds') %>% #Nutrient content/sustainability indicators pr 100g recipe
   #Remove non-dinner recipes
-  filter(!sample_id %in% c('Baklava (Turkey)', 'Sausage Lunch', 'Half-fermented trout', 'Straight trout'))
+  filter(!sample_id %in% c('Baklava (Turkey)', 'Sausage Lunch', 'Half-fermented trout', 'Straight trout', 'Fruit Package'))
 
 data_ingredients <- readRDS('./Data/output/ingredients_for_analysis.Rds') %>% #Nutrient content/sustainability indicators for every ingredient pr 100g recipe
   rename(Foodgroup = L1) %>%
   select(-FoodEx2) %>%
   #Remove non-dinner recipes
-  filter(!sample_id %in% c('Baklava (Turkey)', 'Sausage Lunch', 'Half-fermented trout', 'Straight trout'))
+  filter(!sample_id %in% c('Baklava (Turkey)', 'Sausage Lunch', 'Half-fermented trout', 'Straight trout', 'Fruit Package'))
 
 #Turn tidy
 tidy_recipes <- data_recipes %>%
@@ -50,7 +50,8 @@ tidy_ingredients <- data_ingredients %>%
            str_replace('Fruit and fruit products', 'Fruit and\nfruit products') %>%
            str_replace('Vegetables and vegetable products', 'Vegetables and\nvegetable products') %>%
            str_replace('Seasoning, sauces and condiments', 'Seasoning, sauces\nand conditments') %>%
-           str_replace('Water and water-based beverages', 'Water-based\nbeverages')
+           str_replace('Water and water-based beverages', 'Water-based\nbeverages') %>%
+           str_replace('Coffee, cocoa, tea and infusions', 'Coffee, cocoa, tea\nand infusions')
   ) %>% replace_na(list(Foodgroup = 'Unknown'))
 
 #Recipe metadata
@@ -247,7 +248,8 @@ descriptive_stats_country <- run_stats %>%
             q1 = quantile(value, 0.25),
             median = median(value),
             q3 = quantile(value, 0.75),
-            max = max(value))
+            max = max(value),
+            mean = mean(value))
 
 descriptive_stats_total <- run_stats %>%
   group_by(feature) %>%
@@ -255,7 +257,8 @@ descriptive_stats_total <- run_stats %>%
             q1 = quantile(value, 0.25),
             median = median(value),
             q3 = quantile(value, 0.75),
-            max = max(value)) %>%
+            max = max(value),
+            mean = mean(value)) %>%
   mutate(IQR = paste0('(', round(q1, 1), ', ', round(q3, 1), ')'),
          median = round(median, 1))
 
@@ -295,6 +298,63 @@ temp <- health_indicators %>%
   mutate(sum = sum(n)) %>%
   ungroup() %>%
   mutate(pct = round(n/sum*100, 1))
+
+#Count the number of recipes that are a source of nutrients (>15% of RDI for micronutrients, >12% of energy for protein) and a good source (>30% of RDI for micronutrients, >20 % energy from protein)
+source_of_nutrients_table <- various$with_RDI %>%
+  #Add protein
+  bind_rows(., various$with_energy_pct_densityMJ %>% filter(feature %in% c('Protein', 'Dietary fibre'))) %>%
+  #fill missing country and source information
+  group_by(sample_id) %>% fill(., c(group, Source)) %>% ungroup() %>%
+  #Find sources and good sources
+  mutate(nutrient_source = case_when(
+    #Protein
+    feature == 'Protein' & value > 20 ~ 'good_source',
+    feature == 'Protein' & value > 12 ~ 'source',
+    #Fibre
+    feature == 'Dietary fibre' & value > 6 ~ 'good_source',
+    feature == 'Dietary fibre' & value > 3 ~ 'source',
+    #Micronutrients
+    feature != 'Protein' & value >= 30 ~ 'good_source',
+    feature != 'Protein' & value >= 15 ~ 'source'
+  )) %>%
+  #Filter non-source nutrients
+  filter(!is.na(nutrient_source)) %>%
+  #Count the number of recipes that are either sources or good sources
+  group_by(group, feature, nutrient_source) %>%
+  summarise (n = n()) %>%
+  #Format to have the percent of recipes that are sources with the percent of recipes that are good sources in ()
+  ungroup() %>%
+  pivot_wider(., names_from = nutrient_source, values_from = n) %>%
+  rename(temp = source) %>%
+  replace_na(list(temp = 0, good_source = 0)) %>%
+  mutate(source = temp + good_source) %>% #Total number of recipes that are sources of the nutrient
+  select(-temp) %>%
+  #Add the total number of recipes from each country
+  inner_join(., data_recipes %>% select(sample_id, group) %>% group_by(group) %>% summarise(n = n()) %>% ungroup()) %>%
+  #Calculate %
+  mutate(pct_source = round(source/n*100),
+         pct_good_source = round(good_source/n*100)) %>%
+  #Add this information to one column and pivot wider
+  mutate(final = paste0(pct_source, '% (', pct_good_source, '%)')) %>%
+  select(group, feature, final) %>%
+  pivot_wider(names_from = group,
+              values_from = final) %>%
+  rename(Nutrient = feature) %>%
+  #Reorder for table
+  mutate(Nutrient = factor(Nutrient, levels = c(
+    #Macros
+    'Protein', 'Dietary fibre',
+    #Fat soluble vitamins
+    'Vitamin A', 'Retinol', 'Beta-carotene', 'Vitamin D', 'Vitamin E',
+    #Water soluble vitamins
+    'Vitamin C', 'Thiamin', 'Riboflavin', 'Niacin', 'Vitamin B6', 'Folate', 'Vitamin B12',
+    #Minerals
+    'Calcium', 'Iron', 'Zinc', 'Magnesium', 'Potassium', 'Selenium', 'Iodine', 'Sodium',
+    'Phosphorus', 'Copper'))) %>%
+  arrange(Nutrient)
+
+
+
 
 # Kruskal Wallis and dunn----
 stats <- list(
@@ -1103,13 +1163,13 @@ plots$raw_scores <- list()
 
   save_plot('./thesis/images/raw_scores_guidelines.png', plots$final$raw_guidelines, nrow = 1.7, ncol = 1.7)
   
-# How the different foodgroups contribute to each environmental impact----
+# How the different foodgroups contribute to recipe weight----
 plots$violinbox$foodgroups <- list()
 
   #Animal sourced
   temp <- tidy_ingredients %>%
     filter(Foodgroup %in% c('Meat and\nmeat products', 'Dairy', 'Eggs', 'Seafood')) %>%
-    #pivot wider to get CO2 and landuse columns
+    #pivot wider to get Amounts column
     pivot_wider(names_from = feature,
                 values_from = value) %>%
     group_by(group, sample_id, Foodgroup) %>%
@@ -1134,7 +1194,7 @@ plots$violinbox$foodgroups <- list()
   #Plant based
   temp <- tidy_ingredients %>%
     filter(Foodgroup %in% c('Vegetables and\nvegetable products', 'Roots and tubers', 'Fruit and\nfruit products', 'Fruit/vegetable juice\n and nectar', 'Grains and grain\nbased products', 'Legumes, nuts, seeds')) %>%
-    #pivot wider to get CO2 and landuse columns
+    #pivot wider to get Amounts
     pivot_wider(names_from = feature,
                 values_from = value) %>%
     group_by(group, sample_id, Foodgroup) %>%
@@ -1160,7 +1220,7 @@ plots$violinbox$foodgroups <- list()
     temp <- tidy_ingredients %>%
       filter(!Foodgroup %in% c('Meat and\nmeat products', 'Dairy', 'Eggs', 'Seafood', 'Vegetables and\nvegetable products', 'Roots and tubers', 'Fruit and\nfruit products', 'Fruit/vegetable juice\n and nectar', 'Grains and grain\nbased products', 'Legumes, nuts, seeds')) %>%
       filter(Foodgroup != 'Food imitates') %>% #Only one
-      #pivot wider to get CO2 and landuse columns
+      #pivot wider to get Amounts column
       pivot_wider(names_from = feature,
                   values_from = value) %>%
       group_by(group, sample_id, Foodgroup) %>%
@@ -1168,17 +1228,18 @@ plots$violinbox$foodgroups <- list()
       #Turn into grams, not fraction per 100 g
       mutate(value = value*100) %>%
       #Set factor level for plot
-      mutate(Foodgroup = factor(Foodgroup, levels = c('Water-based\nbeverages', 'Fats and oils', 'Seasoning, sauces\nand conditments', 'Sugar and\n confectionary', 'Alcoholic beverages', 'Unknown')))
+      mutate(Foodgroup = factor(Foodgroup, levels = c('Water-based\nbeverages', 'Fats and oils', 'Seasoning, sauces\nand conditments', 'Sugar and\n confectionary', 'Alcoholic beverages', 'Coffee, cocoa, tea\nand infusions', 'Unknown')))
     
     #Plot
     plots$violinbox$foodgroups$others <- ggplot(temp, aes(x = Foodgroup, y = value, color = group)) +
       geom_half_violin() + 
       geom_half_boxplot(side = 'r') +
       scale_color_manual(values = group_colors) +
-      labs(y = ' ') +
+      labs(y = ' ',
+           color = 'Country') +
       theme(axis.title.x = element_blank(),
             #axis.title.y = element_blank(),
-            legend.position = "none")+
+            legend.position = "bottom")+
       #Set y axis scale to percent
       scale_y_continuous(limits = c(0,100), labels = function(x) paste0(x, "%"))
     
@@ -1330,7 +1391,19 @@ stat_table <- list(
   
   #Finished table
   reduce(full_join, by = 'feature') %>%
-  #Clean up some names
+  #Clean up some names and reorder for the finished table
+  mutate(feature = factor(feature, levels = c(
+      #Environmental impact
+      'CO2', 'Landuse',
+      #Healthiness indicators
+      'inverted_nutriscore', 'inverted_traffic_score', 'nnr_score', 'who_score',
+      #Macros
+      'Protein', 'Dietary fibre', 'Sugar',
+      #Vitamins
+      'Vitamin D', 'Vitamin C', 'Thiamin', 'Niacin', 'Folate', 'Vitamin B12',
+      #Minerals
+      'Copper', 'Iodine', 'Iron', 'Potassium', 'Selenium', 'Zinc'))) %>%
+  arrange(feature) %>%
   rename(Feature = feature) %>%
   mutate(Feature = Feature %>%
            str_replace('inverted_nutriscore', 'Inv. Nutriscore') %>%
@@ -1343,7 +1416,16 @@ stat_table <- list(
            str_replace('SatFa', 'Saturated Fat E%') %>%
            str_replace('Protein', 'Protein E%') %>%
            str_replace('Dietary fibre', 'Dietary fibre g/MJ') %>%
-           str_replace('Kilocalories', 'Kilocalories/100g'))
+           str_replace('Kilocalories', 'Kilocalories/100g') %>%
+           str_replace('CO2', 'kg CO2 equivalents') %>%
+           str_replace('Landuse', 'Landuse m2/year')) %>%
+  mutate(Feature = case_when(
+    Feature %in% c(#Vitamins
+      'Vitamin D', 'Vitamin C', 'Thiamin', 'Niacin', 'Folate', 'Vitamin B12',
+      #Minerals
+      'Copper', 'Iodine', 'Iron', 'Potassium', 'Selenium', 'Zinc') ~ paste0(Feature, ' % of RDI'),
+    TRUE ~ Feature
+  ))
 
 ## Other data ----
 standardKbl <- function(df, caption = NULL){
@@ -1414,7 +1496,7 @@ standardKbl(various$RDI %>%
 
 
 ## Save objects to be used in RMarkdown----
-save(stat_table, tidy_ingredients, guidelines_trafficlights,
+save(stat_table, tidy_ingredients, guidelines_trafficlights, source_of_nutrients_table,
      nutriscore_points, descriptive_stats_total, file = './Data/results_allrecipes.RData')
 
 #Descriptive stats table for results chapter
