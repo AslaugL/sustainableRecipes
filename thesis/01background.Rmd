@@ -12,8 +12,8 @@ editor_options:
 ```{r abbreviations}
 library(tibble)
 Abbreviations <- tibble(
-  'Abbreviation' = c('DALY', 'FBDG', 'NNR', 'WHO', 'FAO', 'NCD', 'RDI', 'FOP', 'LCA', 'MTL', 'E%', 'MJ', 'HEAS', 'LL'),
-  'Explanation' = c('Disability Adjusted Life Years', 'Food Based Dietary Guideline', 'Nordic Nutritional Recommendations', 'World Health Organization', 'Food and Agriculture Organization of the United Nations', 'Non-communicable disease', 'Recommended Dietary Intake', 'Front of Pack', 'Life Cycle Assesment', 'Multiple Traffic Light', 'Percentage of energy', 'Megajoule', 'Australian Healthy Eating Advisory Service traffic light system', 'Australian LiveLighter traffic light system')
+  'Abbreviation' = c('DALY', 'FBDG', 'NNR', 'WHO', 'FAO', 'NCD', 'RDI', 'FOP', 'LCA', 'FSA MTL', 'E%', 'MJ', 'HEAS', 'LL'),
+  'Explanation' = c('Disability Adjusted Life Years', 'Food Based Dietary Guideline', 'Nordic Nutritional Recommendations', 'World Health Organization', 'Food and Agriculture Organization of the United Nations', 'Non-communicable disease', 'Recommended Dietary Intake', 'Front of Pack', 'Life Cycle Assesment', 'Food Standard Agency Multiple Traffic Light', 'Percentage of energy', 'Megajoule', 'Australian Healthy Eating Advisory Service traffic light system', 'Australian LiveLighter traffic light system')
 )
 ```
 
@@ -170,10 +170,10 @@ supply the necessary nutrients for good health.
 
 Turning natural land into croplands or pasture is the principal cause of
 habitat loss of wild species, which in turn is associated with loss of
-biodiversity \[@Benton2021\]. The expanding use of natural lands may
-lead to an increased exposure to infectious pathogens from animals, in
-worst case leading to future pandemics \[@Wilkinson2018; @Patz2004;
-@Wolfe2007; @Dobson2020\]. Water used for farming also shunts water away
+biodiversity [@Benton2021\]. The expanding use of natural lands may lead
+to an increased exposure to infectious pathogens from animals, in worst
+case leading to future pandemics \[@Wilkinson2018; @Patz2004;
+@Wolfe2007; @Dobson2020]. Water used for farming also shunts water away
 from natural ecosystems. Runoff, excess nutrients from fertilizer, can
 end up in rivers and other water systems leading to eutrophication, the
 overgrowth of algae at the expense of other species. The use of
@@ -237,13 +237,15 @@ include a variety of colorful vegetables (starchy roots and tubers are
 generally not counted as a vegetable in these instances) and fruit and
 other fiber rich foods such as whole grain cereals, legumes and nuts,
 consume fish and dairy foods, and have a low intake of processed foods,
-saturated fat, added sugar and salt [@Herforth2019]. These
+saturated fat, added sugar and salt [@Herforth2019\]. These foods are
+highlighted as they contribute important nutrients to the diet. To make
+it easier to know how much to consume to get health benefits,
 recommendations can also be quantitative by defining number of portions
 and/or portion sizes. A well known example is to eat five portions of
 fruits and vegetables a day. In high income countries, it is also common
 to include a maximum red meat intake, like \<500 grams/week. A few
 countries advice that home cooking and cooking skills are beneficial for
-healthy dietary habits [@BrazilDietaryGuidelines2015;
+healthy dietary habits \[@BrazilDietaryGuidelines2015;
 @TheJapanDieteticAssociation; @HealthCanada2019].
 
 FBDGs are often presented to consumers with images that show various
@@ -269,14 +271,13 @@ Following a predominantly plant-based diet rich in whole grains,
 legumes, nuts, fruit and vegetables with low to moderate consumption of
 animal sourced foods is an advice commonly given to consumers that want
 to be environmentally friendly, while still eating healthy
-\[@Willett2019; @SwedishFood; @Fødevarestyrelsen; @Brink2019;
-@Seed2015\]. Although in the case of water footprint it might be that
-reducing animal sourced foods lead to a lower total water footprint, but
-not necessarily a lower blue water footprint \[@Harris2020\], putting
-strain on water scarce areas. This is especially true when animal
-sourced foods is reduced while intake of nuts is increased, made worse
-by the fact that most nuts are grown in areas with water scarcity
-[@Vanham2020].
+[@Willett2019; @SwedishFood; @Fødevarestyrelsen; @Brink2019; @Seed2015].
+Although in the case of water footprint it might be that reducing animal
+sourced foods lead to a lower total water footprint, but not necessarily
+a lower blue water footprint [@Harris2020], putting strain on water
+scarce areas. This is especially true when animal sourced foods is
+reduced while intake of nuts is increased, made worse by the fact that
+most nuts are grown in areas with water scarcity [@Vanham2020].
 
 Animal sourced foods are generally nutrient dense, and they are not
 required in large amounts in the diet to provide necessary nutrients for
@@ -412,14 +413,14 @@ role.
 
 Cooking dinners at home has been associated with improved dietary
 quality and higher adherence to healthy dietary patterns like FBDGs
-\[@Tiwari2017; @Mills2017; @Wolfson2020\], although clinical relevance
-is uncertain. Still, as was seen in the survey by Grunert
-\[@Grunert2020\] more than 40% of European consumers believe cooking at
-home is part of a sustainable diet. And while only a handful of
-countries include home-cooking in their dietary guidelines, cooking
-classes is researched for their potential use as public health
-interventions in several countries \[@Reicks2018; @Garcia2016;
-@Begley2017\], with various results.
+[@Tiwari2017; @Mills2017; @Wolfson2020\], although clinical relevance is
+uncertain. Still, as was seen in the survey by Grunert \[@Grunert2020\]
+more than 40% of European consumers believe cooking at home is part of a
+sustainable diet. And while only a handful of countries include
+home-cooking in their dietary guidelines, cooking classes is researched
+for their potential use as public health interventions in several
+countries \[@Reicks2018; @Garcia2016; @Begley2017], with various
+results.
 
 Consumers find inspiration for what meals to cook in various sources,
 such as cookbooks and on the Internet [@Doub2016]. Recipes from
@@ -434,32 +435,34 @@ than typically used food-frequency questionnaires, dietary interviews or
 diaries.
 
 Several studies have looked at how well recipes found in cookbooks
-\[@Irwin2017; @Howard2012; @Jones2013\], supermarket magazines
+[@Irwin2017; @Howard2012; @Jones2013\], supermarket magazines
 \[@Wademan2020\], food blogs \[@Schneider2013; @Keogh2019;
 @Dickinson2018\] or other Internet recipe sites \[@Trattner2017a;
-@Jones2013; @Cheng2021\] compare to dietary guidelines and/or other
+@Jones2013; @Cheng2021] compare to dietary guidelines and/or other
 classification schemes for healthy meals such as various front of pack
 nutrition labeling systems. Results are sobering, as most recipes
-studied do not comply with healthy dietary principles.
+studied do not comply with healthy dietary principles as defined in
+these studies.
 
 As more focus is put on sustainable diets, recipes could also be used to
 find food combinations aligning with domains of sustainable diet
 principles, and to which extent these domains correlate with each other.
 This is important when many consumers are inspired by recipes, believe
-home cooking is beneficial for their health and the environment, and
-also associate healthiness with lower environmental impact.
+home cooking is beneficial for their health and also associate home
+cooking with sustainable diet principles.
 
 ## Thesis aims
 
 This thesis aims to look at a selection of recipes from the United
-Kingdom (UK), Norway and United States of America (US), from cookbooks
-(UK) and the Internet (Norway, US), and compare two domains of
+Kingdom (UK), Norway and the United States of America (US), from
+cookbooks (UK) and the Internet (Norway, US), and compare two domains of
 sustainable diets, namely health and environmental sustainability. To
 build on previous research on recipe's healthiness, micronutrient
 content will also be included in the analyses. The following research
 questions are asked:
 
-1: ...
+1: How well do recipes from Norway, the UK and the US comply with
+healthy dietary guideline principles?
 
 2: To what extent does a recipe's healthiness and environmental impact
 depend on country of origin?
