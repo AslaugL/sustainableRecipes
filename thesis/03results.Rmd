@@ -88,7 +88,11 @@ See **Appendix** **Table** \@ref(tab:stats-data) for the full kruskal wallis and
 
 ## Dinner meals as a source of nutrients
 
-The majority of recipes were a source of at least one nutrient, with the most common nutrient being protein. Nearly all recipes from each country were considered a source of protein, and the majority were considered good sources of protein. About twice the number of recipes from the UK were considered a source (41%) or a good source (9%) of fibre compared to recipes from Norway or the US. There were also more recipes from the UK compared to the other countries that were sources of vitamin C (44%), folate (7%), iron (8%) and magnesium (11%) although the percentage of recipes that were good sources were more similar between countries. Norway had more than twice the percentage of recipes than the UK or US that were either a source (14%) or a good source (10%) of iodine. See **Table** \@ref(tab:recipes-as-sources-of-nutrients).
+The majority of recipes were a source of at least one nutrient, with the most common nutrient being protein. Nearly all recipes from each country were considered a source of protein, and the majority were considered good sources of protein. About twice the number of recipes from the UK were considered a source (41%) or a good source (9%) of dietary fibre compared to recipes from Norway or the US. There were also about twice the percentage of recipes from the UK compared to the other countries that were sources of Vitamin A (23%), both retinol and beta-carotene, vitamin C (44%), folate (7%), iron (8%) and magnesium (11%) although the percentage of recipes that were good sources were more similar between countries. Norway had more than twice the percentage of recipes than the UK or the US that were either a source (14%) or a good source (10%) of iodine, and also a higher percentage of recipes that were sources of selenium and Vitamin D.
+
+Less than 10% of recipes from any country were sources of retinol, beta-carotene, riboflavin, folate, iron or potassium.
+
+See **Table** \@ref(tab:recipes-as-sources-of-nutrients).
 
 ```{r recipes-as-sources-of-nutrients}
 source_of_nutrients_table %>%
@@ -109,8 +113,6 @@ source_of_nutrients_table %>%
     alphabet = c('>12 or >20 % energy from the nutrient.', '>3 or >6 g/MJ.', '>15 or >30 % recommended daily intake of the nutrient.'))
 ```
 
-About two percent of recipes was not considered a source for any nutrient,
-
 ## Protein sources and amounts of different ingredients
 
 Red meat (beef, lamb, game and pork) were the most used sources of protein in the recipes from all countries, while seafood (lean fish, oily fish and shellfish) were the second most used in the recipes from the UK and Norway and white meat (poultry) the second most used in the recipes from the US. Few recipes were vegan, and the UK had the most vegetarian recipes (**Figure** \@ref(fig:protein-sources).
@@ -124,18 +126,6 @@ Meat products followed by seafood, vegetables and starchy roots and tubers made 
 ```{r percent-foodgroups-weight, fig.cap = "How much various food groups contributed to the weight of the recipes in percent.", fig.width = 10, fig.asp = 0.75}
 knitr::include_graphics('./images/foodgroups.png')
 ```
-
-## Principal component analysis
-
-The Norwegian recipe homemade stick-meat (pinnekjøtt) were left out of the PCA due to being a strong outlier in sodium content.
-
-The PCA score plot (**Figure** \@ref(fig:PCA-data)A) showed no clustering of recipes from the different countries, in line with the small differences found in the dunn test. The loading plot (**Figure** \@ref(fig:PCA-data)B) showed that vitamin B12, vitamin A and retinol contributed the most to the first principal component, while kilocalories, vitamin E, fat and protein contributed the most to the second principal component.
-
-```{r PCA-data, message=FALSE, out.width = "80%", fig.cap = "Principal component analysis score plot (A) and loadings plot (B)."}
-knitr::include_graphics("images/pca_plots.png")
-```
-
-The angle between the loading vectors of vitamin B12, vitamin A and the sub-type of vitamin A retinol, suggests these nutrients are positively correlated. The three recipes that contributed most to PC1 all included liver as a main ingredient. The angle between the loading vectors of kilocalories, fat and protein, suggests a positive correlation between kilocalories in a recipe and its fat content, and a negative correlation between kilocalories and fat with protein content.
 
 ## Correlation analyses
 
