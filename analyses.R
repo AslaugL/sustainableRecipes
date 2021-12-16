@@ -353,7 +353,36 @@ source_of_nutrients_table <- various$with_RDI %>%
     'Phosphorus', 'Copper'))) %>%
   arrange(Nutrient)
 
-
+#Count how many nutrients the recipes are sources of
+temp <- source_of_nutrients_table <- various$with_RDI %>%
+  #Add protein
+  bind_rows(., various$with_energy_pct_densityMJ %>% filter(feature %in% c('Protein', 'Dietary fibre'))) %>%
+  #fill missing country and source information
+  group_by(sample_id) %>% fill(., c(group, Source)) %>% ungroup() %>%
+  #Find sources and good sources
+  mutate(nutrient_source = case_when(
+    #Protein
+    feature == 'Protein' & value > 20 ~ 'good_source',
+    feature == 'Protein' & value > 12 ~ 'source',
+    #Fibre
+    feature == 'Dietary fibre' & value > 6 ~ 'good_source',
+    feature == 'Dietary fibre' & value > 3 ~ 'source',
+    #Micronutrients
+    feature != 'Protein' & value >= 30 ~ 'good_source',
+    feature != 'Protein' & value >= 15 ~ 'source',
+    
+    TRUE ~ 'not_source'
+  )) %>%
+  group_by(sample_id, group, nutrient_source) %>%
+  summarise(n = n()) %>%
+  ungroup() %>%
+  pivot_wider(.,
+              names_from = nutrient_source,
+              values_from = n) %>%
+  #Add 0 for na
+  replace_na(list(good_source = 0, source = 0, not_source = 0)) %>%
+  group_by(group, not_source) %>%
+  summarise(n = n())
 
 
 # Kruskal Wallis and dunn----
@@ -366,7 +395,8 @@ stats <- list(
   
   'kruskal_wallis_effectsize' = run_stats %>%
     group_by(feature) %>%
-    kruskal_effsize(value ~ group)
+    kruskal_effsize(value ~ group,
+                    ci = TRUE)
   )
 
 #Filter out features that were significantly different in the kruskal wallis
@@ -1347,6 +1377,22 @@ save_plot('./thesis/images/protein_source.png', plots$barplots$protein_source, n
 #Significantly differences from dunn test
 temp <- stats$dunn_test %>% filter(p.adj <0.05)
 
+test <- stats$kruskal_wallis %>% filter(feature %in% temp$feature) %>%
+  #Add effect size
+  inner_join(., stats$kruskal_wallis_effectsize, by = 'feature') #%>%
+  #Select columns to keep
+  select(feature, effsize, conf.low, conf.high, p.adj) %>%
+  #Use <0.05, <0.01 and <0.001 from p value
+  mutate(p.adj = case_when(
+    p.adj < 0.001 ~ '<0.001',
+    p.adj < 0.01 ~ '<0.01',
+    p.adj < 0.05 ~ '<0.05',
+    TRUE ~ paste0(as.character(round(p.adj, digits = 2)))),
+    `Effect size \n (95% ci)` = paste0(round(effsize, digits = 3), ' (', round(conf.low, 3), '-', round(conf.high, 3), ')')
+  ) %>%
+  rename(`Adj. p-value` = p.adj) %>%
+  select(-c(effsize, conf.low, conf.high))
+
 #Format the relevant data
 stat_table <- list(
   
@@ -1358,18 +1404,22 @@ stat_table <- list(
                 names_from = group,
                 values_from = median_iqr),
   
-  #Get the chi square statistic and p value for each feature
+  #Get the p value and effect size for each feature
   'kruskal_wallis' = stats$kruskal_wallis %>% filter(feature %in% temp$feature) %>%
-    select(feature, statistic, p.adj) %>%
+    #Add effect size
+    inner_join(., stats$kruskal_wallis_effectsize, by = 'feature') %>%
+    #Select columns to keep
+    select(feature, effsize, conf.low, conf.high, p.adj) %>%
     #Use <0.05, <0.01 and <0.001 from p value
     mutate(p.adj = case_when(
       p.adj < 0.001 ~ '<0.001',
       p.adj < 0.01 ~ '<0.01',
       p.adj < 0.05 ~ '<0.05',
-      TRUE ~ paste0(as.character(round(p.adj, digits = 2)))
-    )) %>%
-    rename(`Chi square` = statistic,
-           `Adj. p-value` = p.adj),
+      TRUE ~ paste0(as.character(round(p.adj, digits = 2)))),
+      `Effect size \n (95% ci)` = paste0(round(effsize, digits = 2), ' (', round(conf.low, 2), '-', round(conf.high, 2), ')')
+      ) %>%
+    rename(`Adj. p-value` = p.adj) %>%
+    select(-c(effsize, conf.low, conf.high)),
   
   #Get the pairwise comparison and adjusted p value for each feature
   'dunn' = stats$dunn_test %>% filter(p.adj <0.05) %>%
