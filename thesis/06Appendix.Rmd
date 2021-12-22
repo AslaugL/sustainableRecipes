@@ -2,45 +2,42 @@
 
 # Appendix
 
-```{r data-completeness, fig.cap = "Percentage of the recipe in weight not mapped to a nutrient database (A) and SHARP Indicators environmental impact database (B).", out.width = '80%'}
+\begin{landscape}
+```{r pct-recipe-healthiness}
+pct_recipes_healthiness_scores %>%
+  mutate(across(everything(), ~str_replace(., "%", "\\\\%"))) %>%
+
+kbl(booktabs = TRUE, linesep = "", escape = FALSE,
+    
+    #Set column names and align
+    col.names = rep(c("Score", "Norway", "UK", "US", "All countries"), 4),
+    caption = "The percentage of recipes that received a specific score on each healthiness indicator.",
+    align = rep(c("l", "c", "c", "c", "c"), 4)) %>%
+  
+  #Add header for each indicator
+  add_header_above(c("Inverted Multiple Traffic Light Model" = 5, "Nutriscore" = 5, "Nordic Nutritional Recommendations" = 5, "World Health Organization Recommendations" = 5)) %>%
+  #Add header to distinguish FOPL and guidelines
+  add_header_above(c("Front of Pack Labels" = 10, "Dietary guidelines" = 10)) %>%
+  
+  #Make score columns bold
+  column_spec(., c(1, 6, 11, 16), bold = TRUE) %>%
+  column_spec(., c(2:5, 7:10, 12:16, 17:20)) %>%
+  kable_styling(latex_options = c("scale_down", "hold_position"), full_width = FALSE)
+```
+\end{landscape}
+
+```{r data-completeness, fig.cap = "Percentage of the recipe in weight not mapped to a nutrient database (A) and SHARP Indicators environmental impact database (B).", out.width = "100%"}
 knitr::include_graphics("images/data_completenes_plot.png")
 ```
 
-```{r stats-data}
-tbl <- stat_table %>%
-  #Round chi square column
-  mutate(`Chi square` = round(`Chi square`, 2)) %>%
-  #Escape % for LaTeX
-  mutate(Feature = str_replace(Feature, "%", "\\\\%")) %>%
-  rename(`Adj. p-value` = `Adj. p-value.x`,
-         `Adj. p-value ` = `Adj. p-value.y`,
-         ` ` = Feature) %>%
-  #Format table
-  kbl(booktabs = TRUE, linesep = "", caption = "Kruskal Wallis and 
-      Dunn test results.", escape = FALSE) %>%
-  kable_classic_2(full_width = FALSE)  %>%
-  kable_styling(latex_options = c("scale_down", "hold_position")) %>%
-      add_header_above(c(" " = 1, "Median (IQR)" = 3, "Kruskal-Wallis test" = 2, "Dunn test, BH corrected" = 2)) %>%
-  #Group rows together
-  pack_rows(., 'Environmental impact', 1, 2) %>%
-  pack_rows(., 'Healthiness indicators', 3, 6) %>%
-  pack_rows(., 'Macronutrients', 7, 9) %>%
-  pack_rows(., 'Vitamins', 10, 15) %>%
-  pack_rows(., 'Minerals', 16, 21) %>%
-  #Add footnote explaining abreviations
-  footnote(general = "Abbreviations used: Inv = Inverted, NNR = New Nordic Nutritional Recommendations, WHO = World Health Organization, E% = Percentage of energy, MJ = Megajoule, RDI = Recommended daily intake.")
-
-tbl
-```
-
-```{r raw-score-nutriscore, fig.cap = "The recipes' raw scores on disqualifying (1-10) and qualifying (1-5) components of the Nutriscore, by country."}
+```{r raw-score-nutriscore, fig.cap = "The recipes' raw scores on disqualifying (1-10) and qualifying (1-5) components of the Nutriscore, by country.", out.width = "100%"}
 knitr::include_graphics('./images/raw_nutriscores.png')
 ```
 
-```{r raw-score-guidelines, fig.cap = "The percentage of recipes that adhered to each of the criteria that made up the World Health Organization (top) and Nordic Nutritional Recommendations (bottom) dietary guidelines, by country."}
+```{r raw-score-guidelines, fig.cap = "The percentage of recipes that adhered to each of the criteria that made up the World Health Organization (top) and Nordic Nutritional Recommendations (bottom) dietary guidelines, by country.", out.width = "100%"}
 knitr::include_graphics('./images/raw_scores_guidelines.png')
 ```
 
-```{r raw-score-trafficlights, fig.cap = "The (inverted) individual scores from each component of the multiple traffic light system, by country."}
+```{r raw-score-trafficlights, fig.cap = "The (inverted) individual scores from each component of the multiple traffic light system, by country.", out.width = "100%"}
 knitr::include_graphics('./images/raw_scores_mtl.png')
 ```

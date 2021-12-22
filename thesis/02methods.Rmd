@@ -1,32 +1,16 @@
----
-title: Methods
-output:
-  html_document:
-    fig_caption: yes
-    number_sections: yes
-    toc: yes
-    df_print: paged
-  bookdown::pdf_document2:
-    keep_tex: yes
-  bookdown::word_document2:
-    toc: yes
-  bookdown::html_document2: default
-bibliography: library.bib
----
-
 # Methods
 
 ## Data
 
 To assess the association between different recipes, healthiness of the recipes and their environmental impact, 400 recipes from Norway, and 100 from each of the UK and the US were analysed.
 
-Recipes from Norway and the US came from a database of online recipes collected previously. A randomized selection of recipes had been chosen for nutritional analyses previously [@Trattner2017] and were reused for this thesis. Recipes came from Klikk.no (n = 100), Tine.no (n = 100), Aperitif.no (n = 100), Kolonial.no (n = 100) (Norway) and Allrecipes.com (n = 100) (US). Since recipe collection Kolonial has been renamed Oda. The UK recipes came from a random selection from an assortment of UK celebrity chef's recipe books previously used to study the healthiness of television chef's recipes[@Howard2012], Baking Made Easy (n = 7), River Cottage Everyday (n = 21), Jamie's Ministry of Food (n = 22), Jamie's 30 Minute Meals (n = 25) and Nigella's Kitchen (n = 25).
+Recipes from Norway and the US came from a database of online recipes collected previously. A randomized selection of these recipes had been chosen for nutritional analyses previously [@Trattner2017] and were reused for this thesis. Recipes came from Klikk.no (n = 100), Tine.no (n = 100), Aperitif.no (n = 100), Kolonial.no (n = 100) (Norway) and Allrecipes.com (n = 100) (US). Since recipe collection Kolonial has been renamed Oda. The UK recipes came from a random selection from an assortment of UK celebrity chef's recipe books previously used to study the healthiness of television chef's recipes [@Howard2012], Baking Made Easy (n = 7), River Cottage Everyday (n = 21), Jamie's Ministry of Food (n = 22), Jamie's 30 Minute Meals (n = 25) and Nigella's Kitchen (n = 25).
 
 ## Calculating nutritional content and environmental impact of the recipes
 
 The dataset used included information about each recipe's energy, macronutrient and sodium content. However, for a more detailed macro-and-micronutrient comparison between the countries, and correlation analysis between healthiness, nutrients and sustainability, the ingredients from each recipe were mapped to the 2020 Norwegian Food Composition Database [@NorwegianFoodSafetyAuthority2020], that contains information about the macro- and micronutrient content per 100 g of commonly consumed foods in Norway. If an ingredient in a recipe was not in the Norwegian database, the US equivalent, Agricultural Research Service FoodData Central food database [@foodDataCentral2019], was used. If the ingredient could not be found in either database it was exchanged for a similar ingredient, for example beef liver was used instead of veal liver.
 
-To explore potential beneficial amounts of nutrients in the recipes, the nutrient content was compared to the European Union commissions nutrition claims legislation [@TheEuropeanparliamentandthecounciloftheEuropeanUnion2006]. For micronutrients, a recipe was considered a source of the nutrient if it contained \>15% of the RDI, and a good source if it contained \>30% of the RDI per 100 g. For protein the amounts were 12 and 20 E% respectively, and for dietary fibre 3 and 6 g/MJ.
+To explore potential beneficial amounts of nutrients in the recipes, the nutrient content was compared to the European Union commissions nutrition claims legislation [@TheEuropeanparliamentandthecounciloftheEuropeanUnion2006]. For micronutrients, a recipe was considered a source of the nutrient if it contained \>15% of the RDI of an adult Norwegian woman [@Helsedirektoratet2014], and a good source if it contained \>30% of the RDI per 100 g. For protein the amounts were 12 and 20 E% respectively, and for dietary fibre 3 and 6 g/MJ.
 
 To calculate a recipe's environmental impact, the SHARP Indicators database was used [@Mertens2019]. The SHARP Indicators database is a public database of certain environmental impacts of different foods, namely greenhouse gas emissions (in kilo CO~2~ equivalents) and land use (in m^2^ pr year) per kg of an ingredient/food. The database includes information on 944 foods commonly consumed in the four European countries Denmark, Czech Republic, Italy and France. The environmental impact in the database comes from life-cycle inventory data on 182 primary products, and many composite foods based on these primary products. These LCAs included the environmental impacts of primary production of the food, and the impact of its packaging, transport to supermarket/consumer, storage at the supermarket/consumer, final preparation and any waste produced throughout.
 
@@ -40,7 +24,7 @@ For both the sustainability markers and nutritional information, values were nor
 
 ## Recipe healthiness
 
-Recipes were scored on how well they adhered to the dietary guidelines supplied by the WHO and the NNR, see **Table** \@ref(tab:guidelines-points-table). A recipe would receive one point for each recommendation in the guideline it adhered to, giving a total score between 0-6. For example a recipe could score one point for having between 15-30% E% coming from fat. A higher score indicates higher adherence to the guideline.
+Recipes were scored on how well they adhered to the dietary guidelines supplied by the WHO [@WHOdietaryguidelines] and the NNR [@NordicCouncilofMinisters2014], see **Table** \@ref(tab:guidelines-points-table). A recipe would receive one point for each recommendation in the guideline it adhered to, giving a total score between 0-6. For example a recipe could score one point for having between 15-30% E% coming from fat. A higher score indicates higher adherence to the guideline.
 
 ```{r guidelines-points-table}
 #Has problems with %
@@ -61,14 +45,14 @@ For these analyses, energy providing nutrients fat, saturated fat, carbohydrates
 
 Energy percentage of each of the nutrients were found by first calculating the amount of kilocalories provided by each nutrient: multiplying the amount in grams of fat and saturated fat by nine, and for carbohydrates, sugar added sugar and protein by four. This was then divided by the total amount of kilocalories per 100 g and multiplied by 100. Grams of fibre per MJ was found by dividing the amount of fibre in grams by the energy in MJ.
 
-Additionally, the recipes were assessed as to how well they adhered to the UK Food Standard Agency multiple traffic light system (FSA MTL), and the French Nutriscore system (used in several countries in Europe). These scoring systems are front of pack nutrition labels, that have been created to provide consumers at-a-glance information about a single food's nutrient qualities and guide healthier food choices. The FSA MTL looks at a food's fat, saturated fat, sugar and salt content, and gives each category a score between green "low", amber "medium" and red "high" depending on how much of the nutrient the food contains per 100 g, see **Table** \@ref(tab:traffic-lights-points-table). Consumers are advised to choose foods with more green and amber than red [@BritishNutritionFoundation2019]. Foods with mostly green is a "healthier choice", foods with all or mostly amber can be eaten "most of the time", and foods with mostly red should be eaten less often and in low amounts. The original FSA MTL gives a score of 1 for "low", 2 for "medium" and 3 for "high", and a food can score between 4-12, with a lower score being a healthier choice. To be in line with the dietary guideline recommendations where a higher score indicates better adherence, an inverted scoring system for the FSA MTL will be used for the analyses in this thesis. This means that a total score of seven or more will correspond to a food having mostly amber colored nutrients (three amber and one red) and can be eaten "most of the time".
+Additionally, the recipes were assessed as to how well they adhered to the UK Food Standard Agency multiple traffic light system (FSA MTL), and the French Nutriscore system (used in several countries in Europe). These scoring systems are front of pack nutrition labels, that have been created to provide consumers at-a-glance information about a single food's nutrient qualities and guide healthier food choices. The FSA MTL looks at a food's fat, saturated fat, sugar and salt content, and gives each category a score between green "low", amber "medium" and red "high" depending on how much of the nutrient the food contains per 100 g, see **Table** \@ref(tab:traffic-lights-points-table). Consumers are advised to choose foods with more green and amber than red [@BritishNutritionFoundation2019]. Foods with mostly green is a "healthier choice", foods with all or mostly amber can be eaten "most of the time", and foods with mostly red should be eaten less often and in low amounts. In a previous study by Howard et al. [@Howard2012] a score of 1 was used for "low", 2 for "medium" and 3 for "high", and a food could score between 4-12, with a lower score being a healthier choice. To be in line with the dietary guideline recommendations where a higher score indicates better adherence, an inverted scoring system for the FSA MTL was used for the analyses in this thesis. This means that a total score of seven or more will correspond to a food having mostly amber colored nutrients (three amber and one red) and can be eaten "most of the time".
 
 ```{r traffic-lights-points-table}
 guidelines_trafficlights %>%
       select(Feature, `Green/low`, `Amber/medium`, `Red/high`) %>%
       filter(!Feature %in% c('Carbohydrate', 'Dietary fibre', 'Protein')) %>%
   #LaTeX less than or equal to sign
-  mutate_at(c("Green/low", "Amber/medium", "Red/high"), ~str_replace(., "≤", "$\\leq$")) %>%
+  mutate(across(everything(), ~str_replace(., "<=", "$\\\\leq$"))) %>%
   rename(Nutrient = Feature,
          `Healthier choice` = `Green/low`,
          `Can be eaten most of the time` = `Amber/medium`,
@@ -76,44 +60,58 @@ guidelines_trafficlights %>%
   
   kbl(booktabs = TRUE, linesep = "", escape = FALSE, caption = "Scoring system for the UK Food Standard Agency multiple traffic light system") %>%
   add_header_above(c(" ", "Green/Low" = 1, "Amber/Medium" = 1, "Red/High" = 1)) %>%
-  kable_classic_2(full_width = FALSE) %>%
   kable_styling(latex_options = "hold_position")
 ```
 
-The Nutriscore is similar, but it builds on the FSA MTL by also taking into account the amount of energy and protein in a food, in addition to the amount of fibre, fruit, vegetables, pulses and nuts and the healthy fats olive oil, rapeseed oil and walnut oil [@Chantal2017; @Hercberg2021]. In the Nutriscore system, a food can receive between 0-10 points for each of the "disqualifying" categories energy, added sugar, saturated fat and sodium, and 0-5 points for the "qualifying" categories of protein, fibre, and the percentage of fruit, vegetables, pulses and nuts and the healthy fats olive oil, rapeseed oil and walnut oil per 100 g of the food. In contrast from the FSA MTL, the Nutriscore is a summary score and does not provide the consumer with the individual scores from each category.
+The Nutriscore is similar, but it builds on the FSA MTL by also taking into account the amount of energy and protein in a food, in addition to the amount of fibre, fruit, vegetables, pulses and nuts and the healthy fats olive oil, rapeseed oil and walnut oil [@Chantal2017; @Hercberg2021]. In the Nutriscore system, a food can receive between 0-10 points for each of the "disqualifying" categories energy, added sugar, saturated fat and sodium, and 0-5 points for the "qualifying" categories of protein, fibre, and the percentage of fruit, vegetables, pulses and nuts and the healthy fats olive oil, rapeseed oil and walnut oil per 100 g of the food [@NutriscoreGuidelines]. In contrast from the FSA MTL, the Nutriscore is a summary score and does not provide the consumer with the individual scores from each category.
 
-The points from the qualifying categories are subtracted from the points from the disqualifying categories, see **Table** \@ref(tab:nutriscore-points-table), giving a total score between -15 to +40, and a lower score indicates a more healthy and nutritious food. The points correspond to a colored grading system between a dark green A (most healthy) and a dark orange E (least healthy). Consumption of foods that score green/A, is encouraged, while consumption of foods that score dark orange/E is advised to be limited [@Dreano-Trecant2020]. As with the FSA MTL, an inverted scoring system is used in the analyses in this thesis. An inverted score of minus two or more, corresponding to a light green B or dark green A, was chosen as the cut-off for a food that could be eaten often as part of a healthy diet. This score has also previously been used to study if the Nutriscore is in alignment with national food based dietary guidelines [@Ahmed2020].
+The points from the qualifying categories are subtracted from the points from the disqualifying categories, see **Table** \@ref(tab:nutriscore-points-table), giving a total score between -15 to +40, and a lower score indicates a more healthy and nutritious food. The points correspond to a colored grading system between a dark green A (most healthy) and a dark orange E (least healthy). Consumption of foods that score green/A, is encouraged, while consumption of foods that score dark orange/E is advised to be limited [@Dreano-Trecant2020]. As with the FSA MTL, an inverted scoring system is used in the analyses in this thesis. An inverted score of minus two or more, corresponding to a light green B or dark green A, was chosen as the cut-off for a food that could be eaten often as part of a healthy diet. This score has also previously been used to study if the Nutriscore is in alignment with national FBDGs [@Ahmed2020].
 
+\begin{landscape}
 ```{r nutriscore-points-table}
 nutriscore_points %>%
-  kbl(booktabs = TRUE, linesep = "", escape = TRUE, caption = "Scoring system for Nutriscore.") %>%
-  kable_classic_2(full_width = FALSE) %>%
+  mutate(across(everything(), ~str_replace(., "<=", "$\\\\leq$"))) %>%
+  #Add units
+  mutate(`Energy density (kJ/100g)` = paste0(`Energy density (kJ/100g)`, " kJ"),
+         
+         across(c(`Added sugars (g/100g)`, `Saturated fat (g/100g)`),
+                ~paste0(., " g")),
+         
+         across(c(`Fibre (g/100g)`, `Protein (g/100g)`), ~case_when(!str_detect(., "-") ~ paste0(., " g"),
+                                                                   TRUE ~ .)),
+         `Sodium (mg/100g)` = paste0(`Sodium (mg/100g)`, " mg"),
+         
+         `Fruits, vegetables, pulses, nuts and rapeseed, walnut and olive oils (%)` = case_when(
+           !str_detect(`Fruits, vegetables, pulses, nuts and rapeseed, walnut and olive oils (%)`, "-") ~ paste0(`Fruits, vegetables, pulses, nuts and rapeseed, walnut and olive oils (%)`, " \\%"),
+           TRUE ~ `Fruits, vegetables, pulses, nuts and rapeseed, walnut and olive oils (%)`)
+         ) %>%
+  
+    #KableExtra
+kbl(booktabs = TRUE, linesep = "", format = "latex", escape = FALSE, caption = "Scoring system for Nutriscore.",
+      col.names = c("Points", "Energy density", "Added sugars", "Saturated fat", "Sodium", "Fruits, vegetables, pulses, nuts and rapeseed, walnut and olive oils", "Dietary fibre", "Protein")
+      ) %>%
+  #kable_classic_2(full_width = FALSE) %>%
   kable_styling(latex_options = c("scale_down", "hold_position")) %>%
   add_header_above(c(' ' = 1, 'Disqualifying' = 4, 'Qualifying' = 3)) %>%
   #Linebreak for long column names
   column_spec(2:4, width = "3cm") %>%
   column_spec(c(5, 7, 8), width = "2.5cm") %>%
-  column_spec(6, width = "5cm")
+  column_spec(6, width = "4cm")
+
 ```
+\end{landscape}
 
 The percentage of fruit, vegetables, pulses, nuts and healthy fats were found by summing the amounts of ingredients found in the food groups "Fruit and fruit products", "Vegetable and vegetable products", "Fruit/vegetable juice and nectar" and "Legumes, nuts, seeds" from the SHARP Indicator database, in addition to the amounts of olive, rapeseed and walnut oil per 100 g of the recipe.
-
-```{r foodgroups-table}
-#Foodgroups in SHARP
-#standardKbl(tidy_ingredients %>%
-#  select(Foodgroup) %>% unique() %>% arrange(., Foodgroup), caption = "Foodgroups included in SHARP Indicators database.") %>%
-#  kable_styling(latex_options = "hold_position")
-```
 
 ## Statistical analyses
 
 ### Missing data
 
-Ingredients with no amounts were replaced with the mean value of that ingredient in all other recipes, normalized to per 100 g of the recipe. If this was not possible, ingredients were left out of the analyses. Ingredients that could not be found in the nutrient or sustainability databases were if possible exchanged for a similar ingredient, or left out.
+Ingredients with no amounts were replaced with the mean value of that ingredient in all other recipes, normalized to per 100 g of the recipe. If this was not possible, ingredients were left out of the analyses. Ingredients that could not be found in the nutrient or sustainability databases were if possible exchanged for a similar ingredient, or left out. If more than 10% of the recipe in weight could not be mapped to either the food composition table or SHARP Indicators database, the recipe was left out.
 
 ### Significant differences between countries
 
-Significant differences in energy per 100 g, macronutrient content in percentage of energy, micronutrient content in percentage of required daily intake of an adult woman, healthiness scores and sustainability indicators between recipes from the different countries were assessed using the Kruskal-Wallis test. A Dunn's test was performed *post-hoc*, and to account for multiple testing the Benjamini Hochberg (BH) method was used. An adjusted p value \< 0.05 was considered significant. 
+Significant differences in energy per 100 g, macronutrient content in percentage of energy, micronutrient content in percentage of the RDI of an adult woman in Norway [@Helsedirektoratet2014], healthiness scores and sustainability indicators between recipes from the different countries were assessed using the Kruskal-Wallis test. A Dunn's test was performed *post-hoc*, and to account for multiple testing the Benjamini Hochberg (BH) method was used. An adjusted p value \< 0.05 was considered significant.
 
 All tests were done using the rstatix package v. 0.7.0 [@Kassambara2021].
 
