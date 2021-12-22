@@ -8,8 +8,8 @@ plot_legends <- list() #For shared legends
 plot_titles <- list() #For shared titles
 plots$final <- list() #For plots that needs extra tweaking   
 
-#GGplot theme
-theme_set(theme_bw())
+#GGplot theme, allows for markdown syntax in strip.text ggplot elements
+theme_set(theme_bw()) +theme_replace(strip.text = ggtext::element_markdown(), strip.text.y = ggtext::element_markdown(angle = 270))
 
 #Read data
 data_recipes <- readRDS('./Data/output/recipes_for_analysis.Rds') %>% #Nutrient content/sustainability indicators pr 100g recipe
@@ -132,18 +132,22 @@ temp <- readRDS('./Data/output/missing_data2.Rds') #Read data from cleanup scrip
   #Capture legends
   plot_legends$data_completeness <- get_legend(
     plots$data_completeness$nutrients +  
-      guides(color = guide_legend(nrow = 3)) +
-      theme(legend.position = "right")
+      guides(color = guide_legend(nrow = 1)) +
+      theme(legend.position = "bottom")
   )
   #Final plot
-  plots$final$data_completeness <- plot_grid(plots$data_completeness$nutrients + theme(legend.position  = 'none'),
-                                             plots$data_completeness$environment + theme(legend.position = 'none'),
-                                             plot_legends$data_completeness,
-                                             
-                                             #Labels, number of rows and relative width of plots
-                                             labels = c('A', 'B', ''),
-                                             nrow = 1,
-                                             rel_widths = c(1,1,0.3))
+  #Without legend
+  temp <- plot_grid(plots$data_completeness$nutrients + theme(legend.position  = 'none'),
+                    plots$data_completeness$environment + theme(legend.position = 'none'),
+                    
+                    #Labels, number of rows and relative width of plots
+                    labels = c('A', 'B'),
+                    nrow = 1,
+                    rel_widths = c(1,1))
+  #With legend
+  plots$final$data_completeness <- plot_grid(temp, plot_legends$data_completeness,
+                                             nrow = 2,
+                                             rel_heights = c(9,1))
   #Save
   save_plot('./thesis/images/data_completenes_plot.png', plots$final$data_completeness,
             base_height = 5, base_width = 12)
@@ -292,12 +296,75 @@ temp <- health_indicators %>%
                cols = -c(sample_id, group, Source),
                names_to = 'feature',
                values_to = 'value') %>%
-  group_by(feature, value) %>%
+  group_by(feature, value, group) %>%
   summarise(n = n()) %>%
-  #In pct
-  mutate(sum = sum(n)) %>%
   ungroup() %>%
-  mutate(pct = round(n/sum*100, 1))
+  #Calculate pct, add total number of recipes
+  inner_join(., data_recipes %>% select(sample_id, group) %>% group_by(group) %>% summarise(sum = n()) %>% ungroup()) %>%
+  #Add totals for all countries for each indicator
+  bind_rows(., health_indicators %>%
+               filter(feature != 'inverted_nutriscore') %>%
+               mutate(value = as.character(value)) %>%
+               pivot_wider(.,
+                           names_from = feature,
+                           values_from = value) %>%
+               pivot_longer(.,
+                            cols = -c(sample_id, group, Source),
+                            names_to = 'feature',
+                            values_to = 'value') %>%
+               group_by(feature, value) %>%
+               summarise(n = n()) %>%
+               ungroup() %>% mutate(group = 'All countries',
+                                    sum = nrow(data_recipes))) %>%
+  mutate(pct = n/sum*100) %>%
+  mutate(pct = sprintf(pct, fmt = '%#.1f')) %>%
+  mutate(pct = paste0(pct, ' %')) %>%
+  #Format for thesis
+  mutate(feature = feature %>%
+           str_replace('inverted_nutriscore', 'Inverted Nutriscore') %>%
+           str_replace('nnr_score', 'Nordic Nutritional\nRecommendations') %>%
+           str_replace('who_score', 'World Health Organization\nRecommendations') %>%
+           str_replace('inverted_traffic_score', 'Inverted Multiple\nTraffic Light Model') %>%
+           str_replace('nutriscore_letter', 'Nutriscore')) %>%
+  select(feature, group, value, pct) %>%
+  #Split on feature to format each indicator separately
+  group_by(feature) %>% group_split() %>%
+  #Pivot wider
+  lapply(., function(x) {x %>% pivot_wider(., names_from = c(group, feature), values_from = pct)})
+
+#Add empty rows to nutriscore before col_bind
+temp[[3]] <- temp[[3]] %>%
+  add_row() %>%
+  add_row() %>%
+  #Replace NA with empty space, add % for UK's E scores
+  mutate(UK_Nutriscore = case_when(
+    value == 'E' ~ '0.0 %',
+    TRUE ~ UK_Nutriscore
+  )) %>%
+  replace(is.na(.), ' ')
+
+#Order by descending score
+temp[[2]] <- temp[[2]] %>%
+  arrange(desc(value))
+temp[[4]] <- temp[[4]] %>%
+  arrange(desc(value))
+temp[[1]] <- temp[[1]] %>%
+  mutate(value = factor(value, levels = c(12, 11, 10, 9, 8 , 7, 6))) %>%
+  arrange(value)
+
+#Add 0 % to other indicators where no recipes has that score, and order from best to lowest score
+temp <- lapply(temp, function(x) {x %>% replace(is.na(.), '0.0 %')})
+
+pct_recipes_healthiness_scores <- bind_cols(temp) %>%
+  #Fix column names
+  rename(
+    `Score_Inverted Multiple\nTraffic Light Model` = value...1,
+    `Score_Nordic Nutritional\nRecommendations` = value...6,
+    `Score_Nutriscore` = value...11,
+    `Score_World Health Organization\nRecommendations` = value...16
+  ) %>%
+  select(ends_with('Inverted Multiple\nTraffic Light Model'), ends_with('Nutriscore'), ends_with('Nordic Nutritional\nRecommendations'), ends_with('World Health Organization\nRecommendations'))
+
 
 #Count the number of recipes that are a source of nutrients (>15% of RDI for micronutrients, >12% of energy for protein) and a good source (>30% of RDI for micronutrients, >20 % energy from protein)
 source_of_nutrients_table <- various$with_RDI %>%
@@ -331,6 +398,38 @@ source_of_nutrients_table <- various$with_RDI %>%
   select(-temp) %>%
   #Add the total number of recipes from each country
   inner_join(., data_recipes %>% select(sample_id, group) %>% group_by(group) %>% summarise(n = n()) %>% ungroup()) %>%
+  #Add the number of recipes for all countries that are sources
+  bind_rows(., various$with_RDI %>%
+              #Add protein
+              bind_rows(., various$with_energy_pct_densityMJ %>% filter(feature %in% c('Protein', 'Dietary fibre'))) %>%
+              #fill missing country and source information
+              group_by(sample_id) %>% fill(., c(group, Source)) %>% ungroup() %>%
+              #Find sources and good sources
+              mutate(nutrient_source = case_when(
+                #Protein
+                feature == 'Protein' & value > 20 ~ 'good_source',
+                feature == 'Protein' & value > 12 ~ 'source',
+                #Fibre
+                feature == 'Dietary fibre' & value > 6 ~ 'good_source',
+                feature == 'Dietary fibre' & value > 3 ~ 'source',
+                #Micronutrients
+                feature != 'Protein' & value >= 30 ~ 'good_source',
+                feature != 'Protein' & value >= 15 ~ 'source'
+              )) %>%
+              #Filter non-source nutrients
+              filter(!is.na(nutrient_source)) %>%
+              #Count the number of recipes that are either sources or good sources
+              group_by(feature, nutrient_source) %>%
+              summarise (n = n()) %>%
+              #Format to have the percent of recipes that are sources with the percent of recipes that are good sources in ()
+              ungroup() %>%
+              pivot_wider(., names_from = nutrient_source, values_from = n) %>%
+              rename(temp = source) %>%
+              replace_na(list(temp = 0, good_source = 0)) %>%
+              mutate(source = temp + good_source,
+                     group = 'All countries',
+                     n = nrow(data_recipes)) %>%
+              select(-temp)) %>%
   #Calculate %
   mutate(pct_source = round(source/n*100),
          pct_good_source = round(good_source/n*100)) %>%
@@ -395,8 +494,8 @@ stats <- list(
   
   'kruskal_wallis_effectsize' = run_stats %>%
     group_by(feature) %>%
-    kruskal_effsize(value ~ group,
-                    ci = TRUE)
+    kruskal_effsize(value ~ group)#,
+                    #ci = TRUE)
   )
 
 #Filter out features that were significantly different in the kruskal wallis
@@ -423,7 +522,9 @@ temp <- run_stats %>%
            str_replace('inverted_traffic_score', 'Inv. Traffic Light') %>%
            str_replace('who_score', 'WHO Score') %>%
            str_replace('nnr_score', 'NNR Score') %>%
-           str_replace('keyhole_certified', 'Keyhole')
+           str_replace('keyhole_certified', 'Keyhole') %>%
+           str_replace('CO2', 'CO<sub>2</sub>') %>%
+           str_replace('Landuse', 'm<sup>2</sup>')
   ) %>%
   inner_join(., metadata) %>%
   pivot_wider(., names_from = 'feature', values_from = 'value')
@@ -654,33 +755,37 @@ plots$violinbox <- list()
   plots$violinbox$env_impact <- plotViolinBox(run_stats %>%
                   filter(feature %in% various$sustainability) %>%
                   mutate(feature = feature %>%
-                           str_replace('CO2', 'Kilo CO2 equivalents\nper 100g') %>%
-                           str_replace('Landuse', 'm2 per year\nper 100g'))) +
+                           str_replace('CO2', 'Kilo CO<sub>2</sub> equivalents\nper 100g') %>%
+                           str_replace('Landuse', 'm<sup>2</sup> per year\nper 100g'))) +
     facet_wrap(~feature, scale = 'free', ncol = 2) +
     labs(
       color = 'Country',
       x = 'Country',
-      y = 'Value'
+      y = ''
     ) +
     #Add line and p value significance
     stat_pvalue_manual(stats$dunn_test %>%
                          filter(feature %in% various$sustainability) %>%
                          mutate(feature = feature %>%
-                                  str_replace('CO2', 'Kilo CO2 equivalents\nper 100g') %>%
-                                  str_replace('Landuse', 'm2 per year\nper 100g')) %>%
+                                  str_replace('CO2', 'Kilo CO<sub>2</sub> equivalents\nper 100g') %>%
+                                  str_replace('Landuse', 'm<sup>2</sup> per year\nper 100g')) %>%
                          #Make some adjustments to the position of the pvalues
                          mutate(y.position = case_when(
-                                    group1 == 'UK' & feature == 'm2 per year\nper 100g' ~ y.position + 0.4,
-                                    group1 == 'UK' & feature == 'Kilo CO2 equivalents\nper 100g' ~ y.position + 0.4,
-                                    group1 == 'Norway' & group2 == 'US' & feature == 'Kilo CO2 equivalents\nper 100g' ~ y.position + 0.2,
+                                    group1 == 'UK' & feature == 'm<sup>2</sup> per year\nper 100g' ~ y.position + 0.35,
+                                    group1 == 'UK' & feature == 'Kilo CO<sub>2</sub> equivalents\nper 100g' ~ y.position + 0.4,
+                                    group1 == 'Norway' & group2 == 'US' & feature == 'Kilo CO<sub>2</sub> equivalents\nper 100g' ~ y.position + 0.2,
                                     TRUE ~ y.position
                                     )),
                      label = "p.adj.signif", tip.length = 0.01, hide.ns = TRUE, bracket.nudge.y = 0.2) +
-    scale_y_continuous(expand = expansion(mult = c(0.1, 0.1)))
+    scale_y_continuous(expand = expansion(mult = c(0.1, 0.1))) +
+    
+    #Place legend at the bottom
+    theme(legend.position = "bottom")
   
     #Save
     save_plot('./thesis/images/violinbox_env_impact.png', plots$violinbox$env_impact,
-              ncol = 1.7)
+              ncol = 1.7,
+              nrow = 1.5)
 
   #Per foodgroup
   temp <- tidy_ingredients %>%
@@ -716,7 +821,8 @@ plots$violinbox <- list()
                            str_replace('inverted_traffic_score', 'Inverted Multiple\nTraffic Light Model'))) + facet_wrap(~feature, scales = 'free') +
     labs(
       color = 'Country',
-      x = 'Country'
+      x = 'Country',
+      y = 'Score'
     ) +
     #Add lines and p-value significance
     stat_pvalue_manual(stats$dunn_test %>% 
@@ -736,11 +842,12 @@ plots$violinbox <- list()
                            TRUE ~ y.position
                          )),
                        label = "p.adj.signif", tip.length = 0.01, hide.ns = TRUE, bracket.nudge.y = 0.5) +
-    scale_y_continuous(expand = expansion(mult = c(0.1, 0.1)))
+    scale_y_continuous(expand = expansion(mult = c(0.1, 0.1))) +
+      theme(legend.position = "bottom")
     
     #Save
     save_plot('./thesis/images/violinbox_health_numerical.png', plots$violinbox$healthNum,
-              ncol = 1.7, nrow = 2)
+              ncol = 1.7, nrow = 2.4)
 
   # categorical, first format data
   temp <- health_indicators %>%
@@ -974,8 +1081,8 @@ plots$all_values <- list()
   plots$all_values$env <- plotViolinBox2(run_stats %>% filter(feature %in% various$sustainability) %>%
                                            #Clean up names
                                            mutate(feature = feature %>%
-                                                    str_replace('CO2', 'Kilo CO2 equivalents\nper 100g') %>%
-                                                    str_replace('Landuse', 'm2 per year\nper 100g')),
+                                                    str_replace('CO2', 'Kilo CO<sub>2</sub> equivalents\nper 100g') %>%
+                                                    str_replace('Landuse', 'm<sup>2</sup> per year\nper 100g')),
                                          x = feature, color = FALSE) + facet_wrap(~feature, scales = 'free', ncol = 1) + labs(x = '', y = '') +
     theme(axis.text.x=element_blank(),
           axis.title.x = element_blank())
@@ -1273,11 +1380,15 @@ plots$violinbox$foodgroups <- list()
       #Set y axis scale to percent
       scale_y_continuous(limits = c(0,100), labels = function(x) paste0(x, "%"))
     
+    #Legend
+    temp <- get_legend(plots$violinbox$foodgroups$others)
     
     #All together, change y axis to %
     plots$final$foodgroups <- plot_grid(plots$violinbox$foodgroups$animal_sourced %>% changeGGplotTxtSize(txt_size = 8),
                                         plots$violinbox$foodgroups$plant_based %>% changeGGplotTxtSize(txt_size = 8),
-                                        plots$violinbox$foodgroups$others %>% changeGGplotTxtSize(txt_size = 8),
+                                        plots$violinbox$foodgroups$others + theme(legend.position = "none") %>% changeGGplotTxtSize(txt_size = 8),
+                                        temp,
+                                        rel_heights = c(3,3,3,1),
                                         ncol = 1
     ) + 
     #Add shared y label
@@ -1289,7 +1400,9 @@ plots$violinbox$foodgroups <- list()
   
 # Number of recipes from each country with various protein sources----
 #Number of recipes with the ingredients
-  temp <- tidy_ingredients %>%
+    
+  #Classify by type of ingredients
+  various$recipe_protein_source <- tidy_ingredients %>%
     select(Ingredients, group, Foodgroup, sample_id) %>% unique() %>%
     
     #Separate into beef, lamb, pork, poultry, lean fish, oily fish, shellfish, vegetarian, vegan
@@ -1337,8 +1450,11 @@ plots$violinbox$foodgroups <- list()
       any(protein == 'pork') ~ 'Pork',
       all(protein == 'plants') ~ 'Vegan',
       all(vegetarian == 'vegetarian') ~ 'Vegetarian'
-      )) %>% ungroup() %>%
-    #Count by country
+      )) %>% ungroup()
+    
+    
+  #Calculate percentage of recipes from each country
+  temp <- various$recipe_protein_source %>%
     group_by(group, type) %>%
     summarise(n = n()) %>% ungroup() %>% drop_na(type) %>%
   
@@ -1367,31 +1483,34 @@ plots$barplots$protein_source <- ggplot(temp, aes(x = type, fill = group, y = pc
     theme(legend.position = c(0.1,0.85), 
           legend.background = element_rect(color = "black"))
 
-plots$barplots$protein_source
+save_plot('./thesis/images/protein_source_bar.png', plots$barplots$protein_source, nrow = 1.7, ncol = 1.7)
 
-save_plot('./thesis/images/protein_source.png', plots$barplots$protein_source, nrow = 1.7, ncol = 1.7)
+  #Violin/boxplot of the environmental impact of the recipes based on protein source
+  temp <- various$recipe_protein_source %>%
+    inner_join(tidy_recipes %>% filter(feature %in% c('CO2', 'Landuse'))) %>%
+    #Set type order for plot and use nicer feature neames
+    mutate(type = factor(type, levels = c('Beef', 'Lamb', 'Game', 'Pork', 'Poultry', 'Lean fish', 'Oily fish', 'Shellfish', 'Vegan', 'Vegetarian')),
+           feature = feature %>%
+             str_replace('CO2', 'Kilo CO<sub>2</sub> equivalents/100g') %>%
+             str_replace('Landuse', 'm<sup>2</sup>/100g')
+           )
   
+  plots$violinbox$recipe_protein_sources <- ggplot(temp, aes(x = type, y = value, color = group)) +
+      geom_boxplot(position = position_dodge(preserve = "single")) +
+      scale_color_manual(values = various$country_colors$sample_group) +
+      facet_wrap(~feature, scales = 'free', nrow = 2) +
+      labs(y = ' ',
+           x = 'Protein source',
+           color = 'Country') +
+      geom_quasirandom(dodge.width = 0.8, alpha = 0.5, size = 1) +
+    theme(legend.position = 'bottom')
+  
+  save_plot('./thesis/images/protein_source_violinbox.png', plots$violinbox$recipe_protein_sources, nrow = 2.2, ncol = 1.7)
 
 ## Tables----
 # Stats----
 #Significantly differences from dunn test
 temp <- stats$dunn_test %>% filter(p.adj <0.05)
-
-test <- stats$kruskal_wallis %>% filter(feature %in% temp$feature) %>%
-  #Add effect size
-  inner_join(., stats$kruskal_wallis_effectsize, by = 'feature') #%>%
-  #Select columns to keep
-  select(feature, effsize, conf.low, conf.high, p.adj) %>%
-  #Use <0.05, <0.01 and <0.001 from p value
-  mutate(p.adj = case_when(
-    p.adj < 0.001 ~ '<0.001',
-    p.adj < 0.01 ~ '<0.01',
-    p.adj < 0.05 ~ '<0.05',
-    TRUE ~ paste0(as.character(round(p.adj, digits = 2)))),
-    `Effect size \n (95% ci)` = paste0(round(effsize, digits = 3), ' (', round(conf.low, 3), '-', round(conf.high, 3), ')')
-  ) %>%
-  rename(`Adj. p-value` = p.adj) %>%
-  select(-c(effsize, conf.low, conf.high))
 
 #Format the relevant data
 stat_table <- list(
@@ -1546,26 +1665,5 @@ standardKbl(various$RDI %>%
 
 
 ## Save objects to be used in RMarkdown----
-save(stat_table, tidy_ingredients, guidelines_trafficlights, source_of_nutrients_table,
+save(stat_table, tidy_ingredients, guidelines_trafficlights, source_of_nutrients_table, pct_recipes_healthiness_scores,
      nutriscore_points, descriptive_stats_total, file = './Data/results_allrecipes.RData')
-
-#Descriptive stats table for results chapter
-descriptive_stats_total %>%
-  select(feature, median, IQR) %>%
-  mutate(value = paste0(median, ', ', IQR)) %>%
-  select(-c(median, IQR)) %>%
-  filter(str_detect(feature, 'nutriscore|traffic|who|nnr')) %>%
-  mutate(feature = feature %>%
-           str_replace('CO2', 'Kilo CO2 equivalents/100g') %>%
-           str_replace('Landuse', 'm2/100g') %>%
-           str_replace('inverted_nutriscore', 'Inverted Nutriscore') %>%
-           str_replace('inverted_traffic_score', 'Inverted Multiple Traffic Light Model') %>%
-           str_replace('nnr_score', 'Nordic Nutritional Recommendations') %>%
-           str_replace('who_score', 'World Health Organization Recommendations')) %>%
-           rename(` ` = feature,
-                  `Median (IQR)` = value) %>%
-  kbl(booktabs = TRUE, linesep = "", caption = "Median and interquartile range of healthiness and environmental impact indicators of all recipes.", escape = FALSE) %>%
-           kable_classic_2(full_width = FALSE) %>%
-           kable_styling(latex_options = c("hold_position"))
-
-
