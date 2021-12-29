@@ -90,7 +90,7 @@ Several studies have looked at how well recipes found in cookbooks [@Irwin2017; 
 
 ## Thesis aims
 
-This thesis aims to look at a selection of recipes from the United Kingdom (UK), Norway and the United States of America (US), from cookbooks (UK) and the Internet (Norway, US), and compare two domains of sustainable diets, namely health and environmental sustainability. To build on previous research on recipe's healthiness, micronutrient content will also be included in the analyses. The following research questions are asked:
+This thesis aim to explore a selection of recipes from the United Kingdom (UK), Norway and the United States of America (US), from cookbooks (UK) and the Internet (Norway, US), and compare two domains of sustainable diets, namely health and environmental sustainability. To build on previous research on recipe's healthiness, micronutrient content will also be included in the analyses. The following research questions are asked:
 
 1: How well do recipes from Norway, the UK and the US comply with healthy dietary guideline principles?
 
