@@ -14,13 +14,15 @@ theme_set(theme_bw()) +theme_replace(strip.text = ggtext::element_markdown(), st
 #Read data
 data_recipes <- readRDS('./Data/output/recipes_for_analysis.Rds') %>% #Nutrient content/sustainability indicators pr 100g recipe
   #Remove non-dinner recipes
-  filter(!sample_id %in% c('Baklava (Turkey)', 'Sausage Lunch', 'Half-fermented trout', 'Straight trout', 'Fruit Package'))
+  filter(!sample_id %in% c('Baklava (Turkey)', 'Sausage Lunch', 'Half-fermented trout', 'Straight trout', 'Fruit Package')) %>%
+  arrange(group) #Set order of countries for plot legends
 
 data_ingredients <- readRDS('./Data/output/ingredients_for_analysis.Rds') %>% #Nutrient content/sustainability indicators for every ingredient pr 100g recipe
   rename(Foodgroup = L1) %>%
   select(-FoodEx2) %>%
   #Remove non-dinner recipes
-  filter(!sample_id %in% c('Baklava (Turkey)', 'Sausage Lunch', 'Half-fermented trout', 'Straight trout', 'Fruit Package'))
+  filter(!sample_id %in% c('Baklava (Turkey)', 'Sausage Lunch', 'Half-fermented trout', 'Straight trout', 'Fruit Package')) %>%
+  arrange(group) #Set order of countries for plot legends
 
 #Turn tidy
 tidy_recipes <- data_recipes %>%
@@ -55,7 +57,7 @@ tidy_ingredients <- data_ingredients %>%
   ) %>% replace_na(list(Foodgroup = 'Unknown'))
 
 #Recipe metadata
-metadata <- readRDS('./Data/output/recipe_metadata.Rds')
+metadata <- readRDS('./Data/output/recipe_metadata.Rds') %>% arrange(group)
 #remove Source from df
 data_recipes <- data_recipes %>% select(-Source)
 
@@ -190,7 +192,7 @@ health_indicators <- temp %>% reduce(full_join, by = c('sample_id', 'group')) %>
   #Add back Source metadata
   inner_join(., metadata) %>%
   #Remove keyhole
-  filter(feature != 'keyhole_certified')
+  filter(feature != 'keyhole_certified') %>% arrange(group)
 
 ## Statistical analyses----
 #Prep
@@ -873,7 +875,7 @@ plots$violinbox <- list()
   #plot
   plots$violinbox$healthCat <- ggplot(temp, aes(x = value, y = pct, fill = group)) +
     geom_bar(stat="identity", position = 'dodge') +
-    scale_fill_manual(values = group_colors) +
+    scale_fill_manual(values = various$country_colors$sample_group) +
     facet_wrap(~feature, scales = 'free_x') +
   
     labs(
@@ -1151,14 +1153,15 @@ plots$raw_scores <- list()
       
     )) %>%
     #Factor and releven
-    mutate(feature = factor(feature, levels = c('Kilojoules', 'Sugar', 'Saturated\nFat', 'Sodium', '% of fruit, vegetables,\noils, legumes and nuts', 'Dietary\nfibre', 'Protein')))
+    mutate(feature = factor(feature, levels = c('Kilojoules', 'Sugar', 'Saturated\nFat', 'Sodium', '% of fruit, vegetables,\noils, legumes and nuts', 'Dietary\nfibre', 'Protein')),
+           group = factor(group, levels = c('Norway', 'UK', 'US'))) %>%
+    arrange(group)
    
   #Diqualyfing 
   plots$raw_scores$nutriscore_disq <- ggplot(temp %>% filter(quali == 'Disqualifying'), aes(x = feature, y = nutriscore_raw, color = group)) +
     geom_boxplot(position = position_dodge(1)) +
     #geom_half_boxplot(side = 'r') + geom_half_violin() +
-    scale_color_manual(values = group_colors) +
-    scale_fill_manual(values = group_colors) +
+    scale_color_manual(values = various$country_colors$sample_group) +
     
     #Fix labs and axis
     labs(
@@ -1173,8 +1176,7 @@ plots$raw_scores <- list()
   plots$raw_scores$nutriscore_qual <- ggplot(temp %>% filter(quali == 'Qualifying'), aes(x = feature, y = nutriscore_raw, color = group)) +
     geom_boxplot(position = position_dodge(1)) +
     #geom_half_boxplot(side = 'r') + geom_half_violin() +
-    scale_color_manual(values = group_colors) +
-    scale_fill_manual(values = group_colors) +
+    scale_color_manual(values = various$country_colors$sample_group, breaks = c('Norway', 'UK', 'US'), labels = c('Norway', 'UK', 'US')) +
     
     #Fix labs and axis
     labs(
@@ -1211,8 +1213,8 @@ plots$raw_scores <- list()
   plots$raw_scores$mtl <- ggplot(temp, aes(x = feature, y = inverted_traffic_light_rating, color = group)) +
     geom_boxplot(position = position_dodge(1)) +
     #geom_half_boxplot(side = 'r') + geom_half_violin() +
-    scale_color_manual(values = group_colors) +
-    scale_fill_manual(values = group_colors) +
+    scale_color_manual(values = various$country_colors$sample_group) +
+    scale_fill_manual(values = various$country_colors$sample_group) +
     
     #Fix labs and axis
     labs(
@@ -1250,7 +1252,7 @@ plots$raw_scores <- list()
     geom_bar(stat="identity", position = position_dodge(0.95)) +
     
     #Fix colors and labs
-    scale_fill_manual(values = group_colors) +
+    scale_fill_manual(values = various$country_colors$sample_group) +
     labs(fill = 'Country',
          y = 'Percentage of recipes that fulfill criteria') + theme(axis.title.x = element_blank()) +
     #Add % to y axis, and increase y axis to allow for text on top of bars
@@ -1282,7 +1284,7 @@ plots$raw_scores <- list()
     geom_bar(stat="identity", position = position_dodge(0.95)) +
     
     #Fix colors and labs
-    scale_fill_manual(values = group_colors) +
+    scale_fill_manual(values = various$country_colors$sample_group) +
     labs(fill = 'Country',
          y = 'Percentage of recipes that fulfill criteria') + theme(axis.title.x = element_blank()) +
     #Add % to y axis, and increase y axis to allow for text on top of bars
@@ -1320,7 +1322,7 @@ plots$violinbox$foodgroups <- list()
   plots$violinbox$foodgroups$animal_sourced <- ggplot(temp, aes(x = Foodgroup, y = value, color = group)) +
       geom_half_violin() + 
       geom_half_boxplot(side = 'r') +
-      scale_color_manual(values = group_colors) +
+      scale_color_manual(values = various$country_colors$sample_group) +
       labs(y = ' ') +
       theme(axis.title.x = element_blank(),
           #axis.title.y = element_blank(),
@@ -1345,7 +1347,7 @@ plots$violinbox$foodgroups <- list()
     plots$violinbox$foodgroups$plant_based <- ggplot(temp, aes(x = Foodgroup, y = value, color = group)) +
       geom_half_violin() + 
       geom_half_boxplot(side = 'r') +
-      scale_color_manual(values = group_colors) +
+      scale_color_manual(values = various$country_colors$sample_group) +
       labs(y = ' ') +
       theme(axis.title.x = element_blank(),
             #axis.title.y = element_blank(),
@@ -1370,8 +1372,8 @@ plots$violinbox$foodgroups <- list()
     #Plot
     plots$violinbox$foodgroups$others <- ggplot(temp, aes(x = Foodgroup, y = value, color = group)) +
       geom_half_violin() + 
-      geom_half_boxplot(side = 'r') +
-      scale_color_manual(values = group_colors) +
+      geom_half_boxplot(side = 'r',position = position_dodge2(preserve = "single")) +
+      scale_color_manual(values = various$country_colors$sample_group) +
       labs(y = ' ',
            color = 'Country') +
       theme(axis.title.x = element_blank(),
@@ -1379,6 +1381,8 @@ plots$violinbox$foodgroups <- list()
             legend.position = "bottom")+
       #Set y axis scale to percent
       scale_y_continuous(limits = c(0,100), labels = function(x) paste0(x, "%"))
+    
+    plots$violinbox$foodgroups$others
     
     #Legend
     temp <- get_legend(plots$violinbox$foodgroups$others)
@@ -1472,7 +1476,7 @@ plots$violinbox$foodgroups <- list()
 plots$barplots$protein_source <- ggplot(temp, aes(x = type, fill = group, y = pct)) +
     geom_bar(stat = 'Identity', position = position_dodge2(width = 0.9, preserve = "single")) +
     geom_text(aes(label = paste0(round(pct, 0), '%')), position = position_dodge2(width = 0.9, preserve = "single"), vjust = -0.2, size = 3) +
-    scale_fill_manual(values = group_colors) +
+    scale_fill_manual(values = various$country_colors$sample_group) +
     #Set y label to percent
     scale_y_continuous(limits = c(0,50), labels = function(x) paste0(x, "%")) +
     labs(
@@ -1488,21 +1492,33 @@ save_plot('./thesis/images/protein_source_bar.png', plots$barplots$protein_sourc
   #Violin/boxplot of the environmental impact of the recipes based on protein source
   temp <- various$recipe_protein_source %>%
     inner_join(tidy_recipes %>% filter(feature %in% c('CO2', 'Landuse'))) %>%
-    #Set type order for plot and use nicer feature neames
+    #Add a fake US recipe with game to get the right width of the quasirandom points
+    add_row(group = 'US', sample_id = 'fake', type = 'Game', Source = 'fake', feature = 'CO2', value = 3) %>%
+    add_row(group = 'US', sample_id = 'fake', type = 'Game', Source = 'fake', feature = 'Landuse', value = 5) %>%
+    #Set type order for plot and use nicer feature names
     mutate(type = factor(type, levels = c('Beef', 'Lamb', 'Game', 'Pork', 'Poultry', 'Lean fish', 'Oily fish', 'Shellfish', 'Vegan', 'Vegetarian')),
            feature = feature %>%
              str_replace('CO2', 'Kilo CO<sub>2</sub> equivalents/100g') %>%
-             str_replace('Landuse', 'm<sup>2</sup>/100g')
-           )
+             str_replace('Landuse', 'm<sup>2</sup>/100g'),
+           #Make a column to set alpha levels for plot, fake data will be invisible
+           alpha_level = case_when(
+             sample_id == 'fake' ~ 'Invisible',
+             TRUE ~ 'Visible')
+           ) %>% arrange(group)
   
-  plots$violinbox$recipe_protein_sources <- ggplot(temp, aes(x = type, y = value, color = group)) +
-      geom_boxplot(position = position_dodge(preserve = "single")) +
-      scale_color_manual(values = various$country_colors$sample_group) +
-      facet_wrap(~feature, scales = 'free', nrow = 2) +
-      labs(y = ' ',
-           x = 'Protein source',
-           color = 'Country') +
-      geom_quasirandom(dodge.width = 0.8, alpha = 0.5, size = 1) +
+  plots$violinbox$recipe_protein_sources <- ggplot() +
+    #Boxplot
+    geom_boxplot(data = temp %>% filter(!sample_id == 'fake'), aes(x = type, y = value, color = group),
+                 position = position_dodge(preserve = "single"), outlier.shape = NA) +
+    scale_color_manual(values = various$country_colors$sample_group) +
+    #Points
+    geom_quasirandom(data = temp, aes(x = type, y = value, color = group, alpha = alpha_level),
+                     dodge.width = 0.75, size = 1, varwidth = FALSE) +
+    scale_alpha_discrete(range = c(0, 0.5)) + #Set "invisible" to have zero alpha
+    facet_wrap(~feature, scales = 'free', nrow = 2) +
+    labs(y = ' ',
+         x = 'Protein source',
+         color = 'Country') +
     theme(legend.position = 'bottom')
   
   save_plot('./thesis/images/protein_source_violinbox.png', plots$violinbox$recipe_protein_sources, nrow = 2.2, ncol = 1.7)
