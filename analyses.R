@@ -455,7 +455,7 @@ source_of_nutrients_table <- various$with_RDI %>%
   arrange(Nutrient)
 
 #Count how many nutrients the recipes are sources of
-temp <- source_of_nutrients_table <- various$with_RDI %>%
+temp <- various$with_RDI %>%
   #Add protein
   bind_rows(., various$with_energy_pct_densityMJ %>% filter(feature %in% c('Protein', 'Dietary fibre'))) %>%
   #fill missing country and source information
@@ -496,8 +496,8 @@ stats <- list(
   
   'kruskal_wallis_effectsize' = run_stats %>%
     group_by(feature) %>%
-    kruskal_effsize(value ~ group)#,
-                    #ci = TRUE)
+    kruskal_effsize(value ~ group,
+                    ci = TRUE)
   )
 
 #Filter out features that were significantly different in the kruskal wallis
