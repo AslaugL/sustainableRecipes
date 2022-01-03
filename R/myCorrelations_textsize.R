@@ -36,7 +36,7 @@ myCorrelations_textsize <- function(data,mapping,...){
     #Bind together
     bind_rows(., .id = 'group')
   
-  ggplot(data = correlations, aes(x = 1, y = factor(group, levels = c('Overall Corr', 'US', 'Norway', 'UK')), color = group)) +
+  ggplot(data = correlations, aes(x = 1, y = factor(group, levels = c('Overall Corr', 'US', 'UK', 'Norway')), color = group)) +
     geom_text(aes(label=paste0(group, ": ", estimate, pvalue_star)), size = 3.5)
   
 }
