@@ -60,15 +60,19 @@ guidelines_trafficlights %>%
   
   kbl(booktabs = TRUE, linesep = "", escape = FALSE, caption = "Scoring system for the UK Food Standard Agency multiple traffic light system") %>%
   add_header_above(c(" ", "Green/Low" = 1, "Amber/Medium" = 1, "Red/High" = 1)) %>%
-  kable_styling(latex_options = "hold_position")
+  kable_styling(latex_options = "hold_position") %>%
+  kable_classic_2()
 ```
 
 The Nutriscore is similar, but it builds on the FSA MTL by also taking into account the amount of energy and protein in a food, in addition to the amount of fibre, fruit, vegetables, pulses and nuts and the healthy fats olive oil, rapeseed oil and walnut oil [@Chantal2017; @Hercberg2021]. In the Nutriscore system, a food can receive between 0-10 points for each of the "disqualifying" categories energy, added sugar, saturated fat and sodium, and 0-5 points for the "qualifying" categories of protein, fibre, and the percentage of fruit, vegetables, pulses and nuts and the healthy fats olive oil, rapeseed oil and walnut oil per 100 g of the food [@NutriscoreGuidelines]. In contrast from the FSA MTL, the Nutriscore is a summary score and does not provide the consumer with the individual scores from each category.
 
 The points from the qualifying categories are subtracted from the points from the disqualifying categories, see **Table** \@ref(tab:nutriscore-points-table), giving a total score between -15 to +40, and a lower score indicates a more healthy and nutritious food. The points correspond to a colored grading system between a dark green A (most healthy) and a dark orange E (least healthy). Consumption of foods that score green/A, is encouraged, while consumption of foods that score dark orange/E is advised to be limited [@Dreano-Trecant2020]. As with the FSA MTL, an inverted scoring system is used in the analyses in this thesis. An inverted score of minus two or more, corresponding to a light green B or dark green A, was chosen as the cut-off for a food that could be eaten often as part of a healthy diet. This score has also previously been used to study if the Nutriscore is in alignment with national FBDGs [@Ahmed2020].
 
+```{r, eval = knitr::is_latex_output(), results='asis'}
 \begin{landscape}
+```
 ```{r nutriscore-points-table}
+if(knitr::is_latex_output()){
 nutriscore_points %>%
   mutate(across(everything(), ~str_replace(., "<=", "$\\\\leq$"))) %>%
   #Add units
@@ -97,9 +101,38 @@ kbl(booktabs = TRUE, linesep = "", format = "latex", escape = FALSE, caption = "
   column_spec(2:4, width = "3cm") %>%
   column_spec(c(5, 7, 8), width = "2.5cm") %>%
   column_spec(6, width = "4cm")
+  
+} else if(knitr::is_html_output()) {
+  
+  nutriscore_points %>%
+  #Add units
+  mutate(`Energy density (kJ/100g)` = paste0(`Energy density (kJ/100g)`, " kJ"),
+         
+         across(c(`Added sugars (g/100g)`, `Saturated fat (g/100g)`),
+                ~paste0(., " g")),
+         
+         across(c(`Fibre (g/100g)`, `Protein (g/100g)`), ~case_when(!str_detect(., "-") ~ paste0(., " g"),
+                                                                   TRUE ~ .)),
+         `Sodium (mg/100g)` = paste0(`Sodium (mg/100g)`, " mg")
+         ) %>%
+  
+    #KableExtra
+kbl(booktabs = TRUE, linesep = "", escape = FALSE, caption = "Scoring system for Nutriscore.",
+      col.names = c("Points", "Energy density", "Added sugars", "Saturated fat", "Sodium", "Fruits, vegetables, pulses, nuts and rapeseed, walnut and olive oils", "Dietary fibre", "Protein")
+      ) %>%
+  kable_classic_2(full_width = FALSE) %>%
+  kable_styling(latex_options = c("scale_down", "hold_position")) %>%
+  add_header_above(c(' ' = 1, 'Disqualifying' = 4, 'Qualifying' = 3)) %>%
+  #Linebreak for long column names
+  column_spec(2:4, width = "3cm") %>%
+  column_spec(c(5, 7, 8), width = "2.5cm") %>%
+  column_spec(6, width = "4cm")
+}
 
 ```
+```{r, eval = knitr::is_latex_output(), results='asis'}
 \end{landscape}
+```
 
 The percentage of fruit, vegetables, pulses, nuts and healthy fats were found by summing the amounts of ingredients found in the food groups "Fruit and fruit products", "Vegetable and vegetable products", "Fruit/vegetable juice and nectar" and "Legumes, nuts, seeds" from the SHARP Indicator database, in addition to the amounts of olive, rapeseed and walnut oil per 100 g of the recipe.
 
