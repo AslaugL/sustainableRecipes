@@ -1,0 +1,276 @@
+# Article
+
+Unhealthy diets that lead to malnutrition is believed to be responsible for one in five adult deaths and 15% of the total adult disability adjusted lift years [@Afshin2019]. At the same time, our current food system is taking its toll on the environment. Globally, food production accounts for 70% of fresh water resources [@Shukla2019](p5), 42-61% of land resources [@Shukla2019](p6) and 21-37% of total greenhouse gas emissions (GHGE) [@Crippa2021]. Additionally there is growing awareness of how food production can negatively impact biodiversity, increase soil degradation and pollute air, water and land [@Benton2021; @RodriguezEugenio2018; @Domingo2021; @Kopittke2019]. This is the background for the need to develop diets that are both healthy and environmentally sustainable, so called "Sustainable Healthy Diets". The World Health Organization (WHO) and the Food and Agriculture Organization of the United Nations (FAO) defines a sustainable healthy diet as a diet that: "promote all dimensions of individuals' health and well being; have low environmental pressure and impact; are accessible, affordable, safe and equitable; and are culturally acceptable." [@FoodandAgricultureOrganizationoftheUnitedNations2019].
+
+Countries around the world have developed food based dietary guidelines (FBDG) to promote healthy dietary patterns in the population [@FoodandAgricultureOrganizationoftheUnitedNationsa]. A few of these include advice on how to make the diet more environmentally sustainable as well [@BrazilDietaryGuidelines2015; @HealthCanada2019; @Fødevarestyrelsen; @FoodandAgricultureOrganizationoftheUnitedNations; @Schafer2021; @Brink2019; @SwedishFood; @Seed2015]. 
+
+Several studies have found the adherence to FBDGs to be low, especially when it comes to intake of healthy foods that are promoted in said guidelines such as fruit and vegetables, legumes, whole grain cereals, nuts and seeds, fish and dairy, and unhealthy foods high in sugar, salt and/or saturated fat [@Valen2020; @Derbyshire2018; @Leme2021; @Brettschneider2021; @Kristjansdottir2009; @Bel2019; @AlThani2018; @VerlyJunior2013; @HopeAbel2021]. At a global level, intake of meat is also higher than what is necessary for good health [@Leme2021]. This consumption pattern is contributing to the environmental toll of our diets, as plant-based foods in general have a lower environmental impact than animal sourced foods [@Poore2018a].
+
+Plant-based diets rich in whole grains, legumes, nuts, fruit and vegetables with a low to moderate consumption of animal sourced foods is an advice commonly given to consumers that want to be environmentally friendly while still eating healthy [@Willett2019; @SwedishFood; @Fødevarestyrelsen; @Brink2019; @Seed2015].
+
+Cookbooks and online recipe sources provide inspiration for which meals to cook [@Doub2016]. Recipes provide a large source of food combinations used by consumers. Analysis of food and nutrient content in recipes have been suggested as a way to follow food trends and dietary patterns in a population [@Buisman2019; @Eidner2013], and to monitor the relationship between food consumption and health [@Trattner2017b]. This also applies to other domains of sustainable diets. Using recipes could be a less resource intensive method to gather dietary information than typically used food-frequency questionnaires, dietary interviews or food diaries. 
+
+Previous studies have found that recipes from cookbooks [@Irwin2017; @Howard2012; @Jones2013], supermarket magazines [@Wademan2020], food blogs [@Schneider2013; @Keogh2019; @Dickinson2018] or other Internet recipe sites [@Trattner2017a; @Jones2013; @Cheng2021] rarely comply with healthy dietary principles. Less is known about how recipes align with the other domains of sustainable diets. 
+
+In this study we aimed to explore the healthiness and environmental impact of a selection of recipes from the United Kingdom (UK), Norway and the United States of America (US), from cookbooks (UK) and the Internet (Norway, US), and compare two domains of sustainable diets, namely health and environmental impact To build on previous research on recipe's healthiness, micronutrient content will also be included in the analyses. The following research questions are asked:
+
+1: How well do recipes from Norway, the UK and the US comply with healthy dietary guideline principles?
+
+2: To what extent does a recipe's healthiness and environmental impact depend on country of origin?
+
+3: To what extent does environmental impact correlate with healthiness?
+
+## Results
+
+### Data completeness
+
+Of the 600 recipes in the dataset, 586 recipes were included in the analyses. One Norwegian recipe was excluded from analysis as it contained no ingredients for which the amount in weight could be obtained. This was a recipe for "Fresh mackerel". Five additional Norwegian recipes were excluded as they were not dinner recipes.
+
+Eight recipes (six Norwegian, two US) were not included in the analysis as \>10% of their ingredients in weight could not be mapped to the nutrient or SHARP Indicators database. The ingredients that contributed to this were sheep head, marrow bones, fish bones, bananas, plantains, pure gluten flour and tamarind juice, ingredients which would be expected to impact either the health or environmental sustainability outcomes.
+
+### Recipe nutrient content, healthiness and environmental impact
+
+Of the total 35 nutrients, healthiness and environmental sustainability indicators assessed, 21 were significantly different (BH adjusted *p*-value \<0.05) between at least two countries in the Kruskal-Wallis test, so a *post-hoc* Dunn test was performed.
+
+Recipes from the UK scored significantly better than recipes from Norway (BH adjusted *p*-value \<0.01) and the US (BH adjusted *p*-value \<0.001) on the NNR guidelines and the inverted Nutriscore (BH adjusted *p*-value \<0.05). Norway scored significantly better than the US recipes in the inverted multiple traffic light model and the NNR guidelines (BH adjusted *p*-value \<0.05).
+
+Few recipes complied with WHO and NNR guideline criteria for carbohydrates, but more were compliant with NNR than WHO criteria. In a similar manner, more recipes were compliant with protein and total fat recommendations of the NNR than WHO. For dietary fibre, saturated fat and added sugar the guideline recommendations are identical. Protein contributed most to the qualifying scores on the Nutriscore, with the median score for protein being higher than the total median score of the disqualifying components. The scores for each component of the healthiness indicators by country, see **Figure** \@ref(fig:raw-score-guidelines), **Figure** \@ref(fig:raw-score-nutriscore) and **Figure** \@ref(fig:raw-score-trafficlights) for the guidelines, Nutriscore and the MTL respectively.
+
+The US recipes had significantly higher CO~2~ emissions than recipes from both the UK (BH adjusted *p*-value \<0.01) and Norway (BH adjusted *p*-value \<0.05), and this was also the case for land requirements (BH adjusted *p*-value \<0.01).
+
+In terms of individual nutrients, the UK recipes were significantly higher in dietary fibre and vitamin C than both the US and Norwegian recipes (BH adjusted *p*-value \<0.001 and \<0.01 respectively) and significantly lower than the US recipes in protein content (BH adjusted *p*-value \<0.05). Norwegian recipes were significantly higher in vitamin B12 than both the US and the UK (BH adjusted *p*-value \<0.05). While there were other statistically significantly different micronutrients, in absolute numbers the difference between countries were negligible.
+
+For all results from the Kruskal-Wallis and Dunn's test, see **Table** \@ref(tab:stats-data-article).
+
+```{r stats-data-article}
+if(knitr::is_latex_output()){
+ stat_table %>%
+  #Escape % for LaTeX
+  mutate(Feature = Feature %>%
+           str_replace("%", "\\\\%") %>%
+           str_replace("CO2", "CO\\\\textsubscript{2}") %>%
+           str_replace("m2", "m\\\\textsuperscript{2}"),
+         `Adj. p-value.y` = str_replace_all(`Adj. p-value.y`, '<br><br>', '\n'),
+         Pairwise = str_replace_all(Pairwise, '<br><br>', '\n')
+         ) %>%
+  mutate(`Adj. p-value.y` = linebreak(`Adj. p-value.y`),
+         Pairwise = linebreak(Pairwise)) %>%
+  #Format table
+  kbl(booktabs = TRUE, linesep = "", align = c("l", "c", "c", "c", "c", "c", "l", "l"), valign = "b",
+  col.names = c(" ", "Norway", "UK", "US", "Adj. \\textit{p}-value", "Effect size (95\\% ci)", "Pairwise", "Adj. \\textit{p}-value"),
+  caption = "Kruskal Wallis and 
+      Dunn test results.", escape = FALSE, format = "latex") %>%
+  kable_styling(full_width = FALSE) %>%
+  kable_styling(latex_options = c("scale_down", "hold_position")) %>%
+      add_header_above(c(" " = 1, "Median (IQR)" = 3, "Kruskal-Wallis test, BH corrected" = 2, "Dunn test, BH corrected" = 2)) %>%
+  column_spec(7, width = "3cm", latex_valign = "p") %>%
+  column_spec(8, width = "2.5cm", latex_valign = "p") %>%
+  #Group rows together
+  pack_rows(., 'Environmental impact', 1, 2) %>%
+  pack_rows(., 'Healthiness indicators', 3, 6) %>%
+  pack_rows(., 'Macronutrients', 7, 9) %>%
+  pack_rows(., 'Vitamins', 10, 15) %>%
+  pack_rows(., 'Minerals', 16, 21) #%>%
+  #Add footnote explaining abreviations
+  #add_footnote("Abbreviations used: Inv = Inverted, NNR = New Nordic Nutritional Recommendations, WHO = World Health Organization, E% = Percentage of energy, MJ = Megajoule, RDI = Recommended daily intake.", notation = "none") 
+} else {
+  stat_table %>%
+  #Format table
+  kbl(booktabs = TRUE, linesep = "", align = c("l", "c", "c", "c", "c", "c", "l", "l"), valign = "b",
+  col.names = c(" ", "Norway", "UK", "US", "Adj. p-value", "Effect size (95% ci)", "Pairwise", "Adj. p-value"),
+  caption = "Kruskal Wallis and 
+      Dunn test results.", escape = FALSE, format = "html") %>%
+    kable_classic_2() %>%
+  kable_styling(full_width = FALSE) %>%
+    add_header_above(c(" " = 1, "Median (IQR)" = 3, "Kruskal-Wallis test, BH corrected" = 2, "Dunn test, BH corrected" = 2)) %>%
+  column_spec(7, width = "3cm") %>%
+  column_spec(8, width = "2.5cm") %>%
+  #Group rows together
+  pack_rows(., 'Environmental impact', 1, 2) %>%
+  pack_rows(., 'Healthiness indicators', 3, 6) %>%
+  pack_rows(., 'Macronutrients', 7, 9) %>%
+  pack_rows(., 'Vitamins', 10, 15) %>%
+  pack_rows(., 'Minerals', 16, 21)
+  #Add footnote explaining abreviations
+  #add_footnote("Abbreviations used: Inv = Inverted, NNR = New Nordic Nutritional Recommendations, WHO = World Health Organization, E% = Percentage of energy, MJ = Megajoule, RDI = Recommended daily intake.", notation = "none")
+  
+}
+```
+
+### Dinner meals as a source of nutrients
+
+The majority of recipes were a source of at least one nutrient, with the most common nutrient being protein. Nearly all recipes from each country were considered a source of protein, and the majority were considered good sources of protein. Most recipes were also a source of phosphorus, and more than half of the recipes in each country were a source of vitamin B12. 
+
+About twice the number of recipes from the UK were considered a source (41%) or a good source (9%) of dietary fibre compared to recipes from Norway or the US. There were also about twice the percentage of recipes from the UK compared to the other countries that were sources of Vitamin A (23%), both retinol and beta-carotene, vitamin C (44%), folate (7%), iron (8%) and magnesium (11%) although the percentage of recipes that were good sources were more similar between countries. Norway had more than twice the percentage of recipes than the UK or the US that were either a source (14%) or a good source (10%) of iodine, and also a higher percentage of recipes that were sources of selenium and Vitamin D.
+
+Less than 10% of recipes from any country were sources of retinol, beta-carotene, riboflavin, folate, iron or potassium.
+
+See **Table** \@ref(tab:recipes-as-sources-of-nutrients-article).
+
+```{r recipes-as-sources-of-nutrients-article}
+if(knitr::is_latex_output()){
+source_of_nutrients_table %>%
+  #Add footnote markers to nutrients
+  mutate(Nutrient = case_when(
+    Nutrient == 'Protein' ~ paste0(Nutrient, footnote_marker_alphabet(1, format = "latex")),
+    Nutrient == 'Dietary fibre' ~ paste0(Nutrient, footnote_marker_alphabet(2, format = "latex")),
+    TRUE ~ paste0(Nutrient, footnote_marker_alphabet(3, format = "latex"))
+  )) %>% rename(` ` = Nutrient) %>%
+  mutate(across(everything(),~str_replace_all(., "%", "\\\\%"))) %>%
+  kbl(booktabs = TRUE, linesep = "", align = c("l", "c", "c", "c", "c"),
+      caption = "The percentage of recipes from each country that could be classified as a source of a specific nutrient, with the percentage of recipes that were classified as a good source in parantheses.", escape = FALSE, format = "latex") %>%
+  kable_styling(latex_options = c("hold_position"), full_width = FALSE) %>%
+    #Group rows based on nutrients
+    pack_rows('Macronutrients', 1,2) %>%
+    pack_rows('Fat soluble vitamins', 3, 7) %>%
+    pack_rows('Water soluble vitamins', 8, 14) %>%
+    pack_rows('Minerals', 15, 24) %>%
+  #Add footnote information
+  footnote(general = 'A recipe is a source or a good source of a nutrient if it contains respectively:',
+    alphabet = c('>12 or >20 % energy from the nutrient.', '>3 or >6 g/MJ.', '>15 or >30 % recommended daily intake of the nutrient.'))
+} else {
+  source_of_nutrients_table %>%
+  #Add footnote markers to nutrients
+  mutate(Nutrient = case_when(
+    Nutrient == 'Protein' ~ paste0(Nutrient, footnote_marker_alphabet(1, format = "html")),
+    Nutrient == 'Dietary fibre' ~ paste0(Nutrient, footnote_marker_alphabet(2, format = "hmtl")),
+    TRUE ~ paste0(Nutrient, footnote_marker_alphabet(3, format = "html"))
+  )) %>% rename(` ` = Nutrient) %>%
+  kbl(booktabs = TRUE, linesep = "", align = c("l", "c", "c", "c", "c"),
+      caption = "The percentage of recipes from each country that could be classified as a source of a specific nutrient, with the percentage of recipes that were classified as a good source in parantheses.", escape = FALSE, format = "html") %>%
+    kable_classic_2() %>%
+  kable_styling(full_width = FALSE) %>%
+    #Group rows based on nutrients
+    pack_rows('Macronutrients', 1,2) %>%
+    pack_rows('Fat soluble vitamins', 3, 7) %>%
+    pack_rows('Water soluble vitamins', 8, 14) %>%
+    pack_rows('Minerals', 15, 24) %>%
+  #Add footnote information
+  footnote(general = 'A recipe is a source or a good source of a nutrient if it contains respectively:',
+    alphabet = c('>12 or >20 % energy from the nutrient.', '>3 or >6 g/MJ.', '>15 or >30 % recommended daily intake of the nutrient.'))
+}
+```
+
+### Protein sources used
+
+Red meat (beef, lamb, game and pork) were the most used sources of protein in the recipes from all countries, while seafood (lean fish, oily fish and shellfish) were the second most used in the recipes from the UK and Norway and white meat (poultry) the second most used in the recipes from the US. Few recipes were vegan, and the UK had the most vegetarian recipes (**Figure** \@ref(fig:protein-sources-bar-article)). Per 100 grams, recipes from the US had the most meat and meat based products (not shown).
+
+```{r protein-sources-bar-article, fig.cap = "Percentage of recipes that used various animal protein sources, or were vegan or vegetarian.", out.width="100%"}
+knitr::include_graphics("images/protein_source_bar.png")
+```
+
+Depending on protein source, the GHGE and landuse for the recipes varied. Recipes with beef, lamb, game and shellfish had the highest environmental impact. Vegetarian and vegan recipes had the lowest environmental impact. Recipes with pork, poultry, lean and oily fish were in between. The vegetarian recipes with the highest impact were on level with the non-ruminant meat based recipes and the lowest ruminant meat recipes (**Figure** \@ref(fig:protein-sources-violinbox-article)).
+
+```{r protein-sources-violinbox-article, fig.cap = "Environmental impact in kilo CO2 equivalents and landuse in m2 per 100g in recipes with various protein sources.", out.width="100%"}
+knitr::include_graphics("images/protein_source_violinbox.png")
+```
+
+### Correlation between healthiness indicators and environmental impact indicators
+
+Results from the Spearman correlation showed a significant (BH adjusted *p*-value \<0.001) positive correlation between the four healthiness indicators. There was a moderate correlation between the two front of pack labels (rho 0.64, BH adjusted *p*-value \<0.001), and a strong correlation between the two dietary guidelines (rho 0.78, BH adjusted *p*-value \<0.001), while the correlation between the front of pack labels and the dietary guidelines were weaker. The two sustainability indicators had a significantly strong positive correlation (BH adjusted *p*-value \<0.001).
+
+All four healthiness indicators were significantly (BH adjusted *p*-value \<0.001) negatively correlated with the two environmental sustainability indicators, with the two dietary guidelines being more strongly correlated with both GHGE and landuse than the FSA MTL and Nutriscore were. NNR had a slightly stronger correlation with both GHGE and landuse than WHO guidelines, while the Nutriscore had a weaker correlation with landuse than the FSA MTL. See **Figure** \@ref(fig:Correlation-healthVSsustainability-article).
+
+```{r, eval = knitr::is_latex_output(), results='asis'}
+\begin{landscape}
+```
+```{r Correlation-healthVSsustainability-article, out.width = "100%", fig.cap = "Spearman's Rho between CO2 equivalents (kg), landuse (m2/year) and the inverted Nutriscore, inverted Food Standard Agency's multiple traffic light score, World Health Organization dietary guideline score and the Norid Nutrition Recommendation score."}
+knitr::include_graphics("images/healthVSsustainability.png")
+```
+```{r, eval = knitr::is_latex_output(), results='asis'}
+\end{landscape}
+```
+
+## Discussion
+
+The purpose of this study was to explore the sustainability of dinner recipes, by looking at a recipe's healthiness and environmental impact, and to see if this varied by country of origin and if there were any correlation between recipe healthiness and environmental impact. To our knowledge, this is the first study to explore the environmental impact of recipes, to use the NNR criteria and the Nutriscore to assess the healthiness of recipes, and to include micronutrients other than sodium.
+
+The results show that the healthiness of recipes depend on the measure of healthiness used, as recipes scored more favorably on the front of pack labels FSA MTL and Nutriscore, used to nudge consumers to make healthy food choices, than dietary guideline macronutrient criteria that have been used in previous studies on recipe healthiness (SOURCES). Recipes from the US scored significantly worse on all four healthiness indicators than recipes from either Norway or the UK, and also had significantly higher environmental impact than recipes from the other two countries. While there were statistically significant differences between countries on the total score of the healthiness indicators, but these differences were small and are unlikely to have clinical relevance.
+
+### Healthiness and environmental impact
+
+In line with previous studies on recipe healthiness, the recipes in this study showed low compliance to dietary guideline macronutrient criteria from the WHO (SOURCES). Recipes scored slightly better on the NNR criteria that allow for more fat and protein and less carbohydrates than the WHO criteria. In contrast, nearly all recipes were considered as a food that could be eaten "most of the time" when using the FSA MTL criteria, and about ~70% of recipes were considered healthy according to the Nutriscore criteria. This is different than a previous study that used the FSA MTL and found that few recipes were healthy (SOURCE), but they used a more stringent criteria for defining a recipe as "healthy", requiring two greens and two amber lights and not three amber and one red as used in this study. Other studies that have used MTLs have used the Australian Live Lighter MTL (SOURCE) that has more stringent nutrient criteria than the FSA MTL, and the Australian Healthy Eating Advisory Service (SOURCE), which is also different than the FSA MTL as it varies depending on the type of food, including different types of dinner main and side dishes. To our knowledge no previous study have used the Nutriscore to assess recipe's healthiness.
+
+Despite the different results on the different healthiness indicators, they were all positively correlated with each other and negatively correlated with environmental impact, indicating that they pick up on similar properties in the recipes.
+
+The two dietary guidelines had a slightly stronger positive correlation with environmental impact than the two front of pack labels. This is likely due to differences in design between the two types of criteria, particularly how nutrients predominantly found in either plant-based or animal sourced foods are scored.
+
+The guidelines reward a moderate-to-high content of carbohydrates and a high content of dietary fibre, both nutrients found in low environmental impact foods such as grains, legumes, tubers and fruit. At the same time, a high content of protein and saturated fat, both nutrients found predominantly in high environmental impact foods of animal based origin, are penalized. Neither the FSA MTL or the Nutriscore rewards total carbohydrate intake, but the Nutriscore reward dietary fibre. This means the Nutriscore reward some plant-based foods, but not as many as the dietary guideline criteria. Both the FSA MTL and the Nutriscore penalize a higher content of saturated fat, but neither penalize a high protein content. Instead, protein is a qualifying component in the Nutriscore with no upper limit. Effectively this means the two front of pack labels nudge consumers towards leaner dairy products or cuts of meat that are encouraged in many FBDGs, but still has a relatively high environmental impact. This is especially true of the Nutriscore.
+
+These differences likely comes from the different purposes of dietary guidelines and front of pack labels. Dietary guidelines are designed to be used to measure the nutrient quality of whole diets, not single meals as the foods in that meal is complemented by other foods consumed throughout the day. On the other hand, front of pack labels are designed to provide at-a-glance information about a specific food product. That particular food by itself does not necessarily comply with all dietary guidelines, but by consistently buying the recommended foods within a varied set of food groups, dietary quality is likely to improve. The Nutriscore have consistently been shown to give A/B scores for foods which are encouraged in FBDGs [@Ahmed2020; @Chantal2015; @SzabodeEdelenyi2019; @Dreano-Trecant2020], although for combination dishes such as ready meals that are comparable to the dinner recipes in this study, the alignment with dietary guidelines have been found to be lower than for other food categories [@Ahmed2020; @VanTongeren2020]. 
+
+Similar to how the proportion of red meat and total amount of meat could explain most the the variance in the environmental impact of European diets [@Mertens2019a], recipes from the US that used more red meat also had the highest environmental impact. Additionally, there were a higher proportion of recipes from the US that used shellfish as an ingredient, which also has a high environmental impact. This shows that recipes can be used to pick up trends important for environmental impact of diets.
+
+### Nutrient content and environmental impact
+
+A diet is not sustainable if it cannot provide the nutrients needed to promote an individual's health and wellbeing, but at the same time the sources of the required nutrients should not put undue strain on the environment.
+
+FBDGs from all three countries have specific recommendations for certain food groups. These include recommendations to choose whole grain products instead of refined grains, chose lean animal sourced  foods, consume at least "five a day" of fruit and vegetables and consume seafood throughout the week [@norskekostraad; @USdietaryguidelines2020; @NHSfood]. These foods are recommended as they contribute important nutrients to the diet, and a higher consumption is believed to improve health and well being. The Nutriscore is the only one of the healthiness indicators used that reward specific foods that FBDGs encourage an increased intake of, in this case fruits, vegetables, legumes, nuts and the oils olive oil, walnut oil and rapeseed oil.
+
+Nearly all dinner recipes were sources of protein, with most also being a source of phosphorus which is commonly found in protein rich foods such as cheese, fish and meat. This is also the case for vitamin B12 [@NorwegianFoodSafetyAuthority2020]. While few recipes were sources of either retinol or beta-carotene, both of these nutrients can be utilized by the body as vitamin A, and more recipes contained enough of both to be considered sources of vitamin A. 
+
+Few recipes included whole grain ingredients, and few recipes had high scores for fruit, vegetable, legume and nut content on the Nutriscore. It is therefore not surprising, although unfortunate, that few recipes were sources of nutrients found in these foods, such as beta-carotene, folate, magnesium, iron and potassium [@NorwegianFoodSafetyAuthority2020]. There were more recipes from the UK that were sources of these nutrients, and also two other nutrients found in plant-based foods namely dietary fibre and vitamin C. This is likely contributing to recipes from the UK performing slightly better on the Nutriscore than recipes from the other two countries.
+
+That few recipes were sources of iodine reflects that few recipes included white lean fish, one of the few dietary sources of this mineral [@NorwegianFoodSafetyAuthority2020]. If the low use of lean fish as an ingredient in this sample is reflective of dinner recipes from these sources overall, it is unfortunate as mild to moderate iodine deficiency could be a problem for vulnerable groups, especially pregnant women, in all the three countries the recipes are sourced from [@Meltzer2016; @Woodside2021; @Panth2019].
+
+Nutrients found predominantly if not exclusively in plant based foods, including carbohydrates, dietary fibre and vitamin C were negatively correlated with environmental impact, while the opposite was true for nutrients found predominantly in or exclusively in animal sourced foods such as protein, saturated fat, retinol, iron and zinc. In the case of iron and zinc, the correlation with environmental impact was weaker for recipes from the UK, possibly because they contained more of these nutrients from plant based sources. This shows that it is possible to find food combinations that provide required nutrients at a lower environmental cost. However, plant-based sources of iron and zinc have lower bioavailability than animal sources, and this must be taken into account when planning a diet [@Helsedirektoratet2014].
+
+That important micronutrients were positively correlated with environmental impact, highlights the importance of including micronutrient content when planning low environmental impact diets. The association between these nutrients and GHGE is likely the reason why in studies on self-selected diets, low GHGE does not always align with higher nutritional quality [@Anitha2021; @Masset2014]. In a recent modelling study by Perignon et al. [@Perignon2016], moderate GHGE reductions (defined as $\leq$ 30%) were possible without compromising nutrient adequacy.
+
+### Strengths, limitations and future work
+
+To our knowledge, this is the first study to explore environmental impact of recipes from either the Internet or recipe books, the first study explore at the healthiness of recipes from Norwegian Internet recipe sites, and the first study on healthiness of recipes to use the NNR and Nutriscore and include a wide range of micronutrients. The healthiness indicators are used in many different countries, making the results of the healthiness and correlation analyses applicable outside of the countries of origin of the recipes included. All analyses and ingredient-to-database mapping are available as R scripts, and can easily be reproduced.
+
+Dietary guidelines for macronutrient intake were used to measure healthiness to compare the recipes in this study with previous studies on recipe healthiness that had used this measurement, but future studies should use other measurements for single meals as these reference ranges are not created to assess single meals. The Nutriscore is advantagous as it is made to be used on single food products comparable to a recipe, balances healthy and unhealthy nutrients in a food, and reward the inclusion of foods recommended in FBDGs namely fruits, vegetables, legumes, nuts and healthy oils. The disadvantage is that it is more difficult to compute. 
+
+### Conclusion
+
+
+
+
+
+## Methods
+
+### Data
+
+To assess the association between different recipes, healthiness of the recipes and their environmental impact, 400 recipes from Norway, and 100 from each of the UK and the US were analysed.
+
+Recipes from Norway and the US came from a database of online recipes collected previously. A randomized selection of these recipes had been chosen for nutritional analyses previously [@Trattner2017] and were reused for this thesis. Recipes came from Klikk.no (n = 100), Tine.no (n = 100), Aperitif.no (n = 100), Kolonial.no (n = 100) (Norway) and Allrecipes.com (n = 100) (US). Since recipe collection Kolonial has been renamed Oda. The UK recipes came from a random selection from an assortment of UK celebrity chef's recipe books previously used to study the healthiness of television chef's recipes [@Howard2012], Baking Made Easy (n = 7), River Cottage Everyday (n = 21), Jamie's Ministry of Food (n = 22), Jamie's 30 Minute Meals (n = 25) and Nigella's Kitchen (n = 25).
+
+### Calculating nutritional content and environmental impact of recipes
+
+The nutrient content of the recipes were calculated by mapping the ingredients from each recipe to the 2020 Norwegian Food Composition Database [@NorwegianFoodSafetyAuthority2020], that contains information about the macro- and micronutrient content per 100 g of commonly consumed foods in Norway. If an ingredient in a recipe was not in the Norwegian database, the US equivalent, Agricultural Research Service FoodData Central food database [@foodDataCentral2019], was used.
+
+To explore potential beneficial amounts of nutrients in the recipes, the nutrient content was compared to the European Union commissions nutrition claims legislation [@TheEuropeanparliamentandthecounciloftheEuropeanUnion2006]. For micronutrients, a recipe was considered a source of the nutrient if it contained \>15% of the RDI of an adult Norwegian woman [@Helsedirektoratet2014], and a good source if it contained \>30% of the RDI per 100 g. For protein the amounts were 12 and 20 E% respectively, and for dietary fibre 3 and 6 g/MJ.
+
+To calculate a recipe's environmental impact, the public SHARP Indicators Database that include greenhouse gas emissions (in kilo CO~2~ equivalents) and land use (in m^2^ pr year) of ~900 foods was used [@Mertens2019]. The environmental impact in the database comes from life-cycle inventory data on 182 primary products, and many composite foods based on these primary products. These LCAs included the environmental impacts of primary production of the food, and the impact of its packaging, transport to supermarket/consumer, storage at the supermarket/consumer, final preparation and any waste produced throughout.
+
+Standardized weight measures from the "Weights, measures and portion sizes for foods" database from The Norwegian Directorate of Health [@ØsterholtDalane2015] were used to calculate the weight of ingredients with volume units. If the ingredient was not in this database the U.S. Department of Agriculture, Agricultural Research Service FoodData Central food database [@foodDataCentral2019] was used, the ingredient was found in the online shops of Meny, Kolonial or COOP, or measured at home. For composite ingredients, a recipe was found through an online search, similar to how the inventors of the SHARP Indicator database looked up composite foods [@Mertens2019] and calculated separately before being added back to the original recipe.
+
+All values were normalized to per 100 g of the recipe.
+
+### Recipe healthiness
+
+Four indicators were used to assess each recipe's healthiness: the dietary gudelines from the WHO [@WHOdietaryguidelines] and the Nordic Nutrition Recommendations (NNR), and the front of pack nutrition labeling systems the UK Food Standard Agency's Multiple Traffic Light (FSA MTL) [@BritishNutritionFoundation2019] and the French Nutriscore [@NutriscoreGuidelines]. 
+
+The two dietary guidelines define macronutrient ranges for daily diets. Similar to Howard et al. [@Howard2012], a health score was created based on the ranger for the nutrients carbohydrates, sugar, dietary fibre, fat, saturated fat and protein, giving a score between 0-6 where 0 is unhealthy and 6 is healthy. 
+
+The FSA MTL includes the four macronutrients salt, fat, saturated fat and sugar. These nutrients are graded "green"/"low", "amber/"medium" and "red"/"high". A score of 3 was awarded for "green", 2 for "amber" and 1 for "red", giving a range between 4-12 where a higher score equals a healthier food. This is an inversion of the scoring system used by Howard et al. [@Howard2012], to be in line with the dietary guidelines where a higher score indicates a more healthy food. According to the FSA, a food can be eaten most of the time if it has a majority of amber lights, which equals to a score of >7. The Nutriscore was calculated as per the guideline documentation [@NutriscoreGuidelines], but an inverted score was used to be in line with the other indicators where a higher score means a more healthy food. An inverted score of >-2 was chosen as the cut-off for a food that could be eaten often as part of a healthy diet, as this had previously been used to assess the alignment between the Nutriscore and national dietary guidelines [@Ahmed2020].
+
+### Statistical analysis
+
+#### Missing data
+
+Ingredients with no amounts were replaced with the mean value of that ingredient in all other recipes, normalized to per 100 g of the recipe. If this was not possible, ingredients were left out of the analyses. Ingredients that could not be found in the nutrient or sustainability databases were if possible exchanged for a similar ingredient, or left out. If more than 10% of the recipe in weight could not be mapped to either the food composition table or SHARP Indicators database, the recipe was left out.
+
+#### Significant differences between countries
+
+Significant differences in energy per 100 g, macronutrient content in percentage of energy, micronutrient content in percentage of the RDI of an adult woman in Norway [@Helsedirektoratet2014], healthiness indicator scores and sustainability indicators between recipes from the different countries were assessed using the Kruskal-Wallis test. A Dunn's test was performed *post-hoc*, and to account for multiple testing the Benjamini Hochberg (BH) method was used.
+
+All tests were done using the rstatix package v. 0.7.0 [@Kassambara2021].
+
+#### Correlation analysis
+
+To explore possible correlation between variables Spearman's rho were calculated using the Psych library v. 2.1.6 [@Raiche2013] corr.test function. This was done for the recipes from each country individually and for the pooled data from all countries. P values were calculated and corrected for multiple testing using the BH method.
+
+For all analyses, an adjusted p value \< 0.05 was considered significant.
