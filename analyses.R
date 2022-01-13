@@ -496,8 +496,8 @@ stats <- list(
   
   'kruskal_wallis_effectsize' = run_stats %>%
     group_by(feature) %>%
-    kruskal_effsize(value ~ group,
-                    ci = TRUE)
+    kruskal_effsize(value ~ group)#,
+                    #ci = TRUE) #Include to calculate effect sizes
   )
 
 #Filter out features that were significantly different in the kruskal wallis
@@ -614,6 +614,20 @@ plots$correlations$vitaminsVSsustainability2 <- ggpairs(temp %>% select(-sample_
             ncol = 2.2, nrow = 2.2)
   save_plot('./thesis/images/vitaminsVSsustainability2.png', plots$correlations$vitaminsVSsustainability2,
             ncol = 2.2, nrow = 2.2)
+  
+  
+  #Most important nutrients
+  plots$correlations$selected_nutrients <- ggpairs(temp %>% select(-sample_id) %>% rename(Fibre = `Dietary fibre`),
+                                                   mapping = ggplot2::aes(color=group, alpha = 0.6),
+                                                   columns = c(25, 30, 3, 13, 28, 29, 8, 24, 36,37),
+                                                   upper = list(continuous = myCorrelations_textsize),
+                                                   lower = list(continuous = wrap("smooth", alpha = 0.3, size=0.1, se = FALSE))) +
+    scale_color_manual(values = various$country_colors$sample_group) +
+    scale_fill_manual(values = various$country_colors$sample_group)
+  
+  #Save
+  save_plot('./thesis/images/correlations_article.png', plots$correlations$selected_nutrients,
+            ncol = 2.5, nrow = 2.5)
 
 ## Principal Component Analysis----
 plots$pca <- list()
@@ -1382,8 +1396,6 @@ plots$violinbox$foodgroups <- list()
       #Set y axis scale to percent
       scale_y_continuous(limits = c(0,100), labels = function(x) paste0(x, "%"))
     
-    plots$violinbox$foodgroups$others
-    
     #Legend
     temp <- get_legend(plots$violinbox$foodgroups$others)
     
@@ -1401,6 +1413,31 @@ plots$violinbox$foodgroups <- list()
     
     save_plot('./thesis/images/foodgroups.png', plots$final$foodgroups,
               nrow = 1.5, ncol = 1.3)
+    
+    #Just meat and meat products for article
+    temp <- tidy_ingredients %>%
+      filter(Foodgroup == 'Meat and\nmeat products') %>%
+      #pivot wider to get Amounts column
+      pivot_wider(names_from = feature,
+                  values_from = value) %>%
+      group_by(group, sample_id, Foodgroup) %>%
+      summarise(value = sum(Amounts, na.rm = TRUE)) %>% ungroup() %>%
+      #Turn into grams, not fraction per 100 g
+      mutate(value = value*100)
+    
+    #Plot
+    plots$violinbox$foodgroups$meat_products <- ggplot(temp, aes(x = Foodgroup, y = value, color = group)) +
+      geom_half_violin() + 
+      geom_half_boxplot(side = 'r', outlier.shape = NA) +
+      geom_quasirandom(alpha = 0.4, dodge.width = 0.75) +
+      scale_color_manual(values = various$country_colors$sample_group) +
+      labs(y = 'Percentage of recipe weight') +
+      theme(axis.title.x = element_blank(),
+            legend.position = "none") +
+      #Set y axis scale to percent
+      scale_y_continuous(labels = function(x) paste0(x, "%"))
+    
+    plots$violinbox$foodgroups$meat_products
   
 # Number of recipes from each country with various protein sources----
 #Number of recipes with the ingredients
@@ -1514,15 +1551,185 @@ save_plot('./thesis/images/protein_source_bar.png', plots$barplots$protein_sourc
     #Points
     geom_quasirandom(data = temp, aes(x = type, y = value, color = group, alpha = alpha_level),
                      dodge.width = 0.75, size = 1, varwidth = FALSE) +
-    scale_alpha_discrete(range = c(0, 0.5)) + #Set "invisible" to have zero alpha
+    scale_alpha_discrete(range = c(0, 0.5)) + #Set fake data "invisible" to have zero alpha
     facet_wrap(~feature, scales = 'free', nrow = 2) +
     labs(y = ' ',
          x = 'Protein source',
          color = 'Country') +
-    theme(legend.position = 'bottom')
+    theme(legend.position = 'bottom') +
+    #Remove alpha legend
+    guides(alpha = "none")
   
   save_plot('./thesis/images/protein_source_violinbox.png', plots$violinbox$recipe_protein_sources, nrow = 2.2, ncol = 1.7)
 
+## Adjancency matrix nutrient sources----
+  
+  #Function to turn df into adjacency list
+  #df a wide dataframe with the recipes in rows and the nutrients in columns, 1 for each nutrient the recipe is a source of, 0 if it is not a source
+  makeAdjacencyMatrix <- function(df){
+    
+    temp <- df %>% select(-type)
+    
+    #Create a matrix
+    mat <- as.matrix(temp[-c(1,2)])
+    
+    #Adjancencymatrix
+    adjacency <- t(mat) %*% mat
+    
+    adjacency
+    
+  }
+  
+  #Turn an adjacencymatrix into an adjacency list with no duplicates
+  makeAdjacencyList <- function(adjacency_matrix){
+    
+    #List
+    list <- reshape::melt(adjacency_matrix) %>%
+      mutate(delete = case_when(
+        X1 == X2 ~ 'delete',
+        TRUE ~ 'keep'
+      )) %>%
+      filter(delete == 'keep') %>%
+      mutate(X1 = as.character(X1),
+             X2 = as.character(X2)) %>%
+      #Remove small connections
+      mutate(value = case_when(
+        value <= 1 ~ 0,
+        TRUE ~ value
+      )) %>% select(-delete) %>%
+      #Remove duplicate connections
+      group_by(X1, X2) %>%
+      mutate(edge_id = paste(sort(unique(c(X1,X2))), collapse="_")) %>%
+      ungroup() %>%
+      select(edge_id, value) %>% unique() %>%
+      separate(., col = edge_id, into = c('X1', 'X2'), sep = '_') %>%
+      select(X1, X2, value) %>%
+      filter(value != 0)
+    
+    list
+    
+  }
+  
+  #Create an adjacency matrix of nutrients recipes are sources of
+  temp <- various$with_RDI %>%
+    #Add protein
+    bind_rows(., various$with_energy_pct_densityMJ %>% filter(feature %in% c('Protein', 'Dietary fibre'))) %>%
+    #fill missing country and source information
+    group_by(sample_id) %>% fill(., c(group, Source)) %>% ungroup() %>%
+    #Find recipes that are sources of the nutrients
+    mutate(nutrient_source = case_when(
+      #Protein
+      feature == 'Protein' & value > 20 ~ 1,
+      #Fibre
+      feature == 'Dietary fibre' & value > 6 ~ 1,
+      #Micronutrients
+      feature != 'Protein' & value >= 30 ~ 1
+    )) %>%
+    #Rename features to better fit chord diagram
+    mutate(feature = feature %>%
+             str_replace_all('Vitamin', 'Vit.') %>%
+             str_replace_all('Calcium', 'Ca') %>%
+             str_replace_all('Copper', 'Cu') %>%
+             str_replace_all('Folate', 'Vit. B9') %>%
+             str_replace_all('Iodine', 'I') %>%
+             str_replace_all('Iron', 'Fe') %>%
+             str_replace_all('Magnesium', 'Mg') %>%
+             str_replace_all('Niacin', 'Vit. B3') %>%
+             str_replace_all('Phosphorus', 'P') %>%
+             str_replace_all('Potassium', 'K') %>%
+             str_replace_all('Riboflavin', 'Vit. B2') %>%
+             str_replace_all('Selenium', 'Se') %>%
+             str_replace_all('Sodium', 'Na') %>%
+             str_replace_all('Thiamin', 'Vit. B1') %>%
+             str_replace_all('Zinc', 'Zn') %>%
+             str_replace_all('Dietary fibre', 'Fibre')
+           ) %>%
+    #Filter non-source nutrients
+    filter(!is.na(nutrient_source)) %>%
+    #Remove columns and turn wider
+    select(-c(Source, value)) %>%
+    pivot_wider(
+      names_from = feature,
+      values_from = nutrient_source,
+      values_fill = 0
+    ) %>%
+    #Remove beta-carotene and retinol
+    select(-c(`Beta-carotene`, Retinol)) %>%
+    #Add protein source and split into multiple dataframes based on protein source
+    inner_join(., various$recipe_protein_source) %>%
+    split(., .$type) %>%
+    #Turn into adjacency matrix
+    lapply(., makeAdjacencyMatrix)
+  
+  #Calculate "big gap" for each matrix, to have number of recipes scaled to the Oily Fish dataset
+  gaps <- lapply(temp[c(1:4, 6:10)], calc_gap, x1 = temp$`Oily fish`)
+  
+  #Turn temp into adjacency list
+  temp <- lapply(temp, makeAdjacencyList)
+    
+  #Colorbrewer set3 for coloring the nutrients
+  grid_col <- c(Protein = '#8dd3c7', Fibre = '#ffffb3', P = '#bebada', Na = '#fb8072', Cu = '#80b1d3',
+                `Vit. A` = '#fdb462', `Vit. B6` = '#b3de69', `Vit. B12` = '#fccde5', Zn = '#d9d9d9', `Vit. C` ='#bc80bd',
+                `Vit. E` = '#ccebc5', `Vit. B2` = '#ffed6f')
+  
+  #Plot titles
+  titles <- various$recipe_protein_source %>%
+    group_by(type) %>%
+    summarise(n = n()) %>% ungroup() %>%
+    mutate(title = paste0(type, ' (n = ', n, ')')) %>% select(title)
+  
+  #Save plots as png
+  for(i in 1:length(temp)){
+    
+    pdf(paste0('./thesis/images/chordDiagram_', names(temp[i]), '.pdf'))
+    
+    circos.clear()
+    chordDiagram(temp[i],
+               #Use black point lines to separate chords from each other
+               link.lwd = 1, link.lty = 1, link.border = "black",
+               #Set color of chords to gray
+               col = "gray",
+               grid.col = grid_col,
+               #Set annotations at 90 degree angle
+               annotationTrack = c("grid"),
+               preAllocateTracks = list(track.height = max(strwidth(temp$Beef$X1)))
+               )
+  
+  for(si in get.all.sector.index()) {
+    xlim = get.cell.meta.data("xlim", sector.index = si, track.index = 1)
+    ylim = get.cell.meta.data("ylim", sector.index = si, track.index = 1)
+    circos.text(mean(xlim), ylim[1], si, sector.index = si, track.index = 1,
+                facing = "clockwise", niceFacing = TRUE, adj = c(-0.2, 0.5), cex = 0.8)
+    circos.axis(h = 0,
+                #major.at = c(0,0.5,1,1.5,2,2.5,3,3.5,4,4.5,5) ,
+                labels.cex = 0.6,labels.facing = "inside", 
+                sector.index = si, track.index = 2)
+  }
+  
+  #Create title
+  title(titles[[i, 1]])
+  
+  dev.off()
+    
+  }
+    
+  
+# Article plot----
+  plots$article <- list()
+  
+  #Add label to embedded plot
+  temp <- plot_grid(plots$violinbox$foodgroups$meat_products,
+                    labels = 'B', vjust = -0.2)
+  plots$article$protein_sources <- plot_grid(plots$barplots$protein_source +
+              annotation_custom(ggplotGrob(temp),
+                                xmin = 6, xmax = 10, ymin = 20, ymax = 50),
+              plots$violinbox$recipe_protein_sources + theme(legend.position = 'none'),
+              nrow = 2,
+              labels = c('A', 'C')
+              )
+  
+  save_plot('./thesis/images/article_proteinsources.png', plots$article$protein_sources, ncol = 2, nrow = 3)
+  
 ## Tables----
 # Stats----
 #Significantly differences from dunn test
