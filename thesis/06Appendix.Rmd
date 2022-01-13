@@ -2,8 +2,11 @@
 
 # Appendix
 
+```{r, eval = knitr::is_latex_output(), results='asis'}
 \begin{landscape}
+```
 ```{r pct-recipe-healthiness}
+if(knitr::is_latex_output()){
 pct_recipes_healthiness_scores %>%
   mutate(across(everything(), ~str_replace(., "%", "\\\\%"))) %>%
 
@@ -23,8 +26,32 @@ kbl(booktabs = TRUE, linesep = "", escape = FALSE,
   column_spec(., c(1, 6, 11, 16), bold = TRUE) %>%
   column_spec(., c(2:5, 7:10, 12:16, 17:20)) %>%
   kable_styling(latex_options = c("scale_down", "hold_position"), full_width = FALSE)
+  } else {
+  pct_recipes_healthiness_scores %>%
+  mutate(across(everything(), ~str_replace(., "%", "\\\\%"))) %>%
+
+kbl(booktabs = TRUE, linesep = "", escape = FALSE, format = "html",
+    
+    #Set column names and align
+    col.names = rep(c("Score", "Norway", "UK", "US", "All countries"), 4),
+    caption = "The percentage of recipes that received a specific score on each healthiness indicator.",
+    align = rep(c("l", "c", "c", "c", "c"), 4)) %>%
+  
+  #Add header for each indicator
+  add_header_above(c("Inverted Multiple Traffic Light Model" = 5, "Nutriscore" = 5, "Nordic Nutritional Recommendations" = 5, "World Health Organization Recommendations" = 5)) %>%
+  #Add header to distinguish FOPL and guidelines
+  add_header_above(c("Front of Pack Labels" = 10, "Dietary guidelines" = 10)) %>%
+  
+  #Make score columns bold
+  column_spec(., c(1, 6, 11, 16), bold = TRUE) %>%
+  column_spec(., c(2:5, 7:10, 12:16, 17:20)) %>%
+      kable_classic_2() %>%
+  kable_styling(latex_options = c("scale_down", "hold_position"), full_width = FALSE)
+}
 ```
+```{r, eval = knitr::is_latex_output(), results='asis'}
 \end{landscape}
+```
 
 ```{r data-completeness, fig.cap = "Percentage of the recipe in weight not mapped to a nutrient database (A) and SHARP Indicators environmental impact database (B).", out.width = "100%"}
 knitr::include_graphics("images/data_completenes_plot.png")

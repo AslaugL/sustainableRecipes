@@ -24,7 +24,7 @@ The energy contribution of added sugar was negligible in most recipes, but were 
 knitr::include_graphics("images/all_macros_cal.png")
 ```
 
-In terms of micronutrients, per 100g the recipes contributed most to percentage of RDI of vitamin B12 (median 25, IQR 10, 49.8), phosphorus (median 19, IQR 15, 23) and vitamin B6 (median 14, IQR 9, 20). On the other end, recipes contributed least to percentage of RDI of vitamin D (median 2, IQR 1, 7), iodine (median, 3 IQR 1, 5) and calcium (median 3, IQR 2, 7). Recipes contained more vitamin A in the form of retinol than beta-carotene. See **Figure** \@ref(fig:all-micros). For the micronutrients copper, iodine, selenium, sodium, phosphorus, vitamin A, D, E, B2 (riboflavin), B9 (folate) and B12 a handful of recipes could deliver more than the RDI per 100 g.
+In terms of micronutrients, per 100g the recipes contributed most to percentage of RDI of vitamin B12 (median 25, IQR 10, 49.8), phosphorus (median 19, IQR 15, 23) and vitamin B6 (median 14, IQR 9, 20). On the other end, recipes contributed least to percentage of RDI of vitamin D (median 2, IQR 1, 7), iodine (median, 3 IQR 1, 5) and calcium (median 3, IQR 2, 7). Recipes contained more vitamin A in the form of retinol than beta-carotene. For the micronutrients copper, iodine, selenium, sodium, phosphorus, vitamin A, D, E, B2 (riboflavin), B9 (folate) and B12 a handful of recipes could deliver more than the RDI per 100 g. See **Figure** \@ref(fig:all-micros).
 
 ```{r all-micros, fig.cap="Micronutrient content in the recipes per 100g, in percentage of recommended daily intake.", out.width="100%"}
 knitr::include_graphics("images/all_minerals_vitamins.png")
@@ -62,15 +62,13 @@ knitr::include_graphics("images/violinbox_health_numerical.png")
 
 Few recipes complied with WHO and NNR guideline criteria for carbohydrates, but more were compliant with NNR than WHO criteria. In a similar manner, more recipes were compliant with protein and total fat recommendations of the NNR than WHO. For dietary fibre, saturated fat and added sugar the guideline recommendations are identical. Protein contributed most to the qualifying scores on the Nutriscore, with the median score for protein being higher than the total median score of the disqualifying components. The scores for each component of the healthiness indicators by country, see **Figure** \@ref(fig:raw-score-guidelines), **Figure** \@ref(fig:raw-score-nutriscore) and **Figure** \@ref(fig:raw-score-trafficlights) for the guidelines, Nutriscore and the MTL respectively.
 
-The US recipes had significantly higher CO~2~ emissions than recipes from both the UK (BH adjusted *p*-value \<0.01) and Norway (BH adjusted *p*-value \<0.05), and this was also the case for land requirements (BH adjusted *p*-value \<0.01) **Figure** \@ref(fig:violinbox-env-sustainability).
+The US recipes had significantly higher CO~2~ emissions than recipes from both the UK (BH adjusted *p*-value \<0.01) and Norway (BH adjusted *p*-value \<0.05), and this was also the case for landuse (BH adjusted *p*-value \<0.01) **Figure** \@ref(fig:violinbox-env-sustainability).
 
 ```{r violinbox-env-sustainability, fig.cap = "The environmental impact in kilo CO2 equivalents and m2 used per year per 100g of the recipes.", out.width="100%"}
 knitr::include_graphics("images/violinbox_env_impact.png")
 ```
 
-In terms of individual nutrients, the UK recipes were significantly higher in dietary fibre and vitamin C than both the US and Norwegian recipes (BH adjusted *p*-value \<0.001 and \<0.01 respectively) and significantly lower than the US recipes in protein content (BH adjusted *p*-value \<0.05). Norwegian recipes were significantly higher in vitamin B12 than both the US and the UK (BH adjusted *p*-value \<0.05). While there were other statistically significantly different micronutrients, in absolute numbers the difference between countries were negligible.
-
-See **Table** \@ref(tab:stats-data).
+In terms of individual nutrients, the UK recipes were significantly higher in dietary fibre and vitamin C than both the US and Norwegian recipes (BH adjusted *p*-value \<0.001 and \<0.01 respectively) and significantly lower than the US recipes in protein content (BH adjusted *p*-value \<0.05). Norwegian recipes were significantly higher in vitamin B12 than both the US and the UK (BH adjusted *p*-value \<0.05). While there were other statistically significantly different micronutrients, in absolute numbers the difference between countries were negligible, see **Table** \@ref(tab:stats-data).
 
 ```{r stats-data}
 if(knitr::is_latex_output()){
@@ -198,7 +196,7 @@ knitr::include_graphics("images/protein_source_violinbox.png")
 
 Meat products followed by seafood, vegetables and starchy roots and tubers made up most of the weight of the recipes in which they were included. For recipes that included meat based products or vegetable products, recipes from the UK tended to include less meat and more vegetables than recipes from Norway and the US. There were small differences for other food groups **Figure** \@ref(fig:percent-foodgroups-weight).
 
-```{r percent-foodgroups-weight, fig.cap = "How much various food groups contributed to the weight of the recipes in percent.", fig.width = 10, fig.asp = 0.75, out.width="100%"}
+```{r percent-foodgroups-weight, fig.cap = "How much various food groups contributed to the weight of the recipes they were included in in percent.", fig.width = 10, fig.asp = 0.75, out.width="100%"}
 knitr::include_graphics('./images/foodgroups.png')
 ```
 
@@ -206,9 +204,9 @@ knitr::include_graphics('./images/foodgroups.png')
 
 ### Healthiness indicators and environmental impact indicators
 
-Results from the Spearman correlation showed a significant (BH adjusted *p*-value \<0.001) positive correlation between the four healthiness indicators. There was a moderate correlation between the two front of pack labels (rho 0.64, BH adjusted *p*-value \<0.001), and a strong correlation between the two dietary guidelines (rho 0.78, BH adjusted *p*-value \<0.001), while the correlation between the front of pack labels and the dietary guidelines were weaker. The two sustainability indicators had a significantly strong positive correlation (BH adjusted *p*-value \<0.001).
+Results from the Spearman correlation showed a significant (BH adjusted *p*-value \<0.001) positive correlation between the four healthiness indicators. There was a moderate correlation between the two front of pack labels (rho 0.64, BH adjusted *p*-value \<0.001), and a strong correlation between the two dietary guidelines (rho 0.78, BH adjusted *p*-value \<0.001), while the correlation between the front of pack labels and the dietary guidelines were weaker. The two environmental sustainability indicators had a significantly strong positive correlation (rho 0.84, BH adjusted *p*-value \<0.001).
 
-All four healthiness indicators were significantly (BH adjusted *p*-value \<0.001) negatively correlated with the two environmental sustainability indicators, with the two dietary guidelines being more strongly correlated with both GHGE and landuse than the FSA MTL and Nutriscore. NNR had a slightly stronger correlation with both GHGE and landuse than WHO guidelines, while the Nutriscore had a weaker correlation with landuse than the FSA MTL. See **Figure** \@ref(fig:Correlation-healthVSsustainability) for details.
+All four healthiness indicators were significantly (BH adjusted *p*-value \<0.001) negatively correlated with the two environmental sustainability indicators, with the two dietary guidelines being more strongly correlated with both GHGE and landuse than the FSA MTL and Nutriscore. NNR had a slightly stronger correlation with both GHGE and landuse than WHO guidelines, while the Nutriscore had a weaker correlation with landuse than the FSA MTL. Slight differences were seen between countries, with recipes from Norway consistently having a weaker correlation between healthiness and environmental impact indicators, this can be seen in **Figure** \@ref(fig:Correlation-healthVSsustainability) that show scatterplots of the various healthiness and environmental impact indicators, and the correlation between them for each country and all countries pooled.
 
 ```{r, eval = knitr::is_latex_output(), results='asis'}
 \begin{landscape}
@@ -244,7 +242,7 @@ knitr::include_graphics("images/energyVSsustainability.png")
 
 Many minerals were correlated with the environmental sustainability indicators, but the strength and significance of the correlations varied between countries.
 
-There was a weak negative correlation between copper and GHGE (rho -0.1, BH adjusted *p*-value \<0.05). GHGE were weakly positively correlated with Iron (rho 0.38, BH adjusted *p*-value \<0.001), phosphorus (rho 0.19, BH adjusted *p*-value \<0.001) and modertately positively correlated with zinc (rho 0.67, BH adjusted *p*-value \<0.001). For copper the correlation was driven by recipes from the US. With iron the correlation was weaker for recipes from the UK than recipes from the US and Norway.
+There was a weak negative correlation between copper and GHGE (rho -0.1, BH adjusted *p*-value \<0.05). GHGE were weakly positively correlated with Iron (rho 0.38, BH adjusted *p*-value \<0.001), phosphorus (rho 0.19, BH adjusted *p*-value \<0.001) and moderately positively correlated with zinc (rho 0.67, BH adjusted *p*-value \<0.001). For copper the correlation was driven by recipes from the US. With iron the correlation was weaker for recipes from the UK than recipes from the US and Norway.
 
 Landuse had a weak negative correlation with calcium (rho -0.16, BH adjusted *p*-value \<0.001), iodine (rho -0.3, BH adjusted *p*-value \<0.001) and copper (rho -0.16, BH adjusted *p*-value \<0.001). The negative correlation between calcium and landuse was very low and did not reach significance in the Norwegian recipes. As with GHGE, the correlation between landuse and copper was driven by recipes from the US. Zinc were moderately positively correlated with landuse, while iron and phosphorus were weakly positively correlated with landuse. As with the correlations with GHGE, the correlation between landuse and iron were weaker in the UK recipes.
 

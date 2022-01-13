@@ -24,7 +24,7 @@ For both the sustainability markers and nutritional information, values were nor
 
 ## Recipe healthiness
 
-Recipes were scored on how well they adhered to the dietary guidelines supplied by the WHO [@WHOdietaryguidelines] and the NNR [@NordicCouncilofMinisters2014], see **Table** \@ref(tab:guidelines-points-table). A recipe would receive one point for each recommendation in the guideline it adhered to, giving a total score between 0-6. For example a recipe could score one point for having between 15-30% E% coming from fat. A higher score indicates higher adherence to the guideline.
+Recipes were scored on how well they adhered to the dietary guidelines macronutrient ranges supplied by the WHO [@WHOdietaryguidelines] and the NNR [@NordicCouncilofMinisters2014], see **Table** \@ref(tab:guidelines-points-table). The WHO guidelines have been used in previous studies [@Howard2012; @Jones2013; @Schneider2013; @Keogh2019; @Dickinson2018; @Trattner2017a; @Cheng2021], and the NNR were chosen as they are used in Norway and are closer to the dietary guidelines from the UK [@PublicHealthEngland2016] (p7) and the US [@USdietaryguidelines2020] (p135) than the WHO guidelines. A recipe would receive one point for each recommendation in the guideline it adhered to, giving a total score between 0-6. For example a recipe could score one point for having between 15-30% E% coming from fat. A higher score indicates higher adherence to the guideline.
 
 ```{r guidelines-points-table}
 #Has problems with %
