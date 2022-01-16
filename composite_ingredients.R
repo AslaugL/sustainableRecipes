@@ -36,7 +36,8 @@ Name = c('condensed cream of mushroom soup', 'condensed cream of chicken soup',
          'caramel', 'sweet green pickle relish', 'saltine_cracker', 'pancake_mix', 'white bread_mix',
          'pancake', 'muesli_apple-cinnamon', 'sandwichspread_cucumber', 'biscuit_plain',
          'custard_vanilla', 'mayonnaise_vegan', 'curd_lemon', 'biscuit_gingerbread', 'icing_chocolate',
-         'bread_pumpernickel',  'biscuit_speculaas', 'spread_speculaas')
+         'bread_pumpernickel',  'biscuit_speculaas', 'spread_speculaas', 'biscuit_kruidnoten',
+         'bread_ontbijtkoek', 'harissa_mild')
 Ingredients = c(
   #Concentrated cream of soups
   #From https://onceamonthmeals.com/blog/recipe-roundups/homemade-cream-of-something-soup/
@@ -783,7 +784,45 @@ Salt',
 1 egg
 30 ml evaporated milk
 75 g condensed milk
-55 g butter')
+55 g butter',
+
+#Kruidnoten
+#From https://www.thespruceeats.com/traditional-kruidnoten-cookies-recipe-1128442
+'200 g plain flour
+100 g sugar
+100 g unsalted butter
+2.5 tbsp milk
+0.5 tsp baking soda
+1 tbsp orange zest
+1 egg white',
+
+#ontbijtkoek / dutch spice bread
+#From https://www.thedutchtable.com/2010/02/ontbijtkoek-dutch-spice-bread.html
+'125 g rye flour
+125 g plain flour
+3 tsp baking powder
+2 tsp cinnamon
+0.5 tsp cardamom
+0.5 tsp ground ginger
+0.5 tsp coriander
+0.5 tsp cloves
+100 g brown sugar
+85 g molasses
+170 g honey
+235 ml milk
+1 pinch salt',
+
+#Mild harissa
+#From https://www.goodhousekeeping.com/uk/food/recipes/a537630/mild-harissa-sauce/
+'2 stk red bell pepper
+18 stk red chili pepper
+6 clove garlic
+1 tsp cumin
+2.5 ml ground coriander
+5 ml salt
+45 ml white wine vinegar
+30 ml olive oil'
+)
 
 composite_ingredients <- tibble(Name = Name, Ingredients = Ingredients)
 
@@ -912,14 +951,14 @@ final <- full_join(temp, various$ingredients_weight) %>% left_join(., databases$
   
   #Add foodgroup/L1 from sharp
   mutate(L1 = case_when(
-    str_detect(Ingredients, 'salsa|soup|sauce|chutney|guacamole|pesto|paste|spice|seasoning|gravy|garam|mayonnaise_vegan|sandwichspread_cucumber') ~ 'Seasoning, sauces and condiments',
+    str_detect(Ingredients, 'salsa|soup|sauce|chutney|guacamole|pesto|paste|spice|seasoning|gravy|garam|mayonnaise_vegan|sandwichspread_cucumber|harissa') ~ 'Seasoning, sauces and condiments',
     str_detect(Ingredients, 'fish') ~ 'Fish, seafood, amphibians, reptiles and invertebrates',
     str_detect(Ingredients, 'meatball') ~ 'Meat and meat products',
     str_detect(Ingredients, 'kimchi|mire_poix|sweet green pickle relish') ~ 'Vegetables and vegetable products',
-    str_detect(Ingredients, 'dough|bread|pastry|lefse|tortilla|graham|saltine|biscuit_digestive|pancake|biscuit|muesli') ~ 'Grains and grain-based products',
+    str_detect(Ingredients, 'dough|\\bbread|pastry|lefse|tortilla|graham|saltine|biscuit_digestive|pancake|muesli') | Ingredients %in% c('potato_flatbread') ~ 'Grains and grain-based products',
     Ingredients %in% c('shrimp_salad', 'omelet') ~ 'Composite dishes',
     Ingredients %in% c('amaretti cookie', 'marshmallow','brownie_mix', 'yellow cake_mix', 'custard_vanilla', 'icing_chocolate', 'spread_speculaas',
-                       'chocolate pudding_mix', 'german chocolate cake_mix', 'caramel', 'curd_lemon')  ~ 'Sugar and similar, confectionery and water-based sweet desserts',
+                       'chocolate pudding_mix', 'german chocolate cake_mix', 'caramel', 'curd_lemon') | str_detect(Ingredients, 'biscuit')  ~ 'Sugar and similar, confectionery and water-based sweet desserts',
   ))
 
 #Save

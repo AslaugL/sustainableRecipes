@@ -19,7 +19,7 @@ standardiseRecipes <- function(df){
     sapply(., function(x) {paste0('\\s', x, '\\s')}) 
   
   #Ingredients that are counted as individual pieces/stk
-  stk = c('anchovy', 'anise', 'apple', 'apricot', 'avocado', 'artichoke',
+  stk = c('anchovy', 'anise', 'apple', 'apricot', 'avocado', 'artichoke', 'aubergine',
               
               'banana', 'bay leaf', 'bean', 'baguette', 'bok choi', 'broccoli', 'broth cube', 'basil',
               'bread',
@@ -30,7 +30,7 @@ standardiseRecipes <- function(df){
               
               'duck',
               
-              'egg', 'entrecôtekam',
+              'egg', 'entrecôtekam', 'eggplant',
               
               'fennel', 'fig',
               
@@ -39,6 +39,8 @@ standardiseRecipes <- function(df){
               'hamburger bun', 'hen breast fillet grouse', 'herring smoked',
               
               'jerusalem artichoke', 'juniper berry',
+          
+              'kiwi',
               
               'lamb chop', 'leek', 'lemon', 'lemongrass', 'lettuce', 'lime',
               
@@ -49,7 +51,7 @@ standardiseRecipes <- function(df){
               'olive', 'onion', 'orange',
               
               'paprika', 'pear', 'pepper', 'peppercorns', 'pineapple', 'pomegranate', 'plate', 'pork',
-              'potato', 'prawn', 'prune',
+              'pork sausage', 'potato', 'prawn', 'prune',
               
               'radish', 'roll',
               

@@ -157,13 +157,21 @@ checkRef <- function(df, reference, fix_errors = TRUE){
           Ingredients == 'chicken breast' & unit == 'dl' ~ fixRefID(reference = reference, 'chicken', 'diced'),
           Ingredients == 'salad rocket' ~ fixRefID(reference = reference, 'ruccola'),
           Ingredients == 'lime lead' ~ fixRefID(reference = reference, 'bay', 'leaf'), #Assume similar
-          Ingredients == 'oat quick' ~ fixRefID(reference = reference, 'rolled', 'oats'),
+          Ingredients == 'oat quick' ~ fixRefID(reference = reference, 'rolled', 'oat'),
+          Ingredients == 'peach canned' ~ fixRefID(reference = reference, 'peach', 'canned'),
+          #Ingredients with no references
+          Ingredients %in% c('mustard powder', 'chinese five spice', 'of dip mix', 'asafoetida powder',
+                             'sauce browning', 'trout caviar', 'whip it stabilizer', 'vanillin') ~ 0,
+          
+          #Similar ingredients to exchange for each other
+          Ingredients == 'garlic wild' ~ fixRefID(reference = reference, 'scallion'),
           Ingredients == 'agave nectar' ~ fixRefID(reference = reference, 'honey'),
           Ingredients %in% c('shortening', 'shortening vegetable') ~ fixRefID(reference = reference, 'margarine'),
           Ingredients %in% c('onion seed', 'chia seeds') ~ fixRefID(reference = reference, 'poppy', 'seed'), #Both are small seeds
-          #Ingredients with no references
-          Ingredients %in% c('mustard powder', 'chinese five spice', 'of dip mix', 'asafoetida powder',
-                             'sauce browning') ~ 0,
+          Ingredients == 'graham cracker' ~ fixRefID(reference = reference, 'cracker', 'cream'),
+          Ingredients == 'marjoram fresh herbs' ~ fixRefID(reference = reference, 'oregano', 'fresh'),
+          Ingredients == 'harissa mild' ~ fixRefID(reference = reference, 'chili', 'paste'),
+          Ingredients == 'spread speculaas' ~ fixRefID(reference = reference, 'peanut', 'butter'),
           
           TRUE ~ ID
         )) 
@@ -198,16 +206,18 @@ checkRef <- function(df, reference, fix_errors = TRUE){
           Ingredients == 'sweet pepper grilled' ~ fixRefID(reference = reference, 'sweet pepper', 'red'), #Standard
           Ingredients == 'watermelon' ~ fixRefID(reference = reference, 'watermelon'), 
           Ingredients == 'salsa' ~ fixRefID(reference = reference, 'chunky', 'salsa'),
+          Ingredients == 'pear' ~ fixRefID(reference = reference, 'pear'),
+          Ingredients == 'jam blueberries' ~ fixRefID(reference = reference, 'jam'),
           
           #Dairy
           Ingredients == 'parmesan cheese' ~ fixRefID(reference = reference, 'parmesan'),
           Ingredients == 'butter clarified ghee' ~ fixRefID(reference = reference, 'ghee'),
           Ingredients == 'cheese cottage low fat' ~ fixRefID(reference = reference, 'cottage cheese', 'low fat'),
           Ingredients == 'cheese cottage' ~ fixRefID(reference = reference, 'cottage cheese'),
-          Ingredients %in% c('cheese asiago', 'cheese cotija') ~  fixRefID(reference = reference, 'parmesan'), #Can be substituted for eachother in recipes
-          Ingredients == 'cheese blue' ~ fixRefID(reference = reference, 'gorgonzola', 'blue cheese'), #Use as standard for time being
-          Ingredients == 'cheese goat chevre white' ~ fixRefID(reference = reference, 'chevre'),
-          Ingredients == 'cheese cream' ~ fixRefID(reference = reference, 'cream cheese'),
+          Ingredients %in% c('cheese asiago', 'cheese cotija', 'cheese pecorino', 'cheese romano', 'cheese gruyere') ~  fixRefID(reference = reference, 'parmesan'), #Can be substituted for eachother in recipes
+          Ingredients %in% c('cheese blue', 'cheese blue stilton', 'cheese gorgonzola') ~ fixRefID(reference = reference, 'gorgonzola', 'blue cheese'), #Use as standard for time being
+          Ingredients == 'cheese goat chevre white|cheese goat' ~ fixRefID(reference = reference, 'chevre'), #Goat cheese
+          Ingredients %in% c('cheese cream', 'cheese soft') ~ fixRefID(reference = reference, 'cream cheese'),
           Ingredients == 'cheese hard goat' ~ fixRefID(reference = reference, 'hard goat cheese', 'kvitlin'), #Use as standard for time being
           Ingredients == 'cheese jarlsberg' ~ fixRefID(reference = reference, 'jarlsberg'), 
           Ingredients == 'cheese manchego' ~ fixRefID(reference = reference, 'cheddar'), #Can be substituted in recipes
@@ -215,18 +225,21 @@ checkRef <- function(df, reference, fix_errors = TRUE){
           Ingredients == 'cheese norvegia' ~ fixRefID(reference = reference, 'norvegia'),
           Ingredients == 'cheese ricotta salata' ~ fixRefID(reference = reference, 'ricotta salata'),
           Ingredients == 'cheese port salut' ~ fixRefID(reference = reference, 'port salut'),
-          Ingredients == 'cheese semi-hard' ~ fixRefID(reference = reference, 'norvegia'), #Use as standard for time being
+          Ingredients %in% c('cheese semi-hard', 'cheese emmentaler') ~ fixRefID(reference = reference, 'norvegia'), #Use as standard for time being
           Ingredients == 'goat brown cheese' ~ fixRefID(reference = reference, 'goat cheese brown'),
           Ingredients == 'cheese blue normanna' ~ fixRefID(reference = reference, 'normanna', 'blue cheese'),
           Ingredients == 'cheese blue norzola' ~ fixRefID(reference = reference, 'norzola', 'blue cheese'),
           Ingredients == 'cheese blue normanna' ~ fixRefID(reference = reference, 'normanna', 'blue cheese'),
-          Ingredients == 'cheese cream goat snøfrisk' ~ fixRefID(reference = reference, 'snøfrisk', 'goat cream cheese'),
+          Ingredients %in% c('cheese cream goat snøfrisk', 'cheese goat') ~ fixRefID(reference = reference, 'snøfrisk', 'goat cream cheese'),
           Ingredients == 'cheese garlic' ~ fixRefID(reference = reference, 'norvegia'), #Standard
           Ingredients == 'cheese mascarpone' ~ fixRefID(reference = reference, 'mascarpone'),
           Ingredients == 'tine light 2 % a good alternative to sour cream' ~ fixRefID(reference = reference, 'quark', '1'), #Closest in nutritional value
+          Ingredients == 'milk evaporated' ~ fixRefID(reference = reference, 'milk evaporated'),
+          Ingredients == 'yoghurt greek' ~ fixRefID(reference = reference, 'yogurt', 'greek'),
+          Ingredients == 'buttermilk' ~ fixRefID(reference = reference, 'buttermilk'),
           
           #Div
-          Ingredients == 'mushroom' ~ fixRefID(reference = reference, 'mushroom'),
+          Ingredients %in% c('mushroom', 'mushroom chestnut') ~ fixRefID(reference = reference, 'mushroom'),
           Ingredients == 'sesame seed oil' ~ fixRefID(reference = reference, 'sesame', 'oil'),
           Ingredients == 'sugar' ~  fixRefID(reference = reference, 'sugar'),
           str_detect(Ingredients, 'water broth') ~ fixRefID(reference = reference, 'water'),
@@ -242,6 +255,7 @@ checkRef <- function(df, reference, fix_errors = TRUE){
           Ingredients == 'homemade beef gravy' ~ fixRefID(reference = reference, 'beef gravy'),
           Ingredients == 'sweet chili sauce' ~ fixRefID(reference = reference, 'chili sauce', 'sweet'),
           Ingredients == 'refrigerated buttermilk biscuit dough' ~ fixRefID(reference = reference, 'refrigerated buttermilk biscuit dough'),
+          Ingredients == 'beef gravy' ~ fixRefID(reference = reference, 'beef', 'gravy'),
           
           #Grains, seeds nuts
           Ingredients == 'chick pea' ~ fixRefID(reference = reference, 'chick pea'),
@@ -260,6 +274,7 @@ checkRef <- function(df, reference, fix_errors = TRUE){
           Ingredients == 'peanut salt' ~ fixRefID(reference = reference, 'peanut', 'salt'),
           Ingredients == 'rice parboiled' ~ fixRefID(reference = reference, 'rice parboiled'),
           Ingredients == 'rice brown long grain' ~ fixRefID(reference = reference, 'rice brown long grain'),
+          Ingredients == 'white bread mix' ~ fixRefID(reference = reference, 'white bread', 'mix'),
           
           #Seafood
           Ingredients == 'cod lutefisk' ~ fixRefID(reference = reference, 'lutefisk'),
@@ -283,15 +298,15 @@ checkRef <- function(df, reference, fix_errors = TRUE){
           Ingredients == 'pork neck' ~ fixRefID(reference = reference, 'pork', 'neck chop'),
           
           #Not in reference
-          Ingredients %in% c('duck or goose fat for confit', 'lime leaf', 'cranberries jam', "beans'n'pork canned",
-                             'cooking spray', 'red food coloring', 'beef fund', 'fish scraps for broth',
-                             'pack high quality charcoal briquettes', 'pomegranate kernel', 'yeast nutritional',
-                             'salmon roe', 'spice seasoning pepper', 'toro greek moussaka', 'paste chili',
-                             'fish soup base', 'guacamole spice mix', 'lamb sheep head', 'lemon balm',
-                             'lingonberry jam', 'marrow bone', 'rhubarb juice', 'beef bones',
-                             '20 pound pack high quality charcoal briquettes', 'wine rice'
-                             
-          ) ~ 0,
+          Ingredients %in% c('duck or goose fat for confit', 'lime leaf', 'cranberries jam', "beans'n'pork canned", 'onion seed',
+                             'cooking spray', 'red food coloring', 'beef fund', 'fish scraps for broth', 'chili bean paste sichuan',
+                             'pack high quality charcoal briquettes', 'pomegranate kernel', 'yeast nutritional', 'condensed tomato soup',
+                             'salmon roe', 'spice seasoning pepper', 'toro greek moussaka', 'paste chili', 'carbonated beverage lemon-lime',
+                             'fish soup base', 'guacamole spice mix', 'lamb sheep head', 'lemon balm', 'can tomato soup',
+                             'lingonberry jam', 'marrow bone', 'rhubarb juice', 'beef bones', 'whip it stabilizer', 'toenjang soybean paste',
+                             '20 pound pack high quality charcoal briquettes', 'wine rice', 'trout caviar', 'vanillin',
+                             'vanilla pod', 'vanilla extract', 'butter-vanilla aroma', 'paste vanilla bean', 'blueberries pie filling',
+                             'milk powder nonfat', 'garlic powder', 'apricot nectar', 'apricot preserve', 'apple sauce') ~ 0,
           
           #Substitutions or ingredients not found in Matvaretabellen
           Ingredients %in% c('garlic oil', 'oil truffle') ~ fixRefID(reference = reference, 'olive', 'oil'), #Garlic/truffle oil can be made by placing garlic in olive oil
@@ -303,6 +318,10 @@ checkRef <- function(df, reference, fix_errors = TRUE){
           Ingredients == 'elk shoulder' ~ fixRefID(reference = reference, 'elk moose'),
           Ingredients == 'lime, the zest' ~ fixRefID(reference = reference, 'lemon', 'zest'),
           Ingredients %in% c('salsa', 'salsa tomato') ~ fixRefID(reference = reference, 'chunky', 'salsa'),
+          Ingredients %in% c('syrup apple', 'syrup pear') ~ fixRefID(reference = reference, 'syrup', 'maple'),
+          Ingredients == 'sugar vanilla' ~ fixRefID(reference = reference, 'sugar'),
+          Ingredients %in% c('beef shank', 'beef oxtail') ~ fixRefID(reference = reference, 'beef', 'veal chops'), #Cut with the highest % of bone in Matvaretabellen
+          Ingredients %in% c('syrup apple', 'syrup pear', 'syrup ginger') ~ fixRefID(reference = reference, 'syrup', 'maple'),
           
           TRUE ~ ID
         ))
@@ -325,13 +344,14 @@ checkRef <- function(df, reference, fix_errors = TRUE){
         temp <- temp %>% mutate(ID = case_when(
           
           #Grains, nuts, seeds, legumes
+          Ingredients == 'espresso bean coffee ground' ~ fixRefID(reference = reference, 'coffee ground'),
           Ingredients == 'almond' ~ fixRefID(reference = reference, 'almonds', 'sweet'),
           Ingredients == 'hazelnut' ~ fixRefID(reference = reference, 'nut', 'hazel'),
           Ingredients %in% c('lentil', 'lentil green') ~ fixRefID(reference = reference, 'lentil', 'dry'),
           Ingredients == 'peas green' ~ fixRefID(reference = reference, 'pea', 'garden'),
           Ingredients %in% c('bean green asparagus', 'bean green', 'bean broad') ~ fixRefID(reference = reference, 'bean with pods', 'with'),
-          str_detect(Ingredients, 'bean|chick pea|lentil') & !str_detect(Ingredients, 'canned|sprout|oil') ~ fixRefID(reference = reference, 'beans', 'dry'),
-          str_detect(Ingredients, 'bean') & str_detect(Ingredients, 'canned') | Ingredients == 'bean white tomato' ~ fixRefID(reference = reference, 'bean', 'canned'),
+          str_detect(Ingredients, 'bean|chick pea|lentil') & !str_detect(Ingredients, 'canned|sprout|oil|flour|paste|coffee ground') ~ fixRefID(reference = reference, 'beans', 'dry'),
+          str_detect(Ingredients, 'bean|chick pea') & str_detect(Ingredients, 'canned') | Ingredients == 'bean white tomato' ~ fixRefID(reference = reference, 'bean', 'canned'),
           str_detect(Ingredients, 'noodle') ~ fixRefID(reference = reference, 'noodle'),
           Ingredients == 'pistachio nut' ~ fixRefID(reference = reference, 'pistachio'),
           Ingredients == 'dried soybeans' ~ fixRefID(reference = reference, 'bean', 'soy'),
@@ -339,9 +359,10 @@ checkRef <- function(df, reference, fix_errors = TRUE){
           Ingredients == 'tahini' ~ fixRefID(reference = reference, 'sesame', 'seed'),
           Ingredients %in% c('seed flax', 'flaxseed meal') ~ fixRefID(reference = reference, 'linseed'),
           Ingredients == 'corn starch' ~ fixRefID(reference = reference, 'corn', 'flour'), #Use as substitute
+          Ingredients == 'chick pea flour' ~ fixRefID(reference = reference, 'chick pea', 'flour'),
           
           #Veggies and fruit
-          str_detect(Ingredients, 'pickled') & str_detect(Ingredients, 'ginger|sweet pepper|cucumber') ~ fixRefID(reference = reference, 'vegetables', 'pickled'),
+          str_detect(Ingredients, 'pickled') & str_detect(Ingredients, 'ginger|sweet pepper|cucumber|pearl onion') ~ fixRefID(reference = reference, 'vegetables', 'pickled'),
           str_detect(Ingredients, 'canned') & str_detect(Ingredients, 'sweet pepper|sweet corn|artichoke') ~ fixRefID(reference = reference, 'vegetables', 'canned'),
           str_detect(Ingredients, 'endive|chicory') ~ fixRefID(reference = reference, 'curly', 'endives'),
           Ingredients == 'peach' ~ fixRefID(reference = reference, 'peaches', 'other'),
@@ -368,6 +389,8 @@ checkRef <- function(df, reference, fix_errors = TRUE){
           Ingredients == 'black currant' ~ fixRefID(reference = reference, 'blackcurrant'),
           Ingredients == 'tamarind juice' ~ fixRefID(reference = reference, 'fruit', 'juice'),
           Ingredients == 'salsa' ~ fixRefID(reference = reference, 'chunky', 'salsa'), 
+          Ingredients %in% c('syrup apple', 'syrup pear', 'syrup ginger') ~ fixRefID(reference = reference, 'syrup'),
+          Ingredients == 'apricot nectar' ~ fixRefID(reference = reference, 'fruit', 'nectars'),
           
           #Red meat
           str_detect(Ingredients, 'reindeer|elk shoulder') ~ fixRefID(reference = reference, 'mammals', 'meat'),
@@ -404,36 +427,37 @@ checkRef <- function(df, reference, fix_errors = TRUE){
           Ingredients == 'soybean oil' ~ fixRefID(reference = reference, 'soy', 'oil'),
           Ingredients == 'mustard honey' ~ fixRefID(reference = reference, 'mustard'),
           Ingredients == 'refrigerated buttermilk biscuit dough' ~ fixRefID(reference = reference, 'refrigerated buttermilk biscuit dough'),
+          Ingredients == 'corn meal mix' ~ fixRefID(reference = reference, 'corn flour', 'polenta'),
+          Ingredients %in% c('jam blueberries', 'jam currant') ~ fixRefID(reference = reference, 'jam'),
           
           #Dairy
           str_detect(Ingredients, 'cheddar|romano|parmigiano-reggiano|parmesan|parmigiano-reggiano|cheese hard goat|cheese cotjia|gruyere') ~ fixRefID(reference = reference, 'hard cheese'),
-          str_detect(Ingredients, 'halloumi|manchego|havarti|swiss|monterey jack|pepperjack|asiago|mozzarella|goat brown cheese|jarlsberg|cheese semi-hard|provolone|norvegia') ~ fixRefID(reference = reference, 'hard to semi-hard cheese'),
+          str_detect(Ingredients, 'halloumi|manchego|havarti|swiss|monterey jack|pepperjack|asiago|mozzarella|goat brown cheese|jarlsberg|cheese semi-hard|provolone|norvegia|emmentaler') ~ fixRefID(reference = reference, 'hard to semi-hard cheese'),
           str_detect(Ingredients, 'ricotta|cheese blue|camembert|chevre|neufchatel|port salut|brie|mascarpone|gorgonzola|cheese soft') ~ fixRefID(reference = reference, 'soft-ripened cheese'),
           Ingredients == 'cheese american' ~ fixRefID(reference = reference, 'processed cheese and spreads'),
           Ingredients == 'yogurt greek' | Ingredients == 'kefir' | str_detect(Ingredients, 'quark') ~ fixRefID(reference = reference, 'yoghurt'),
           
-          
           #Bread and rolls
           Ingredients %in% c('bread', 'bread coarse', 'tortilla coarse', 'crisp bread coarse',
-                             'bread crumb', 'bread brown chapati') ~ fixRefID(reference = reference, 'wheat bread and rolls', 'brown'),
+                             'bread crumb', 'bread brown chapati', 'bread coarse pita') ~ fixRefID(reference = reference, 'wheat bread and rolls', 'brown'),
           Ingredients %in% c('hamburger bun', 'bread white', 'tortilla', 'crisp bread', 'breadstick', 'ciabatta',
-                             'rolls white', 'cracker cream', 'bread naan', 'bread flat hard') | str_detect(Ingredients, 'rolls white') ~ fixRefID(reference = reference, 'wheat bread and rolls', 'white'),
+                             'rolls white', 'cracker cream', 'bread naan', 'bread flat hard', 'bread white pita') | str_detect(Ingredients, 'rolls white') ~ fixRefID(reference = reference, 'wheat bread and rolls', 'white'),
           
           #Herbs and spices
-          str_detect(Ingredients, 'saffron|fenugreek seed|mint fresh herbs|mint dried|lemon balm|turmeric|anise|marjoram|sazon seasoning|ginger|caraway|lemongrass|basil|rosemary|thyme|tarragon|pepper|sage|masala|oregano|spice mix|nutmeg|cloves|coriander|cumin|dill|fenugreek leaf|juniper berry|cinnamon|chives|chervil|cardamom|caper|allspice|bay leaf|paprika powder|fennel seed') &
+          str_detect(Ingredients, 'saffron|fenugreek seed|mint fresh herbs|mint dried|lemon balm|turmeric|anise|marjoram|sazon seasoning|ginger|caraway|lemongrass|basil|rosemary|thyme|tarragon|pepper|sage|masala|oregano|spice mix|nutmeg|cloves|coriander|cumin|dill|fenugreek leaf|juniper berry|cinnamon|chives|chervil|cardamom|caper|allspice|bay leaf|paprika powder|fennel seed|garlic powder') &
             !str_detect(Ingredients, 'sauce|paste|sweet|chili|sausage') |
             str_detect(Ingredients, 'chili') & !str_detect(Ingredients, 'pepper|paste|sauce|sausage') |
-            Ingredients %in% c('herbs', 'different spices', 'spices') ~ fixRefID(reference = reference, 'mixed', 'herbs'),
+            Ingredients %in% c('herbs', 'different spices', 'spices', 'soup seasoning') ~ fixRefID(reference = reference, 'mixed', 'herbs'),
           
           #Not in ref
-          Ingredients %in% c('yeast nutritional', 'paste chili', 'agar', 'gluten', 'corn meal mix',
-                             'nori seaweed','salmon roe', "beans'n'pork canned",
-                             'plantain', 'tabasco', 'tapioca', 'sake', 'wine rice', 'liquid smoke flavoring',
-                             'pack high quality charcoal briquettes', 'cooking spray', 'quinoa', 'paste carrot',
-                             'red food coloring', 'toro greek moussaka', 'banana', 'paste curry',
-                             'fish scraps for broth', 'fish soup base', 'paste garlic',
-                             'pomegranate kernel', 'sauce white', 'celery seed',
-                             'sauce bearnaise', 'wine rice', 'onion soup mix') ~ 0,
+          Ingredients %in% c('yeast nutritional', 'paste chili', 'agar', 'gluten', 'corn meal mix', 'blueberries pie filling', 'onion seed',
+                             'nori seaweed','salmon roe', "beans'n'pork canned", 'apricot preserve', 'apple sauce', 'chili bean paste sichuan',
+                             'plantain', 'tabasco', 'tapioca', 'sake', 'wine rice', 'liquid smoke flavoring', 'carbonated beverage lemon-lime',
+                             'pack high quality charcoal briquettes', 'cooking spray', 'quinoa', 'paste carrot', 'seed hemp', 'onion powder',
+                             'red food coloring', 'toro greek moussaka', 'banana', 'paste curry', 'can tomato soup', 'paste vanilla bean',
+                             'fish scraps for broth', 'fish soup base', 'paste garlic', 'vanillin', 'vanilla extract', 'toenjang soybean paste',
+                             'pomegranate kernel', 'sauce white', 'celery seed', 'trout caviar', 'vanilla pod', 'condensed tomato soup',
+                             'sauce bearnaise', 'wine rice', 'onion soup mix', 'whip it stabilizer', 'butter-vanilla aroma',) ~ 0,
           
           TRUE ~ ID
         ))
