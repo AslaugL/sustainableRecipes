@@ -1,4 +1,5 @@
 devtools::load_all(path = '.')
+roxygen2::roxygenise()
 
 #Run twice to get the nutrient amounts/sustainability indicators for mango chutney in the worcestershire sauce recipe
 
@@ -32,7 +33,10 @@ Name = c('condensed cream of mushroom soup', 'condensed cream of chicken soup',
          'sauce pad thai', 'sauce tikka masala', 'fajita spice mix', 'kimchi', 'sauce_teriyaki',
          'mire_poix', 'graham_cracker', 'amaretti cookie', 'brownie_mix', 'yellow cake_mix',
          'chocolate pudding_mix', 'german chocolate cake_mix', 'marshmallow', 'biscuit_digestive',
-         'caramel', 'sweet green pickle relish', 'saltine_cracker')
+         'caramel', 'sweet green pickle relish', 'saltine_cracker', 'pancake_mix', 'white bread_mix',
+         'pancake', 'muesli_apple-cinnamon', 'sandwichspread_cucumber', 'biscuit_plain',
+         'custard_vanilla', 'mayonnaise_vegan', 'curd_lemon', 'biscuit_gingerbread', 'icing_chocolate',
+         'bread_pumpernickel',  'biscuit_speculaas', 'spread_speculaas')
 Ingredients = c(
   #Concentrated cream of soups
   #From https://onceamonthmeals.com/blog/recipe-roundups/homemade-cream-of-something-soup/
@@ -635,13 +639,157 @@ Salt',
 0.25 cup unsalted butter
 1.33 cup milk
 1 stk egg white
-1 tbsp water'
+1 tbsp water',
 
-)
+#Pancake dry mix
+#From https://www.spendwithpennies.com/homemade-pancake-mix/
+'4 cup all-purpose flour
+3 tbsp baking powder
+1 tsp baking soda
+1 tsp salt
+3 tbsp sugar',
+
+#White bread mix
+#From https://www.justapinch.com/recipes/bread/other-bread/perfect-white-bread-mix-in-a-jar.html
+'2 tbsp sugar
+2 tsp salt
+1.5 cup flour
+1 tbsp dry yeast',
+
+#Pancake
+#From https://www.bbcgoodfood.com/recipes/easy-pancakes
+'100 g plain flour
+2 stk egg
+3 dl milk
+1 tbsp sunflower oil',
+
+#Apple cinnamon muesli
+#From http://www.healthinspirations.net/2012/10/22/toasted-apple-cinnamon-muesli/
+'500 g rolled oats
+1 cup almonds
+1 cup sunflower seeds
+0.75 cup sesame seeds
+0.75 cup walnuts, roughly chopped
+0.33 cup brown sugar
+4 tsp cinnamon
+2 cup unsweetened apple sauce
+0.25 cup honey
+3 tbsp coconut oil',
+
+#Cucumber sandwhichspread
+#From https://www.allrecipes.com/recipe/238851/cucumber-sandwich-spread/
+'8 ounce cream cheese
+1 stk cucumber
+2 green onion
+1 tbsp milk
+1 tbsp mayonnaise
+0.5 tsp cayenne pepper
+0.25 tsp lemon pepper',
+
+#Plain biscuits
+#From https://www.bbcgoodfood.com/user/3068811/recipe/plain-biscuits
+'165 g Caster Sugar
+250 g  Butter
+1 stk Egg Yolk
+350 g Plain Flour',
+
+#Vanilla custard
+#From https://12tomatoes.com/old-fashioned-vanilla-custard/
+'1 cup heavy cream
+1 cup whole milk
+4 stk egg yolk
+2 tsp vanilla extract
+1.5 tbsp cornstarch
+0.25 cup sugar',
+
+#Vegan mayo
+#From https://simpleveganblog.com/vegan-mayonnaise/
+'250 ml sunflower oil
+125 ml soy milk
+2 tsp apple cider vinegar
+0.5 tsp salt',
+
+#Lemon curd
+#From https://sallysbakingaddiction.com/how-to-make-lemon-curd/
+'4 stk egg yolk
+134 g sugar
+1 tbsp lemon zest
+80 ml lemon juice
+0.125 tsp salt
+86 g unsalted butter',
+
+#Gingerbread
+#From https://www.blessthismessplease.com/perfect-gingerbread-cookies-without-molasses/
+'1 cup butter
+1 cup sugar
+1 stk egg
+1 cup honey
+2 tbsp white vinegar
+5 cup plain flour
+1.5 tsp baking soda
+0.5 tsp salt
+2 tsp ground ginger
+1 tsp cinnamon
+1 tsp cloves',
+
+#Chocolate icing
+#From https://laurenslatest.com/the-best-and-easiest-chocolate-frosting-birthday-cake/
+'1 cup butter
+0.5 cup cocoa powder
+5 cup powdered sugar
+3.5 tbsp milk',
+
+#Pumpernickel bread
+#From https://oppskrift.klikk.no/pumpernikkel/1718/
+'50 g yeast
+8 dl kefir
+1 dl honey
+2 tsp salt
+1000 g rye flour
+150 g plain flour',
+
+#Speculaas cookies
+#From https://tasty.co/recipe/speculoos-cookies-homemade-cookie-butter
+'1 tbsp cinnamon
+1.5 tsp ground nutmeg
+1 tsp ground cloves
+1 tsp ground ginger
+0.25 tsp ground cardamom
+0.25 tsp white pepper
+0.25 tsp ground anise
+185 g plain flour
+0.25 tsp salt
+0.5 tsp baking powder
+115 g butter
+110 g brown sugar
+100 g sugar
+1 egg',
+
+#Speculaas spread
+#From same as above
+'1 tbsp cinnamon
+1.5 tsp ground nutmeg
+1 tsp ground cloves
+1 tsp ground ginger
+0.25 tsp ground cardamom
+0.25 tsp white pepper
+0.25 tsp ground anise
+185 g plain flour
+0.25 tsp salt
+0.5 tsp baking powder
+115 g butter
+110 g brown sugar
+100 g sugar
+1 egg
+30 ml evaporated milk
+75 g condensed milk
+55 g butter')
 
 composite_ingredients <- tibble(Name = Name, Ingredients = Ingredients)
 
-composite_ingredients <- composite_ingredients %>%
+composite_ingredients <- composite_ingredients %>% 
+  #Add an ID column to more easily check new additions
+  rowid_to_column(., "number") %>%
   #Separate ingredients into separate rows
   separate_rows(., Ingredients, sep = '\n') %>%
   
@@ -688,7 +836,7 @@ various$ingredients_weight <- right_join(weights, temp, by = c('ID', 'unit')) %>
   )) %>%
   
   #Cleanup
-  select(Name, Ingredients.y, Amounts_kg, ref, Amounts, unit) %>%
+  select(Name, Ingredients.y, Amounts_kg, ref, Amounts, unit, number) %>%
   unique() %>% #Got some values twice 
   rename(Ingredients = Ingredients.y) %>% select(-ref)
 
@@ -764,14 +912,14 @@ final <- full_join(temp, various$ingredients_weight) %>% left_join(., databases$
   
   #Add foodgroup/L1 from sharp
   mutate(L1 = case_when(
-    str_detect(Ingredients, 'salsa|soup|sauce|chutney|guacamole|pesto|paste|spice|seasoning|gravy|garam') ~ 'Seasoning, sauces and condiments',
+    str_detect(Ingredients, 'salsa|soup|sauce|chutney|guacamole|pesto|paste|spice|seasoning|gravy|garam|mayonnaise_vegan|sandwichspread_cucumber') ~ 'Seasoning, sauces and condiments',
     str_detect(Ingredients, 'fish') ~ 'Fish, seafood, amphibians, reptiles and invertebrates',
     str_detect(Ingredients, 'meatball') ~ 'Meat and meat products',
     str_detect(Ingredients, 'kimchi|mire_poix|sweet green pickle relish') ~ 'Vegetables and vegetable products',
-    str_detect(Ingredients, 'dough|bread|pastry|lefse|tortilla|graham|saltine|biscuit_digestive') ~ 'Grains and grain-based products',
+    str_detect(Ingredients, 'dough|bread|pastry|lefse|tortilla|graham|saltine|biscuit_digestive|pancake|biscuit|muesli') ~ 'Grains and grain-based products',
     Ingredients %in% c('shrimp_salad', 'omelet') ~ 'Composite dishes',
-    Ingredients %in% c('amaretti cookie', 'marshmallow','brownie_mix', 'yellow cake_mix',
-                       'chocolate pudding_mix', 'german chocolate cake_mix', 'caramel')  ~ 'Sugar and similar, confectionery and water-based sweet desserts',
+    Ingredients %in% c('amaretti cookie', 'marshmallow','brownie_mix', 'yellow cake_mix', 'custard_vanilla', 'icing_chocolate', 'spread_speculaas',
+                       'chocolate pudding_mix', 'german chocolate cake_mix', 'caramel', 'curd_lemon')  ~ 'Sugar and similar, confectionery and water-based sweet desserts',
   ))
 
 #Save
