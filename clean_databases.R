@@ -40,7 +40,8 @@ all_weights <- raw_data %>% rename(
          Foodgroup = `Matvaregruppe\r\nFoodgroup`) %>%
   
   #Remove some not needed foodgroups
-  filter(!str_detect(Foodgroup, regex('prepared|tilberedt|Spedbarnsmat|Baby food|dishes|Retter'))) %>%
+  filter(!(str_detect(Foodgroup, regex('prepared|tilberedt|Spedbarnsmat|Baby food|dishes|Retter')) & !str_detect(Ingredients, 'Pancake'))
+         ) %>%
   
   #Rename some ingredients
   mutate(Ingredients = Ingredients %>%
@@ -174,6 +175,7 @@ temp <- list(
   c('asparagus white', 'dl', '35.93', 'FoodData Central', 'english'),
   c('Asparagus beans', 'dl', '80', 'Assumed similar to other beans in database', 'english'),
   c('corn baby', 'stk', '10', 'BAMA, mais mini', 'english'),
+  c('corn baby', 'can', '425', 'Eldorado Meny', 'english'),
   c('bagel', 'stk', '85', 'Meny, Hatting', 'english'),
   c('bay leaf', 'stk', '0.2', 'Yahoo Answers', 'english'),
   c('Bean sprout', 'neve/dl', '97.3', 'FoodData Central', 'english'),
@@ -196,6 +198,7 @@ temp <- list(
   c('Coconut milk', 'can', '400', 'Rema 1000, kokosmelk', 'english'),
   c('corn cob', 'stk', '250', 'Grønn&Frisk, Meny', 'english'),
   c('corn kernel', 'dl', '105.7', 'FoodData Central', 'english'),
+  c('corn kernel', 'can', '160', 'Green Giant Meny', 'english'),
   c('chapati', 'stk', '60', 'Assume weight is the same as a tortilla', 'english'),
   c('chick pea flour', 'dl', '38.9', 'FoodData Central', 'english'),
   c('Chicory', 'stk', '85', 'CooksInfo.com', 'english'),
@@ -336,6 +339,8 @@ temp <- list(
   c('tuna water', 'box', '185', 'Eldorado', 'english'),
   c('tuna oil', 'stk', '185', 'Eldorado', 'english'),
   c('tuna water', 'stk', '185', 'Eldorado', 'english'),
+  c('tuna oil', 'can', '185', 'Eldorado', 'english'),
+  c('tuna water', 'can', '185', 'Eldorado', 'english'),
   c('squid baby', 'stk', '85.05', 'http://www.clovegarden.com/ingred/seasquidc.html', 'english'),
   c('herring smoked', 'stk', '300', 'DOMSTEIN Sjømat', 'english'),
   c('prawn', 'stk', '17', 'Kostholdsplanleggeren//Matvaretabellen', 'english'),
@@ -553,7 +558,7 @@ various$not_needed <- all_weights %>%
   filter(!Ingredients %in% c('crisp bread', 'flatbread, hard','smoke-cured ham', 'cured ham', 'spekeskinke', 'boiled ham', 'honning', 'sukker, brunt',
                              'sukker hvitt', 'anchovies, canned', 'anchovy fillets, canned', 'salmon, smoked, dry salted',
                              'mackerel fillet, in tomato sauce, canned', 'cod roe', 'tuna canned', 'ground meat, raw', 'bread, semi-coarse', 'bread, white',
-                             'cream cracker', 'salami', 'rice parboiled', 'caramels', 'marshmallows', 'ice cream'))
+                             'cream cracker', 'salami', 'rice parboiled', 'caramels', 'marshmallows', 'ice cream', 'pancakes'))
 
 #Remove the not needed ingredients, add cloves
 all_weights <- all_weights %>%
@@ -602,7 +607,9 @@ all_weights <- all_weights %>%
            str_replace('lentils', 'lentil') %>%
            str_replace('raisins', 'raisin') %>%
            str_replace('caramels', 'caramel') %>%
-           str_replace('marshmallows', 'marshmallow')
+           str_replace('marshmallows', 'marshmallow') %>%
+           str_replace('pancakes', 'pancake') %>%
+           str_replace('oats', 'oat')
   ) %>%
   #Conditionals
   mutate(Ingredients = case_when(
@@ -763,6 +770,7 @@ mutate(Ingredients = case_when(
   food_item == 'beef, minced meat, without salt and water, raw' ~ 'beef_minced meat',
   food_item == 'veal, for roast, raw' ~ 'beef_veal for roast',
   food_item == 'beef, roast of nuckle, raw' ~ 'beef_roast of knuckle',
+  food_item == 'veal, chops, raw' ~ 'beef_veal chops',
   
   #lamb----
   food_item == 'lamb, for stewing, raw' ~ 'lamb_stew meat',
@@ -938,6 +946,7 @@ mutate(Ingredients = case_when(
                    'grapefruit juice', 'orange juice', 'tomato juice', 'tomato ketchup') ~ str_replace(food_item, ' ', '_'),
   food_item == 'sweet corn, canned' ~ 'sweet corn_canned',
   food_item == 'grapes, unspecified, raw' ~ 'grape',
+  food_item == 'peaches, canned, in syrup' ~ 'peach_canned',
   
   #Grains----
   food_item == 'almonds' ~ 'almond',
@@ -982,9 +991,13 @@ mutate(Ingredients = case_when(
   food_item == 'tortilla chips' ~ 'nacho', 
   food_item == 'wheat flour, 80 % extraction' ~ 'wheat flour',
   food_item == 'wheat flour, wholemeal' ~ 'wheat flour_wholemeal',
+  food_item == 'rye flour' ~ 'wheat flour_rye',
+  food_item == 'rye flour, wholemeal' ~ 'wheat flour rye_wholemeal',
+  food_item == 'semolina, wheat meal' ~ 'wheat flour_semolina',
   food_item %in% c('hamburger bun', 'peanut butter', 'potato starch') ~ str_replace(food_item, ' ', '_'),
   food_item == 'oatmeal' ~ 'oatmeal',
   food_item == 'rolled oats' ~ 'oat_rolled',
+  food_item == 'sunflower seeds' ~ 'sunflower_seed',
   
   str_detect(food_item, 'bread, semi-coarse') & str_detect(food_item, '25-50') & str_detect(food_item, 'industrially made') ~ 'bread',
   str_detect(food_item, 'bread, white') & str_detect(food_item, '0-25') & str_detect(food_item, 'industrially made') & !str_detect(food_item, 'spiral|square') ~ 'bread_white',
@@ -1046,6 +1059,7 @@ mutate(Ingredients = case_when(
   food_item == 'quark, 7 % fat' ~ 'quark_7',
   food_item == 'milk, cultured, skimmed, skummet kulturmelk' ~ 'buttermilk', #Similar in nutrient content
   food_item == 'yoghurt, whole milk, plain' ~ 'yoghurt',
+  food_item == 'milk, condensed, sweetened' ~ 'milk evaporated',
   
   #Mushrooms----
   food_item == 'mushroom, chantherelle, raw' ~ 'mushroom_chanterelle',
@@ -1079,6 +1093,7 @@ mutate(Ingredients = case_when(
   food_item == 'salt, table' ~ 'salt',
   food_item == 'soy sauce' ~ 'soy_sauce',
   food_item == 'tofu, soy bean curd' ~ 'tofu',
+  food_item == 'jam, 45 % berries, 25 % sugar' ~ 'jam',
   
   #Keep the unspecified ingredients
   str_detect(food_item, ', unspecified, raw') ~ str_replace(food_item, ', unspecified, raw', ''),
@@ -1465,9 +1480,9 @@ various$sharp_to_remove <- SHARP %>%
   filter(L1 %in% c('Coffee, cocoa, tea and infusions', 'Composite dishes',
                    'Food products for young population', 'Eggs and egg products',
                    'Sugar and similar, confectionery and water-based sweet desserts',
-                    'Grains and grain-based products', 'Milk and dairy products',
+                   'Grains and grain-based products', 'Milk and dairy products',
                    'Alcoholic beverages', 'Seasoning, sauces and condiments',
-                    'Water and water-based beverages') |
+                   'Water and water-based beverages') |
            str_detect(Ingredients, 'rice|other wine-like fruit drinks|soft')) %>%
   #Remove ingredients in these categories that should be kept
   filter(!Ingredients %in% tolower(c('White sugar', 'Honey', 'Syrups',
@@ -1476,7 +1491,7 @@ various$sharp_to_remove <- SHARP %>%
                                      'Cream cheese', 'Cottage cheese', 'extra hard cheese parmesan, grana type',
                                      'Firm/semi-hard cheese gouda and edam type', 'Hard cheese cheddar, emmental type',
                                      'Cheese, feta', 'Soft - ripened cheese', 'Cheese, chevre frais',  'processed cheese and spreads',
-                                     'ricotta', 'mozzarella',
+                                     'ricotta', 'mozzarella', 'cheese, pecorino toscano',
                                      #Milk products
                                      'buttermilk', 'coconut milk cocos nucifera liquid', 'cow milk', 'yoghurt, cow milk',
                                      'evaporated milk liquid, unsweetened', 'cream, plain', 'cr�me fraiche and other mild variants of sour cream',
@@ -1489,7 +1504,8 @@ various$sharp_to_remove <- SHARP %>%
                                      'puff pastry', 'biscuits', 'maize flour', 'crisp bread, rye wholemeal', 'wheat bread and rolls',
                                      'breadcrumbs', 'buns', 'wheat bread and rolls, brown or wholemeal', 'wheat flour', 'maize flour',
                                      'wheat wholemeal flour', 'dried pasta', 'pasta wholemeal', 'oat grain', 'bulgur', 'barley grain, pearled',
-                                     'oat rolled grains', 'processed oat-based flakes',
+                                     'oat rolled grains', 'processed oat-based flakes', 'rye flour, light', 'rye flour, wholemeal',
+                                     'wheat semolina',
                                      #Alcoholic beverages
                                      'beer', 'wine', 'whisky', 'fortified and liqueur wines', 'cider', 'brandy', 'vodka and vodka-like spirits',
                                      'rum',
@@ -1503,9 +1519,11 @@ various$sharp_to_remove <- SHARP %>%
                                      #Chocolate etc
                                      'cocoa powder', 'bitter chocolate', 'milk chocolate', 'white chocolate',
                                      
+                                     #Coffee and tea
+                                     'coffee ground, roasted',
+                                     
                                      #Water
-                                     'tap water'))) %>% #All sugars have the same CO2 and land-use footprint, only need one, same with types of cheeses
-  select(FoodEx2)
+                                     'tap water'))) #All sugars have the same CO2 and land-use footprint, only need one, same with types of cheeses
 
 SHARP <- SHARP %>%
   #Filter ingredients not needed
@@ -1569,6 +1587,7 @@ SHARP <- SHARP %>%
            str_replace('cow milk', 'milk') %>%
            str_replace('milk powder, skimmed', 'milk powder nonfat') %>%
            str_replace('ice cream, milk-based', 'ice cream') %>%
+           str_replace('cheese, pecorino toscano', 'cheese pecorino') %>%
            
            #Plants
            str_replace('aubergines', 'eggplant') %>%
@@ -1622,6 +1641,7 @@ SHARP <- SHARP %>%
            str_replace('jam, strawberries', 'strawberry jam') %>%
            str_replace('jam, apricots', 'apricot jam') %>%
            str_replace('jam, oranges', 'orange jam') %>%
+           str_replace('jam of fruit / vegetables', 'jam') %>%
            str_replace('juice, apple', 'apple juice') %>%
            str_replace('juice, lemon', 'lemon juice') %>%
            str_replace('juice, lime', 'lime juice') %>%
@@ -1657,6 +1677,11 @@ SHARP <- SHARP %>%
            str_replace('jam of fruit / vegetables', 'jam') %>%
            str_replace('fruit juices 100% from named source', 'fruit juice') %>%
            str_replace('canned or jarred pineapple', 'pineapple canned') %>%
+           str_replace('canned or jarred peach', 'peach canned') %>%
+           str_replace('canned or jarred sweet cherry', 'cherries canned') %>%
+           str_replace('wheat semolina', 'wheat flour semolina') %>%
+           str_replace('rye flour, light', 'wheat flour rye') %>%
+           str_replace('rye flour, wholemeal', 'wheat flour rye wholemeal') %>%
            
            #Meat
            str_replace('beef tallow including processed suet', 'tallow') %>%
@@ -1710,28 +1735,10 @@ SHARP <- SHARP %>%
            str_replace('bitter chocolate', 'chocolate dark') %>%
            str_replace('milk chocolate', 'chocolate milk') %>%
            str_replace('white chocolate', 'chocolate white') %>%
-           str_replace('traditional margarine', 'margarine')
+           str_replace('traditional margarine', 'margarine') %>%
+           str_replace('dairy imitates other than milks', 'dairy imitate')
          
   ) %>%
-  
-  #Conditional
-  #mutate(Ingredients = case_when(
-    
-    #All beers have the same CO2 and landuse
-    #str_detect(Ingredients, 'beer') ~ 'beer',
-    #str_detect(tolower(Ingredients), 'pork') ~ 'ham', #All are ham products
-    #str_detect(tolower(Ingredients), 'pig') ~ 'pork', #Pork meat is used in all the recipes, not pig meat. All pig products have the same values
-    #str_detect(tolower(Ingredients), 'bovine|beef') ~ 'beef', #Beef is used in the recipes, all have the same values
-    #str_detect(Ingredients, 'sausage') ~ 'sausage', #All have the same values
-    #str_detect(Ingredients, 'chicken') ~ 'chicken',
-    #str_detect(Ingredients, '\\bgoose\\b') ~ 'goose',
-    #str_detect(Ingredients, 'sheep') ~ 'sheep',
-    #str_detect(Ingredients, 'margarine') ~ 'margarine',
-    #str_detect(Ingredients, 'lobster') ~ 'lobster',
-    #str_detect(Ingredients, 'salami') ~ 'salami',
-    #str_detect(Ingredients, 'cherries') ~ 'cherries',
-   # TRUE ~ Ingredients
-  #)) %>%
   
   #Change 'and similar' to 'other'
   mutate(Ingredients = Ingredients %>%
@@ -1866,6 +1873,11 @@ sharp_ref <- SHARP %>%
       Ingredients == 'marrow bone beef' ~ 'marrow bone',
       Ingredients == 'sweet green pickle relish' ~ 'sweet green pickle relish',
       Ingredients == 'ice cream' ~ 'ice cream',
+      Ingredients == 'wheat flour rye' ~ 'wheat flour',
+      Ingredients == 'wheat flour rye wholemeal' ~ 'wheat flour',
+      Ingredients == 'wheat flour semolina' ~ 'wheat flour',
+      Ingredients == 'white bread mix' ~ 'white bread',
+      Ingredients == 'coffee ground, roasted' ~ 'coffee ground',
       TRUE ~ first_word),
     
     second_word = case_when(
@@ -1934,6 +1946,11 @@ sharp_ref <- SHARP %>%
       Ingredients == 'marrow bone beef' ~ 'beef',
       Ingredients == 'sweet green pickle relish' ~ '\\',
       Ingredients == 'ice cream' ~ '\\',
+      Ingredients == 'wheat flour rye' ~ 'rye',
+      Ingredients == 'wheat flour rye wholemeal' ~ 'rye',
+      Ingredients == 'wheat flour semolina' ~ 'semolina',
+      Ingredients == 'white bread mix' ~ 'mix',
+      Ingredients == 'coffee ground, roasted' ~ '\\',
       TRUE ~ second_word
     )
   ) %>%
