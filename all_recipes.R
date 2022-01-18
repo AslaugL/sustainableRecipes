@@ -1,5 +1,6 @@
 #Setup----
 devtools::load_all(path = '.')
+roxygen2::roxygenise()
 
 #Different databases to search through to find amounts in kilos, nutrient content and sustainability measurements
 references <- list(
@@ -83,7 +84,7 @@ recipes <- raw %>%
          str_replace('2 tbsp tine genuine torn cheese original', '1 tbsp norvegia\n 1 tbsp jarlsberg') %>%
          #Change vegetable/herb mixes to vegetables/herbs
          str_replace('1 hp rema frozen vegetables', '170 g carrot\n165 g broccoli\n165 g baby corn') %>% #Familiefavoritt grovkuttet in the recipe
-         str_replace('frozen mixed vegetables', '40.75 g potato\n40.75 g sweet pepper red\n40.75 g green peas\n40.75 g carrot') %>% #Mix of vegetables typically found in the dish
+         str_replace('0.163 kg frozen mixed vegetables', '40.75 g potato\n40.75 g sweet pepper red\n40.75 g green peas\n40.75 g carrot') %>% #Mix of vegetables typically found in the dish
          str_replace('600 g frozen vegetable mixture|600 g of frozen stew mix', '180 g swede\n150 g carrot\n150 g celeriac root\n60 g red onion\n60 g parsnip root') %>%
          str_replace('wok-vegetables', '110 g bean green asparagus\n110 g broccoli\n100 g mango\n85 g onion\n75 g water chestnut\n10 g rapeseed oil') %>% #Thai inspired wok REMA1000
          str_replace('400 g wok mixture with asparagus beans, carrot and leek', '133.33 g asparagus beans\n133.33 g carrot\n133.33 g leek') %>%
@@ -326,6 +327,7 @@ various$org_amounts <- recipes %>% select(sample_id, Country, Ingredients, Amoun
   unite(., 'original_amounts', c(Amounts, unit), sep = ' ') %>%
   mutate(original_amounts = str_replace(original_amounts, 'NA NA', '-')) #Should get the original volume amounts from US recipes as well
 
+#Check if it looks ok
 t <- various$org_ingredients %>% select(Ingredients, org_ingredients) %>% unique()
 
 #Map to databases, find the amount (Weight) of each ingredient by weight,the nutritional values and environmental impact----
@@ -519,6 +521,9 @@ t <- various$org_ingredients %>% select(Ingredients, org_ingredients) %>% unique
     select(-ref) %>%
     replace(is.na(.), 0)
   
+  #See if it look ok
+  t <- temp %>% select(Ingredients, ID) %>% inner_join(references$nutrients) %>% unique()
+  
   #See which ingredients haven't been picked up
   t <- anti_join(recipes %>% select(sample_id, Ingredients) %>% unique(), temp %>% select(sample_id, Ingredients))
   
@@ -577,6 +582,9 @@ t <- various$org_ingredients %>% select(Ingredients, org_ingredients) %>% unique
     inner_join(databases$sustainability %>% mutate(ID = as.numeric(ID)), by = 'ID') %>%
       select(-ref) %>%
       replace(is.na(.), 0)
+  
+  #See if it look ok
+  t <- temp %>% select(Ingredients, ID) %>% inner_join(references$sustainability) %>% unique()
   
   #See which ingredients haven't been picked up
   t <- anti_join(recipes %>% select(sample_id, Ingredients) %>% unique(), temp %>% select(sample_id, Ingredients))
