@@ -399,7 +399,6 @@ checkRef <- function(df, reference, fix_errors = TRUE){
           Ingredients == 'clementine' ~ fixRefID(reference = reference, 'mandarin'),
           Ingredients == 'black currant' ~ fixRefID(reference = reference, 'blackcurrant'),
           Ingredients == 'tamarind juice' ~ fixRefID(reference = reference, 'fruit', 'juice'),
-          Ingredients == 'salsa' ~ fixRefID(reference = reference, 'chunky', 'salsa'), 
           Ingredients == 'salsa' ~ fixRefID(reference = reference, 'chunky', 'salsa'),
           Ingredients %in% c('syrup apple', 'syrup pear', 'syrup ginger', 'syrup chocolate') ~ fixRefID(reference = reference, 'syrup'),
           Ingredients == 'apricot nectar' ~ fixRefID(reference = reference, 'fruit', 'nectars'),
