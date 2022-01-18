@@ -1,5 +1,6 @@
 devtools::load_all(path = '.')
 
+library(circlize)
 
 ## Setup ----
 #Empty list to fill with plots and plot legends
@@ -497,7 +498,7 @@ stats <- list(
   'kruskal_wallis_effectsize' = run_stats %>%
     group_by(feature) %>%
     kruskal_effsize(value ~ group)#,
-                    #ci = TRUE) #Include to calculate effect sizes
+                    #ci = TRUE) #Include to calculate effect sizes used in final stat table
   )
 
 #Filter out features that were significantly different in the kruskal wallis
@@ -616,7 +617,7 @@ plots$correlations$vitaminsVSsustainability2 <- ggpairs(temp %>% select(-sample_
             ncol = 2.2, nrow = 2.2)
   
   
-  #Most important nutrients
+  #Correlations discussed in article----
   plots$correlations$selected_nutrients <- ggpairs(temp %>% select(-sample_id) %>% rename(Fibre = `Dietary fibre`),
                                                    mapping = ggplot2::aes(color=group, alpha = 0.6),
                                                    columns = c(25, 30, 3, 13, 28, 29, 8, 24, 36,37),
@@ -1414,7 +1415,7 @@ plots$violinbox$foodgroups <- list()
     save_plot('./thesis/images/foodgroups.png', plots$final$foodgroups,
               nrow = 1.5, ncol = 1.3)
     
-    #Just meat and meat products for article
+    #Just meat and meat products for article----
     temp <- tidy_ingredients %>%
       filter(Foodgroup == 'Meat and\nmeat products') %>%
       #pivot wider to get Amounts column
@@ -1456,7 +1457,7 @@ plots$violinbox$foodgroups <- list()
       str_detect(Ingredients, 'pork|bacon|sausage|ham|salami') & !str_detect(Ingredients, 'lard|beef|burger') ~ 'pork',
       str_detect(Ingredients, 'chicken|turkey|duck|goose') & !str_detect(Ingredients, 'broth|fat|sauce') ~ 'poultry',
       
-      str_detect(Ingredients, 'pollock|cod|anglerfish|fish cake coarse|haddock|grouper|catfish|sea bass|halibut|tuna') ~ 'lean fish', #The fishcakes are made out of mostly haddock
+      str_detect(Ingredients, 'pollock|cod|anglerfish|fish cakes coarse|haddock|grouper|catfish|sea bass|halibut|tuna') ~ 'lean fish', #The fishcakes are made out of mostly haddock
       str_detect(Ingredients, 'salmon|trout|arctic char|mackerel|herring|sardine|anchovy') & !str_detect(Ingredients, 'roe') ~ 'oily fish',
       str_detect(Ingredients, 'squid|prawn|shrimp|mussel|crab|lobster|shellfish|scampi|clam|scallop') & !str_detect(Ingredients, 'paste') ~ 'shellfish'
       
@@ -1668,9 +1669,10 @@ save_plot('./thesis/images/protein_source_bar.png', plots$barplots$protein_sourc
   temp <- lapply(temp, makeAdjacencyList)
     
   #Colorbrewer set3 for coloring the nutrients
-  grid_col <- c(Protein = '#8dd3c7', Fibre = '#ffffb3', P = '#bebada', Na = '#fb8072', Cu = '#80b1d3',
-                `Vit. A` = '#fdb462', `Vit. B6` = '#b3de69', `Vit. B12` = '#fccde5', Zn = '#d9d9d9', `Vit. C` ='#bc80bd',
-                `Vit. E` = '#ccebc5', `Vit. B2` = '#ffed6f')
+  grid_colors <- c(Protein = '#8dd3c7', Fibre = '#ffffb3', P = '#bebada', Na = '#ffed6f', Cu = '#80b1d3',
+                `Vit. A` = '#ffffff', `Vit. B6` = '#b3de69', `Vit. B12` = '#fccde5', Zn = '#d9d9d9',
+                `Vit. C` ='#bc80bd', Se = '#1FDEA0', `Vit. E` = '#ccebc5', Fe = '#ffed6f', `Vit. B2` = '#d8fb98',
+                I = '#fdb462', `Vit. B1` = '#3ddd0c', `Vit. B9` = '#cfa649', `Vit. B3` = '#fb8072')
   
   #Plot titles
   titles <- various$recipe_protein_source %>%
@@ -1681,6 +1683,9 @@ save_plot('./thesis/images/protein_source_bar.png', plots$barplots$protein_sourc
   #Save plots as png
   for(i in 1:length(temp)){
     
+    #Set colors
+    #nutrients <- as_vector(c(temp[[1]][1], temp[[1]][2])) %>% unique()
+    
     pdf(paste0('./thesis/images/chordDiagram_', names(temp[i]), '.pdf'))
     
     circos.clear()
@@ -1689,7 +1694,7 @@ save_plot('./thesis/images/protein_source_bar.png', plots$barplots$protein_sourc
                link.lwd = 1, link.lty = 1, link.border = "black",
                #Set color of chords to gray
                col = "gray",
-               grid.col = grid_col,
+               grid.col = grid_colors,
                #Set annotations at 90 degree angle
                annotationTrack = c("grid"),
                preAllocateTracks = list(track.height = max(strwidth(temp$Beef$X1)))
@@ -1717,19 +1722,22 @@ save_plot('./thesis/images/protein_source_bar.png', plots$barplots$protein_sourc
 # Article plot----
   plots$article <- list()
   
-  #Add label to embedded plot
-  temp <- plot_grid(plots$violinbox$foodgroups$meat_products,
-                    labels = 'B', vjust = -0.2)
-  plots$article$protein_sources <- plot_grid(plots$barplots$protein_source +
+  #Add label to embedded plot with amount of meat per 100 g
+  temp <- plot_grid(plots$violinbox$foodgroups$meat_products + labs(y = 'Recipe weight') + scale_x_discrete(position = "top"),
+                    labels = 'B')
+  plots$article$protein_sources <- plot_grid(plots$barplots$protein_source + theme(legend.position = c(0.075, 0.8)) +
               annotation_custom(ggplotGrob(temp),
-                                xmin = 6, xmax = 10, ymin = 20, ymax = 50),
+                                xmin = 7, xmax = 10, ymin = 22, ymax = 50),
               plots$violinbox$recipe_protein_sources + theme(legend.position = 'none'),
               nrow = 2,
-              labels = c('A', 'C')
+              labels = c('A', 'C'),
+              rel_heights = c(1.5,2)
               )
   
-  save_plot('./thesis/images/article_proteinsources.png', plots$article$protein_sources, ncol = 2, nrow = 3)
+  plots$article$protein_sources
   
+  save_plot('./thesis/images/article_proteinsources.png', plots$article$protein_sources, ncol = 2, nrow = 3)
+
 ## Tables----
 # Stats----
 #Significantly differences from dunn test
