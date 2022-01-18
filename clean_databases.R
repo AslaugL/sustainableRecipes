@@ -747,11 +747,10 @@ clean_nutrients <- raw_data %>%
   #Remove unnecessary food items, first turn to lowercase----
 mutate(food_item = str_to_lower(food_item),
        Foodgroup = str_to_lower(Foodgroup)) %>%
-  
-  #Whole foodgroups
-  filter(!(str_detect(Foodgroup,
-                      'dessert|other meat products, prepared|egg, prepared|cookies|cod liver oil|homemade|chocolate|instant|cake|breakfast cereals|porridge|pizza') &
-             (!str_detect(Foodgroup, 'sausage') | !str_detect(food_item, 'alkaline cured|tofu') ))) %>%
+  #Keep some ingredients
+  filter((food_item %in% c('chocolate bar, milk', 'chocolate, white', 'chocolate, cooking, plain, minimum 35 % cocoa', 'chocolate, snickers', 'ice cream, dairy', 'chocolate, dark, 70 % cocoa')) |
+           !str_detect(Foodgroup,
+                      'dessert|other meat products, prepared|other meats, minced, offal, prepared|egg, prepared|cookies|cod liver oil|homemade|chocolate|instant|cake|breakfast cereals|porridge|pizza')) %>%
   
 #Rename some ingredients----
 mutate(Ingredients = case_when(
@@ -998,6 +997,8 @@ mutate(Ingredients = case_when(
   food_item == 'oatmeal' ~ 'oatmeal',
   food_item == 'rolled oats' ~ 'oat_rolled',
   food_item == 'sunflower seeds' ~ 'sunflower_seed',
+  food_item == 'linseeds, flax seeds, crushed' ~ 'flax_seed',
+  food_item == 'pecan nuts' ~ 'pecan_nut',
   
   str_detect(food_item, 'bread, semi-coarse') & str_detect(food_item, '25-50') & str_detect(food_item, 'industrially made') ~ 'bread',
   str_detect(food_item, 'bread, white') & str_detect(food_item, '0-25') & str_detect(food_item, 'industrially made') & !str_detect(food_item, 'spiral|square') ~ 'bread_white',
@@ -1060,6 +1061,9 @@ mutate(Ingredients = case_when(
   food_item == 'milk, cultured, skimmed, skummet kulturmelk' ~ 'buttermilk', #Similar in nutrient content
   food_item == 'yoghurt, whole milk, plain' ~ 'yoghurt',
   food_item == 'milk, condensed, sweetened' ~ 'milk evaporated',
+  food_item == 'soy beverage, unsweetened' ~ 'milk_soy',
+  food_item == 'oat beverage, with calcium and vitamins' ~ 'dairy imitate_oatmilk',
+  food_item == 'ice cream, dairy' ~ 'ice cream',
   
   #Mushrooms----
   food_item == 'mushroom, chantherelle, raw' ~ 'mushroom_chanterelle',
@@ -1094,6 +1098,11 @@ mutate(Ingredients = case_when(
   food_item == 'soy sauce' ~ 'soy_sauce',
   food_item == 'tofu, soy bean curd' ~ 'tofu',
   food_item == 'jam, 45 % berries, 25 % sugar' ~ 'jam',
+  food_item == 'chocolate bar, milk' ~ 'chocolate_milk',
+  food_item == 'chocolate, white' ~ 'chocolate_white',
+  food_item == 'chocolate, cooking, plain, minimum 35 % cocoa' ~ 'chocolate_semi-sweet',
+  food_item == 'chocolate, snickers' ~ 'chocolate_candy bar',
+  food_item == 'chocolate, dark, 70 % cocoa' ~ 'chocolate_dark', #Not really, but darkest they have
   
   #Keep the unspecified ingredients
   str_detect(food_item, ', unspecified, raw') ~ str_replace(food_item, ', unspecified, raw', ''),
@@ -1152,6 +1161,9 @@ fromFoodDataCentral_foods <- read_csv('./Data/databases/food.csv') %>%
   
   #Select missing foods
   filter(description %in% c(
+    
+    #Grains
+    'Tempeh',
     
     #Meat products
     'Beef, variety meats and by-products, tongue, raw', 'Pork, fresh, variety meats and by-products, kidneys, raw',
