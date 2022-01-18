@@ -39,7 +39,7 @@ standardiseIngredients <- function(df){
       str_detect(Ingredients, 'banan') & !str_detect(Ingredients, 'shallot') ~ 'banana',
       str_detect(Ingredients, 'beet|better') & str_detect(Ingredients, 'yellow') ~ 'beetroot yellow',
       str_detect(Ingredients, 'beet') & str_detect(Ingredients, 'cooked|boiled') ~ 'beetroot cooked',
-      str_detect(Ingredients, 'beet') & str_detect(Ingredients, 'root') ~ 'beetroot',
+      str_detect(Ingredients, 'beet') & str_detect(Ingredients, 'root') & !str_detect(Ingredients, 'pickle') ~ 'beetroot',
       str_detect(Ingredients, 'curran') & str_detect(Ingredients, 'jam') ~ 'jam currant',
       str_detect(Ingredients, 'black curran') & !str_detect(Ingredients, 'juice') ~ 'black currant',
       str_detect(Ingredients, 'currant') & !str_detect(Ingredients, 'juice') ~ 'black currant', #Use as default
@@ -77,6 +77,7 @@ standardiseIngredients <- function(df){
         str_detect(Ingredients, 'red') & str_detect(Ingredients, 'pepper') & str_detect(Ingredients, 'hot') & str_detect(Ingredients, 'slice') |
         str_detect(Ingredients, 'chili') & str_detect(Ingredients, 'seed') ~ 'chili pepper red',
       str_detect(Ingredients, 'chili') & str_detect(Ingredients, 'dried') & !str_detect(Ingredients, 'flake') ~ 'chili pepper dried',
+      str_detect(Ingredients, 'chili') & str_detect(Ingredients, 'pickle') ~ 'chili pepper pickled',
       str_detect(Ingredients, 'clemen') ~ 'clementine',
       str_detect(Ingredients, 'coconut') & !str_detect(Ingredients, 'milk|cream|oil') ~ 'coconut',
       str_detect(Ingredients, 'minima|baby corn') ~ 'corn baby',
@@ -147,6 +148,7 @@ standardiseIngredients <- function(df){
       str_detect(Ingredients, 'olive') & str_detect(Ingredients, 'black|kalamata') ~ 'olive black',
       str_detect(Ingredients, 'olive') & str_detect(Ingredients, 'green') ~ 'olive green',
       str_detect(Ingredients, 'olive') & !str_detect(Ingredients, 'oil|tapenade') ~ 'olive green',
+      str_detect(Ingredients, 'onion') & str_detect(Ingredients, 'pickle') ~ 'onion pickled',
       str_detect(Ingredients, 'onion') & !str_detect(Ingredients, 'pickle|spring|green|pearl|leek|mire|garlic|powder|soup|bread|seed') ~ 'onion',
       str_detect(Ingredients, 'pearl onion') & str_detect(Ingredients, 'pickle') ~ 'pearl onion pickled',
       str_detect(Ingredients, 'pearl onion') ~ 'pearl onion',
@@ -498,7 +500,7 @@ standardiseIngredients <- function(df){
       str_detect(Ingredients, 'oat') & str_detect(Ingredients, 'quick|porridge') ~ 'oat quick',
       
       str_detect(Ingredients, 'pancake') & str_detect(Ingredients, 'mix') ~ 'pancake dry mix',
-      str_detect(Ingredients, 'pancake') ~ 'pancake',
+      str_detect(Ingredients, 'pancake') & !str_detect(Ingredients, 'syrup') ~ 'pancake',
       str_detect(Ingredients, 'pasta|paste|spagetti|spaghetti') & str_detect(Ingredients, 'whole') ~ 'pasta whole grain',
       str_detect(Ingredients, 'lasagna|lasagne') & str_detect(Ingredients, 'plate|sheet') ~ 'lasagna plate pasta',
       str_detect(Ingredients, 'pasta|spagetti|spaghetti|tagli|pens|macaroni') & !str_detect(Ingredients, 'lasagna') & str_detect(Ingredients, '\\bcooked') ~ 'pasta cooked',
@@ -705,7 +707,7 @@ standardiseIngredients <- function(df){
       str_detect(Ingredients, 'crab') & str_detect(Ingredients, 'claw') ~ 'crab claw',
       str_detect(Ingredients, 'crab') ~ 'crab',
       
-      str_detect(Ingredients, 'fish cake') & str_detect(Ingredients, 'coarse') ~ 'fish cake coarse',
+      str_detect(Ingredients, 'fish cake') & str_detect(Ingredients, 'coarse') ~ 'fish cakes coarse',
       str_detect(Ingredients, 'fish, head, back bone') | Ingredients == 'fish cut' ~ 'fish scraps for broth',
       
       str_detect(Ingredients, 'grouper') ~ 'grouper',
@@ -808,6 +810,7 @@ standardiseIngredients <- function(df){
       str_detect(Ingredients, 'baking soda|bicarbonate of soda') ~ 'baking soda',
       str_detect(Ingredients, 'beer') & str_detect(Ingredients, 'dark|amber|christmas') ~ 'beer dark',
       str_detect(Ingredients, 'beer|ale') ~ 'beer',
+      str_detect(Ingredients, 'beet') & str_detect(Ingredients, 'pickle') ~ 'beetroot pickled',
       Ingredients == 'black truffle or 2 tbsp s truffle oil' ~ 'black truffle',
       str_detect(Ingredients, 'brandy') ~ 'spirits 40 vol-% alcohol brandy',
       str_detect(Ingredients, 'brine') & !str_detect(Ingredients, 'shrimp') ~ 'water brine',
@@ -903,7 +906,7 @@ standardiseIngredients <- function(df){
       str_detect(Ingredients, 'pepper') & str_detect(Ingredients, 'cayenne') ~ 'cayenne pepper',
       str_detect(Ingredients, 'pepper|Pepper') & !str_detect(Ingredients, 'chili|white|sweet|cayenne|spice|bell|salad|sauce') & !str_detect(Ingredients, 'salt') ~ 'black pepper',
       str_detect(Ingredients, 'sweet green pickle relish') ~ 'sweet green pickle relish',
-      str_detect(Ingredients, 'pickle') & !(str_detect(Ingredients, 'cucumber|ginger|sweet pepper')) | str_detect(Ingredients, 'gherkin') ~ 'cucumber pickled', #Standard
+      str_detect(Ingredients, 'pickle') & !(str_detect(Ingredients, 'cucumber|ginger|sweet pepper|onion|beet')) | str_detect(Ingredients, 'gherkin') ~ 'cucumber pickled', #Standard
       str_detect(Ingredients, 'pizza filling') ~ 'pizza filling',
       
       str_detect(Ingredients, 'sake') ~ 'sake',
