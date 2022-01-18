@@ -95,10 +95,10 @@ if(knitr::is_latex_output()){
   column_spec(8, width = "2.5cm", latex_valign = "p") %>%
   #Group rows together
   pack_rows(., 'Environmental impact', 1, 2) %>%
-  pack_rows(., 'Healthiness indicators', 3, 6) %>%
-  pack_rows(., 'Macronutrients', 7, 9) %>%
-  pack_rows(., 'Vitamins', 10, 15) %>%
-  pack_rows(., 'Minerals', 16, 21) #%>%
+  pack_rows(., 'Healthiness indicators', 3, 5) %>%
+  pack_rows(., 'Macronutrients', 6, 8) %>%
+  pack_rows(., 'Vitamins', 9, 14) %>%
+  pack_rows(., 'Minerals', 15, 19) #%>%
   #Add footnote explaining abreviations
   #add_footnote("Abbreviations used: Inv = Inverted, NNR = New Nordic Nutritional Recommendations, WHO = World Health Organization, E% = Percentage of energy, MJ = Megajoule, RDI = Recommended daily intake.", notation = "none") 
 } else {
@@ -115,10 +115,10 @@ if(knitr::is_latex_output()){
   column_spec(8, width = "2.5cm") %>%
   #Group rows together
   pack_rows(., 'Environmental impact', 1, 2) %>%
-  pack_rows(., 'Healthiness indicators', 3, 6) %>%
-  pack_rows(., 'Macronutrients', 7, 9) %>%
-  pack_rows(., 'Vitamins', 10, 15) %>%
-  pack_rows(., 'Minerals', 16, 21)
+  pack_rows(., 'Healthiness indicators', 3, 5) %>%
+  pack_rows(., 'Macronutrients', 6, 8) %>%
+  pack_rows(., 'Vitamins', 9, 14) %>%
+  pack_rows(., 'Minerals', 15, 19)
   #Add footnote explaining abreviations
   #add_footnote("Abbreviations used: Inv = Inverted, NNR = New Nordic Nutritional Recommendations, WHO = World Health Organization, E% = Percentage of energy, MJ = Megajoule, RDI = Recommended daily intake.", notation = "none")
   
@@ -208,13 +208,13 @@ Results from the Spearman correlation showed a significant (BH adjusted *p*-valu
 
 All four healthiness indicators were significantly (BH adjusted *p*-value \<0.001) negatively correlated with the two environmental sustainability indicators, with the two dietary guidelines being more strongly correlated with both GHGE and landuse than the FSA MTL and Nutriscore. NNR had a slightly stronger correlation with both GHGE and landuse than WHO guidelines, while the Nutriscore had a weaker correlation with landuse than the FSA MTL. Slight differences were seen between countries, with recipes from Norway consistently having a weaker correlation between healthiness and environmental impact indicators, this can be seen in **Figure** \@ref(fig:Correlation-healthVSsustainability) that show scatterplots of the various healthiness and environmental impact indicators, and the correlation between them for each country and all countries pooled.
 
-```{r, eval = knitr::is_latex_output(), results='asis'}
+```{=latex, eval = knitr::is_latex_output()}
 \begin{landscape}
 ```
 ```{r Correlation-healthVSsustainability, out.width = "100%", fig.cap = "Spearman's Rho between CO2 equivalents (kg), landuse (m2/year) and the inverted Nutriscore, inverted Food Standard Agency's multiple traffic light score, World Health Organization dietary guideline score and the Norid Nutrition Recommendation score."}
 knitr::include_graphics("images/healthVSsustainability.png")
 ```
-```{r, results = 'asis', eval = knitr::is_latex_output()}
+```{=latex, eval = knitr::is_latex_output()}
 \end{landscape}
 ```
 
@@ -228,13 +228,13 @@ Landuse had a weak negative correlation with carbohydrates (rho -0.42, BH adjust
 
 See **Figure** \@ref(fig:Correlation-energyVSsustainability) for a details.
 
-```{r, eval = knitr::is_latex_output(), results='asis'}
+```{=latex, eval = knitr::is_latex_output()}
 \begin{landscape}
 ```
 ```{r Correlation-energyVSsustainability, out.width = "100%", fig.cap = "Spearman's Rho between CO2 equivalents (kg), landuse (m2/year), energy content and energy providing nutrients."}
 knitr::include_graphics("images/energyVSsustainability.png")
 ```
-```{r, eval = knitr::is_latex_output(), results='asis'}
+```{=latex, eval = knitr::is_latex_output()}
 \end{landscape}
 ```
 
@@ -248,7 +248,7 @@ Landuse had a weak negative correlation with calcium (rho -0.16, BH adjusted *p*
 
 **Figure** \@ref(fig:Correlation-mineralsVSsustainability1) and **Figure** \@ref(fig:Correlation-mineralsVSsustainability2) shows the correlation between minerals and environmental impact of each country and all countries pooled.
 
-```{r, eval = knitr::is_latex_output(), results='asis'}
+```{=latex, eval = knitr::is_latex_output()}
 \begin{landscape}
 ```
 ```{r Correlation-mineralsVSsustainability1, out.width = "98%", fig.cap = "Spearman's Rho between CO2 equivalents (kg), landuse (m2/year) and mineral content (\\% of recommended daily intake)."}
@@ -257,7 +257,7 @@ knitr::include_graphics("images/mineralsVSsustainability1.png")
 ```{r Correlation-mineralsVSsustainability2, out.width = "98%", fig.cap = "Spearman's Rho between CO2 equivalents (kg), landuse (m2/year) and mineral content (\\% of recommended daily intake)."}
 knitr::include_graphics("images/mineralsVSsustainability2.png")
 ```
-```{r, eval = knitr::is_latex_output(), results='asis'}
+```{=latex, eval = knitr::is_latex_output()}
 \end{landscape}
 ```
 
@@ -271,7 +271,7 @@ Correlation between the different vitamins and landuse generally followed the sa
 
 **Figure** \@ref(fig:Correlation-vitaminsVSsustainability1) and **Figure** \@ref(fig:Correlation-vitaminsVSsustainability2) shows the correlation between vitamins and environmental impact of each country and all countries pooled.
 
-```{r, eval = knitr::is_latex_output(), results='asis'}
+```{=latex, eval = knitr::is_latex_output()}
 \begin{landscape}
 ```
 ```{r Correlation-vitaminsVSsustainability1, out.width = "98%", fig.cap = "Spearman's Rho between CO2 equivalents (kg), landuse (m2/year) and vitamin content (\\% of recommended daily intake)."}
@@ -280,6 +280,6 @@ knitr::include_graphics("images/vitaminsVSsustainability1.png")
 ```{r Correlation-vitaminsVSsustainability2, out.width = "98%", fig.cap = "Spearman's Rho between CO2 equivalents (kg), landuse (m2/year) and vitamin content (\\% of recommended daily intake)."}
 knitr::include_graphics("images/vitaminsVSsustainability2.png")
 ```
-```{r, eval = knitr::is_latex_output(), results='asis'}
+```{=latex, eval = knitr::is_latex_output()}
 \end{landscape}
 ```

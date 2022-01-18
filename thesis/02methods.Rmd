@@ -16,7 +16,7 @@ To calculate a recipe's environmental impact, the SHARP Indicators database was 
 
 The nutrient content and environmental impact of each recipe was found by summing the values for all ingredients in the recipe.
 
-Some ingredients were listed in the recipe with either volume units or number of pieces. Before calculating the nutritional content and environmental impact of these ingredients, standardized weight equivalent was found by primarily using the "Weights, measures and portion sizes for foods" database from The Norwegian Directorate of Health [@ØsterholtDalane2015]. If the ingredient was not in this database the U.S. Department of Agriculture, Agricultural Research Service FoodData Central food database [@foodDataCentral2019] was used, the ingredient was found in the online shops of Meny, Kolonial or COOP, or measured at home.
+Some ingredients were listed in the recipe with either volume units or number of pieces. Before calculating the nutritional content and environmental impact of these ingredients, standardized weight equivalent was found by primarily using the "Weights, measures and portion sizes for foods" database from The Norwegian Directorate of Health [@OesterholtDalane2015]. If the ingredient was not in this database the U.S. Department of Agriculture, Agricultural Research Service FoodData Central food database [@foodDataCentral2019] was used, the ingredient was found in the online shops of Meny, Kolonial or COOP, or measured at home.
 
 Some recipes included composite ingredients, such as pastry or pizza dough, not present in either nutrient databases or the SHARP Indicator database. For these ingredients a recipe was found through an online search, similar to how the inventors of the SHARP Indicator database looked up composite foods [@Mertens2019]. Nutrient content, CO~2~ emission and land use were calculated for the composite ingredient and normalized to per 100 g of the ingredient, before being added to the recipe like any other ingredient.
 
@@ -68,7 +68,7 @@ The Nutriscore is similar, but it builds on the FSA MTL by also taking into acco
 
 The points from the qualifying categories are subtracted from the points from the disqualifying categories, see **Table** \@ref(tab:nutriscore-points-table), giving a total score between -15 to +40, and a lower score indicates a more healthy and nutritious food. The points correspond to a colored grading system between a dark green A (most healthy) and a dark orange E (least healthy). Consumption of foods that score green/A, is encouraged, while consumption of foods that score dark orange/E is advised to be limited [@Dreano-Trecant2020]. As with the FSA MTL, an inverted scoring system is used in the analyses in this thesis. An inverted score of minus two or more, corresponding to a light green B or dark green A, was chosen as the cut-off for a food that could be eaten often as part of a healthy diet. This score has also previously been used to study if the Nutriscore is in alignment with national FBDGs [@Ahmed2020].
 
-```{r, eval = knitr::is_latex_output(), results='asis'}
+```{=latex, eval = knitr::is_latex_output()}
 \begin{landscape}
 ```
 ```{r nutriscore-points-table}
@@ -130,7 +130,7 @@ kbl(booktabs = TRUE, linesep = "", escape = FALSE, caption = "Scoring system for
 }
 
 ```
-```{r, eval = knitr::is_latex_output(), results='asis'}
+```{=latex, eval = knitr::is_latex_output()}
 \end{landscape}
 ```
 

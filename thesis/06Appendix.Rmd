@@ -2,7 +2,7 @@
 
 # Appendix
 
-```{r, eval = knitr::is_latex_output(), results='asis'}
+```{=latex, eval = knitr::is_latex_output()}
 \begin{landscape}
 ```
 ```{r pct-recipe-healthiness}
@@ -49,7 +49,7 @@ kbl(booktabs = TRUE, linesep = "", escape = FALSE, format = "html",
   kable_styling(latex_options = c("scale_down", "hold_position"), full_width = FALSE)
 }
 ```
-```{r, eval = knitr::is_latex_output(), results='asis'}
+```{=latex, eval = knitr::is_latex_output()}
 \end{landscape}
 ```
 
