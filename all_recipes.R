@@ -147,6 +147,8 @@ recipes <- raw %>%
          #Change units of ingredients
          str_replace('bacon slice|pieces of bacon|pieces of good sliced bacon|thin slices of bacon|slices of bacon thin|rashers of smoked streaky bacon', 'slice bacon') %>%
          str_replace('large garlic cloves|cloves of garlic|pieces minced garlic|ts garlic minced|fat garlic|clove of garlic|cloves garlic|garlic cloves|garlic clove|garlic boats|garlic boat|piece garlic|pieces of pressed garlic cloves|pieces of garlic|teaspoon garlic clove|tsp finely chopped garlic|tsp finely grated garlic|boats finely chopped garlic|cloves finely chopped garlic|cloves with garlic', 'clove garlic') %>% #A tsp garlic is about a clove
+         str_replace('10 pcs loff, whole, slices without crust', '10 slice white bread') %>%
+         str_replace('4 pieces of chapati', '160 g chapati') %>% #Assume the weight of a regular tortilla
          str_replace('0.5 stem celery', '0.5 stk celery') %>%
          str_replace('celery root', 'celeriac root') %>% #Must be fixed before changing the units of celery stalks)
          str_replace('stk of celery|stalks of celery|celery rod|celery stalks|celery stalk|chopped bar celery|celery bars|stems celery|stem celery|pieces celery|piece celery|pieces of celery|piece of celery|stk celery stalks|stk celery stalk|rod celery|twig celery', 'stalk celery') %>%
@@ -522,7 +524,12 @@ t <- various$org_ingredients %>% select(Ingredients, org_ingredients) %>% unique
     replace(is.na(.), 0)
   
   #See if it look ok
-  t <- temp %>% select(Ingredients, ID) %>% inner_join(references$nutrients) %>% unique()
+  t <- temp %>% select(Ingredients, ID, from) %>% inner_join(references$nutrients) %>% unique()
+  
+  #Save ingredient nutrient mapping
+  write_csv(t %>% rename(Ingredient = Ingredients,
+                         Mapped_ID = ID,
+                         ID_From = from) %>% select(-ends_with('word')), './Supplementary/ingredients_nutrient_mapping.csv')
   
   #See which ingredients haven't been picked up
   t <- anti_join(recipes %>% select(sample_id, Ingredients) %>% unique(), temp %>% select(sample_id, Ingredients))
@@ -539,7 +546,7 @@ t <- various$org_ingredients %>% select(Ingredients, org_ingredients) %>% unique
     unique() %>%
     
     #Join with nutrient database
-    full_join(databases$nutrients, by = 'ID') %>%
+    full_join(databases$nutrients, by = 'ID') %>% select(-from) %>%
     
     #Turn wide and calculate nutrient contents
     select(-c(ID, Amounts)) %>%
@@ -575,6 +582,34 @@ t <- various$org_ingredients %>% select(Ingredients, org_ingredients) %>% unique
     mutate(`pct_of_full_recipe` = round(Amounts/Weight*100, 2)) %>%
     select(-c(Amounts, Weight))
   
+  #Nutrient content in whole recipe, not normalized by weight
+  various$recipe_nutrient_whole <- temp %>%
+    select(Ingredients, ID) %>%
+    #Add amounts of ingredients
+    inner_join(., recipes, by = 'Ingredients') %>%
+    unique() %>%#Join with nutrient database
+    full_join(databases$nutrients, by = 'ID') %>% select(-from) %>%
+    
+    #Turn wide and calculate nutrient contents
+    select(-c(ID)) %>%
+    pivot_longer(
+      cols = -c(sample_id, Ingredients, Country, Source, Amounts),
+      names_to = 'feature',
+      values_to = 'value'
+    ) %>%
+    
+    #Calculate nutrient content pr ingredients
+    mutate(value = Amounts*value*10) %>% #Multiply by 10 since amounts is in kilo
+    select(-Amounts) %>%
+    
+    #Sum for each recipe
+    group_by(sample_id, Country, Source, feature) %>%
+    summarise(total = sum(value, na.rm = TRUE)) %>%
+    
+    #Rename for later
+    rename(group = Country)
+  
+  
 # Sustainability database-----
   temp <- checkRef(recipes, reference = references$sustainability) %>%
   
@@ -585,6 +620,9 @@ t <- various$org_ingredients %>% select(Ingredients, org_ingredients) %>% unique
   
   #See if it look ok
   t <- temp %>% select(Ingredients, ID) %>% inner_join(references$sustainability) %>% unique()
+  
+  #Save ingredient FoodEx2 mapping
+  write_csv(temp %>% select(Ingredients, FoodEx2) %>% unique(), './Supplementary/ingredients_SHARPID_mapping.csv')
   
   #See which ingredients haven't been picked up
   t <- anti_join(recipes %>% select(sample_id, Ingredients) %>% unique(), temp %>% select(sample_id, Ingredients))
@@ -636,13 +674,32 @@ t <- various$org_ingredients %>% select(Ingredients, org_ingredients) %>% unique
     summarise(value = sum(value, na.rm = TRUE)) %>%
     ungroup() 
   
-  #Per foodgroup
-  various$foodgroup_sustainability <- various$ingredients_sustainability %>%
+  #Sum total environmetal impact of whole recipe
+  various$recipe_sustainability_whole <-  temp %>%
+    select(Ingredients, ID) %>%
+    #Add amounts of ingredients
+    inner_join(., recipes, by = 'Ingredients') %>%
+    unique() %>%#Join with nutrient database
+    full_join(databases$sustainability, by = 'ID') %>% select(-c(FoodEx2, L1)) %>%
     
-    #Calculate the whole recipe
-    group_by(group, Source, L1, feature) %>%
-    summarise(value = sum(value, na.rm = TRUE)) %>%
-    ungroup() 
+    #Turn wide and calculate nutrient contents
+    select(-c(ID)) %>%
+    pivot_longer(
+      cols = -c(sample_id, Ingredients, Country, Source, Amounts),
+      names_to = 'feature',
+      values_to = 'value'
+    ) %>%
+    
+    #Calculate nutrient content pr ingredients
+    mutate(value = Amounts*value) %>%
+    select(-Amounts) %>%
+    
+    #Sum for each recipe
+    group_by(sample_id, Country, Source, feature) %>%
+    summarise(total = sum(value, na.rm = TRUE)) %>%
+    
+    #Rename for later
+    rename(group = Country)
   
   #Ingredients that are still without sustainability indicators
   various$no_sustainability_indiactors <- t %>%
@@ -667,7 +724,7 @@ to_remove <- bind_rows(
   missing_data$no_sustainability_indicators %>% filter(pct_of_full_recipe >10)
 ) %>% unique()
  
-#All recipes with summed nutrients and sustainability 
+#All recipes with summed nutrients and sustainability per 100g
 recipes_analysis <- full_join(
   various$recipe_sustainability %>% pivot_wider(names_from = feature, values_from = value),
   various$recipes_nutrients %>% pivot_wider(names_from = feature, values_from = value)
@@ -684,23 +741,8 @@ ingredients_analysis <- full_join(
 saveRDS(ingredients_analysis, './Data/output/ingredients_for_analysis.Rds')
 
 
-#Share ingredients, only sustainability
-to_share_ingredients <- ingredients_analysis %>%
-  rename(food_group = L1) %>%
-  select(group, Source, sample_id, Ingredients, FoodEx2, food_group, Amounts, CO2, Landuse) %>%
-  rename(Amounts_hectograms = Amounts)
-
-#With nutrients
-to_share_ingredients <- ingredients_analysis %>%
-  rename(food_group = L1) %>%
-  select(group, Source, sample_id, Ingredients, FoodEx2, food_group, Amounts, everything())
-
-to_share_recipes <- recipes_analysis %>%
-  inner_join(., recipes %>%
-               select(sample_id, Country, Source) %>%
-               rename(group = Country) %>% unique()) %>%
-  select(group, Source, sample_id, everything())
-
+#Other dfs to save
+#Metadata to show the units of the various features
 features_metadata <- read_xlsx('./Data/databases/matvaretabellen_metadata.xlsx') %>%
   select(-c(starts_with('Ref'), starts_with('Food'), starts_with('C1'), starts_with('C20:3'), starts_with('C20:4'), `Edible part`, Water)) %>%
   rename(EPA = `C20:5n-3 (EPA)`,
@@ -715,9 +757,21 @@ features_metadata <- read_xlsx('./Data/databases/matvaretabellen_metadata.xlsx')
                names_to = 'feature',
                values_to = 'unit')
 
-write_csv(to_share_ingredients, 'all_ingredients_100g.csv')
-write_csv(to_share_recipes, 'all_recipes_100g.csv')
-write_csv(features_metadata, 'features_metadata.csv')
-write_csv(various$recipe_weight, 'total_weight_recipe.csv')
-write_csv(various$org_ingredients, 'original_ingredients')
+#Wide df of nutrient content and environmental impact of each recipe and its total weight
+whole_recipe_calc <- bind_rows(various$recipe_nutrient_whole, various$recipe_sustainability_whole) %>% #Bind nutrient and sustainability frames together
+  full_join(various$recipe_weight) %>% #Add recipe weight
+  #Add units for the nutrients
+  full_join(., features_metadata %>% filter(!feature %in% c('CO2', 'Landuse', 'Amounts', 'Weight'))) %>%
+  unite(., col = 'temp', c(feature, unit)) %>% mutate(temp = str_replace(temp, '_NA', '')) %>%
+  pivot_wider(.,
+              names_from = temp,
+              values_from = total) %>%
+  rename(total_weight_kg = Weight) %>%
+  relocate(total_weight_kg, .after = last_col()) %>% #Set total weight column last
+  #Remove recipes not used in analysis
+  filter(!sample_id %in% c(to_remove$sample_id, 'Baklava (Turkey)', 'Sausage Lunch', 'Half-fermented trout', 'Straight trout', 'Fruit Package'))
+
+#Save
+write_csv(whole_recipe_calc, './Supplementary/recipe_nutrient_sustainability_whole.csv')
+
 
