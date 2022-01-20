@@ -199,7 +199,7 @@ temp <- list(
   c('corn cob', 'stk', '250', 'Grønn&Frisk, Meny', 'english'),
   c('corn kernel', 'dl', '105.7', 'FoodData Central', 'english'),
   c('corn kernel', 'can', '160', 'Green Giant Meny', 'english'),
-  c('chapati', 'stk', '60', 'Assume weight is the same as a tortilla', 'english'),
+  c('chapati', 'stk', '50', 'Assume weight is the same as a tortilla', 'english'),
   c('chick pea flour', 'dl', '38.9', 'FoodData Central', 'english'),
   c('Chicory', 'stk', '85', 'CooksInfo.com', 'english'),
   c('Chicory, endive', 'stk', '85', 'CooksInfo.com', 'english'),
@@ -1251,7 +1251,7 @@ fromFoodDataCentral_foods <- read_csv('./Data/databases/food.csv') %>%
   #First get nutrient id's
   inner_join(., fromFoodDataCentral_nutrients, by = 'fdc_id') %>%
   #Select columns
-  select(description, nutrient_id, amount) %>%
+  select(description, nutrient_id, fdc_id, amount) %>%
   #Get nutrient names
   inner_join(fromFoodDataCentral_nutrient_names, by = 'nutrient_id') %>%
   
@@ -1331,14 +1331,11 @@ fromFoodDataCentral_foods <- read_csv('./Data/databases/food.csv') %>%
   #Add zero for NA
   replace(is.na(.), 0) %>%
   
-  #Create new ID column
-  group_by(Ingredients) %>%
-  mutate(ID = cur_group_id()) %>%
-  ungroup() %>%
-  mutate(ID = ID + 100)
+  #rename ID column
+  rename(ID = fdc_id)
 
-#Add to clean_nutrients df
-clean_nutrients <- bind_rows(clean_nutrients, fromFoodDataCentral_foods %>% select(ID, Ingredients))
+#Add to clean_nutrients df, add where the foods are from
+clean_nutrients <- bind_rows(clean_nutrients %>% mutate(from = 'Matvaretabellen_FoodID'), fromFoodDataCentral_foods %>% select(ID, Ingredients) %>% mutate(from = 'FoodData Central_fdc_id'))
 
 #Add composite ingredients----
 various$component_ingredients_nutrients <- readRDS('./Data/output/composite_ingredients_nutrient_content.Rds') %>%
@@ -1346,11 +1343,11 @@ various$component_ingredients_nutrients <- readRDS('./Data/output/composite_ingr
   group_by(Ingredients) %>%
   mutate(ID = cur_group_id()) %>%
   ungroup() %>%
-  mutate(ID = ID + 200)
+  mutate(ID = ID + 200) %>% mutate(from = 'Composite ingredient not in database')
 
-clean_nutrients <- bind_rows(clean_nutrients, various$component_ingredients_nutrients %>% select(ID, Ingredients)) %>%
+clean_nutrients <- bind_rows(clean_nutrients, various$component_ingredients_nutrients %>% select(ID, Ingredients, from)) %>%
   #Add a shellfish row
-  add_row(ID = 10000, Ingredients = 'shellfish')
+  add_row(ID = 10000, Ingredients = 'shellfish', from = 'Shellfish in Matvaretabellen')
 
 #Create the nutrient content of the shellfish ingredient by taking the mean of the shellfish in the db
 various$shellfish <- raw_data %>%
@@ -1421,7 +1418,7 @@ nutrients_to_use <- raw_data %>%
   mutate_at(c('ID', 'value'), ~as.numeric(.)) %>%
   pivot_wider(.,
               names_from = feature,
-              values_from = value)
+              values_from = value) %>% mutate(from = 'Matvaretabellen_FoodID')
 
 #Add the foodDataCentral and composite ingredients
 nutrients_to_use <- nutrients_to_use %>%
@@ -1435,7 +1432,7 @@ nutrients_to_use <- nutrients_to_use %>%
     
     TRUE ~ ID
   )) %>%
-  select(-c(food_item, Foodgroup, Ingredients.x, Ingredients.y))
+  select(-c(food_item, Foodgroup, Ingredients.x, Ingredients.y, from.x)) %>% rename(from = from.y)
 
 saveRDS(nutrients_to_use, './Data/output/nutrients_df.Rds')
 
