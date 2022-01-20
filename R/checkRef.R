@@ -159,6 +159,7 @@ checkRef <- function(df, reference, fix_errors = TRUE){
           Ingredients == 'lime lead' ~ fixRefID(reference = reference, 'bay', 'leaf'), #Assume similar
           Ingredients == 'oat quick' ~ fixRefID(reference = reference, 'rolled', 'oat'),
           Ingredients == 'peach canned' ~ fixRefID(reference = reference, 'peach', 'canned'),
+          Ingredients == 'bread brown chapati' & unit == 'stk' ~ fixRefID(reference = reference, 'chapati'), #Assume similar
           #Ingredients with no references
           Ingredients %in% c('mustard powder', 'chinese five spice', 'of dip mix', 'asafoetida powder',
                              'sauce browning', 'trout caviar', 'whip it stabilizer', 'vanillin') ~ 0,
