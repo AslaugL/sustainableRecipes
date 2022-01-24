@@ -1,6 +1,9 @@
 devtools::load_all(path = '.')
 
-library(circlize)
+# install 'arcdiagram' (development version)
+devtools::install_github('gastonstat/arcdiagram')
+
+library(arcdiagram)
 
 ## Setup ----
 #Empty list to fill with plots and plot legends
@@ -167,13 +170,6 @@ temp <- list(
     calculateNutritionScore_trafficlights() %>%
     inner_join(metadata %>% select(sample_id, group)),
   
-  'Keyhole' = tidy_ingredients %>% calculateNutritionScore_keyhole() %>%
-    inner_join(metadata %>% select(sample_id, group)) %>%
-    #Turn keyhole certified to 1 for certified and 0 for not certified
-    mutate(keyhole_certified = case_when(
-      keyhole_certified == 'No Keyhole' ~ 0,
-      keyhole_certified == 'Keyhole' ~ 1)),
-  
   'who_score' = data_recipes %>%
     calculateNutritionScore_who() %>%
     inner_join(metadata %>% select(sample_id, group)),
@@ -192,8 +188,69 @@ health_indicators <- temp %>% reduce(full_join, by = c('sample_id', 'group')) %>
   ) %>%
   #Add back Source metadata
   inner_join(., metadata) %>%
-  #Remove keyhole
-  filter(feature != 'keyhole_certified') %>% arrange(group)
+  #arrange
+  arrange(group)
+
+  #Save score in wide format
+  write_csv(health_indicators %>%
+              select(-nutriscore_letter) %>% pivot_wider(., names_from = feature, values_from = value),
+            './Supplementary/healthiness_indicator_scores.csv')
+
+#Raw scores for supplementary materials
+temp <- list(
+  
+  #% of fruits, veg and legumes from Nutriscore
+  'nutriscore' = tidy_ingredients %>% calculateNutritionScore_nutriscore(raw_scores = TRUE),
+  
+  #Pct of energy for dietary guidelines
+  'energy_pct' = data_recipes %>% calculateEnergypercentDensity(.) %>%
+    #Add unit
+    mutate(unit = case_when(
+      str_detect(feature, 'fibre') ~ 'g/Megajoule',
+      TRUE ~ 'Energy percent'
+    )) %>%
+    #Unite with deature column to use as column names later
+    unite(., col = 'temp', c(feature, unit)) %>%
+    #Extract values used
+    mutate(value = case_when(
+      str_detect(temp, 'fibre') ~ densityMJ,
+      TRUE ~ energy_percent
+    )) %>%
+    #Turn wide
+    select(sample_id, temp, value) %>%
+    pivot_wider(.,
+                names_from = temp,
+                values_from = value),
+  
+  #Grams per 100 g for multiple traffic lights and nutriscore
+  'grams' = data_recipes %>% select(sample_id, group, Kilojoules, Fat, Salt, SatFa, Sodium, Sugar, `Dietary fibre`) %>%
+    #Pivot longer to add units
+    pivot_longer(.,
+                 cols = -c(sample_id, group),
+                 names_to = 'feature',
+                 values_to = 'value') %>%
+    #Add units
+    mutate(unit = case_when(
+      feature == 'Kilojoules' ~ 'kJ/100g',
+      feature == 'Sodium' ~ 'mg/100g',
+      TRUE ~ 'g/100g'
+    )) %>%
+    #Unite with feature column and turn wide
+    unite(., col = 'temp', c(feature, unit)) %>%
+    pivot_wider(.,
+                names_from = temp,
+                values_from = value)
+)
+#change names of nutriscore % fruit veg column
+temp$nutriscore$raw_scores <- temp$nutriscore$raw_scores %>%
+  filter(feature == 'nutriscore_amounts_pct') %>%
+  mutate(feature = str_replace(feature, 'nutriscore_amounts_pct', '% of fruit, vegetables,\noils, legumes and nuts')) %>%
+  select(-nutriscore_raw) %>% pivot_wider(names_from = feature, values_from = value)
+
+#Add all together and save for supplementary
+temp2 <- full_join(temp$nutriscore$raw_scores, temp$energy_pct) %>% full_join(., temp$grams)
+
+write_csv(temp2, './Supplementary/calculating_healthiness_indicator_values.csv')
 
 ## Statistical analyses----
 #Prep
@@ -225,6 +282,17 @@ various$with_RDI <- tidy_recipes %>%
   rename(raw_value = value,
          value = pct_rdi) %>%
   select(-c(rdi, raw_value))
+
+#Turn wide and save
+temp2 <- various$with_RDI %>%
+  #Add RDI to featurenames
+  mutate(feature = paste0(feature, '_RDI/100g')) %>%
+  #Turn diwde
+  pivot_wider(.,
+              names_from = feature,
+              values_from = value)
+
+write_csv(temp2, './Supplementary/rdi_micronutrients_100g.csv')
 
 #Energy percentage of macronutrients in each recipe
 various$with_energy_pct_densityMJ <- data_recipes %>%
@@ -454,38 +522,6 @@ source_of_nutrients_table <- various$with_RDI %>%
     'Calcium', 'Iron', 'Zinc', 'Magnesium', 'Potassium', 'Selenium', 'Iodine', 'Sodium',
     'Phosphorus', 'Copper'))) %>%
   arrange(Nutrient)
-
-#Count how many nutrients the recipes are sources of
-temp <- various$with_RDI %>%
-  #Add protein
-  bind_rows(., various$with_energy_pct_densityMJ %>% filter(feature %in% c('Protein', 'Dietary fibre'))) %>%
-  #fill missing country and source information
-  group_by(sample_id) %>% fill(., c(group, Source)) %>% ungroup() %>%
-  #Find sources and good sources
-  mutate(nutrient_source = case_when(
-    #Protein
-    feature == 'Protein' & value > 20 ~ 'good_source',
-    feature == 'Protein' & value > 12 ~ 'source',
-    #Fibre
-    feature == 'Dietary fibre' & value > 6 ~ 'good_source',
-    feature == 'Dietary fibre' & value > 3 ~ 'source',
-    #Micronutrients
-    feature != 'Protein' & value >= 30 ~ 'good_source',
-    feature != 'Protein' & value >= 15 ~ 'source',
-    
-    TRUE ~ 'not_source'
-  )) %>%
-  group_by(sample_id, group, nutrient_source) %>%
-  summarise(n = n()) %>%
-  ungroup() %>%
-  pivot_wider(.,
-              names_from = nutrient_source,
-              values_from = n) %>%
-  #Add 0 for na
-  replace_na(list(good_source = 0, source = 0, not_source = 0)) %>%
-  group_by(group, not_source) %>%
-  summarise(n = n())
-
 
 # Kruskal Wallis and dunn----
 stats <- list(
@@ -1509,6 +1545,7 @@ plots$violinbox$foodgroups <- list()
       #Set order for plot
       mutate(type = factor(type, levels = c('Beef', 'Lamb', 'Game', 'Pork', 'Poultry', 'Lean fish', 'Oily fish', 'Shellfish', 'Vegan', 'Vegetarian')))
 
+  #Plot
     plots$barplots <- list()
     
 plots$barplots$protein_source <- ggplot(temp, aes(x = type, fill = group, y = pct)) +
@@ -1563,7 +1600,124 @@ save_plot('./thesis/images/protein_source_bar.png', plots$barplots$protein_sourc
   
   save_plot('./thesis/images/protein_source_violinbox.png', plots$violinbox$recipe_protein_sources, nrow = 2.2, ncol = 1.7)
 
+# Article plot----
+  plots$article <- list()
+  
+  #Add label to embedded plot with amount of meat per 100 g
+  temp <- plot_grid(plots$violinbox$foodgroups$meat_products + labs(y = 'Recipe weight') + scale_x_discrete(position = "top"),
+                    labels = 'B')
+  plots$article$protein_sources <- plot_grid(plots$barplots$protein_source + theme(legend.position = c(0.075, 0.8)) +
+                                               annotation_custom(ggplotGrob(temp),
+                                                                 xmin = 7, xmax = 10, ymin = 22, ymax = 50),
+                                             plots$violinbox$recipe_protein_sources + theme(legend.position = 'none'),
+                                             nrow = 2,
+                                             labels = c('A', 'C'),
+                                             rel_heights = c(1.5,2)
+  )
+  
+  plots$article$protein_sources
+  
+  save_plot('./thesis/images/article_proteinsources.png', plots$article$protein_sources, ncol = 2, nrow = 3)
+  
 ## Adjancency matrix nutrient sources----
+  
+  #Some dataframes that are needed
+  various$adjacency <- list()
+  
+  #Number of recipes that are a sources of a nutrient depending on type of recipe
+  various$adjacency$n_source_of_protein_and_nutrients <- various$with_RDI %>%
+    #Add protein
+    bind_rows(., various$with_energy_pct_densityMJ %>% filter(feature %in% c('Protein', 'Dietary fibre'))) %>%
+    #fill missing country and source information
+    group_by(sample_id) %>% fill(., c(group, Source)) %>% ungroup() %>%
+    #Find sources and good sources
+    mutate(nutrient_source = case_when(
+      #Protein
+      #feature == 'Protein' & value > 20 ~ 'good_source',
+      feature == 'Protein' & value > 12 ~ 'source',
+      #Fibre
+      #feature == 'Dietary fibre' & value > 6 ~ 'good_source',
+      feature == 'Dietary fibre' & value > 3 ~ 'source',
+      #Micronutrients
+      #feature != 'Protein' & value >= 30 ~ 'good_source',
+      feature != 'Protein' & value >= 15 ~ 'source',
+      
+      TRUE ~ 'not_source'
+    ))
+  
+  #Number of recipes that are good sources of a nutrient depending on type of recipe
+  various$adjacency$n_good_source_of_protein_and_nutrients <- various$with_RDI %>%
+    #Add protein
+    bind_rows(., various$with_energy_pct_densityMJ %>% filter(feature %in% c('Protein', 'Dietary fibre'))) %>%
+    #fill missing country and source information
+    group_by(sample_id) %>% fill(., c(group, Source)) %>% ungroup() %>%
+    #Find sources and good sources
+    mutate(nutrient_source = case_when(
+      #Protein
+      feature == 'Protein' & value > 20 ~ 'good_source',
+      #Fibre
+      feature == 'Dietary fibre' & value > 6 ~ 'good_source',
+      #Micronutrients
+      feature != 'Protein' & value >= 30 ~ 'good_source',
+
+      TRUE ~ 'not_source'
+    ))
+  
+  #Apply the same formatting to both
+  various$adjacency <- lapply(various$adjacency, function(x) {
+    
+    x %>% #Rename features to better fit with the plots to create
+      mutate(feature = feature %>%
+               str_replace_all('Vitamin', 'Vit.') %>%
+               str_replace_all('Calcium', 'Ca') %>%
+               str_replace_all('Copper', 'Cu') %>%
+               str_replace_all('Folate', 'Vit. B9') %>%
+               str_replace_all('Iodine', 'I') %>%
+               str_replace_all('Iron', 'Fe') %>%
+               str_replace_all('Magnesium', 'Mg') %>%
+               str_replace_all('Niacin', 'Vit. B3') %>%
+               str_replace_all('Phosphorus', 'P') %>%
+               str_replace_all('Potassium', 'K') %>%
+               str_replace_all('Riboflavin', 'Vit. B2') %>%
+               str_replace_all('Selenium', 'Se') %>%
+               str_replace_all('Sodium', 'Na') %>%
+               str_replace_all('Thiamin', 'Vit. B1') %>%
+               str_replace_all('Zinc', 'Zn') %>%
+               str_replace_all('Dietary fibre', 'Fibre')
+      ) %>%
+      #Add protein source
+      inner_join(., various$recipe_protein_source) %>%
+      #Count number of recipes that are (good) sources
+      group_by(feature, type, nutrient_source) %>%
+      summarise(n = n()) %>%
+      ungroup() %>%
+      filter(nutrient_source != 'not_source') %>% #Only sources are used in plot
+      #Scale by the number of recipes in the category
+      #Add total number of recipes
+      inner_join(., various$recipe_protein_source %>%
+                   group_by(type) %>%
+                   summarise(total_n_recipes = n()) %>%
+                   ungroup()) %>%
+      #Scale
+      mutate(scaled = n/total_n_recipes*10) %>%
+      #rename feature to fit with graph object
+      rename(name = feature) %>%
+      #Split by protein source
+      split(., .$type) %>%
+      #Change 'type' into the categories "red meat", "poultry" etc
+      lapply(., function(x) {x %>%
+          #Save old typing
+          mutate(org_type = type) %>%
+          #change
+          mutate(type = type %>%
+                   str_replace('Beef|Lamb|Game|Pork', 'Red meat') %>%
+                   str_replace('Lean fish|Oily fish|Shellfish', 'Seafood') %>%
+                   str_replace('Vegetarian|Vegan', 'Vegetarian/Vegan')
+          )})
+    
+  })
+  
+  
   
   #Function to turn df into adjacency list
   #df a wide dataframe with the recipes in rows and the nutrients in columns, 1 for each nutrient the recipe is a source of, 0 if it is not a source
@@ -1612,7 +1766,23 @@ save_plot('./thesis/images/protein_source_bar.png', plots$barplots$protein_sourc
   }
   
   #Create an adjacency matrix of nutrients recipes are sources of
-  temp <- various$with_RDI %>%
+  various$adjacency$matrix$source <- various$with_RDI %>%
+    #Add protein
+    bind_rows(., various$with_energy_pct_densityMJ %>% filter(feature %in% c('Protein', 'Dietary fibre'))) %>%
+    #fill missing country and source information
+    group_by(sample_id) %>% fill(., c(group, Source)) %>% ungroup() %>%
+    #Find recipes that are sources of the nutrients
+    mutate(nutrient_source = case_when(
+      #Protein
+      feature == 'Protein' & value > 12 ~ 1,
+      #Fibre
+      feature == 'Dietary fibre' & value > 3 ~ 1,
+      #Micronutrients
+      feature != 'Protein' & value >= 15 ~ 1
+    )) 
+  
+  #Create an adjacency matrix of nutrients recipes are good sources of
+  various$adjacency$matrix$good_source <- various$with_RDI %>%
     #Add protein
     bind_rows(., various$with_energy_pct_densityMJ %>% filter(feature %in% c('Protein', 'Dietary fibre'))) %>%
     #fill missing country and source information
@@ -1625,48 +1795,58 @@ save_plot('./thesis/images/protein_source_bar.png', plots$barplots$protein_sourc
       feature == 'Dietary fibre' & value > 6 ~ 1,
       #Micronutrients
       feature != 'Protein' & value >= 30 ~ 1
-    )) %>%
-    #Rename features to better fit chord diagram
-    mutate(feature = feature %>%
-             str_replace_all('Vitamin', 'Vit.') %>%
-             str_replace_all('Calcium', 'Ca') %>%
-             str_replace_all('Copper', 'Cu') %>%
-             str_replace_all('Folate', 'Vit. B9') %>%
-             str_replace_all('Iodine', 'I') %>%
-             str_replace_all('Iron', 'Fe') %>%
-             str_replace_all('Magnesium', 'Mg') %>%
-             str_replace_all('Niacin', 'Vit. B3') %>%
-             str_replace_all('Phosphorus', 'P') %>%
-             str_replace_all('Potassium', 'K') %>%
-             str_replace_all('Riboflavin', 'Vit. B2') %>%
-             str_replace_all('Selenium', 'Se') %>%
-             str_replace_all('Sodium', 'Na') %>%
-             str_replace_all('Thiamin', 'Vit. B1') %>%
-             str_replace_all('Zinc', 'Zn') %>%
-             str_replace_all('Dietary fibre', 'Fibre')
-           ) %>%
-    #Filter non-source nutrients
-    filter(!is.na(nutrient_source)) %>%
-    #Remove columns and turn wider
-    select(-c(Source, value)) %>%
-    pivot_wider(
-      names_from = feature,
-      values_from = nutrient_source,
-      values_fill = 0
-    ) %>%
-    #Remove beta-carotene and retinol
-    select(-c(`Beta-carotene`, Retinol)) %>%
-    #Add protein source and split into multiple dataframes based on protein source
-    inner_join(., various$recipe_protein_source) %>%
-    split(., .$type) %>%
-    #Turn into adjacency matrix
-    lapply(., makeAdjacencyMatrix)
+    )) 
   
-  #Calculate "big gap" for each matrix, to have number of recipes scaled to the Oily Fish dataset
-  gaps <- lapply(temp[c(1:4, 6:10)], calc_gap, x1 = temp$`Oily fish`)
+  #Do same formatting to both
+  various$adjacency$matrix <- lapply(various$adjacency$matrix, function(x) {
+    
+    x %>%
+      #Rename features to better fit in these plots
+      mutate(feature = feature %>%
+               str_replace_all('Vitamin', 'Vit.') %>%
+               str_replace_all('Calcium', 'Ca') %>%
+               str_replace_all('Copper', 'Cu') %>%
+               str_replace_all('Folate', 'Vit. B9') %>%
+               str_replace_all('Iodine', 'I') %>%
+               str_replace_all('Iron', 'Fe') %>%
+               str_replace_all('Magnesium', 'Mg') %>%
+               str_replace_all('Niacin', 'Vit. B3') %>%
+               str_replace_all('Phosphorus', 'P') %>%
+               str_replace_all('Potassium', 'K') %>%
+               str_replace_all('Riboflavin', 'Vit. B2') %>%
+               str_replace_all('Selenium', 'Se') %>%
+               str_replace_all('Sodium', 'Na') %>%
+               str_replace_all('Thiamin', 'Vit. B1') %>%
+               str_replace_all('Zinc', 'Zn') %>%
+               str_replace_all('Dietary fibre', 'Fibre')
+      ) %>%
+      #Filter non-source nutrients
+      filter(!is.na(nutrient_source)) %>%
+      #Remove columns and turn wider
+      select(-c(Source, value)) %>%
+      pivot_wider(
+        names_from = feature,
+        values_from = nutrient_source,
+        values_fill = 0
+      ) %>%
+      #Remove beta-carotene and retinol
+      select(-c(`Beta-carotene`, Retinol)) %>%
+      #Add protein source and split into multiple dataframes based on protein source
+      inner_join(., various$recipe_protein_source) %>%
+      split(., .$type) %>%
+      #Turn into adjacency matrix
+      lapply(., makeAdjacencyMatrix)
+    
+  })
   
-  #Turn temp into adjacency list
-  temp <- lapply(temp, makeAdjacencyList)
+  
+  # Chord diagrams----
+  #Only use good sources as plot gets too full if not
+  #Calculate "big gap" for each matrix, to have number of recipes scaled to the Oily Fish dataset for chord diagram
+  gaps <- lapply(various$adjacency$matrix$good_source[c(1:4, 6:10)], calc_gap, x1 = various$adjacency$matrix$good_source$`Oily fish`)
+  
+  #Turn adjancency matrix into adjacency list
+  temp <- lapply(various$adjacency$matrix$good_source, makeAdjacencyList)
     
   #Colorbrewer set3 for coloring the nutrients
   grid_colors <- c(Protein = '#8dd3c7', Fibre = '#ffffb3', P = '#bebada', Na = '#ffed6f', Cu = '#80b1d3',
@@ -1717,26 +1897,104 @@ save_plot('./thesis/images/protein_source_bar.png', plots$barplots$protein_sourc
   dev.off()
     
   }
+  
+  
+  # Network plot----
+  library(tidygraph)
+  library(ggraph)
+  
+  #Create a tidygraph object with type of protein information and how many recipes are sources
+  #Source
+  various$adjacency$tidygraph$source <- lapply(various$adjacency$matrix$source,
+                                               function(x) {makeAdjacencyList(x) %>% as_tbl_graph(., directed = FALSE)}) %>%
+    mapply(left_join, x = ., y = various$adjacency$n_source_of_protein_and_nutrients, USE.NAMES = TRUE, SIMPLIFY = FALSE)
+  #Good source
+  various$adjacency$tidygraph$good_source <- lapply(various$adjacency$matrix$good_source,
+                                               function(x) {makeAdjacencyList(x) %>% as_tbl_graph(., directed = FALSE)}) %>%
+    mapply(left_join, x = ., y = various$adjacency$n_good_source_of_protein_and_nutrients, USE.NAMES = TRUE, SIMPLIFY = FALSE)
+  
+  
+  various$protein_source_colors <- setNames(c('#DF4B67',
+                                            '#EAE51A',
+                                            '#365D8D',
+                                            '#7CD250'),
+                                            c('Red meat',
+                                              'Poultry',
+                                              'Seafood',
+                                              'Vegetarian/Vegan')
+                                            )
+  
+  #Graph = tidygraph object
+  #Source = good_source, or just source, if 'good_source' some graphs will be made into trees as they have few nodes and connection
+  #label_size is the text size of the labels
+  plotNetwork <- function(graph, source = NULL, label_size = 2) {
     
+    #Vegan must have "tree" mode as there are so few recipes
+    if(source == 'good_source' & data.frame(graph)$org_type %in% c('Vegan', 'Game')) {
+      
+      temp <- ggraph(graph, 'tree')
+      
+    } else {
+      
+      temp <- ggraph(graph)
+      
+    }
+    
+    temp +
+      #Draw edges and nodes
+      geom_edge_link(aes(alpha = value)) + #Alpha based on the number of connections
+      geom_node_point(aes(size = scaled, fill = type), shape = 21, color = 'black') +  #Size based on the number of recipes that are a source
+      geom_node_label(aes(label = name, size = label_size), repel = TRUE, show.legend = FALSE) + #Add labels for the nutrients
+      theme(legend.position = "none") +
+      
+      #Scale alpha and size between plots
+      scale_size_area(limits = c(0, 10), breaks = c(0, 2.5, 5, 7.5, 10), labels = c('0', '25 %', '50 %', '75 %', '100 %')) +
+      scale_edge_alpha(range = c(0.1, 1), guide = 'none') +
+      #Add colors and change the size of the legend item for fill/color
+      scale_fill_manual(values = various$protein_source_colors) +
+      #Add title
+      ggtitle(label = data.frame(graph)$org_type)
+    
+  } 
   
-# Article plot----
-  plots$article <- list()
+  #Plot
+  plots$network$source <- sapply(various$adjacency$tidygraph$source, plotNetwork, source = 'source', USE.NAMES = TRUE, simplify = FALSE)
   
-  #Add label to embedded plot with amount of meat per 100 g
-  temp <- plot_grid(plots$violinbox$foodgroups$meat_products + labs(y = 'Recipe weight') + scale_x_discrete(position = "top"),
-                    labels = 'B')
-  plots$article$protein_sources <- plot_grid(plots$barplots$protein_source + theme(legend.position = c(0.075, 0.8)) +
-              annotation_custom(ggplotGrob(temp),
-                                xmin = 7, xmax = 10, ymin = 22, ymax = 50),
-              plots$violinbox$recipe_protein_sources + theme(legend.position = 'none'),
-              nrow = 2,
-              labels = c('A', 'C'),
-              rel_heights = c(1.5,2)
-              )
+  plots$network$good_source <- sapply(various$adjacency$tidygraph$good_source, plotNetwork, source = 'good_source', label_size = 3.58, USE.NAMES = TRUE, simplify = FALSE)
+    
+  #Create a legend for the plots
+  plot_legends$network <- plot_grid(get_legend(plotNetwork(various$adjacency$tidygraph$source$Beef, source = 'source') +
+    theme(legend.position = 'right') +
+    labs(fill = 'Protein source') +
+    guides(fill = guide_legend(override.aes = list(size = 5)),
+           alpha = 'none',
+           size = 'none')),
+    get_legend(plotNetwork(various$adjacency$tidygraph$source$Beef, source = 'source') +
+                 theme(legend.position = 'right') +
+                 labs(size = 'Percent of recipes') +
+                 guides(fill = 'none',
+                        alpha = 'none')),
+    ncol = 2, align = 'hv')
   
-  plots$article$protein_sources
+  plot_legends$network
   
-  save_plot('./thesis/images/article_proteinsources.png', plots$article$protein_sources, ncol = 2, nrow = 3)
+  #Build a large plot
+  plots$final$network$sources <- plot_grid(
+    plots$network$source$Beef, plots$network$source$Lamb, plots$network$source$Game, plots$network$source$Pork,
+    plots$network$source$Poultry, plots$network$source$`Lean fish`, plots$network$source$`Oily fish`, plots$network$source$Shellfish,
+    plots$network$source$Vegetarian, plots$network$source$Vegan, plot_legends$network,
+    ncol = 4)
+  
+  plots$final$network$good_sources <- plot_grid(
+    plots$network$good_source$Beef, plots$network$good_source$Lamb, plots$network$good_source$Game, plots$network$good_source$Pork,
+    plots$network$good_source$Poultry, plots$network$good_source$`Lean fish`, plots$network$good_source$`Oily fish`, plots$network$good_source$Shellfish,
+    plots$network$good_source$Vegetarian, plots$network$good_source$Vegan, plot_legends$network,
+    ncol = 4)
+  
+  #Save
+  save_plot('./thesis/images/network_source.png', plots$final$network$sources, ncol = 2, nrow = 1.5)
+  save_plot('./thesis/images/network_good_source.png', plots$final$network$good_sources, ncol = 2, nrow = 1.5)
+  
 
 ## Tables----
 # Stats----
@@ -1828,71 +2086,16 @@ stat_table <- list(
   ))
 
 ## Other data ----
-standardKbl <- function(df, caption = NULL){
-  #df = dataframe to turn into kableExtra table, caption = caption for the table
-  
-  if(is.null(caption)){
-    
-    table <- df %>%
-      kbl(escape = FALSE) %>%
-      kable_classic_2(full_width = FALSE)
-    
-  } else {
-    table <- df %>%
-      kbl(caption = caption, escape = FALSE) %>%
-      kable_classic_2(full_width = FALSE)
-  }
-  
-  table 
-  
-}
-
-#Foodgroups in SHARP
-temp <- tidy_ingredients %>%
-  select(Foodgroup) %>% unique() %>% arrange(., Foodgroup)
-
-standardKbl(temp)
-
 #Guidelines, nutriscore and trafficlights
+#Guidelines and traffic lights
 guidelines_trafficlights <- read_csv2('./Data/health_indicators/guidelines_trafficlights.csv') %>%
   rename(Feature = X1) %>%
   replace(is.na(.), ' ')
 
-#Guidelines
-kbl(guidelines_trafficlights %>% select(Feature, `World Health Organization`, `Nordic Nutritional Recommendation`), escape = FALSE) %>%
-  kable_classic_2(full_width = FALSE) %>%
-  add_header_above(c(' ' = 1, 'Dietary guidelines' = 2))
-#Multiple traffic lights
-kbl(guidelines_trafficlights %>%
-      select(Feature, `Green/low`, `Amber/medium`, `Red/high`) %>%
-      filter(!Feature %in% c('Carbohydrate', 'Dietary fibre', 'Protein')), escape = FALSE) %>%
-  kable_classic_2(full_width = FALSE) %>%
-  add_header_above(c(' ' = 1, 'Multiple traffic light model' = 3))
 #Nutriscore
 nutriscore_points <- read_csv2('./Data/health_indicators/nutriscore_points.csv') %>%
   select(-Points_1) %>%
   replace(is.na(.), ' ')
-
-kbl(nutriscore_points, escape = TRUE) %>%
-  kable_classic_2(full_width = FALSE) %>%
-  add_header_above(c(' ' = 1, 'Disqualifying' = 4, 'Qualifying' = 3))
-
-#RDIs
-standardKbl(various$RDI %>%
-              #Rename columns
-              rename(Feature = feature,
-                     RDI = rdi) %>%
-              #Add units
-              mutate(Unit = case_when(
-                Feature %in% c('Calcium', 'Iron', 'Zinc', 'Magnesium',
-                               'Phosphorus', 'Copper', 'Potassium', 'Thiamin',
-                               'Riboflavin', 'Vitamin B6', 'Vitamin C', 'Sodium') ~ 'mg',
-                Feature %in% c('Iodine', 'Selenium', 'Vitamin D', 'Folate',
-                               'Vitamin B12') ~ 'mcg',
-                Feature == 'Vitamin A' ~ 'RAE',
-                Feature == 'Vitamin E' ~ 'mcg TE',
-                Feature == 'Niacin' ~ 'NE'
-              )))
 
 
 ## Save objects to be used in RMarkdown----
