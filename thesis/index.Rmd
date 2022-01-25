@@ -1,0 +1,75 @@
+---
+site: bookdown::bookdown_site
+always_allow_html: true
+output:
+  bookdown::pdf_document2:
+    toc: no
+    toc_depth: 4
+    keep_tex: true
+    fig_caption: true
+    includes:
+      in_header: './tex/preamble.tex'
+      before_body: './tex/doc_preface.tex'
+    pandoc_args: --top-level-division=chapter
+bibliography: library.bib
+csl: vancouver-imperial-college-london.csl
+fontsize: 12pt
+linestretch: 1.5
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, echo = FALSE, message = FALSE, warning = FALSE)
+options(tinytex.clean = FALSE)
+```
+
+```{r packages-and-functions}
+# Load here the packages
+#Add analysis script
+load("../Data/results_allrecipes.RData")
+
+#Libraries
+devtools::load_all(path = '.')
+library(kableExtra)
+library(knitr)
+library(bookdown)
+library(tidyverse)
+```
+
+<!-- Add toc, lof, lot without pagebreak before list of abbreviations -->
+\begingroup
+\let\cleardoublepage\relax
+\let\clearpage\relax
+\tableofcontents
+\newpage
+\listoffigures
+\newpage
+\listoftables
+\newpage
+<!-- Include table of abbreviations before body of thesis -->
+# List of Abbreviations {.unnumbered}
+```{r abbreviations}
+Abbreviations <- tibble(
+  'Abbreviation' = c('DALY', 'FBDG', 'NNR', 'WHO', 'FAO', 'NCD', 'RDI', 'FOP', 'LCA', 'FSA MTL', 'E%', 'MJ', 'HEAS', 'LL'),
+  'Explanation' = c('Disability Adjusted Life Years', 'Food Based Dietary Guideline', 'Nordic Nutritional Recommendations', 'World Health Organization', 'Food and Agriculture Organization of the United Nations', 'Non-communicable disease', 'Recommended Dietary Intake', 'Front of Pack', 'Life Cycle Assesment', 'Food Standard Agency Multiple Traffic Light', 'Percentage of energy', 'Megajoule', 'Australian Healthy Eating Advisory Service traffic light system', 'Australian LiveLighter traffic light system')
+) %>% arrange(Abbreviation) %>%
+  kbl(booktab = TRUE, format = 'latex')
+
+Abbreviations
+```
+\endgroup
+
+<!-- Start the redaction on a new page -->
+\newpage
+
+<!-- Start page numbering where the redaction starts -->
+\pagenumbering{arabic}
+
+<!--  Fancy page styling -->
+\pagestyle{fancy}
+\renewcommand{\sectionmark}[1]{ \markright{#1} }
+\renewcommand\chaptermark[1]{\markboth{\thechapter\,--\,#1}{}}
+\fancyhead[LE]{\nouppercase{\leftmark}}
+\fancyhead[RO]{\nouppercase{\rightmark}}
+\fancyhead[LO,RE]{}
+\fancyfoot[C]{\thepage}
+\setlength{\headheight}{14.49998pt}
