@@ -2,56 +2,111 @@
 
 # Appendix
 
-```{=latex, eval = knitr::is_latex_output()}
-\begin{landscape}
-```
-```{r pct-recipe-healthiness}
+<!--  Fancy page styling -->
+\pagestyle{fancy}
+\renewcommand{\sectionmark}[1]{ \markright{#1} }
+\renewcommand\chaptermark[1]{\markboth{\thechapter\,--\,#1}{}}
+\fancyhead[LE]{\nouppercase{\leftmark}}
+\fancyhead[RO]{\nouppercase{\rightmark}}
+\fancyhead[LO,RE]{}
+\fancyfoot[C]{\thepage}
+
+\newpage
+```{r pct-recipe-healthiness-fopl}
+#Split into two tables, one for the front of pack labels, one for the dietary guidelines.
 if(knitr::is_latex_output()){
 pct_recipes_healthiness_scores %>%
+    select(c(ends_with('Traffic Light Model'), ends_with('Nutriscore'))) %>%
   mutate(across(everything(), ~str_replace(., "%", "\\\\%"))) %>%
 
 kbl(booktabs = TRUE, linesep = "", escape = FALSE,
     
     #Set column names and align
-    col.names = rep(c("Score", "Norway", "UK", "US", "All countries"), 4),
-    caption = "The percentage of recipes that received a specific score on each healthiness indicator.",
-    align = rep(c("l", "c", "c", "c", "c"), 4)) %>%
+    col.names = rep(c("Score", "Norway", "UK", "US", "All countries"), 2),
+    caption = "The percentage of recipes that received a specific score on each front-of-pack-label indicator.",
+    align = rep(c("l", "c", "c", "c", "c"), 2)) %>%
   
   #Add header for each indicator
-  add_header_above(c("Inverted Multiple Traffic Light Model" = 5, "Nutriscore" = 5, "Nordic Nutritional Recommendations" = 5, "World Health Organization Recommendations" = 5)) %>%
+  add_header_above(c("Inverted Multiple Traffic Light Model" = 5, "Nutriscore" = 5)) %>%
   #Add header to distinguish FOPL and guidelines
-  add_header_above(c("Front of Pack Labels" = 10, "Dietary guidelines" = 10)) %>%
+  add_header_above(c("Front of Pack Labels" = 10)) %>%
   
   #Make score columns bold
-  column_spec(., c(1, 6, 11, 16), bold = TRUE) %>%
-  column_spec(., c(2:5, 7:10, 12:16, 17:20)) %>%
+  column_spec(., c(1, 6), bold = TRUE) %>%
+  column_spec(., c(2:5, 7:10)) %>%
   kable_styling(latex_options = c("scale_down", "hold_position"), full_width = FALSE)
   } else {
   pct_recipes_healthiness_scores %>%
+    select(c(ends_with('Traffic Light Model'), ends_with('Nutriscore'))) %>%
   mutate(across(everything(), ~str_replace(., "%", "\\\\%"))) %>%
 
 kbl(booktabs = TRUE, linesep = "", escape = FALSE, format = "html",
     
     #Set column names and align
-    col.names = rep(c("Score", "Norway", "UK", "US", "All countries"), 4),
-    caption = "The percentage of recipes that received a specific score on each healthiness indicator.",
-    align = rep(c("l", "c", "c", "c", "c"), 4)) %>%
+    col.names = rep(c("Score", "Norway", "UK", "US", "All countries"), 2),
+    caption = "The percentage of recipes that received a specific score on each front-of-pack-label indicator.",
+    align = rep(c("l", "c", "c", "c", "c"), 2)) %>%
   
   #Add header for each indicator
-  add_header_above(c("Inverted Multiple Traffic Light Model" = 5, "Nutriscore" = 5, "Nordic Nutritional Recommendations" = 5, "World Health Organization Recommendations" = 5)) %>%
+  add_header_above(c("Inverted Multiple Traffic Light Model" = 5, "Nutriscore" = 5)) %>%
   #Add header to distinguish FOPL and guidelines
-  add_header_above(c("Front of Pack Labels" = 10, "Dietary guidelines" = 10)) %>%
+  add_header_above(c("Front of Pack Labels" = 10)) %>%
   
   #Make score columns bold
-  column_spec(., c(1, 6, 11, 16), bold = TRUE) %>%
-  column_spec(., c(2:5, 7:10, 12:16, 17:20)) %>%
+  column_spec(., c(1, 6), bold = TRUE) %>%
+  column_spec(., c(2:5, 7:10)) %>%
       kable_classic_2() %>%
   kable_styling(latex_options = c("scale_down", "hold_position"), full_width = FALSE)
 }
 ```
-```{=latex, eval = knitr::is_latex_output()}
-\end{landscape}
+```{r pct-recipe-healthiness-guidelines}
+#Split into two tables, one for the front of pack labels, one for the dietary guidelines.
+if(knitr::is_latex_output()){
+pct_recipes_healthiness_scores %>%
+    select(ends_with('Recommendations')) %>%
+  mutate(across(everything(), ~str_replace(., "%", "\\\\%"))) %>%
+
+kbl(booktabs = TRUE, linesep = "", escape = FALSE,
+    
+    #Set column names and align
+    col.names = rep(c("Score", "Norway", "UK", "US", "All countries"), 2),
+    caption = "The percentage of recipes that received a specific score on the dietary guideline indicators.",
+    align = rep(c("l", "c", "c", "c", "c"), 2)) %>%
+  
+  #Add header for each indicator
+  add_header_above(c("Nordic Nutritional Recommendations" = 5, "World Health Organization Recommendations" = 5)) %>%
+  #Add header to distinguish FOPL and guidelines
+  add_header_above(c("Dietary guidelines" = 10)) %>%
+  
+  #Make score columns bold
+  column_spec(., c(1, 6), bold = TRUE) %>%
+  column_spec(., c(2:5, 7:10)) %>%
+  kable_styling(latex_options = c("scale_down", "hold_position"), full_width = FALSE)
+  } else {
+  pct_recipes_healthiness_scores  %>%
+    select(ends_with('Recommendations')) %>%
+  mutate(across(everything(), ~str_replace(., "%", "\\\\%"))) %>%
+
+kbl(booktabs = TRUE, linesep = "", escape = FALSE, format = "html",
+    
+    #Set column names and align
+    col.names = rep(c("Score", "Norway", "UK", "US", "All countries"), 2),
+    caption = "The percentage of recipes that received a specific score on the dietary guideline indicators.",
+    align = rep(c("l", "c", "c", "c", "c"), 2)) %>%
+  
+  #Add header for each indicator
+  add_header_above(c("Nordic Nutritional Recommendations" = 5, "World Health Organization Recommendations" = 5)) %>%
+  #Add header to distinguish FOPL and guidelines
+  add_header_above(c("Dietary guidelines" = 10)) %>%
+  
+  #Make score columns bold
+  column_spec(., c(1, 6), bold = TRUE) %>%
+  column_spec(., c(2:5, 7:10)) %>%
+      kable_classic_2() %>%
+  kable_styling(latex_options = c("scale_down", "hold_position"), full_width = FALSE)
+}
 ```
+
 
 ```{r data-completeness, fig.cap = "Percentage of the recipe in weight not mapped to a nutrient database (A) and SHARP Indicators environmental impact database (B).", out.width = "100%"}
 knitr::include_graphics("images/data_completenes_plot.png")
@@ -68,3 +123,9 @@ knitr::include_graphics('./images/raw_scores_guidelines.png')
 ```{r raw-score-trafficlights, fig.cap = "The (inverted) individual scores from each component of the multiple traffic light system, by country.", out.width = "100%"}
 knitr::include_graphics('./images/raw_scores_mtl.png')
 ```
+
+\begin{landscape}
+```{r co-occuring-nutrients-source, out.width = "100%", fig.cap = "Nutrients that occur together in the recipes, in such amounts that the recipe is considered a source. A larger circle indicates a higher percentage of recipes that is a source of the nutrient scaled by the number of recipes that used a particular source of protein, and a stronger line indicate a higher number of co-occurrences."}
+knitr::include_graphics("images/network_source.png")
+```
+\end{landscape}
