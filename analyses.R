@@ -1980,13 +1980,15 @@ save_plot('./thesis/images/protein_source_bar.png', plots$barplots$protein_sourc
     labs(fill = 'Protein source') +
     guides(fill = guide_legend(override.aes = list(size = 5)),
            alpha = 'none',
-           size = 'none')),
+           size = 'none') + theme(legend.box.margin = margin(0,25,0,0))),
     get_legend(plotNetwork(various$adjacency$tidygraph$source$Shellfish, source = 'source') +
                  theme(legend.position = 'right') +
                  labs(size = 'Percentage of recipes') +
                  guides(fill = 'none',
-                        alpha = 'none')),
-    ncol = 2, align = 'hv')
+                        alpha = 'none') + theme(legend.box.margin = margin(17,0,0,0))),
+    ncol = 2)
+  
+  plot_legends$network
   
   #Build a large plot
   plots$final$network$sources <- plot_grid(
