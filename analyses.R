@@ -1955,7 +1955,7 @@ save_plot('./thesis/images/protein_source_bar.png', plots$barplots$protein_sourc
       #Draw edges and nodes
       geom_edge_link(aes(alpha = scaled)) + #Alpha based on the number of connections
       geom_node_point(aes(size = scaled, fill = type), shape = 21, color = 'black') +  #Size based on the number of recipes that are a source
-      geom_node_label(aes(label = name), size = label_size, repel = TRUE, show.legend = FALSE) + #Add labels for the nutrients
+      geom_node_label(aes(label = name), arrow = arrow(length = unit(0.03, "npc"), type = "open", ends = "first"), arrow.fill = 'black', size = label_size, repel = TRUE, show.legend = FALSE) + #Add labels for the nutrients
       theme(legend.position = "none") +
       
       #Scale alpha and size between plots
@@ -1980,13 +1980,15 @@ save_plot('./thesis/images/protein_source_bar.png', plots$barplots$protein_sourc
     labs(fill = 'Protein source') +
     guides(fill = guide_legend(override.aes = list(size = 5)),
            alpha = 'none',
-           size = 'none')),
+           size = 'none') + theme(legend.box.margin = margin(0,25,0,0))),
     get_legend(plotNetwork(various$adjacency$tidygraph$source$Shellfish, source = 'source') +
                  theme(legend.position = 'right') +
                  labs(size = 'Percentage of recipes') +
                  guides(fill = 'none',
-                        alpha = 'none')),
-    ncol = 2, align = 'hv')
+                        alpha = 'none') + theme(legend.box.margin = margin(17,0,0,0))),
+    ncol = 2)
+  
+  plot_legends$network
   
   #Build a large plot
   plots$final$network$sources <- plot_grid(
