@@ -1,0 +1,200 @@
+%
+% We use the book class
+%
+
+\documentclass[12pt]{book}
+
+
+%
+% The geometry package allows consistent control of page layout
+%
+
+\usepackage[paper = a4paper,         %To be shrunk to 80% when printed
+			twoside,                 %Two-side mode, switches margins on 
+			bindingoffset = 2mm,     %Offset for binding side of page
+			hmargin = 25mm,          %Left and right margin
+			vmargin = 25mm,          %Top and bottom margin
+			dvipdfm]
+			{geometry}
+
+
+%
+% Font settings
+%
+\usepackage[T1]{fontenc}	% Activate Type 1 fonts
+\usepackage{mathptmx}       % Use Times font, also for math
+\usepackage[scaled]{helvet} % for sans serif fonts (\textsf{...} or \sffamiliy)
+\usepackage{sectsty}        % Change section and chapter header
+%\allsectionsfont{\usefont{T1}{phv}{bc}{n}\selectfont} % Set chapter/section header to narrow helvectica (arial-like)
+%\usepackage[scaled]{luximono} % for monospaced fonts (\texttt{...} or \ttfamily)
+
+
+%
+% Packages we need
+%
+\usepackage{graphicx}       % Handles figures
+\usepackage[utf8]{inputenc} % We want æøå
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage[mathcal]{euscript} % For calligraphy fonts
+\usepackage{booktabs}       % Publication quality tables
+\usepackage{setspace}       % Easy setting of line spacing
+\usepackage{forloop}		% For-loops!
+\usepackage[round]{natbib}  % author and names
+%\usepackage[numbers,sort&compress]{natbib}  % Sort numerical keys for multiple cites
+\usepackage{hypernat}       % Avoid breaking 'backref' option of hyperref package
+\usepackage{float}
+\usepackage[dvipsnames]{color}   % named colors
+\usepackage[procnames]{listings} % beautiful listings
+\usepackage{units}				 % semantically represent numbers with units
+\usepackage{natbib}  
+\usepackage[table]{xcolor}
+\usepackage[final]{pdfpages}
+\usepackage{epigraph}			%for quotation
+\setlength\epigraphwidth{8cm}
+%\setlength\epigraphrule{0pt} %remove line in quote
+\usepackage{textcomp}
+\usepackage{sidecap} %for figure caption on the side
+\usepackage{enumitem} % for possibility to adjust item left margin indentation
+
+\usepackage{titlesec} %fix header fonts
+\titleformat{\title}[display]
+  {\normalfont\rmfamily\huge\bfseries\color{black}}
+  {\chaptertitlename\ \thechapter}{20pt}{\Huge}
+\titleformat{\chapter}[display]
+  {\normalfont\rmfamily\huge\bfseries\color{black}}
+  {\chaptertitlename\ \thechapter}{20pt}{\Huge}
+\titleformat{\section}
+  {\normalfont\rmfamily\Large\bfseries\color{black}}
+  {\thesection}{1em}{}
+\titleformat{\subsection}
+  {\normalfont\rmfamily\Large\bfseries\color{black}}
+  {\thesubsection}{1em}{}
+
+% The hyperref package allows advanced hyperlinking functionality
+%
+\usepackage[%dvipdfmx,        % Use dvipdf driver %KD removed
+			backref,         % List citing occurences in the References
+			colorlinks,      % Colored links
+			citecolor=black,  % Color of cite links
+			linkcolor=black,  % Color of links
+			urlcolor=blue,   % Color of urls
+			]{hyperref}
+%\newcommand{\aref}[1]{\autoref*{#1}} % Prevent links
+\newcommand{\aref}[1]{\autoref{#1}} % Enable links
+
+
+%
+% Set fancy page header using fancyhdr package
+% 
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+
+% Ensure that the chapter and section headings are in lowercase
+\setlength{\headheight}{15pt}
+\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+\renewcommand{\sectionmark}[1]{\markright{\thesection\ #1}}
+
+% Delete current section for header/footer
+\fancyhf{}
+
+% Define header/footer layout
+\fancyhead[LE,RO]{\bfseries\thepage}
+\fancyhead[LO]{\bfseries\rightmark}
+\fancyhead[RE]{\bfseries\leftmark}
+\renewcommand{\headrulewidth}{0.5pt}
+
+% make space for the rule
+\fancypagestyle{plain}{
+	\fancyhead{} %get rid of the headers on plain pages
+	\renewcommand{\headrulewidth}{0pt} % and the line
+}
+\usepackage[font={small,it,rm}]{caption}
+\usepackage{atveryend}
+%\usepackage{thumbs}
+
+
+%
+% Set header height to 30pt to make room for two rows in the header
+% (useful if you have very long chapter names)
+%
+%\headheight 30pt
+
+
+%
+% Include user-defined macros
+%
+\include{macros}
+
+%
+% TeX is very proud of its hyphenation engine, to the point where it 
+% hyphenates _everything_ just to show off.  Increasing penalty for 
+% hyphenation, and increase tolerance for underfull boxes can make 
+% the text easier to read, at the expense of making the text less aligned
+% to the right margin
+%
+\hyphenpenalty=10
+\tolerance=1000
+
+
+% Redefine include command -> input command
+%\renewcommand{\include}{\input}
+
+%
+% Set up the frontpage, with author, title, etc
+%
+%{\fontsize{28}{30}\usefont{OT1}{phv}{bc}{n}\selectfont 
+%{\fontsize{28}{30}\usefont{T1}{phv}{bc}{n}\selectfont Exchange of water masses
+\title{{\fontsize{25}{24}\sffamily\textbf{Sustainable dinner recipes}}
+	\author{
+	\large\textbf{Aslaug Angelsen}\vspace{4em}\\
+		%\includegraphics[width=74mm]{{../images/emblem.png}}\vspace{4em}\\
+		Master in Clinical Nutrition\\ at the University of Bergen}
+        
+	%}
+	\huge\date{2022}
+}
+
+
+%====================================================
+%------------------ BEGIN DOCUMENT ------------------
+%====================================================
+\begin{document}
+%Cause all references in bibtex file to appear in the 'References' section, even
+%if they are not explicitly cite'ed in the document
+%\nocite{*}
+
+\renewcommand{\familydefault}{\sfdefault} %KD
+
+%--------------------------------------------------------------------------------------------------
+% FRONT MATTER
+%--------------------------------------------------------------------------------------------------
+\maketitle
+\frontmatter
+\normalfont\rmfamily
+\tableofcontents
+\listoffigures
+\lstlistoflistings
+
+%--------------------------------------------------------------------------------------------------
+% MAIN MATTER
+%--------------------------------------------------------------------------------------------------
+\mainmatter
+
+%
+% Main chapters
+%
+$body$
+%
+% Appendices
+%
+%\appendix
+
+
+%--------------------------------------------------------------------------------------------------
+% BACK MATTER
+%--------------------------------------------------------------------------------------------------
+\backmatter
+
+
+\end{document}
