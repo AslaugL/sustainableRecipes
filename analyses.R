@@ -1633,13 +1633,10 @@ save_plot('./thesis/images/protein_source_bar.png', plots$barplots$protein_sourc
     #Find sources and good sources
     mutate(nutrient_source = case_when(
       #Protein
-      #feature == 'Protein' & value > 20 ~ 'good_source',
       feature == 'Protein' & value > 12 ~ 'source',
       #Fibre
-      #feature == 'Dietary fibre' & value > 6 ~ 'good_source',
       feature == 'Dietary fibre' & value > 3 ~ 'source',
       #Micronutrients
-      #feature != 'Protein' & value >= 30 ~ 'good_source',
       feature != 'Protein' & value >= 15 ~ 'source',
       
       TRUE ~ 'not_source'
@@ -1699,7 +1696,7 @@ save_plot('./thesis/images/protein_source_bar.png', plots$barplots$protein_sourc
                    summarise(total_n_recipes = n()) %>%
                    ungroup()) %>%
       #Scale
-      mutate(scaled = n/total_n_recipes*10) %>%
+      mutate(scaled = round(n/total_n_recipes*100, 0)) %>%
       #rename feature to fit with graph object
       rename(name = feature) %>%
       #Split by protein source
@@ -1716,8 +1713,6 @@ save_plot('./thesis/images/protein_source_bar.png', plots$barplots$protein_sourc
           )})
     
   })
-  
-  
   
   #Function to turn df into adjacency list
   #df a wide dataframe with the recipes in rows and the nutrients in columns, 1 for each nutrient the recipe is a source of, 0 if it is not a source
@@ -1906,11 +1901,27 @@ save_plot('./thesis/images/protein_source_bar.png', plots$barplots$protein_sourc
   #Create a tidygraph object with type of protein information and how many recipes are sources
   #Source
   various$adjacency$tidygraph$source <- lapply(various$adjacency$matrix$source,
-                                               function(x) {makeAdjacencyList(x) %>% as_tbl_graph(., directed = FALSE)}) %>%
+                                               #First make adjacency list
+                                               makeAdjacencyList) %>% 
+    #Scale edges by number of recipes in that category and turn into tidygraph object
+    mapply(function(x, y) {x %>%
+        mutate(total_n_recipes = unique(y$total_n_recipes)) %>%
+        mutate(scaled = round(value/total_n_recipes*100, 0))}, x = ., y = various$adjacency$n_source_of_protein_and_nutrients,
+      USE.NAMES = TRUE, SIMPLIFY = FALSE) %>%
+    lapply(., as_tbl_graph, directed = FALSE) %>%
+    #Also scale nodes by total number of recipes
     mapply(left_join, x = ., y = various$adjacency$n_source_of_protein_and_nutrients, USE.NAMES = TRUE, SIMPLIFY = FALSE)
   #Good source
   various$adjacency$tidygraph$good_source <- lapply(various$adjacency$matrix$good_source,
-                                               function(x) {makeAdjacencyList(x) %>% as_tbl_graph(., directed = FALSE)}) %>%
+                                                    #First make adjacency list
+                                                    makeAdjacencyList) %>% 
+    #Scale edges by number of recipes in that category and turn into tidygraph object
+    mapply(function(x, y) {x %>%
+        mutate(total_n_recipes = unique(y$total_n_recipes)) %>%
+        mutate(scaled = round(value/total_n_recipes*100, 0))}, x = ., y = various$adjacency$n_good_source_of_protein_and_nutrients,
+        USE.NAMES = TRUE, SIMPLIFY = FALSE) %>%
+    lapply(., as_tbl_graph, directed = FALSE) %>%
+    #Also scale nodes by total number of recipes
     mapply(left_join, x = ., y = various$adjacency$n_good_source_of_protein_and_nutrients, USE.NAMES = TRUE, SIMPLIFY = FALSE)
   
   
@@ -1927,7 +1938,7 @@ save_plot('./thesis/images/protein_source_bar.png', plots$barplots$protein_sourc
   #Graph = tidygraph object
   #Source = good_source, or just source, if 'good_source' some graphs will be made into trees as they have few nodes and connection
   #label_size is the text size of the labels
-  plotNetwork <- function(graph, source = NULL, label_size = 2) {
+  plotNetwork <- function(graph, source = NULL, label_size = 3.58) {
     
     #Vegan must have "tree" mode as there are so few recipes
     if(source == 'good_source' & data.frame(graph)$org_type %in% c('Vegan', 'Game')) {
@@ -1942,14 +1953,14 @@ save_plot('./thesis/images/protein_source_bar.png', plots$barplots$protein_sourc
     
     temp +
       #Draw edges and nodes
-      geom_edge_link(aes(alpha = value)) + #Alpha based on the number of connections
+      geom_edge_link(aes(alpha = scaled)) + #Alpha based on the number of connections
       geom_node_point(aes(size = scaled, fill = type), shape = 21, color = 'black') +  #Size based on the number of recipes that are a source
-      geom_node_label(aes(label = name, size = label_size), repel = TRUE, show.legend = FALSE) + #Add labels for the nutrients
+      geom_node_label(aes(label = name), size = label_size, repel = TRUE, show.legend = FALSE) + #Add labels for the nutrients
       theme(legend.position = "none") +
       
       #Scale alpha and size between plots
-      scale_size_area(limits = c(0, 10), breaks = c(0, 2.5, 5, 7.5, 10), labels = c('0', '25 %', '50 %', '75 %', '100 %')) +
-      scale_edge_alpha(range = c(0.1, 1), guide = 'none') +
+      scale_size_area(limit = c(0,100), breaks = c(5, 25, 50, 75, 100), labels = c('5 %', '25 %', '50 %', '75 %', '100 %')) +
+      scale_edge_alpha(range = c(0.01, 1), guide = 'none') +
       #Add colors and change the size of the legend item for fill/color
       scale_fill_manual(values = various$protein_source_colors) +
       #Add title
@@ -1958,42 +1969,41 @@ save_plot('./thesis/images/protein_source_bar.png', plots$barplots$protein_sourc
   } 
   
   #Plot
-  plots$network$source <- sapply(various$adjacency$tidygraph$source, plotNetwork, source = 'source', USE.NAMES = TRUE, simplify = FALSE)
-  
-  plots$network$good_source <- sapply(various$adjacency$tidygraph$good_source, plotNetwork, source = 'good_source', label_size = 3.58, USE.NAMES = TRUE, simplify = FALSE)
+  plots$network$source <- sapply(various$adjacency$tidygraph$source, plotNetwork, source = 'source', USE.NAMES = TRUE, simplify = FALSE, label_size = 3)
+  plots$network$source$Vegetarian
+  plots$network$good_source <- sapply(various$adjacency$tidygraph$good_source, plotNetwork, source = 'good_source', USE.NAMES = TRUE, simplify = FALSE)
+  plots$network$good_source$Vegan
     
   #Create a legend for the plots
-  plot_legends$network <- plot_grid(get_legend(plotNetwork(various$adjacency$tidygraph$source$Beef, source = 'source') +
+  plot_legends$network <- plot_grid(get_legend(plotNetwork(various$adjacency$tidygraph$source$Shellfish, source = 'source') +
     theme(legend.position = 'right') +
     labs(fill = 'Protein source') +
     guides(fill = guide_legend(override.aes = list(size = 5)),
            alpha = 'none',
            size = 'none')),
-    get_legend(plotNetwork(various$adjacency$tidygraph$source$Beef, source = 'source') +
+    get_legend(plotNetwork(various$adjacency$tidygraph$source$Shellfish, source = 'source') +
                  theme(legend.position = 'right') +
-                 labs(size = 'Percent of recipes') +
+                 labs(size = 'Percentage of recipes') +
                  guides(fill = 'none',
                         alpha = 'none')),
     ncol = 2, align = 'hv')
-  
-  plot_legends$network
   
   #Build a large plot
   plots$final$network$sources <- plot_grid(
     plots$network$source$Beef, plots$network$source$Lamb, plots$network$source$Game, plots$network$source$Pork,
     plots$network$source$Poultry, plots$network$source$`Lean fish`, plots$network$source$`Oily fish`, plots$network$source$Shellfish,
-    plots$network$source$Vegetarian, plots$network$source$Vegan, plot_legends$network,
+    plots$network$source$Vegetarian, plots$network$source$Vegan, plot_legends$network  + theme(plot.margin = margin(0, 0, 0, 25)), #Add margin between last plot and legend
     ncol = 4)
   
   plots$final$network$good_sources <- plot_grid(
     plots$network$good_source$Beef, plots$network$good_source$Lamb, plots$network$good_source$Game, plots$network$good_source$Pork,
     plots$network$good_source$Poultry, plots$network$good_source$`Lean fish`, plots$network$good_source$`Oily fish`, plots$network$good_source$Shellfish,
-    plots$network$good_source$Vegetarian, plots$network$good_source$Vegan, plot_legends$network,
+    plots$network$good_source$Vegetarian, plots$network$good_source$Vegan, plot_legends$network + theme(plot.margin = margin(0, 0, 0, 25)),
     ncol = 4)
   
   #Save
-  save_plot('./thesis/images/network_source.png', plots$final$network$sources, ncol = 2, nrow = 1.5)
-  save_plot('./thesis/images/network_good_source.png', plots$final$network$good_sources, ncol = 2, nrow = 1.5)
+  save_plot('./thesis/images/network_source.png', plots$final$network$sources, ncol = 2, nrow = 2)
+  save_plot('./thesis/images/network_good_source.png', plots$final$network$good_sources, ncol = 2, nrow = 2)
   
 
 ## Tables----
