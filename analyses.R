@@ -398,10 +398,14 @@ temp <- health_indicators %>%
            str_replace('inverted_traffic_score', 'Inverted Multiple\nTraffic Light Model') %>%
            str_replace('nutriscore_letter', 'Nutriscore')) %>%
   select(feature, group, value, pct) %>%
+  #Arrange for table
+  mutate(group = factor(group, c('Norway', 'UK', 'US', 'All countries'))) %>%
   #Split on feature to format each indicator separately
   group_by(feature) %>% group_split() %>%
   #Pivot wider
-  lapply(., function(x) {x %>% pivot_wider(., names_from = c(group, feature), values_from = pct)})
+  lapply(., function(x) {x %>% pivot_wider(., names_from = c(group, feature), values_from = pct)}) %>%
+  #Set order of countries
+  lapply(., function(x) {x %>% select(value, starts_with('Norway'), starts_with('UK'), starts_with('US'), starts_with('All'))})
 
 #Add empty rows to nutriscore before col_bind
 temp[[3]] <- temp[[3]] %>%
