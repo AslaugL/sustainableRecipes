@@ -125,7 +125,7 @@ knitr::include_graphics('./images/raw_scores_mtl.png')
 ```
 
 \begin{landscape}
-```{r co-occuring-nutrients-source, out.width = "100%", fig.cap = "Nutrients that occur together in the recipes, in such amounts that the recipe is considered a source. A larger circle indicates a higher percentage of recipes that is a source of the nutrient scaled by the number of recipes that used a particular source of protein, and a stronger line indicate a higher number of co-occurrences."}
+```{r co-occuring-nutrients-source, out.width = "98%", fig.cap = "Nutrients that occur together in the recipes, in such amounts that the recipe is considered a source. A larger circle indicates a higher percentage of recipes that is a source of the nutrient scaled by the number of recipes that used a particular source of protein, and a stronger line indicate a higher number of co-occurrences."}
 knitr::include_graphics("images/network_source.png")
 ```
 \end{landscape}
