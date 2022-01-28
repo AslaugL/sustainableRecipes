@@ -7,7 +7,7 @@
 featureAnnotationColors(df)
 }
 \arguments{
-\item{df}{The dataframe with data to be plotted.}
+\item{df}{The dtaframe with dta to be plotted.}
 }
 \value{
 A list with a named vector with colors for the variables in the 'feature_anno' column.

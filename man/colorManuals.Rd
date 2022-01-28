@@ -7,7 +7,7 @@
 colorManuals(df, group = TRUE, feature_anno = TRUE)
 }
 \arguments{
-\item{df}{The dataframe with data to be plotted.}
+\item{df}{The dtaframe with dta to be plotted.}
 
 \item{group}{Should a color manual be made for the 'group' column? Default TRUE.}
 
