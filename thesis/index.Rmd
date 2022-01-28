@@ -41,6 +41,7 @@ library(tidyverse)
 \let\clearpage\relax
 \tableofcontents
 \newpage
+\pagenumbering{roman}
 \listoffigures
 \newpage
 \listoftables
@@ -49,8 +50,8 @@ library(tidyverse)
 # List of Abbreviations {.unnumbered}
 ```{r abbreviations}
 Abbreviations <- tibble(
-  'Abbreviation' = c('DALY', 'FBDG', 'NNR', 'WHO', 'FAO', 'NCD', 'RDI', 'FOP', 'LCA', 'FSA MTL', 'E%', 'MJ', 'HEAS', 'LL'),
-  'Explanation' = c('Disability Adjusted Life Years', 'Food Based Dietary Guideline', 'Nordic Nutritional Recommendations', 'World Health Organization', 'Food and Agriculture Organization of the United Nations', 'Non-communicable disease', 'Recommended Dietary Intake', 'Front of Pack', 'Life Cycle Assesment', 'Food Standard Agency Multiple Traffic Light', 'Percentage of energy', 'Megajoule', 'Australian Healthy Eating Advisory Service traffic light system', 'Australian LiveLighter traffic light system')
+  'Abbreviation' = c('DALY', 'FBDG', 'NNR', 'WHO', 'FAO', 'RDI', 'LCA', 'FSA MTL', 'E%', 'MJ', 'HEAS', 'LL', 'OPP', 'GHGE'),
+  'Explanation' = c('Disability Adjusted Life Years', 'Food Based Dietary Guideline', 'Nordic Nutrition Recommendations', 'World Health Organization', 'Food and Agriculture Organization of the United Nations', 'Recommended Dietary Intake', 'Life Cycle Assesment', 'Food Standard Agency Multiple Traffic Light', 'Percentage of energy', 'Megajoule', 'Australian Healthy Eating Advisory Service traffic light system', 'Australian LiveLighter traffic light system', 'One Planet Plate Concept', 'Greenhouse gas emissions')
 ) %>% arrange(Abbreviation) %>%
   kbl(booktab = TRUE, format = 'latex')
 
