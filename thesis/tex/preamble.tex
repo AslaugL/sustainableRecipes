@@ -1,8 +1,10 @@
-% Add some packages
+% Add some packagesæ
 \usepackage{booktabs}
 \usepackage{longtable}
 \usepackage[nottoc]{tocbibind}
 \usepackage{fancyhdr}
+\usepackage[utf8]{inputenc}
+\usepackage{setspace}
 \usepackage[final]{pdfpages}
 \usepackage{pdflscape} % for landscape pages
 \usepackage{threeparttable} % For kableExtra captions
@@ -14,6 +16,7 @@
   natbib=true]{biblatex}
 \usepackage{pdfpages}
 \renewcommand*{\ppspace}{}
+
 
 \DeclareFieldFormat{postnote}{#1}
 \renewcommand{\textfraction}{0.05}
@@ -41,7 +44,8 @@
 % the text easier to read, at the expense of making the text less aligned
 % to the right margin
 %
-\hyphenpenalty=10
-\tolerance=1000
+\usepackage[none]{hyphenat}
 
+\let\oldmaketitle\maketitle
 \AtBeginDocument{\let\maketitle\relax}
+\makeatletter\@openrightfalse
