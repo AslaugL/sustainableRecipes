@@ -21,4 +21,4 @@ Then run composite_ingredients.R and go back to clean_databases.R and include th
 After preparing the databases, run all_recipes.R to map the recipe ingredients to the databases and calculate the nutrient content and environmental impact per 100 grams of each recipe.
 
 ## Calculate healthiness, run statistical tests, build plots and tables
-The analysis.R script 
+Run analysis.R script.
