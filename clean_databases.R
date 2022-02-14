@@ -1324,7 +1324,7 @@ fromFoodDataCentral_foods <- read_csv('./Data/databases/food.csv') %>%
          Sugar = sucrose,
          `Vitamin E` = `alpha-tocopherol` + `gamma-tocopherol` + `beta-tocopherol` + `delta-tocopherol`,
          Kilojoules = Kilocalories*4.184,
-         Salt = Sodium*2.5
+         Salt = Sodium*2.5/1000 #Unit is in mg Salt in Matvaretabellen is in g
   ) %>%
   #Remove the columns
   select(-c(glucose, galactose, dextrose, maltose, sucrose, lactose, `alpha-tocopherol`, `gamma-tocopherol`, `beta-tocopherol`, `delta-tocopherol`)) %>%
