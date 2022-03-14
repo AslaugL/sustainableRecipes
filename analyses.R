@@ -1,10 +1,5 @@
 devtools::load_all(path = '.')
 
-# install 'arcdiagram' (development version)
-devtools::install_github('gastonstat/arcdiagram')
-
-library(arcdiagram)
-
 ## Setup ----
 #Empty list to fill with plots and plot legends
 plots <- list()
@@ -194,7 +189,7 @@ health_indicators <- temp %>% reduce(full_join, by = c('sample_id', 'group')) %>
   #Save score in wide format
   write_csv(health_indicators %>%
               select(-nutriscore_letter) %>% pivot_wider(., names_from = feature, values_from = value),
-            './Supplementary/healthiness_indicator_scores.csv')
+            './Supplementary/SupTable6.csv')
 
 #Raw scores for supplementary materials
 temp <- list(
@@ -250,7 +245,7 @@ temp$nutriscore$raw_scores <- temp$nutriscore$raw_scores %>%
 #Add all together and save for supplementary
 temp2 <- full_join(temp$nutriscore$raw_scores, temp$energy_pct) %>% full_join(., temp$grams)
 
-write_csv(temp2, './Supplementary/calculating_healthiness_indicator_values.csv')
+write_csv(temp2, './Supplementary/SupTable4.csv')
 
 ## Statistical analyses----
 #Prep
@@ -292,7 +287,7 @@ temp2 <- various$with_RDI %>%
               names_from = feature,
               values_from = value)
 
-write_csv(temp2, './Supplementary/rdi_micronutrients_100g.csv')
+write_csv(temp2, './Supplementary/SupTable5.csv')
 
 #Energy percentage of macronutrients in each recipe
 various$with_energy_pct_densityMJ <- data_recipes %>%
@@ -393,7 +388,7 @@ temp <- health_indicators %>%
   #Format for thesis
   mutate(feature = feature %>%
            str_replace('inverted_nutriscore', 'Inverted Nutriscore') %>%
-           str_replace('nnr_score', 'Nordic Nutritional\nRecommendations') %>%
+           str_replace('nnr_score', 'Nordic Nutrition\nRecommendations') %>%
            str_replace('who_score', 'World Health Organization\nRecommendations') %>%
            str_replace('inverted_traffic_score', 'Inverted Multiple\nTraffic Light Model') %>%
            str_replace('nutriscore_letter', 'Nutriscore')) %>%
@@ -434,11 +429,11 @@ pct_recipes_healthiness_scores <- bind_cols(temp) %>%
   #Fix column names
   rename(
     `Score_Inverted Multiple\nTraffic Light Model` = value...1,
-    `Score_Nordic Nutritional\nRecommendations` = value...6,
+    `Score_Nordic Nutrition\nRecommendations` = value...6,
     `Score_Nutriscore` = value...11,
     `Score_World Health Organization\nRecommendations` = value...16
   ) %>%
-  select(ends_with('Inverted Multiple\nTraffic Light Model'), ends_with('Nutriscore'), ends_with('Nordic Nutritional\nRecommendations'), ends_with('World Health Organization\nRecommendations'))
+  select(ends_with('Inverted Multiple\nTraffic Light Model'), ends_with('Nutriscore'), ends_with('Nordic Nutrition\nRecommendations'), ends_with('World Health Organization\nRecommendations'))
 
 
 #Count the number of recipes that are a source of nutrients (>15% of RDI for micronutrients, >12% of energy for protein) and a good source (>30% of RDI for micronutrients, >20 % energy from protein)
@@ -571,6 +566,9 @@ temp <- run_stats %>%
   ) %>%
   inner_join(., metadata) %>%
   pivot_wider(., names_from = 'feature', values_from = 'value')
+
+#Save for source data
+write_csv(temp[,c(26, 31, 4, 14, 29, 30, 9, 25,  33:38)], './Supplementary/SourceFig2-3.csv')
 
 #Health indicators with sustainability indicators
 plots$correlations$healthVSsustainability <- ggpairs(temp %>% select(-sample_id),
@@ -873,7 +871,7 @@ plots$violinbox <- list()
                     filter(feature != 'keyhole_certified') %>%
                     mutate(feature = feature %>%
                            str_replace('inverted_nutriscore', 'Inverted Nutriscore') %>%
-                           str_replace('nnr_score', 'Nordic Nutritional\nRecommendations') %>%
+                           str_replace('nnr_score', 'Nordic Nutrition\nRecommendations') %>%
                            str_replace('who_score', 'World Health Organization\nRecommendations') %>%
                            str_replace('inverted_traffic_score', 'Inverted Multiple\nTraffic Light Model'))) + facet_wrap(~feature, scales = 'free') +
     labs(
@@ -887,14 +885,14 @@ plots$violinbox <- list()
                         filter(feature != 'keyhole_certified') %>%
                         mutate(feature = feature %>%
                                   str_replace('inverted_nutriscore', 'Inverted Nutriscore') %>%
-                                  str_replace('nnr_score', 'Nordic Nutritional\nRecommendations') %>%
+                                  str_replace('nnr_score', 'Nordic Nutrition\nRecommendations') %>%
                                   str_replace('who_score', 'World Health Organization\nRecommendations') %>%
                                   str_replace('inverted_traffic_score', 'Inverted Multiple\nTraffic Light Model')
                                 ) %>%
                          #Make some adjustments to pvalue position
                          mutate(y.position = case_when(
-                           feature == 'Nordic Nutritional\nRecommendations' & group1 == 'UK' ~ y.position + 0.8,
-                           feature == 'Nordic Nutritional\nRecommendations' & group1 == 'Norway' & group2 == 'US' ~ y.position + 0.4,
+                           feature == 'Nordic Nutrition\nRecommendations' & group1 == 'UK' ~ y.position + 0.8,
+                           feature == 'Nordic Nutrition\nRecommendations' & group1 == 'Norway' & group2 == 'US' ~ y.position + 0.4,
                            
                            TRUE ~ y.position
                          )),
@@ -1128,7 +1126,7 @@ plots$all_values <- list()
                                               mutate(feature = feature %>%
                                                        str_replace('inverted_nutriscore', 'Inverted Nutriscore') %>%
                                                        str_replace('inverted_traffic_score', 'Inverted Multiple\nTraffic Light Model') %>%
-                                                       str_replace('nnr_score', 'Nordic Nutritional\nRecommendations') %>%
+                                                       str_replace('nnr_score', 'Nordic Nutrition\nRecommendations') %>%
                                                        str_replace('who_score', 'World Health Organization\nRecommendations')),
                                                 x = feature, color = FALSE) + facet_wrap(~feature, scales = 'free') + labs(x = '', y = '') +
     theme(axis.text.x=element_blank(),
@@ -1174,8 +1172,8 @@ plots$all_values <- list()
   
       #Save
       save_plot('./thesis/images/all_health_env.png', plots$final$health_env,
-                ncol = 1.5,
-                nrow = 1.5)
+                ncol = 2,
+                nrow = 2)
   
   
   #All together
@@ -1349,7 +1347,7 @@ plots$raw_scores <- list()
   
   #The two guidelines together, with shared y axis
   plots$final$raw_guidelines <- plot_grid(plots$raw_scores$who + theme(legend.position = 'none') + labs(y=' ', title = 'World Health Organization dietary guidelines'),
-                                          plots$raw_scores$nnr + theme(legend.position = 'bottom') + labs(y=' ', title = 'Nordic Nutritional Recommendations dietary guidelines'),
+                                          plots$raw_scores$nnr + theme(legend.position = 'bottom') + labs(y=' ', title = 'Nordic Nutrition Recommendations dietary guidelines'),
                                           ncol = 1,
                                           rel_heights = c(1,1.2)) +
    #Shared label
@@ -1466,6 +1464,9 @@ plots$violinbox$foodgroups <- list()
       #Turn into grams, not fraction per 100 g
       mutate(value = value*100)
     
+    #Save for source materials
+    write_csv(temp, './Supplementary/SourceFig1B.csv')
+    
     #Plot
     plots$violinbox$foodgroups$meat_products <- ggplot(temp, aes(x = Foodgroup, y = value, color = group)) +
       geom_half_violin() + 
@@ -1534,6 +1535,8 @@ plots$violinbox$foodgroups <- list()
       all(vegetarian == 'vegetarian') ~ 'Vegetarian'
       )) %>% ungroup()
     
+  #Save for source data
+  write_csv(various$recipe_protein_source, './Supplementary/SourceFig1A.csv')
     
   #Calculate percentage of recipes from each country
   temp <- various$recipe_protein_source %>%
@@ -1584,6 +1587,9 @@ save_plot('./thesis/images/protein_source_bar.png', plots$barplots$protein_sourc
              sample_id == 'fake' ~ 'Invisible',
              TRUE ~ 'Visible')
            ) %>% arrange(group)
+  
+  #Save for source data
+  write_csv(temp, './Supplementary/SourceFig1C.csv')
   
   plots$violinbox$recipe_protein_sources <- ggplot() +
     #Boxplot
@@ -2117,3 +2123,4 @@ nutriscore_points <- read_csv2('./Data/health_indicators/nutriscore_points.csv')
 ## Save objects to be used in RMarkdown----
 save(stat_table, tidy_ingredients, guidelines_trafficlights, source_of_nutrients_table, pct_recipes_healthiness_scores,
      nutriscore_points, descriptive_stats_total, file = './Data/results_allrecipes.RData')
+
