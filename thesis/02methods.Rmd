@@ -24,7 +24,7 @@ For both the environmental sustainability indicators and nutritional information
 
 ## Recipe healthiness
 
-Recipes were scored on how well they adhered to the dietary guidelines macronutrient ranges supplied by the WHO [@WHOdietaryguidelines] and the NNR [@NordicCouncilofMinisters2014], see **Table** \@ref(tab:guidelines-points-table). The WHO guidelines have been used in previous studies [@Howard2012; @Jones2013; @Schneider2013; @Keogh2019; @Dickinson2018; @Trattner2017a; @Cheng2021], and the NNR were chosen as they are used in Norway and are closer to the dietary guidelines from the UK [@PublicHealthEngland2016] (p7) and the US [@USdietaryguidelines2020] (p135) than the WHO guidelines. A recipe would receive one point for each recommendation in the guideline it adhered to, giving a total score between 0-6. For example a recipe could score one point for having between 15-30% E% coming from fat. A higher score indicates higher adherence to the guideline.
+Recipes were scored on how well they adhered to the dietary guidelines macronutrient ranges supplied by the WHO [@WHOdietaryguidelines] and the NNR [@NordicCouncilofMinisters2014], see **Table** \@ref(tab:guidelines-points-table). The WHO guidelines have been used in previous studies [@Howard2012; @Jones2013; @Schneider2013; @Keogh2019; @Dickinson2018; @Trattner2017a; @Cheng2021], and the NNR were chosen as they are used in Norway and are closer to the dietary guidelines from the UK [@PublicHealthEngland2016] (p7) and the US [@USdietaryguidelines2020] (p135) than the WHO guidelines. A recipe would receive one point for each recommendation in the guideline it adhered to, giving a total score between 0-6. For example a recipe could score one point for having between 15-30 E% coming from fat. A higher score indicates higher adherence to the guideline.
 
 ```{r guidelines-points-table}
 #Has problems with %
@@ -38,7 +38,8 @@ guidelines_trafficlights %>% select(Feature, `World Health Organization`, `Nordi
   kbl(booktabs = TRUE, linesep = "", caption = "Scoring system for the dietary guidelines from World Health Organization and the Nordic countries.", escape = FALSE) %>%
   kable_classic_2(full_width = FALSE) %>%
   kable_styling(latex_options = "hold_position") %>%
-  add_header_above(c(' ' = 1, 'Dietary guidelines' = 2))
+  add_header_above(c(' ' = 1, 'Dietary guidelines' = 2)) %>%
+  footnote(general = "Abbreviations used: E% = Energy percent, MJ = Megajoule.")
 ```
 
 For these analyses, energy providing nutrients fat, saturated fat, carbohydrates, added sugar and protein were recalculated to E%, and dietary fibre to grams/MJ, from the original raw values of grams found in the nutrient databases.
