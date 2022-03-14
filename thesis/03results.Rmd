@@ -104,7 +104,7 @@ if(knitr::is_latex_output()){
   pack_rows(., 'Vitamins', 9, 14) %>%
   pack_rows(., 'Minerals', 15, 19) %>%
   #Add footnote explaining abreviations
-  footnote(., general = "Abbreviations used: Inv = Inverted, NNR = New Nordic Nutritional Recommendations, WHO = World Health Organization, E\\\\% = Percentage of energy, MJ = Megajoule, RDI = Recommended daily intake.", threeparttable = TRUE) 
+  footnote(., general = "Abbreviations used: Inv = Inverted, NNR = Nordic Nutrition Recommendations, WHO = World Health Organization, E\\\\% = Percentage of energy, MJ = Megajoule, RDI = Recommended daily intake.", threeparttable = TRUE) 
 } else {
   stat_table %>%
   #Format table
@@ -124,7 +124,7 @@ if(knitr::is_latex_output()){
   pack_rows(., 'Vitamins', 9, 14) %>%
   pack_rows(., 'Minerals', 15, 19)
   #Add footnote explaining abreviations
-  #add_footnote("Abbreviations used: Inv = Inverted, NNR = New Nordic Nutritional Recommendations, WHO = World Health Organization, E% = Percentage of energy, MJ = Megajoule, RDI = Recommended daily intake.", notation = "none")
+  #add_footnote("Abbreviations used: Inv = Inverted, NNR = Nordic Nutrition Recommendations, WHO = World Health Organization, E% = Percentage of energy, MJ = Megajoule, RDI = Recommended daily intake.", notation = "none")
   
 }
 ```
@@ -224,7 +224,7 @@ knitr::include_graphics("images/network_good_source.png")
 
 ### Healthiness indicators and environmental sustainability indicators
 
-Results from the Spearman correlation showed a significant (BH adjusted *p*-value \<0.001) positive correlation between all the four healthiness indicators. There was a strong correlation between the two front-of-pack labels (rho 0.62), and a strong correlation between the two dietary guidelines (rho 0.78), while the correlation between the front-of-pack labels and the dietary guidelines were weaker. The two environmental sustainability indicators had a significantly strong positive correlation (rho 0.84, BH adjusted *p*-value \<0.001).
+Results from the Spearman correlation showed a significant (BH adjusted *p*-value \<0.001) positive correlation between all the four healthiness indicators. There was a strong correlation between the two front-of-pack labels (rho 0.68), and a strong correlation between the two dietary guidelines (rho 0.78), while the correlation between the front-of-pack labels and the dietary guidelines were weaker. The two environmental sustainability indicators had a significantly strong positive correlation (rho 0.84, BH adjusted *p*-value \<0.001).
 
 All four healthiness indicators were significantly (BH adjusted *p*-value \<0.001) negatively correlated with the two environmental sustainability indicators, with the two dietary guidelines being more strongly correlated with both GHGE and land use than the FSA MTL and Nutriscore. NNR had a slightly stronger correlation with both GHGE and land use than WHO guidelines, while the Nutriscore had a weaker correlation with land use than the FSA MTL. Slight differences were seen between countries, with recipes from Norway consistently having a weaker correlation between healthiness and environmental sustainability indicators, this can be seen in **Figure** \@ref(fig:Correlation-healthVSsustainability) that show scatterplots of the various healthiness and environmental sustainability indicators, and the correlation between them for each country and all countries pooled.
 
