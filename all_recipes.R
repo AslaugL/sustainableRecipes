@@ -529,7 +529,7 @@ t <- various$org_ingredients %>% select(Ingredients, org_ingredients) %>% unique
   #Save ingredient nutrient mapping
   write_csv(t %>% rename(Ingredient = Ingredients,
                          Mapped_ID = ID,
-                         ID_From = from) %>% select(-ends_with('word')), './Supplementary/ingredients_nutrient_mapping.csv')
+                         ID_From = from) %>% select(-ends_with('word')), './Supplementary/SupTable1.csv')
   
   #See which ingredients haven't been picked up
   t <- anti_join(recipes %>% select(sample_id, Ingredients) %>% unique(), temp %>% select(sample_id, Ingredients))
@@ -622,7 +622,7 @@ t <- various$org_ingredients %>% select(Ingredients, org_ingredients) %>% unique
   t <- temp %>% select(Ingredients, ID) %>% inner_join(references$sustainability) %>% unique()
   
   #Save ingredient FoodEx2 mapping
-  write_csv(temp %>% select(Ingredients, FoodEx2) %>% unique(), './Supplementary/ingredients_SHARPID_mapping.csv')
+  write_csv(temp %>% select(Ingredients, FoodEx2) %>% unique(), './Supplementary/SupTable2.csv')
   
   #See which ingredients haven't been picked up
   t <- anti_join(recipes %>% select(sample_id, Ingredients) %>% unique(), temp %>% select(sample_id, Ingredients))
@@ -772,6 +772,6 @@ whole_recipe_calc <- bind_rows(various$recipe_nutrient_whole, various$recipe_sus
   filter(!sample_id %in% c(to_remove$sample_id, 'Baklava (Turkey)', 'Sausage Lunch', 'Half-fermented trout', 'Straight trout', 'Fruit Package'))
 
 #Save
-write_csv(whole_recipe_calc, './Supplementary/recipe_nutrient_sustainability_whole.csv')
+write_csv(whole_recipe_calc, './Supplementary/SupTable3.csv')
 
 
