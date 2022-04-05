@@ -15,7 +15,7 @@ Some volume/weight and nutrients were found from other sources than those listed
 ## Clean databases and add composite ingredients to the databases
 Open clean_databases.R and block out the code for adding composite ingredients to the nutrient and environmental impact databases. 
 
-Run the code which will creae two output files for each of the three databases used in the thesis. One output file is a shortened version of the database while the other is a set of words used to map recipe ingredients to the database.
+Run the code which will create two output files for each of the three databases used in the thesis. One output file is a shortened version of the database while the other is a set of words used to map recipe ingredients to the database.
 
 Then run composite_ingredients.R and go back to clean_databases.R and include the code to add composite ingredients. This step must be done twice as some composite ingredients depend on other composite ingredients.
 
