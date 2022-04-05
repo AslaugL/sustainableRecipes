@@ -6,7 +6,7 @@ Nutrient content is compared to the macronutrient criteria from the World Health
 Some volume/weight and nutrients were found from other sources than those listed which can be seen in the clean_database.R script. 
 
 # Files and folders
-- **Data** contains the databases used, the nutrient criteria for the two dietary guidelines and the front-og-pack labels and the recipes.
+- **Data** contains the databases used, the nutrient criteria for the two dietary guidelines and the front-of-pack labels and the recipes.
 - **R** Contains functions used. standardiseIngredients and checkRef are used to standardise recipe ingredient names and map them to the databases. Choices to change one ingredient for a similar one are found in these scripts.
 
 # How to run
