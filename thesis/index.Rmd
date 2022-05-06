@@ -11,7 +11,8 @@ output:
       in_header: './tex/preamble.tex'
       before_body: './tex/doc_preface.tex'
     pandoc_args: --top-level-division=chapter
-bibliography: library.bib
+bibliography: masteroppgave.bib
+link-citations: true
 csl: vancouver-imperial-college-london.csl
 fontsize: 12pt
 linestretch: 1.5
@@ -19,7 +20,7 @@ linestretch: 1.5
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, echo = FALSE, message = FALSE, warning = FALSE)
-options(tinytex.clean = FALSE)
+#options(tinytex.clean = FALSE)
 ```
 
 ```{r packages-and-functions}
@@ -50,8 +51,8 @@ library(tidyverse)
 # List of Abbreviations {.unnumbered}
 ```{r abbreviations}
 Abbreviations <- tibble(
-  'Abbreviation' = c('DALY', 'FBDG', 'NNR', 'WHO', 'FAO', 'RDI', 'LCA', 'FSA MTL', 'E%', 'MJ', 'HEAS', 'LL', 'OPP', 'GHGE'),
-  'Explanation' = c('Disability Adjusted Life Years', 'Food Based Dietary Guideline', 'Nordic Nutrition Recommendations', 'World Health Organization', 'Food and Agriculture Organization of the United Nations', 'Recommended Dietary Intake', 'Life Cycle Assesment', 'Food Standard Agency Multiple Traffic Light', 'Percentage of energy', 'Megajoule', 'Australian Healthy Eating Advisory Service traffic light system', 'Australian LiveLighter traffic light system', 'One Planet Plate Concept', 'Greenhouse gas emissions')
+  'Abbreviation' = c('FBDG', 'NNR', 'WHO', 'FAO', 'RDI', 'LCA', 'FSA MTL', 'E%', 'MJ', 'HEAS', 'LL', 'OPP', 'GHGE'),
+  'Explanation' = c('Food Based Dietary Guideline', 'Nordic Nutrition Recommendations', 'World Health Organization', 'Food and Agriculture Organization of the United Nations', 'Recommended Dietary Intake', 'Life Cycle Assesment', 'Food Standard Agency Multiple Traffic Light', 'Percentage of energy', 'Megajoule', 'Australian Healthy Eating Advisory Service traffic light system', 'Australian LiveLighter traffic light system', 'One Planet Plate Concept', 'Greenhouse gas emissions')
 ) %>% arrange(Abbreviation) %>%
   kbl(booktab = TRUE, format = 'latex')
 

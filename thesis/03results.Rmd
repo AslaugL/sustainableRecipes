@@ -54,17 +54,21 @@ descriptive_stats_total %>%
 
 ### Comparison between countries
 
-Of the total 35 nutrients, healthiness and environmental sustainability indicators assessed, 19 were significantly different (BH adjusted *p*-value \<0.05) between at least two countries in the Kruskal-Wallis test, so a *post-hoc* Dunn test was performed.
+Of the 35 variables assessed, 19 were significantly different (adjusted *p*-value \<0.05) between at least two countries in the Kruskal-Wallis test, so a *post-hoc* Dunn test was performed. 
 
-Recipes from the UK scored significantly better than recipes from Norway (BH adjusted *p*-value \<0.01) and the US (BH adjusted *p*-value \<0.001) on the NNR guideline criteria, the WHO criteria (BH adjusted *p*-value <0.05 and <0.01 respectively) and the inverted Nutriscore (BH adjusted *p*-value \<0.05). Norway scored significantly better than the US recipes on the NNR guidelines (BH adjusted *p*-value \<0.05) **Figure** \@ref(fig:violinbox-healthiness).
+#### Healthiness indicators
+
+As seen in **Figure** \@ref(fig:violinbox-healthiness), significant differences between countries were found in three of the four healthiness indicators assessed: the inverted Nutriscore (UK \> Norway: adjusted *p*-value \<0.05; UK \> US: adjusted *p*-value \<0.05), the NNR guideline criteria (UK \> Norway: adjusted *p*-value \<0.01; UK \> US: adjusted *p*-value \<0.001; Norway \> US: adjusted *p*-value \< 0.05) and the WHO guideline criteria (UK \> Norway: adjusted *p*-value \<0.05; UK \> US: adjusted *p*-value \<0.01).
 
 ```{r violinbox-healthiness, fig.cap = "The healthiness of the recipes based on the dietary guidelines from the World Health Organization and Nordic Nutritional Recommendations, and the inverted Multiple Traffic Light model from the UK and the inverted Nutriscore from France.", out.width="100%"}
-knitr::include_graphics("images/violinbox_health_numerical.png")
+knitr::include_graphics("images/violinbox_health_numerical.jpg")
 ```
 
-Few recipes complied with WHO and NNR guideline criteria for carbohydrates, but more were compliant with NNR than WHO criteria. In a similar manner, more recipes were compliant with protein and total fat recommendations of the NNR than WHO. For dietary fibre, saturated fat and added sugar the guideline recommendations are identical. Protein contributed most to the qualifying scores on the Nutriscore for recipes from all countries. Recipes from the UK scored better on dietary fibre criteria on both dietary guidelines and the Nutriscore. The scores for each component of the healthiness indicators by country, see **Figure** \@ref(fig:raw-score-guidelines), **Figure** \@ref(fig:raw-score-nutriscore) and **Figure** \@ref(fig:raw-score-trafficlights) for the guidelines, Nutriscore and the MTL respectively.
+Only a few recipes complied with WHO and NNR guideline criteria for carbohydrates, but more were compliant with NNR than WHO criteria. In a similar manner, more recipes were compliant with protein and total fat recommendations of the NNR than WHO. For dietary fibre, saturated fat and added sugar the guideline recommendations are identical so there are no differences in adherence. Protein contributed most to the qualifying scores on the Nutriscore for recipes from all countries. Recipes from the UK did better on dietary fibre criteria on both dietary guidelines and the Nutriscore than recipes from other countries. For the scores for each component of the healthiness indicators by country, see **Figure** \@ref(fig:raw-score-guidelines), **Figure** \@ref(fig:raw-score-nutriscore) and **Figure** \@ref(fig:raw-score-trafficlights) for the guidelines, Nutriscore and the MTL respectively.
 
-The US recipes had significantly higher CO~2~ emissions than recipes from both the UK (BH adjusted *p*-value \<0.001) and Norway (BH adjusted *p*-value \<0.05), and this was also the case for land use (BH adjusted *p*-value \<0.01). Norwegian recipes were significantly lower in CO~2~ emissions (BH adjusted *p*-value \<0.05) and land use (BH adjusted *p*-value \<0.01) than the US recipes **Figure** \@ref(fig:violinbox-env-sustainability).
+#### Environmental impact
+
+Significant differences between countries were also found for the environmental impact indicators: kilo CO~2~ emissions (US \> UK: adjusted *p*-value \<0.001; US \> Norway: adjusted *p*-value \<0.05; Norway \> UK: adjusted *p*-value \<0.05), and land use (US \> UK: adjusted *p*-value \<0.01; US \> Norway: adjusted *p*-value \<0.01), See **Figure** \@ref(fig:violinbox-env-sustainability)
 
 (ref:violin-env-sustainability-caption) The environmental impact in kilo CO~2~ equivalents and m^2^ used per year per 100 grams of the recipes.
 
@@ -72,7 +76,9 @@ The US recipes had significantly higher CO~2~ emissions than recipes from both t
 knitr::include_graphics("images/violinbox_env_impact.png")
 ```
 
-In terms of individual nutrients, the UK recipes were significantly higher in dietary fibre (*p*-value \<0.001) and vitamin C (*p*-value \<0.05) than both the US and Norwegian recipes, and significantly lower than the US recipes in protein content (BH adjusted *p*-value \<0.01). Norwegian recipes were significantly higher in vitamin B12 than both the US and the UK (BH adjusted *p*-value \<0.05), and significantly lower in protein (BH adjusted *p*-value \<0.5) than the US recipes. While there were other statistically significantly different micronutrients, in absolute numbers the difference between countries were negligible, see **Table** \@ref(tab:stats-data).
+#### Individual nutrients
+
+In terms of individual nutrients, significant differences were seen for dietary fibre (UK \> US: adjusted *p*-value \<0.001; UK \> Norway: adjusted *p*-value \<0.001), vitamin C (UK \> US: adjusted *p*-value \<0.001; UK \> Norway: adjusted *p*-value \<0.01; Norway \> US: adjusted *p*-value \<0.05), protein (US \> UK: adjusted *p*-value \<0.01; US \> Norway: adjusted *p*-value \< 0.05) and vitamin B12 content (Norway \> UK: adjusted *p*-value \< 0.05; Norway \> US: adjusted *p*-value \< 0.05). While there were other statistically significantly different micronutrients, in absolute numbers the difference between countries were negligible, see **Table** \@ref(tab:stats-data).
 
 ```{r stats-data}
 if(knitr::is_latex_output()){
@@ -104,7 +110,7 @@ if(knitr::is_latex_output()){
   pack_rows(., 'Vitamins', 9, 14) %>%
   pack_rows(., 'Minerals', 15, 19) %>%
   #Add footnote explaining abreviations
-  footnote(., general = "Abbreviations used: Inv = Inverted, NNR = Nordic Nutrition Recommendations, WHO = World Health Organization, E\\\\% = Percentage of energy, MJ = Megajoule, RDI = Recommended daily intake.", threeparttable = TRUE) 
+  footnote(., general = "Abbreviations used: Inv = Inverted, NNR = Nordic Nutrition Recommendations, WHO = World Health Organization, E% = Percentage of energy, MJ = Megajoule, RDI = Recommended daily intake.", threeparttable = TRUE) 
 } else {
   stat_table %>%
   #Format table
@@ -132,13 +138,13 @@ if(knitr::is_latex_output()){
 ### Protein sources and amounts of different ingredients
 
 Red meat (beef, lamb, game and pork) were the most used sources of protein in the recipes from all countries, while seafood (lean fish, oily fish and shellfish) were the second most used in the recipes from the UK and Norway and white meat (poultry) the second most used in the recipes from the US. Few recipes were vegan, and the UK had the most vegetarian recipes (**Figure** \@ref(fig:protein-sources-bar)).
-\newpage
 
 ```{r protein-sources-bar, fig.cap = "Percentage of recipes that used various animal protein sources, or were vegan or vegetarian.", out.width="100%"}
 knitr::include_graphics("images/protein_source_bar.png")
 ```
 
 Depending on protein source, the GHGE and land use for the recipes varied. Recipes with beef, lamb, game and shellfish had the highest environmental impact. Vegetarian and vegan recipes had the lowest environmental impact. Recipes with pork, poultry, lean and oily fish were in between. The vegetarian recipes with the highest impact were on level with the non-ruminant meat based recipes, and the lowest ruminant meat recipes (**Figure** \@ref(fig:protein-sources-violinbox)).
+\newpage
 
 (ref:protein-sources-violinbox-caption) Environmental impact in kilo CO~2~ equivalents and land use in m^2^ per 100 grams in recipes with various protein sources.
 
@@ -210,7 +216,7 @@ source_of_nutrients_table %>%
 
 The percentage of recipes that were good sources of the various nutrients varied by the type of protein used, and this was also the case for the pattern of nutrients that occurred together (**Figure** \@ref(fig:co-occuring-nutrients-good-source)). 
 
-Recipes that were vegan or used game as a source of protein had the fewest number of nutrients that occurred simultaneously in such amounts that a recipe was considered a good source. In recipes that used ruminant meat or seafood as a source protein, protein and vitamin B12 were the highest co-occurring nutrients, while there were slight differences for which additional nutrients that a recipe was a good source of. Many of the recipes that used beef as a source of protein and were good sources of protein and B12 were also good sources of zinc. For recipes that contained oily fish, protein, vitamin B12 and vitamin D were found together. Lean fish and shellfish recipes were good sources of protein, vitamin B12, iodine and selenium. For poultry, more recipes were good sources of vitamin B3 and B6 than B12, while for pork more recipes were good sources of vitamin B1 and B6 than B12. For vegetarian recipes, most that were good sources of protein were also good sources of fibre or phosphorus. For vegan recipes, only fibre and vitamin C occurred together in a recipe in such amounts as to be considered good sources. 
+Recipes that were vegan or used game meat as a source of protein had the fewest number of nutrients that occurred simultaneously in such amounts that a recipe was considered a good source. In recipes that used ruminant meat or seafood as a source protein, protein and vitamin B12 were the highest co-occurring nutrients, while there were slight differences for which additional nutrients that a recipe was a good source of. Many beef recipes that were good sources of protein and B12, were also good sources of zinc. For recipes that contained oily fish, protein, vitamin B12 and vitamin D were found together. Lean fish and shellfish recipes were good sources of protein, vitamin B12, iodine and selenium. For poultry, more recipes were good sources of vitamin B3 and B6 than B12, while for pork more recipes were good sources of vitamin B1 and B6 than B12. For vegetarian recipes, most that were good sources of protein were also good sources of fibre or phosphorus. For vegan recipes, only fibre and vitamin C occurred together in a recipe in such amounts as to be considered good sources. 
 
 More nutrients that were only sources, not good sources, could be found occurring together, see **Appendix Figure** \@ref(fig:co-occuring-nutrients-source).
 
@@ -224,9 +230,9 @@ knitr::include_graphics("images/network_good_source.png")
 
 ### Healthiness indicators and environmental sustainability indicators
 
-Results from the Spearman correlation showed a significant (BH adjusted *p*-value \<0.001) positive correlation between all the four healthiness indicators. There was a strong correlation between the two front-of-pack labels (rho 0.68), and a strong correlation between the two dietary guidelines (rho 0.78), while the correlation between the front-of-pack labels and the dietary guidelines were weaker. The two environmental sustainability indicators had a significantly strong positive correlation (rho 0.84, BH adjusted *p*-value \<0.001).
+Results from the Spearman correlation showed a significant (adjusted *p*-value \<0.001) positive correlation between all the four healthiness indicators. There was a strong correlation between the two front-of-pack labels (rho 0.68), and a strong correlation between the two dietary guidelines (rho 0.78), while the correlation between the front-of-pack labels and the dietary guidelines were weaker. The two environmental sustainability indicators had a significantly strong positive correlation (rho 0.84, adjusted *p*-value \<0.001).
 
-All four healthiness indicators were significantly (BH adjusted *p*-value \<0.001) negatively correlated with the two environmental sustainability indicators, with the two dietary guidelines being more strongly correlated with both GHGE and land use than the FSA MTL and Nutriscore. NNR had a slightly stronger correlation with both GHGE and land use than WHO guidelines, while the Nutriscore had a weaker correlation with land use than the FSA MTL. Slight differences were seen between countries, with recipes from Norway consistently having a weaker correlation between healthiness and environmental sustainability indicators, this can be seen in **Figure** \@ref(fig:Correlation-healthVSsustainability) that show scatterplots of the various healthiness and environmental sustainability indicators, and the correlation between them for each country and all countries pooled.
+All four healthiness indicators were significantly (adjusted *p*-value \<0.001) negatively correlated with the two environmental sustainability indicators, with the two dietary guidelines being more strongly correlated with both GHGE and land use than the FSA MTL and Nutriscore. NNR had a slightly stronger correlation with both GHGE and land use than WHO guidelines, while the Nutriscore had a weaker correlation with land use than the FSA MTL. Slight differences were seen between countries, with recipes from Norway consistently having a weaker correlation between healthiness and environmental sustainability indicators, this can be seen in **Figure** \@ref(fig:Correlation-healthVSsustainability) that show scatterplots of the various healthiness and environmental sustainability indicators, and the correlation between them for each country and all countries pooled.
 
 (ref:Correlation-healthVSsustainability-caption) Spearman's Rho between CO~2~ equivalents (kg), land use (m^2^/year) and the inverted Nutriscore, inverted Food Standard Agency's multiple traffic light score, World Health Organization dietary guideline score and the Nordic Nutrition Recommendation score.
 
@@ -238,11 +244,11 @@ knitr::include_graphics("images/healthVSsustainability.png")
 
 ### Environmental sustainability indicators and energy providing nutrients
 
-**Figure** \@ref(fig:Correlation-energyVSsustainability) show the correlations between energy and macronutrient content of a recipe and its environmental sustainability. For all countries pooled, there was a very weak positive correlation between GHGE and total energy content in kilocalories (rho 0.12, BH adjusted *p*-value \<0.01), a weak positive correlation between GHGE and total fat (rho 0.24, BH adjusted *p*-value \<0.001) and protein (rho 0.34, BH adjusted *p*-value \<0.001), and a moderate positive correlation between GHGE and saturated fat (rho (0.43, BH adjusted *p*-value \< 0.001). These associations did not reach statistical significance in all countries separately.
+**Figure** \@ref(fig:Correlation-energyVSsustainability) show the correlations between energy and macronutrient content of a recipe and its environmental sustainability. For all countries pooled, there was a very weak positive correlation between GHGE and total energy content in kilocalories (rho 0.12, adjusted *p*-value \<0.01), a weak positive correlation between GHGE and total fat (rho 0.24, adjusted *p*-value \<0.001) and protein (rho 0.34, adjusted *p*-value \<0.001), and a moderate positive correlation between GHGE and saturated fat (rho 0.43, adjusted *p*-value \< 0.001). These associations did not reach statistical significance in all countries separately.
 
-Sugar had a very weak (rho 0.1) positive correlation with both environmental sustainability indicators in the pooled recipe data (BH adjusted *p*-value \<0.01). In both cases this was driven by recipes from the US, where sugar was used in many meat-based recipes as part of a condiment (not shown).
+Sugar had a very weak (rho 0.1) positive correlation with both environmental sustainability indicators in the pooled recipe data (adjusted *p*-value \<0.01). In both cases this was driven by recipes from the US, where sugar was used in many meat-based recipes as part of a condiment (not shown).
 
-GHGE had a moderate negative correlation with carbohydrates (rho -0.47, BH adjusted *p*-value \<0.001) and a weak negative correlation with dietary fibre (rho -0.38, BH adjusted *p*-value \<0.001). Land use had a moderate negative correlation with carbohydrates (rho -0.42, BH adjusted *p*-value \<0.001) and a weak negative correlation with dietary fibre (rho -0.32, BH adjusted *p*-value \<0.001).
+GHGE had a moderate negative correlation with carbohydrates (rho -0.47, adjusted *p*-value \<0.001) and a weak negative correlation with dietary fibre (rho -0.38, adjusted *p*-value \<0.001). Land use had a moderate negative correlation with carbohydrates (rho -0.42, adjusted *p*-value \<0.001) and a weak negative correlation with dietary fibre (rho -0.32, adjusted *p*-value \<0.001).
 
 (ref:Correlation-energyVSsustainability-caption) Spearman's Rho between CO~2~ equivalents (kg), land use (m^2^/year), energy content and energy providing nutrients.
 
@@ -256,9 +262,9 @@ knitr::include_graphics("images/energyVSsustainability.png")
 
 Many minerals were correlated with the environmental sustainability indicators, but the strength and significance of the correlations varied between countries, see **Figure** \@ref(fig:Correlation-mineralsVSsustainability1) and **Figure** \@ref(fig:Correlation-mineralsVSsustainability2).
 
-There was a very weak negative correlation between GHGE and both copper (rho -0.08, BH-adjusted *p*-value \<0.05) and calcium (rho -0.09, BH adjusted *p*-value \<0.05). GHGE were weakly positively correlated with Iron (rho 0.39, BH adjusted *p*-value \<0.001), phosphorus (rho 0.21, BH adjusted *p*-value \<0.001) and strongly positively correlated with zinc (rho 0.68, BH adjusted *p*-value \<0.001). For copper the correlation was driven by recipes from the US, while for calcium it was driven by recipes from the UK. With iron and zinc the correlation was weaker for recipes from the UK than recipes from the US and Norway.
+There was a very weak negative correlation between GHGE and both copper (rho -0.08, BH-adjusted *p*-value \<0.05) and calcium (rho -0.09, adjusted *p*-value \<0.05). GHGE were weakly positively correlated with Iron (rho 0.39, adjusted *p*-value \<0.001), phosphorus (rho 0.21, adjusted *p*-value \<0.001) and strongly positively correlated with zinc (rho 0.68, adjusted *p*-value \<0.001). For copper the correlation was driven by recipes from the US, while for calcium it was driven by recipes from the UK. With iron and zinc the correlation was weaker for recipes from the UK than recipes from the US and Norway.
 
-Land use had a very weak negative correlation with copper (rho -0.17, BH adjusted *p*-value \<0.001) and calcium (rho -0.15, BH adjusted *p*-value \<0.001), and a weak negative correlation with iodine (rho -0.3, BH adjusted *p*-value \<0.001). As with GHGE, the correlation between land use and copper was driven by recipes from the US. Zinc had a strong positive correlation with land use (rho 0.7, BH adjusted *p*-value \<0.001), while the corellation between land use and iron and phosphorus were moderate (rho 0.45, BH adjusted *p*-value \<0.001) and weak (rho 0.16, BH adjusted *p*-value \<0.001) respectively. As with the correlations with GHGE, the correlation between land use and both iron and zinc were weakest in the UK recipes.
+Land use had a very weak negative correlation with copper (rho -0.17, adjusted *p*-value \<0.001) and calcium (rho -0.15, adjusted *p*-value \<0.001), and a weak negative correlation with iodine (rho -0.3, adjusted *p*-value \<0.001). As with GHGE, the correlation between land use and copper was driven by recipes from the US. Zinc had a strong positive correlation with land use (rho 0.7, adjusted *p*-value \<0.001), while the corellation between land use and iron and phosphorus were moderate (rho 0.45, adjusted *p*-value \<0.001) and weak (rho 0.16, adjusted *p*-value \<0.001) respectively. As with the correlations with GHGE, the correlation between land use and both iron and zinc were weakest in the UK recipes.
 
 (ref:Correlation-mineralsVSsustainability-caption) Spearman's Rho between CO~2~ equivalents (kg), land use (m^2^/year) and mineral content (\% of recommended daily intake).
 
@@ -275,9 +281,9 @@ knitr::include_graphics("images/mineralsVSsustainability2.png")
 
 As with minerals, there were many vitamins that correlated with the environmental sustainability indicators, to various degrees of strength and significance, see **Figure** \@ref(fig:Correlation-vitaminsVSsustainability1) and **Figure** \@ref(fig:Correlation-vitaminsVSsustainability2).
 
-GHGE had a very weak negative correlation with thiamine (rho -0.1, BH adjusted *p*-value \<0.05), beta-carotene (rho -0.19, BH adjusted *p*-value \<0.001), and a weak negative correlation with folate (rho -0.27, BH adjusted *p*-value \<0.001) and vitamin C (rho -0.23, BH adjusted *p*-value \<0.001). For thiamine, the correlation was only significant in the pooled data. In all countries, there was a very weak positive correlation between GHGE and retinol (rho 0.17, BH adjusted *p*-value \<0.001), and a weak correlation between GHGE and niacin (rho 0.25, BH adjusted *p*-value \<0.001), riboflavin (rho 0.37, BH adjusted *p*-value \<0.01) and vitamin B12 (rho 0.35, BH adjusted *p*-value \<0.001).
+GHGE had a very weak negative correlation with thiamine (rho -0.1, adjusted *p*-value \<0.05), beta-carotene (rho -0.19, adjusted *p*-value \<0.001), and a weak negative correlation with folate (rho -0.27, adjusted *p*-value \<0.001) and vitamin C (rho -0.23, adjusted *p*-value \<0.001). For thiamine, the correlation was only significant in the pooled data. In all countries, there was a very weak positive correlation between GHGE and retinol (rho 0.17, adjusted *p*-value \<0.001), and a weak correlation between GHGE and niacin (rho 0.25, adjusted *p*-value \<0.001), riboflavin (rho 0.37, adjusted *p*-value \<0.01) and vitamin B12 (rho 0.35, adjusted *p*-value \<0.001).
 
-Correlation between the different vitamins and land use generally followed the same pattern, but there was also a weak negative correlation between land use and vitamin D content (rho -0.25, BH adjusted *p*-value \<0.001), mostly driven by the Norwegian recipes
+Correlation between the different vitamins and land use generally followed the same pattern, but there was also a weak negative correlation between land use and vitamin D content (rho -0.25, adjusted *p*-value \<0.001), mostly driven by the Norwegian recipes
 
 (ref:Correlation-vitaminsVSsustainability-caption) Spearman's Rho between CO~2~ equivalents (kg), land use (m^2^/year) and vitamin content (\% of recommended daily intake).
 
