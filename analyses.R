@@ -533,8 +533,13 @@ stats <- list(
   'kruskal_wallis_effectsize' = run_stats %>%
     group_by(feature) %>%
     kruskal_effsize(value ~ group)#,
-                    #ci = TRUE) #Include to calculate effect sizes used in final stat table
+                   # ci = TRUE) #Include to calculate effect sizes used in final stat table
   )
+
+#Save
+#saveRDS(stats, 'stats.Rds')
+#Read
+stats <- readRDS('stats.Rds')
 
 #Filter out features that were significantly different in the kruskal wallis
 temp <- stats$kruskal_wallis %>%
@@ -548,7 +553,12 @@ stats$dunn_test <- temp %>%
     #Add ** markings for significance leven, and y position to create p-value brackets in plots later
     add_significance() %>%
     add_y_position(scales = 'free_y')
-  
+
+#Dunn test with all variables
+stats$dunn_test_all <- run_stats %>%
+  group_by(feature) %>%
+  dunn_test(value ~ group, detailed = TRUE) %>%
+  adjust_pvalue(., method = 'BH')
 
 ## Correlation analysis----
 plots$correlations <- list()
@@ -667,47 +677,6 @@ plots$correlations$vitaminsVSsustainability2 <- ggpairs(temp %>% select(-sample_
   #Save
   save_plot('./thesis/images/correlations_article.png', plots$correlations$selected_nutrients,
             ncol = 2.5, nrow = 2.5)
-
-## Principal Component Analysis----
-plots$pca <- list()
-#Create a feature_anno column to color features by
-temp <- run_stats %>%
-    mutate(feature_anno = case_when(
-      feature %in% c("Kilojoules", "Kilocalories") ~ "Energy",
-      feature %in% minerals ~ 'Minerals',
-      feature %in% vitamins ~ 'Vitamins',
-      feature %in% energy_contributing ~ 'Macronutrient',
-      feature %in% sustainability ~ 'Sustainability indicators',
-      feature %in% health ~ 'Health indicators'
-    ))
-
-#Score plot
-plots$pca$scores <- createPCA(temp %>% filter(sample_id != 'Homemade stick meat'),
-                        interesting_samples = c(
-                          #Samples driving pc1
-                          'Calf liver with bulgur',
-                          'Liver and bacon, onion gravy, smashed potato, dressed greens', "Pig's liver with sage and onions")) +
-  #Legend at bottom
-  theme(legend.position = 'bottom') %>% changeGGplotTxtSize(., 10) +
-  #Fix lab
-  labs(color = 'Country') #%>% changeGGplotTxtSize(.)
-
-#Loadings plot
-plots$pca$loadings <- createPCA(temp, plots = 'loadings', cutoff = 0.06) +
-  theme(legend.position = 'bottom') %>% changeGGplotTxtSize(., 10)
-
-plots$final$pca <- plot_grid(plots$pca$scores,
-            plots$pca$loadings,
-            #Labels, relative width/height of plots and number of grid columns
-            labels = "AUTO",
-            ncol = 1,
-            rel_heights = c(1,1.1))
-
-plots$final$pca
-
-  #Save
-  save_plot('./thesis/images/pca_plots.png', plots$final$pca,
-            nrow = 2.5)
 
 ## Violin boxplots----
 plots$violinbox <- list()
@@ -871,9 +840,9 @@ plots$violinbox <- list()
                     filter(feature != 'keyhole_certified') %>%
                     mutate(feature = feature %>%
                            str_replace('inverted_nutriscore', 'Inverted Nutriscore') %>%
-                           str_replace('nnr_score', 'Nordic Nutrition\nRecommendations') %>%
-                           str_replace('who_score', 'World Health Organization\nRecommendations') %>%
-                           str_replace('inverted_traffic_score', 'Inverted Multiple\nTraffic Light Model'))) + facet_wrap(~feature, scales = 'free') +
+                           str_replace('nnr_score', 'Nordic Nutrition  \nRecommendations') %>%
+                           str_replace('who_score', 'World Health Organization  \nRecommendations') %>%
+                           str_replace('inverted_traffic_score', 'Inverted Multiple  \nTraffic Light Model'))) + facet_wrap(~feature, scales = 'free') +
     labs(
       color = 'Country',
       x = 'Country',
@@ -885,14 +854,14 @@ plots$violinbox <- list()
                         filter(feature != 'keyhole_certified') %>%
                         mutate(feature = feature %>%
                                   str_replace('inverted_nutriscore', 'Inverted Nutriscore') %>%
-                                  str_replace('nnr_score', 'Nordic Nutrition\nRecommendations') %>%
-                                  str_replace('who_score', 'World Health Organization\nRecommendations') %>%
-                                  str_replace('inverted_traffic_score', 'Inverted Multiple\nTraffic Light Model')
+                                  str_replace('nnr_score', 'Nordic Nutrition  \nRecommendations') %>%
+                                  str_replace('who_score', 'World Health Organization  \nRecommendations') %>%
+                                  str_replace('inverted_traffic_score', 'Inverted Multiple  \nTraffic Light Model')
                                 ) %>%
                          #Make some adjustments to pvalue position
                          mutate(y.position = case_when(
-                           feature == 'Nordic Nutrition\nRecommendations' & group1 == 'UK' ~ y.position + 0.8,
-                           feature == 'Nordic Nutrition\nRecommendations' & group1 == 'Norway' & group2 == 'US' ~ y.position + 0.4,
+                           feature == 'Nordic Nutrition  \nRecommendations' & group1 == 'UK' ~ y.position + 0.8,
+                           feature == 'Nordic Nutrition  \nRecommendations' & group1 == 'Norway' & group2 == 'US' ~ y.position + 0.4,
                            
                            TRUE ~ y.position
                          )),
@@ -1125,19 +1094,20 @@ plots$all_values <- list()
                                               #Clean up names
                                               mutate(feature = feature %>%
                                                        str_replace('inverted_nutriscore', 'Inverted Nutriscore') %>%
-                                                       str_replace('inverted_traffic_score', 'Inverted Multiple\nTraffic Light Model') %>%
-                                                       str_replace('nnr_score', 'Nordic Nutrition\nRecommendations') %>%
-                                                       str_replace('who_score', 'World Health Organization\nRecommendations')),
+                                                       str_replace('inverted_traffic_score', 'Inverted Multiple  \nTraffic Light Model') %>%
+                                                       str_replace('nnr_score', 'Nordic Nutrition  \nRecommendations') %>%
+                                                       str_replace('who_score', 'World Health Organization  \nRecommendations')),
                                                 x = feature, color = FALSE) + facet_wrap(~feature, scales = 'free') + labs(x = '', y = '') +
     theme(axis.text.x=element_blank(),
-          axis.title.x = element_blank())
+          axis.title.x = element_blank(),
+          legend.position = "bottom")
 
   #Environmental impact
   plots$all_values$env <- plotViolinBox2(run_stats %>% filter(feature %in% various$sustainability) %>%
                                            #Clean up names
                                            mutate(feature = feature %>%
-                                                    str_replace('CO2', 'Kilo CO<sub>2</sub> equivalents\nper 100g') %>%
-                                                    str_replace('Landuse', 'm<sup>2</sup> per year\nper 100g')),
+                                                    str_replace('CO2', 'Kilo CO<sub>2</sub> equivalents  \nper 100g') %>%
+                                                    str_replace('Landuse', 'm<sup>2</sup> per year  \nper 100g')),
                                          x = feature, color = FALSE) + facet_wrap(~feature, scales = 'free', ncol = 1) + labs(x = '', y = '') +
     theme(axis.text.x=element_blank(),
           axis.title.x = element_blank())
@@ -1172,8 +1142,8 @@ plots$all_values <- list()
   
       #Save
       save_plot('./thesis/images/all_health_env.png', plots$final$health_env,
-                ncol = 2,
-                nrow = 2)
+                ncol = 1.5,
+                nrow = 1.5)
   
   
   #All together
@@ -1247,10 +1217,23 @@ plots$raw_scores <- list()
                     ncol = 1,
                     rel_heights = c(3/4, 1/4))
   
-  plots$final$raw_nutriscore <- plot_grid(plots$raw_scores$nutriscore_disq + theme(legend.position = 'none'),
+  #Title
+  plots$titles$nutriscore <- ggdraw() + draw_label("Nutriscore raw points",
+                                                   fontface = 'bold',
+                                                   x = 0.065,
+                                                   hjust = 0.1)
+  
+  #Whole plot
+  plots$final$raw_nutriscore <- plot_grid(
+    plots$titles$nutriscore,
+    plot_grid(plots$raw_scores$nutriscore_disq + theme(legend.position = 'none'),
             temp,
             nrow = 1,
-            rel_widths = c(1.66,1))
+            rel_widths = c(1.66,1)),
+    nrow = 2,
+    rel_heights = c(0.1,0.9))
+  
+  plots$final$raw_nutriscore
   
     #Save
     save_plot('./thesis/images/raw_nutriscores.png', plots$final$raw_nutriscore,
@@ -1272,7 +1255,8 @@ plots$raw_scores <- list()
     #Fix labs and axis
     labs(
       y = 'Points',
-      color = 'Country'
+      color = 'Country',
+      title = "Food Standard Agency Multiple Traffic Light raw scores"
     ) +
     theme(axis.title.x = element_blank(),
           legend.position = 'bottom') +
@@ -2107,6 +2091,130 @@ stat_table <- list(
     TRUE ~ Feature
   ))
 
+#All features
+#Format the relevant data
+all_stats_table <- list(
+  
+  'descriptive_stats' = descriptive_stats_country %>%
+    #Create one row for each feature, with the median + interquartile range for each country
+    mutate(median_iqr = paste0(round(median, 1), ' (', round(q1, 1), ', ', round(q3, 1), ')')) %>%
+    select(feature, group, median_iqr) %>%
+    pivot_wider(.,
+                names_from = group,
+                values_from = median_iqr),
+  
+  #Get the p value and effect size for each feature
+  'kruskal_wallis' = stats$kruskal_wallis %>%
+    #Add effect size
+    inner_join(., stats$kruskal_wallis_effectsize, by = 'feature') %>%
+    #Select columns to keep
+    select(feature, effsize, conf.low, conf.high, p.adj) %>%
+    #Use <0.05, <0.01 and <0.001 from p value
+    mutate(p.adj = case_when(
+      p.adj < 0.001 ~ '<0.001',
+      p.adj < 0.01 ~ '<0.01',
+      p.adj < 0.05 ~ '<0.05',
+      TRUE ~ paste0(as.character(round(p.adj, digits = 2)))),
+      `Effect size \n (95% ci)` = paste0(round(effsize, digits = 2), ' (', round(conf.low, 2), '-', round(conf.high, 2), ')')
+    ) %>%
+    rename(`Adj. p-value` = p.adj) %>%
+    select(-c(effsize, conf.low, conf.high)),
+  
+  #Get the pairwise comparison and adjusted p value for each feature
+  'dunn' = stats$all_dunn_test %>%
+    mutate(Pairwise = paste0(group1, ' - ', group2)) %>%
+    select(feature, Pairwise, p.adj) %>%
+    #Use <0.05, <0.01 and <0.001 from p value
+    mutate(p.adj = case_when(
+      p.adj < 0.001 ~ '<0.001',
+      p.adj < 0.01 ~ '<0.01',
+      p.adj < 0.05 ~ '<0.05',
+      TRUE ~ paste0(as.character(round(p.adj, digits = 2))))
+      ) %>%
+    rename(`Adj. p-value` = p.adj) %>%
+    #One row for each feature
+    group_by(feature) %>%
+    summarise(Pairwise = paste0(Pairwise, collapse = '<br><br>'),
+              `Adj. p-value` = paste0(`Adj. p-value`, collapse = '<br><br>')) %>% ungroup()
+  
+) %>%
+  
+  #Finished table
+  reduce(full_join, by = 'feature') %>%
+  #Clean up some names and reorder for the finished table
+  mutate(feature = factor(feature, levels = c(
+    #Environmental impact
+    'CO2', 'Landuse',
+    #Healthiness indicators
+    'inverted_nutriscore', 'inverted_traffic_score', 'nnr_score', 'who_score',
+    #Macros
+    'Fat', 'SatFa', 'Protein', 'Carbo', 'Dietary fibre', 'Sugar',
+    #Vitamins
+    'Vitamin A', 'Retinol', 'Beta-carotene', 'Vitamin D', 'Vitamin E', 'Vitamin C', 'Thiamin', 'Riboflavin', 'Niacin', 'Vitamin B6', 'Folate', 'Vitamin B12',
+    #Minerals
+    'Calcium', 'Copper', 'Iodine', 'Iron', 'Magnesium', 'Phosphorus', 'Potassium', 'Selenium', 'Sodium', 'Zinc',
+    #DIV
+    'Kilocalories'))) %>%
+  arrange(feature) %>%
+  rename(Feature = feature) %>%
+  mutate(Feature = Feature %>%
+           str_replace('inverted_nutriscore', 'Inv. Nutriscore') %>%
+           str_replace('inverted_traffic_score', 'Inv. Traffic Light') %>%
+           str_replace('who_score', 'WHO Score') %>%
+           str_replace('nnr_score', 'NNR Score') %>%
+           str_replace('Carbo', 'Carbohydrates E%') %>%
+           str_replace('Sugar', 'Sugar E%') %>%
+           str_replace('Fat', 'Fat E%') %>%
+           str_replace('SatFa', 'Saturated Fat E%') %>%
+           str_replace('Protein', 'Protein E%') %>%
+           str_replace('Dietary fibre', 'Dietary fibre g/MJ') %>%
+           str_replace('Kilocalories', 'Kilocalories/100g') %>%
+           str_replace('CO2', 'kg CO2 equivalents') %>%
+           str_replace('Landuse', 'Landuse m2/year')) %>%
+  mutate(Feature = case_when(
+    Feature %in% c(
+      #Vitamins
+      'Vitamin A', 'Retinol', 'Beta-carotene', 'Vitamin D', 'Vitamin E', 'Vitamin C', 'Thiamin', 'Riboflavin', 'Niacin', 'Vitamin B6', 'Folate', 'Vitamin B12',
+      #Minerals
+      'Calcium', 'Copper', 'Iodine', 'Iron', 'Magnesium', 'Phosphorus', 'Potassium', 'Selenium', 'Sodium', 'Zinc'
+    ) ~ paste0(Feature, ' % of RDI'),
+    TRUE ~ Feature
+  ))
+
+  #Format table and save for supplementary
+t <- all_stats_table %>%
+  #Escape % for LaTeX
+  mutate(Feature = Feature %>%
+           str_replace("%", "\\\\%") %>%
+           str_replace("CO2", "CO\\\\textsubscript{2}") %>%
+           str_replace("m2", "m\\\\textsuperscript{2}"),
+         `Adj. p-value.y` = str_replace_all(`Adj. p-value.y`, '<br><br>', '\n'),
+         Pairwise = str_replace_all(Pairwise, '<br><br>', '\n')
+  ) %>%
+  mutate(`Adj. p-value.y` = linebreak(`Adj. p-value.y`),
+         Pairwise = linebreak(Pairwise)) %>%
+  #Format table
+  kbl(booktabs = TRUE, linesep = "", align = c("l", "c", "c", "c", "c", "c", "l", "l"), valign = "b",
+      col.names = c(" ", "Norway", "UK", "US", "Adj. \\textit{p}-value", "Effect size (95\\% ci)", "Pairwise", "Adj. \\textit{p}-value"),
+      caption = "Kruskal Wallis and 
+      Dunn test results.", escape = FALSE, format = "latex") %>%
+  kable_styling(full_width = FALSE) %>%
+  kable_styling(latex_options = c("scale_down", "hold_position")) %>%
+  add_header_above(c(" " = 1, "Median (IQR)" = 3, "Kruskal-Wallis test, BH corrected" = 2, "Dunn test, BH corrected" = 2)) %>%
+  column_spec(7, width = "3cm", latex_valign = "p") %>%
+  column_spec(8, width = "2.5cm", latex_valign = "p") %>%
+  #Group rows together
+  pack_rows(., 'Environmental impact', 1, 2) %>%
+  pack_rows(., 'Healthiness indicators', 3, 6) %>%
+  pack_rows(., 'Macronutrients', 7, 12) %>%
+  pack_rows(., 'Vitamins', 13, 24) %>%
+  pack_rows(., 'Minerals', 25, 34) %>%
+  pack_rows(., 'Energy', 35, 35) %>%
+  #Add footnote explaining abreviations
+  footnote(., general = "Abbreviations used: Inv = Inverted, NNR = Nordic Nutrition Recommendations, WHO = World Health Organization, E% = Percentage of energy, MJ = Megajoule, RDI = Recommended daily intake.", threeparttable = TRUE)
+  
+  save_kable(t, 'SupTable11.pdf')
+
 ## Other data ----
 #Guidelines, nutriscore and trafficlights
 #Guidelines and traffic lights
@@ -2123,4 +2231,6 @@ nutriscore_points <- read_csv2('./Data/health_indicators/nutriscore_points.csv')
 ## Save objects to be used in RMarkdown----
 save(stat_table, tidy_ingredients, guidelines_trafficlights, source_of_nutrients_table, pct_recipes_healthiness_scores,
      nutriscore_points, descriptive_stats_total, file = './Data/results_allrecipes.RData')
+
+load('./Data/results_allrecipes.RData')
 
