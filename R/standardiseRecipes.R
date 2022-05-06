@@ -21,7 +21,7 @@ standardiseRecipes <- function(df){
   #Ingredients that are counted as individual pieces/stk
   stk = c('anchovy', 'anise', 'apple', 'apricot', 'avocado', 'artichoke', 'aubergine',
               
-              'banana', 'bay leaf', 'bean', 'baguette', 'bok choi', 'broccoli', 'broth cube', 'basil',
+              'banana', 'bay leaf', 'bean', 'baguette', 'bok choi', 'bouquet garni', 'broccoli', 'broth cube', 'basil',
               'bread',
               
               'cabbage', 'cardamom', 'carrot', 'cauliflower', 'Celariac root', 'celery', 'celery stalk',
@@ -55,10 +55,12 @@ standardiseRecipes <- function(df){
               
               'radish', 'roll',
               
-              'salad', 'salmon', 'scallion', 'scallop', 'scampi', 'shallot', 'sheep', 'sheet', 'shrimp',
+              'salad', 'salmon', 'sausage', 'scallion', 'scallop', 'scampi', 'shallot', 'sheep', 'sheet', 'shrimp',
               'squid', 'stock cube',
               
-              'tenderloin', 'thyme', 'tomato', 'tortilla', 'trout', 'turkey')
+              'tenderloin', 'thyme', 'tomato', 'tortilla', 'trout', 'turkey', 'turnip',
+          
+              'zucchini')
   
   standardise = df %>%
   
