@@ -11,7 +11,6 @@
 \fancyhead[LO,RE]{}
 \fancyfoot[C]{\thepage}
 
-\newpage
 ```{r pct-recipe-healthiness-fopl}
 #Split into two tables, one for the front of pack labels, one for the dietary guidelines.
 if(knitr::is_latex_output()){
@@ -133,11 +132,241 @@ knitr::include_graphics("images/network_source.png")
 # Appendix
 ## Data summary
 
-All the data and code used to write this thesis is available in the currently private Github repository "sustainableRecipes". The code is able to recognize recipe ingredients, recalculate volume units into weight and calculate a recipe's nutrient content and environmental impact by using the three databases "Weights, measures and portion sizes for foods" from Norway, the Norwegian food composition datatable 2020 edition, and the SHARP Indicator database. 
+All the data and code used to write this thesis is available in the GitHub repository "sustainableRecipes" that will be made public after thesis evaluation. The code is able to recognise recipe ingredients, recalculate volume units into weight and calculate a recipe's nutrient content and environmental impact by using the respective databases "Weights, measures and portion sizes for foods" from the Norwegian Directory of Health, the Norwegian food composition datatable Matvaretabellen 2020 edition, and the SHARP Indicator database.
 
 Nutrient content can be compared to the macronutrient criteria from the World Health Organization and the Nordic Nutrition Recommendations, and the front-of-pack labels the UK multiple traffic light and French Nutriscore. 
 
 Some volume/weight and nutrients were found from other sources than those listed which can be seen in the clean_database.R script. 
+
+Below is a short code example using a single recipe showing how the code is used and its output. Also included is the data structure of the GitHub repository and how to run the files within to replicate the results of the thesis.
+
+## Code example
+### Read in recipe data and standardise it
+I have here used the "Bidos" recipe from the Norwegian dataset to illustrate how the code works. First Table \@ref(tab:code-example-org-data-show) shows how the recipe look before it will be standardised in terms of ingredient names and measurement units.
+```{r code-example-org-data-show}
+#Read in recipe data
+sample <- read_csv("../Data/recipes/sample_recipe.csv")
+#Show how the recipes look
+kbl(head(sample %>% rename(recipe = sample_id)), caption = "Original Bidos recipe data") %>% kable_styling(latex_options = "hold_position")
+```
+After being read, the recipe is standardised using the "standardiseRecipes" function. Here the amount and unit of an ingredient is taken from the "Ingredients" column and added to the respective "Amounts" and "unit" columns. All volume units are standardised to dl, weight units to kg, while ingredient names are standardised from plural forms to singular and to have the same spelling. The results after running this function are shown in Table \@ref(tab:code-example-standardised-recipes) (see how the two tablespoons of butter is now 0.3 dl and 600 g is 0.6 kg, and plural forms of potatoes and carrots have become singular). The recipe can now be mapped to the databases. I will illustrate with the volume/weight database as this recipe includes some ingredients where the amounts are listed in volume units. 
+```{r code-example2, echo = TRUE}
+#Standardise the recipes before calculating nutrient content 
+#and environmental impact
+sample_standardised <- sample %>%
+  standardiseRecipes()
+```
+
+```{r code-example-standardised-recipes}
+#Show standardisation on the seven first ingredients
+kbl(head(sample_standardised %>% 
+  #Clean up the output-table for the example
+  select(sample_id, Ingredients, Amounts, unit, Source, Country) %>%
+    rename(recipe = sample_id) %>%
+    mutate(Amounts = round(Amounts, 2))
+  ), caption = "Standardised Bidos recipe data") %>%
+  kable_styling(latex_options = "hold_position")
+```
+```{r code-example-some-setup}
+#Fix up the data a bit
+sample_standardised <- sample_standardised %>% select(-org_ingredients) %>%
+    group_by(sample_id, Ingredients, Country, Source, unit) %>%
+    summarise(Amounts = sum(Amounts, na.rm = TRUE)) %>% ungroup() %>%
+    #Using na.rm gives ingredients with no amounts a '0' value, change back to NA
+    mutate(Amounts = case_when(
+      !is.na(unit) ~ Amounts
+    ))
+
+#Read in references and databases
+references <- list(
+  'volume_weight' = readRDS('../Data/output/food_weight_ref.Rds') %>% filter(language == 'english'),
+  'sustainability' = readRDS('../Data/output/sharp_ref.Rds'),
+  'nutrients' = readRDS('../Data/output/nutrient_reference.Rds')
+)
+databases <- list(
+  'volume_weight' = readRDS('../Data/output/all_weights.Rds'),
+  'nutrients' = readRDS('../Data/output/nutrients_df.Rds') ,
+  'sustainability' = readRDS('../Data/output/sharp_db.Rds')
+)
+```
+
+### Map to databases
+The function "checkRef" is used to map recipes to the different databases, using the "reference" argument to choose which database to use, here the volume/weight database is chosen. 
+```{r code-example-3, echo = TRUE, message = FALSE, warning = FALSE, results = 'hide'}
+#Find the ingredients with amounts not in weight already
+  get_amounts_kg <- sample_standardised %>%
+    filter(unit != 'kg')
+#Map to volume/weight database
+  temp <- checkRef(get_amounts_kg, reference = references$volume_weight)
+```
+
+The output of this function is a dataframe with the ingredient from the recipe and the food from the database it has been mapped to. After checking that there are no errors, the weight of one unit of the ingredient in grams is pulled from the database and the total amount in grams is calculated by multiplying the amount of units from the original recipe with the grams per unit from the database. Table \@ref(tab:show-mapped-to-db-frame) show the dataframe before this calculation. \newpage
+
+```{r code-example-addweights}
+#Amounts that need t be turned into dl from the database
+to_dl <- c('pepper', 'peanøttsmør', 'olje', 'oil', 'smør', 'butter', 'margarin',
+                     'ghee', 'garlic', 'tomato paste', 'baking powder', 'taco spice mix',
+                     'tahini')
+  
+  weights <- databases$volume_weight %>%
+    #Set brutto as default value pr stk, as it used in both Matvaretabellen and SHARP
+    mutate(
+      g = case_when(
+        str_detect(Ingredients, regex(paste0(to_dl, collapse ='|'), ignore_case = TRUE)) &
+          unit_enhet == 'tbsp' ~ g * 6.67,
+        TRUE ~ g),
+      unit_enhet = case_when(
+        unit_enhet == 'brutto' ~ 'stk',
+        
+        #These ingredients doesn't have brutto values, use netto
+        unit_enhet == 'netto' & str_detect(Ingredients, 'tomat|egg yolk|egg white') ~ 'stk',
+        
+        str_detect(Ingredients, regex(paste0(to_dl, collapse ='|'), ignore_case = TRUE)) &
+          unit_enhet == 'tbsp' ~ 'dl',
+        unit_enhet %in% c('cm rot', 'cm of root') ~ 'cm',
+        TRUE ~ unit_enhet
+      )) %>%
+    #Only keep those necessary
+    filter(unit_enhet %in% sample_standardised$unit) %>% select(-reference) %>% unique() %>% filter(language != 'norwegian') %>%
+    rename(unit = unit_enhet) %>% select(ID, unit, g)
+  
+  #Join them together and calculate the weight in kilos
+  with_weights_temp <- inner_join(temp, weights, by = c('ID', 'unit')) 
+  
+  with_weights <- with_weights_temp %>%
+    
+    mutate(Amounts_kg = (Amounts * g) / 1000,
+           unit = 'kg') %>%
+    #Remove and rename columns
+    select(-c(g, ID, ref, Amounts)) %>%
+    rename(Amounts = Amounts_kg)
+
+```
+```{r show-mapped-to-db-frame}
+kbl(head(with_weights_temp %>% select(sample_id, Ingredients, ref, ID, unit, Amounts, g) %>% rename(db_ID = ID, db_reference = ref, gram_pr_unit = g) %>% rename(recipe = sample_id)
+         ), caption = "Result of mapping to volume/weight database.") %>% kable_styling(latex_options = "hold_position")
+```
+
+This procedure is repeated with the nutrient and environmental impact databases, by changing the "reference" argument to the respective database. The end result is a dataframe with the recipe's nutrient content and environmental impact. An excerpt of this dataframe can be seen in Table \@ref(tab:code-example-finalDF), where the results have been normalised to per 100 grams of the recipe.
+
+```{r code-example-finalDF}
+bidos_final <- readRDS('../Data/output/recipes_for_analysis.Rds') %>% filter(sample_id == "Bidos") %>% select(-Source)
+
+#Need the individual ingredients to calculate the Nutriscore
+bidos_all_ingredients <- readRDS('../Data/output/ingredients_for_analysis.Rds') %>%
+  select(-Source) %>%
+  filter(sample_id == "Bidos") %>% #Nutrient content/sustainability indicators for every ingredient pr 100g recipe
+  rename(Foodgroup = L1) %>%
+  select(-FoodEx2) %>%
+  #Turn tidy for calculateNutriscore function
+  pivot_longer(.,
+               cols = -c(Ingredients, sample_id, group, Foodgroup, Amounts),
+               names_to = 'feature',
+               values_to = 'value') %>%
+  #Rename some foodgroups
+  mutate(Foodgroup = Foodgroup %>%
+           str_replace('Fish, seafood, amphibians, reptiles and invertebrates', 'Seafood') %>%
+           str_replace('Legumes, nuts, oilseeds and spices', 'Legumes, nuts, seeds') %>%
+           str_replace('Meat and meat products', 'Meat and\nmeat products') %>%
+           str_replace('Milk and dairy products', 'Dairy') %>%
+           str_replace('Animal and vegetable fats and oils and primary derivatives thereof', 'Fats and oils') %>%
+           str_replace('Eggs and egg products', 'Eggs') %>%
+           str_replace('Starchy roots or tubers and products thereof, sugar plants', 'Roots and tubers') %>%
+           str_replace('Products for non-standard diets, food imitates and food supplements', 'Food imitates') %>%
+           str_replace('Grains and grain-based products', 'Grains and grain\nbased products') %>%
+           str_replace('Sugar and similar, confectionery and water-based sweet desserts', 'Sugar and\n confectionary') %>%
+           str_replace('Fruit and vegetable juices and nectars \\(including concentrates\\)', 'Fruit/vegetable juice\n and nectar') %>%
+           str_replace('Fruit and fruit products', 'Fruit and\nfruit products') %>%
+           str_replace('Vegetables and vegetable products', 'Vegetables and\nvegetable products') %>%
+           str_replace('Seasoning, sauces and condiments', 'Seasoning, sauces\nand conditments') %>%
+           str_replace('Water and water-based beverages', 'Water-based\nbeverages') %>%
+           str_replace('Coffee, cocoa, tea and infusions', 'Coffee, cocoa, tea\nand infusions')
+  ) %>% replace_na(list(Foodgroup = 'Unknown'))
+  
+
+kbl(bidos_final %>%
+      #Only select macros
+      select(sample_id, CO2, Landuse, Fat, SatFa, Carbo, `Dietary fibre`, Sugar, Protein) %>%
+      #Round the numbers
+      mutate(across(-sample_id, ~ round(., 2))) %>%
+        #Rename for ease of reading
+        rename(
+          recipe = sample_id,
+          `CO2 (kg)` = CO2,
+          `Landuse (m2/year)` = Landuse,
+          `Fat (g)` = Fat,
+          `Sat. fat (g)` = SatFa,
+          `Carb. (g)` = Carbo,
+          `Dietary fibre (g)` = `Dietary fibre`,
+          `Sugar (g)` = Sugar,
+          `Protein (g)` = Protein),
+      caption = "Environmental impact and macronutrient content per 100 g of Bidos.",
+    align = "c") %>% kable_styling(latex_options = "hold_position") %>%
+  #Change column widths to fit page
+  column_spec(., column = c(2,4,6), width = "0.9cm") %>%
+  column_spec(., column = 3, width = "1.9cm") %>%
+  column_spec(., column = 7, width = "1.5cm") %>%
+  column_spec(., column = c(5,8:9), width = "1.2cm")
+  
+```
+
+### Healthiness assessment
+With the nutrient content of the recipe, the healthiness assessment can be done, the result can be seen in Table \@ref(tab:bidos-healthiness)
+```{r code-example-4, echo = TRUE}
+#Calculate the various healthiness scores based on 
+#nutrient content of the recipe
+healthiness_scores <- list(
+  'nutriscore' = bidos_all_ingredients %>%
+    calculateNutritionScore_nutriscore(),
+  'multiple_traffic_light' = bidos_final %>%
+    select(-group) %>%
+    calculateNutritionScore_trafficlights(),
+  'who_score' = bidos_final %>%
+    calculateNutritionScore_who(),
+  'nnr_score' = bidos_final %>%
+    calculateNutritionScore_nnr()
+) %>% reduce(full_join, by = c('sample_id')) 
+
+```
+```{r bidos-healthiness}
+kbl(healthiness_scores %>%
+      #Rename so it looks prettier
+      rename(recipe = sample_id,
+             `Inv. Nutriscore` = inverted_nutriscore,
+             `Nutriscore letter` = nutriscore_letter,
+             `Inv. Multiple Traffic Light` = inverted_traffic_score,
+             `WHO Score` = who_score,
+             `NNR Score` = nnr_score)
+         , caption = "Healthiness assessment of the Bidos recipe.", align = "c") %>% kable_styling(latex_options = "hold_position") %>%
+  #Change column widths to fit page
+  column_spec(., column = c(2:3), width = "1.8cm") %>%
+  column_spec(., column = 4, width = "2.5cm") %>%
+  column_spec(., column = 5:6, width = "1cm") %>%
+  footnote(., general = "Abbreviations used: Inv = Inverted, NNR = Nordic Nutrition Recommendations, WHO = World Health Organization", threeparttable = TRUE)
+```
+
+It is also possible to see the points awarded the individual components of the healthiness indicator. Doing so for the Nutriscore by including the argument "raw_scores = TRUE" in the function result in Table \@ref(tab:raw-nutriscore-bidos-table). It should be noted this table has been cleaned up with improved column names for the sake of illustration.
+
+```{r raw-nutriscore-bidos, echo = TRUE}
+bidos_nutriscores <- bidos_all_ingredients %>%
+  calculateNutritionScore_nutriscore(raw_scores = TRUE)
+```
+
+```{r raw-nutriscore-bidos-table}
+kbl(bidos_nutriscores$raw_scores %>%
+      select(-value) %>%
+      #Rename so it looks prettier
+      rename(recipe = sample_id,
+             Component = feature,
+             Points = nutriscore_raw) %>%
+      mutate(Component = Component %>%
+                str_replace(., 'nutriscore_amounts_pct', '% of fruit, vegetables,\noils, legumes and nuts') %>%
+               str_replace(., 'SatFa', 'Saturated fat')
+             )
+         , caption = "Points awarded each component of the Nutriscore for the Bidos recipe.") %>% kable_styling(latex_options = "hold_position") %>%
+  footnote(., general = "Abbreviations used: Inv = Inverted, NNR = Nordic Nutrition Recommendations, WHO = World Health Organization", threeparttable = TRUE)
+
+```
 
 ## Data structure
 ```{=latex}
@@ -214,7 +443,7 @@ Some volume/weight and nutrients were found from other sources than those listed
 ### Clean databases and add composite ingredients to the databases
 Open clean_databases.R and block out the code for adding composite ingredients to the nutrient and environmental impact databases. 
 
-Run the code which will create two output files for each of the three databases used in the thesis. One output file is a shortened version of the database while the other is a set of words used to map recipe ingredients to the database.
+Run the code which will create two output files for each of the three databases used in the thesis. One output file is a shortened version of the database while the other is a set of reference words used to map recipe ingredients to the database.
 
 Then run composite_ingredients.R and go back to clean_databases.R and include the code to add composite ingredients. This step must be done twice as some composite ingredients depend on other composite ingredients.
 

@@ -319,6 +319,9 @@ recipes <- raw %>%
     sample_id == 'Pollock with herb onion and baked potatoes' & str_detect(Ingredients, 'fish') ~ str_replace(Ingredients, 'fish fillet', 'pollock'), #It says in the name it's pollock
     
     TRUE ~ Ingredients))
+  
+  #Extract a recipe to use as example in thesis appendix
+  write_csv(recipes %>% filter(sample_id == 'Bidos'), './Data/recipes/sample_recipe.csv')
 
   #Standardise recipe ingredients and units
   recipes <- recipes %>% standardiseRecipes()
@@ -773,5 +776,3 @@ whole_recipe_calc <- bind_rows(various$recipe_nutrient_whole, various$recipe_sus
 
 #Save
 write_csv(whole_recipe_calc, './Supplementary/SupTable3.csv')
-
-

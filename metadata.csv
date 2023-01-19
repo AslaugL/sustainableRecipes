@@ -1,0 +1,48 @@
+feature,unit
+Kilojoules,kJ
+Kilocalories,kcal
+Fat,g
+SatFa,g
+TransFa,g
+MuFa,g
+PuFa,g
+EPA,g
+DPA,g
+DHA,g
+Omega-3,g
+Omega-6,g
+Cholesterol,mg
+Carbo,g
+Starch,g
+Mono+Di,g
+Sugar,g
+Dietary fibre,g
+Protein,g
+Salt,g
+Alcohol,g
+Vitamin A,RAE
+Retinol,µg
+Beta-carotene,µg
+Vitamin D,µg
+Vitamin E,alfa-TE
+Thiamin,mg
+Riboflavin,mg
+Niacin,mg
+Vitamin B6,mg
+Folate,µg
+Vitamin B12,µg
+Vitamin C,mg
+Calcium,mg
+Iron,mg
+Sodium,mg
+Potassium,mg
+Magnesium,mg
+Zinc,mg
+Selenium,µg
+Copper,mg
+Phosphorus,mg
+Iodine,µg
+CO2,consumed_kgCO2eq
+Landuse,consumed_m2/yr
+Amounts,Normalized by total weight of recipe
+Weight,kg

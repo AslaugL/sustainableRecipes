@@ -137,6 +137,18 @@ temp <- readRDS('./Data/output/missing_data2.Rds') #Read data from cleanup scrip
       theme(legend.position = "bottom")
   )
   #Final plot
+  #Title
+ plots$titles$data_completeness <- ggdraw() + 
+    draw_label(
+      "Data completeness",
+      x = 0,
+      hjust = -0.32
+    ) +
+    theme(
+      # add margin on the left of the drawing canvas,
+      # so title is aligned with left edge of first plot
+      plot.margin = margin(0, 0, 0, 7)
+    )
   #Without legend
   temp <- plot_grid(plots$data_completeness$nutrients + theme(legend.position  = 'none'),
                     plots$data_completeness$environment + theme(legend.position = 'none'),
@@ -146,9 +158,9 @@ temp <- readRDS('./Data/output/missing_data2.Rds') #Read data from cleanup scrip
                     nrow = 1,
                     rel_widths = c(1,1))
   #With legend
-  plots$final$data_completeness <- plot_grid(temp, plot_legends$data_completeness,
-                                             nrow = 2,
-                                             rel_heights = c(9,1))
+  plots$final$data_completeness <- plot_grid(plots$titles$data_completeness, temp, plot_legends$data_completeness,
+                                             nrow = 3,
+                                             rel_heights = c(1,10,1))
   #Save
   save_plot('./thesis/images/data_completenes_plot.png', plots$final$data_completeness,
             base_height = 5, base_width = 12)
@@ -204,7 +216,7 @@ temp <- list(
       str_detect(feature, 'fibre') ~ 'g/Megajoule',
       TRUE ~ 'Energy percent'
     )) %>%
-    #Unite with deature column to use as column names later
+    #Unite with feature column to use as column names later
     unite(., col = 'temp', c(feature, unit)) %>%
     #Extract values used
     mutate(value = case_when(
@@ -536,7 +548,7 @@ stats <- list(
                    # ci = TRUE) #Include to calculate effect sizes used in final stat table
   )
 
-#Save
+#Save with confidence intervals
 #saveRDS(stats, 'stats.Rds')
 #Read
 stats <- readRDS('stats.Rds')
@@ -583,6 +595,7 @@ write_csv(temp[,c(26, 31, 4, 14, 29, 30, 9, 25,  33:38)], './Supplementary/Sourc
 #Health indicators with sustainability indicators
 plots$correlations$healthVSsustainability <- ggpairs(temp %>% select(-sample_id),
         mapping = ggplot2::aes(color=group, alpha = 0.6),
+        title = "Spearman's correlations between recipe healthiness and environmental sustainability",
         columns = 32:37,
         upper = list(continuous = myCorrelations_textsize),
         lower = list(continuous = wrap("smooth", alpha = 0.3, size=0.1, se = FALSE))) +
@@ -607,6 +620,7 @@ plots$correlations$energyVSsustainability <- ggpairs(temp %>% select(-sample_id)
           ),
         mapping = ggplot2::aes(color=group, alpha = 0.6),
         columns = c(25:31, 36,37),
+        title = "Spearman's correlations between recipe content of energy providing nutrients and environmental sustainability",
         upper = list(continuous = myCorrelations_textsize),
         lower = list(continuous = wrap("smooth", alpha = 0.3, size=0.1, se = FALSE))) +
   scale_color_manual(values = various$country_colors$sample_group) +
@@ -620,6 +634,7 @@ plots$correlations$energyVSsustainability <- ggpairs(temp %>% select(-sample_id)
 plots$correlations$mineralsVSsustainability1 <- ggpairs(temp %>% select(-sample_id),
         mapping = ggplot2::aes(color=group, alpha = 0.6),
         columns = c(4,5, 7:9, 36,37),
+        title = "Spearman's correlation between recipe mineral content and environmental sustainability",
         upper = list(continuous = myCorrelations_textsize),
         lower = list(continuous = wrap("smooth", alpha = 0.3, size=0.1, se = FALSE))) +
   scale_color_manual(values = various$country_colors$sample_group) +
@@ -627,6 +642,7 @@ plots$correlations$mineralsVSsustainability1 <- ggpairs(temp %>% select(-sample_
 
 plots$correlations$mineralsVSsustainability2 <- ggpairs(temp %>% select(-sample_id),
                                                         mapping = ggplot2::aes(color=group, alpha = 0.6),
+                                                        title = "Spearman's correlation between recipe mineral content and environmental sustainability",
                                                         columns = c(11, 12, 15, 16, 24, 36,37),
                                                         upper = list(continuous = myCorrelations_textsize),
                                                         lower = list(continuous = wrap("smooth", alpha = 0.3, size=0.1, se = FALSE))) +
@@ -643,6 +659,7 @@ plots$correlations$mineralsVSsustainability2 <- ggpairs(temp %>% select(-sample_
 #Sustainability vs vitamin content, split in two
 plots$correlations$vitaminsVSsustainability1 <- ggpairs(temp %>% select(-sample_id),
         mapping = ggplot2::aes(color=group, alpha = 0.6),
+        title = "Spearman's correlation between recipe vitamin content and environmental sustainability",
         columns = c(18,3,13,22,23, 21, 36,37),
         upper = list(continuous = myCorrelations_textsize),
         lower = list(continuous = wrap("smooth", alpha = 0.3, size=0.1, se = FALSE))) +
@@ -651,6 +668,7 @@ plots$correlations$vitaminsVSsustainability1 <- ggpairs(temp %>% select(-sample_
 
 plots$correlations$vitaminsVSsustainability2 <- ggpairs(temp %>% select(-sample_id),
                                                         mapping = ggplot2::aes(color=group, alpha = 0.6),
+                                                        title = "Spearman's correlation between recipe vitamin content and environmental sustainability",
                                                         columns = c(17,14,10,20,6,19, 36,37),
                                                         upper = list(continuous = myCorrelations_textsize),
                                                         lower = list(continuous = wrap("smooth", alpha = 0.3, size=0.1, se = FALSE))) +
@@ -668,6 +686,7 @@ plots$correlations$vitaminsVSsustainability2 <- ggpairs(temp %>% select(-sample_
   #Correlations discussed in article----
   plots$correlations$selected_nutrients <- ggpairs(temp %>% select(-sample_id) %>% rename(Fibre = `Dietary fibre`),
                                                    mapping = ggplot2::aes(color=group, alpha = 0.6),
+                                                   title = "Spearman's correlation between recipe nutrient content and environmental sustainability",
                                                    columns = c(25, 30, 3, 13, 28, 29, 8, 24, 36,37),
                                                    upper = list(continuous = myCorrelations_textsize),
                                                    lower = list(continuous = wrap("smooth", alpha = 0.3, size=0.1, se = FALSE))) +
@@ -785,7 +804,8 @@ plots$violinbox <- list()
     labs(
       color = 'Country',
       x = 'Country',
-      y = ''
+      y = '',
+      title = "Recipe environmental impact by country"
     ) +
     #Add line and p value significance
     stat_pvalue_manual(stats$dunn_test %>%
@@ -846,7 +866,8 @@ plots$violinbox <- list()
     labs(
       color = 'Country',
       x = 'Country',
-      y = 'Score'
+      y = 'Score',
+      title = "Recipe healthiness by country"
     ) +
     #Add lines and p-value significance
     stat_pvalue_manual(stats$dunn_test %>% 
@@ -872,60 +893,6 @@ plots$violinbox <- list()
     #Save
     save_plot('./thesis/images/violinbox_health_numerical.png', plots$violinbox$healthNum,
               ncol = 1.7, nrow = 2.4)
-
-  # categorical, first format data
-  temp <- health_indicators %>%
-    filter(feature == 'keyhole_certified') %>%
-    mutate(value = case_when(
-      value == 0 ~ 'No keyhole',
-      TRUE ~ 'Keyhole'
-    )) %>%
-    rename(Keyhole = value,
-           Nutriscore = nutriscore_letter) %>%
-    select(sample_id, Nutriscore, Keyhole) %>%
-    pivot_longer(.,
-                 cols = -sample_id,
-                 names_to = 'feature',
-                 values_to = 'value') %>% unique() %>% inner_join(., metadata) %>%
-    group_by(group, feature, value) %>%
-    #pct of recipe with each score
-    summarise(n = n()) %>%
-    mutate(pct = n / sum(n)*100) %>% ungroup() %>% select(-n) %>%
-    #Add that Norway and UK have 0 recipes with nutriscore E for plot
-    add_row(group = 'Norway', feature = 'Nutriscore', value = 'E', pct = 0) %>%
-    add_row(group = 'UK', feature = 'Nutriscore', value = 'E', pct = 0)
-  #plot
-  plots$violinbox$healthCat <- ggplot(temp, aes(x = value, y = pct, fill = group)) +
-    geom_bar(stat="identity", position = 'dodge') +
-    scale_fill_manual(values = various$country_colors$sample_group) +
-    facet_wrap(~feature, scales = 'free_x') +
-  
-    labs(
-      y = '% of recipes',
-      x = 'Score',
-      fill = 'Country'
-    )
-
-    #Legend, if only plotting keyhole value, not nutriscore
-    plot_legends$healthCat <- get_legend(plots$violinbox$healthCat, position = 'right')
-    #Temp plot positioning plot and legend if only plotting keyhole 
-    temp_plot <- plot_grid(plots$violinbox$healthCat + theme(legend.position = 'none'), plot_legends$healthCat, NULL,
-                           nrow = 1,
-                           rel_widths = c(0.44, 0.1, 0.46))
-
-  #Plot both together
-  plots$final$health_indicators <- plot_grid(plots$violinbox$healthNum,
-                                             #plots$violinbox$healthCat, #Remove # to include in final plot
-                                             temp_plot,
-                                             ncol = 1,
-                                             rel_heights = c(2:1), #Must be tweaked if healthcat is included
-                                             labels = "AUTO")
-
-  plots$final$health_indicators
-
-    #Save
-    save_plot('./thesis/images/violinbox_health_indicators.png', plots$final$health_indicators,
-              ncol = 1.7, nrow = 3)
 
   # Minerals
   plotViolinBox(run_stats %>%
@@ -998,10 +965,9 @@ plots$all_values <- list()
     #Title for plot_grid
     plots$titles$mineral_vitamin <- ggdraw() + 
       draw_label(
-        "Micronutrients in % of recommended daily intake",
-        fontface = 'bold',
+        "Micronutrients in percentage of recommended daily intake",
         x = 0,
-        hjust = 0
+        hjust = -0.12
       ) +
       theme(
         # add margin on the left of the drawing canvas,
@@ -1013,12 +979,12 @@ plots$all_values <- list()
     plot_legends$all_values <- get_legend(plots$all_values$vitamins, position = 'bottom')
 
     #Both together
-    plots$final$mineral_vitamin <- plot_grid(#plots$titles$mineral_vitamin,
+    plots$final$mineral_vitamin <- plot_grid(plots$titles$mineral_vitamin,
                                              plots$all_values$minerals + theme(legend.position="none"),
                                              plots$all_values$vitamins+ theme(legend.position="none"),
                                              plot_legends$all_values,
                                              ncol = 1,
-                                             rel_heights = c(#0.1,
+                                             rel_heights = c(0.1,
                                                              0.45, 0.45, 0.1)) +
       #Shared y label
       draw_label("Percentage of recommended daily intake", x =  0, y =0.5, vjust= 1.5, angle=90)
@@ -1058,10 +1024,9 @@ plots$all_values <- list()
     #Title
     plots$titles$energy <- ggdraw() + 
       draw_label(
-        "Energy and macronutrient content",
-        fontface = 'bold',
+        "Energy and amount of energy contributing nutrients in the recipes",
         x = 0,
-        hjust = 0
+        hjust = -0.08
       ) +
       theme(
         # add margin on the left of the drawing canvas,
@@ -1077,11 +1042,11 @@ plots$all_values <- list()
                                      rel_widths = c(0.2, 0.6, 0.2))
     
     #With title and/or legend
-    plots$final$energy <- plot_grid(#plots$titles$energy, #Remove # to include title
+    plots$final$energy <- plot_grid(plots$titles$energy, #Remove # to include title
                                     plots$final$energy1,
                                     plot_legends$all_values,
                                     ncol = 1,
-                                    rel_heights = c(#0.1, #Remove # to include title
+                                    rel_heights = c(0.1, #Remove # to include title
                                                     0.9,
                                                     0.1))
     #Save
@@ -1115,10 +1080,9 @@ plots$all_values <- list()
     #Title
     plots$titles$health_env <- ggdraw() + 
       draw_label(
-        "Healthiness indicators and environmental impact",
-        fontface = 'bold',
+        "Healthiness indicators and environmental impact of the recipes",
         x = 0,
-        hjust = 0
+        hjust = -0.09
       ) +
       theme(
         # add margin on the left of the drawing canvas,
@@ -1132,12 +1096,12 @@ plots$all_values <- list()
                                          rel_widths = c(2/3, 1/3),
                                          labels = "AUTO")
     #With legend and title
-    plots$final$health_env <- plot_grid(#plots$titles$health_env, #Remove # to include title
+    plots$final$health_env <- plot_grid(plots$titles$health_env, #Remove # to include title
                                         plots$final$health_env1,
                                         plot_legends$all_values,
                                         ncol = 1,
                                         rel_heights = c(
-                                          #0.1, #remove # to include title
+                                          0.1, #remove # to include title
                                           0.9,0.1))
   
       #Save
@@ -1219,7 +1183,6 @@ plots$raw_scores <- list()
   
   #Title
   plots$titles$nutriscore <- ggdraw() + draw_label("Nutriscore raw points",
-                                                   fontface = 'bold',
                                                    x = 0.065,
                                                    hjust = 0.1)
   
@@ -1422,12 +1385,21 @@ plots$violinbox$foodgroups <- list()
     #Legend
     temp <- get_legend(plots$violinbox$foodgroups$others)
     
+    #Title
+    plots$titles$foodgroups <-  ggdraw() + 
+      draw_label(
+        "Amount of various food groups in the recipes",
+        x = 0,
+        hjust = -0.155
+      )
+    
     #All together, change y axis to %
-    plots$final$foodgroups <- plot_grid(plots$violinbox$foodgroups$animal_sourced %>% changeGGplotTxtSize(txt_size = 8),
+    plots$final$foodgroups <- plot_grid(plots$titles$foodgroups,
+                                        plots$violinbox$foodgroups$animal_sourced %>% changeGGplotTxtSize(txt_size = 8),
                                         plots$violinbox$foodgroups$plant_based %>% changeGGplotTxtSize(txt_size = 8),
                                         plots$violinbox$foodgroups$others + theme(legend.position = "none") %>% changeGGplotTxtSize(txt_size = 8),
                                         temp,
-                                        rel_heights = c(3,3,3,1),
+                                        rel_heights = c(1,3,3,3,1),
                                         ncol = 1
     ) + 
     #Add shared y label
@@ -1587,6 +1559,7 @@ save_plot('./thesis/images/protein_source_bar.png', plots$barplots$protein_sourc
     facet_wrap(~feature, scales = 'free', nrow = 2) +
     labs(y = ' ',
          x = 'Protein source',
+         title = "Environmental impact of recipes by their source of protein",
          color = 'Country') +
     theme(legend.position = 'bottom') +
     #Remove alpha legend
@@ -1613,7 +1586,7 @@ save_plot('./thesis/images/protein_source_bar.png', plots$barplots$protein_sourc
   
   save_plot('./thesis/images/article_proteinsources.png', plots$article$protein_sources, ncol = 2, nrow = 3)
   
-## Adjancency matrix nutrient sources----
+## Adjacency matrix nutrient sources----
   
   #Some dataframes that are needed
   various$adjacency <- list()
@@ -1654,7 +1627,8 @@ save_plot('./thesis/images/protein_source_bar.png', plots$barplots$protein_sourc
       TRUE ~ 'not_source'
     ))
   
-  #Apply the same formatting to both
+  #Apply the same formatting to both (make sure only n_source_of_protein_and_nutrients and
+  #n_good_source_of_protein_and_nutrients can be found in various$adjacency)
   various$adjacency <- lapply(various$adjacency, function(x) {
     
     x %>% #Rename features to better fit with the plots to create
@@ -1958,7 +1932,9 @@ save_plot('./thesis/images/protein_source_bar.png', plots$barplots$protein_sourc
       #Add colors and change the size of the legend item for fill/color
       scale_fill_manual(values = various$protein_source_colors) +
       #Add title
-      ggtitle(label = data.frame(graph)$org_type)
+      ggtitle(label = paste0(data.frame(graph)$org_type, " (n* = ", data.frame(graph)$total_n_recipes, ")")) + 
+      #Change title size
+      theme(plot.title = element_text(size = 10))
     
   } 
   
@@ -1984,18 +1960,59 @@ save_plot('./thesis/images/protein_source_bar.png', plots$barplots$protein_sourc
   
   plot_legends$network
   
-  #Build a large plot
-  plots$final$network$sources <- plot_grid(
+  #Create titles
+  plots$titles$network$sources <- ggdraw() + 
+    draw_label(
+      "Network of nutrients that recipes are sources of simultaneously, by protein source",
+      x = 0,
+      hjust = -0.01
+    ) +
+    theme(
+      # add margin on the left of the drawing canvas,
+      # so title is aligned with left edge of first plot
+      plot.margin = margin(0, 0, 0, 7)
+    )
+  
+  plots$titles$network$good_sources <- ggdraw() + 
+    draw_label(
+      "Network of nutrients that recipes are good sources of simultaneously, by protein source",
+      x = 0,
+      hjust = -0.001
+    ) +
+    theme(
+      # add margin on the left of the drawing canvas,
+      # so title is aligned with left edge of first plot
+      plot.margin = margin(0, 0, 0, 7)
+    )
+  
+  #Build large plots with all the small ones
+  temp <- plot_grid(
     plots$network$source$Beef, plots$network$source$Lamb, plots$network$source$Game, plots$network$source$Pork,
     plots$network$source$Poultry, plots$network$source$`Lean fish`, plots$network$source$`Oily fish`, plots$network$source$Shellfish,
     plots$network$source$Vegetarian, plots$network$source$Vegan, plot_legends$network  + theme(plot.margin = margin(0, 0, 0, 25)), #Add margin between last plot and legend
     ncol = 4)
   
-  plots$final$network$good_sources <- plot_grid(
+  plots$final$network$sources <- plot_grid(plots$titles$network$sources,
+                                           temp,
+                                           ncol = 1,
+                                           rel_heights = c(1,12)) +
+    #draw_text("*: Number of recipes", x = 0.83, y = 0.22, size = 12) In line with the other two legends
+    #draw_text("*: Number of recipes", x = 0.65, y = 0.96, size = 10) In line with title
+    draw_text("*: Number of recipes", x = 0.94, y = 0.04, size = 10) #Bottom right corner
+  
+  temp <- plot_grid(
     plots$network$good_source$Beef, plots$network$good_source$Lamb, plots$network$good_source$Game, plots$network$good_source$Pork,
     plots$network$good_source$Poultry, plots$network$good_source$`Lean fish`, plots$network$good_source$`Oily fish`, plots$network$good_source$Shellfish,
     plots$network$good_source$Vegetarian, plots$network$good_source$Vegan, plot_legends$network + theme(plot.margin = margin(0, 0, 0, 25)),
     ncol = 4)
+  
+  plots$final$network$good_sources <- plot_grid(plots$titles$network$good_sources,
+                                                temp,
+                                                ncol = 1,
+                                                rel_heights = c(1,12)) +
+    #draw_text("*: Number of recipes", x = 0.83, y = 0.22, size = 12) In line with the other two legends
+    #draw_text("*: Number of recipes", x = 0.73, y = 0.96, size = 10) In line with title
+    draw_text("*: Number of recipes", x = 0.94, y = 0.04, size = 10) #Bottom right corner
   
   #Save
   save_plot('./thesis/images/network_source.png', plots$final$network$sources, ncol = 2, nrow = 2)

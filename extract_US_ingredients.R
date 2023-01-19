@@ -8,10 +8,11 @@ temp <- read_delim('./Data/recipes/ingredients_allrecipes_nomissing.csv', delim 
 
 #Clean up the recipe names
 raw <- temp %>%
-  mutate(recipe_id = str_replace_all(recipe_id, 'http://allrecipes.com/recipe/|/detail.aspx', ''),
+  mutate(url = recipe_id,
+         recipe_id = str_replace_all(recipe_id, 'http://allrecipes.com/recipe/|/detail.aspx', ''),
          recipe_id = str_replace_all(recipe_id, '-', ' '))
 #Used by Andira, according to extra file sent by Alain, chinese pepper steak is chinese pepper steak 2 in allrecipes
-recipe_names <- read_xlsx('./Data/Oppskrifter/Data_US_100.xlsx') %>%
+recipe_names <- read_xlsx('./Data/recipes/Data_US_100.xlsx') %>%
   select(`Selected Meals`) %>%
   rename(recipe_id = `Selected Meals`) %>% mutate(recipe_id = recipe_id %>%
                                                     tolower() %>%
@@ -30,6 +31,7 @@ raw_recipes <- raw %>%
 #Clean up dataframe----
 clean_US <- raw_recipes %>%
 
+  select(-url) %>%
   #Change names to the other dataframes and turn grams to kilos
   rename(`Selected Meals` = recipe_id,
          Ingredients = ingredient_name,
