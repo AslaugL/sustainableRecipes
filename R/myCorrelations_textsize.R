@@ -37,6 +37,9 @@ myCorrelations_textsize <- function(data,mapping,...){
     bind_rows(., .id = 'group')
   
   ggplot(data = correlations, aes(x = 1, y = factor(group, levels = c('Overall Corr', 'US', 'UK', 'Norway')), color = group)) +
-    geom_text(aes(label=paste0(group, ": ", estimate, pvalue_star)), size = 3.5)
+    geom_richtext(aes(label=paste0(group, ": ", estimate, pvalue_star)), size = 3.5,
+                  fill = NA, label.color = NA, # remove background and outline
+                  label.padding = grid::unit(rep(0, 4), "pt") # remove padding
+                  )
   
 }

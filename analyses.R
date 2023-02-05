@@ -1,5 +1,9 @@
 devtools::load_all(path = '.')
 
+library(viridis)
+library(viridisLite)
+library(shadowtext)
+
 ## Setup ----
 #Empty list to fill with plots and plot legends
 plots <- list()
@@ -322,6 +326,12 @@ run_stats <- bind_rows(various$with_RDI, various$with_energy_pct_densityMJ) %>%
   #Add country and where missing
   group_by(sample_id) %>% fill(group, .direction = "downup") %>% fill(Source, .direction = "downup") %>% ungroup()
 
+#Plot differences in sources
+temp <- run_stats %>%
+  mutate(Source = factor(Source, levels = c("Aperitif", "Tine", "Kolonialen", "Klikk", "Ministry of Food (Jamie)", "Kitchen (Nigella)", "River Cottage Everyday (Hugh)", "30m Meals (Jamie)", "Baking Made Easy (Lorraine)", "allrecipes")))
+#Mienrals
+ggplot(temp %>% filter(feature %in% various$minerals), aes(x = Source, y = value)) + geom_violin() +
+  facet_wrap(~feature, scale = "free")
 
 # Some descriptive stats----
 descriptive_stats_country <- run_stats %>%
@@ -574,6 +584,7 @@ stats$dunn_test_all <- run_stats %>%
 
 ## Correlation analysis----
 plots$correlations <- list()
+
 #Wide df with the variables
 temp <- run_stats %>%
   #Make feature names more presentable
@@ -592,6 +603,186 @@ temp <- run_stats %>%
 #Save for source data
 write_csv(temp[,c(26, 31, 4, 14, 29, 30, 9, 25,  33:38)], './Supplementary/SourceFig2-3.csv')
 
+#Create plots with correlation scores for each country supplementary
+all_correlations <- list()
+
+all_correlations$data <- temp[,c(2, 26, 31, 4, 14, 29, 30, 9, 25,  33:38)] %>% 
+  split(.$group) %>%
+  lapply(., function(x) {x %>% select(-group)})
+all_correlations$data$`Overall Corr` <- temp[,c(26, 31, 4, 14, 29, 30, 9, 25,  33:38)]
+
+all_correlations$correlations <- lapply(all_correlations$data, function(x) {
+  
+  corr_test <- corr.test(x, method = "spearman", adjust = "BH")
+  
+  #Only keep the upper triangle, where the adjusted p.values are
+  liste <- list(
+    
+    rho = corr_test$r,
+    p_values = corr_test$p
+    
+  )
+  
+  liste$rho[!upper.tri(liste$rho)] <- NA
+  liste$p_values[!upper.tri(liste$p_values)] <- NA
+  
+  liste$rho <- as_tibble(liste$rho, rownames = "var1") %>%
+    pivot_longer(
+      cols = -var1,
+      names_to = "var2",
+      values_to = "rho"
+    )
+  liste$p_values<- as_tibble(liste$p_values, rownames = "var1") %>%
+    pivot_longer(
+      cols = -var1,
+      names_to = "var2",
+      values_to = "p_value"
+    )
+  
+  full_join(liste$rho, liste$p_value) %>%
+    #Remove rho where p value is not significant for plotting
+    mutate(rho = case_when(
+      p_value < 0.05 ~ rho
+    )) %>%
+    mutate(across(var1:var2, ~str_replace(., "Carbo", "Carbohydrate")),
+           across(var1:var2, ~str_replace(., "SatFa", "Saturated fat")),
+           across(var1:var2, ~str_replace(., "CO<sub>2</sub>", "CO<sub>2</sub> eq.")),
+           var1 = factor(var1, levels = unique(var1)),
+           var2 = factor(var2, levels = unique(var2)))
+  
+}) %>% bind_rows(., .id = "group") %>%
+  mutate(group = factor(group, levels = c("Norway", "UK", "US", "Overall Corr")))
+
+
+ggplot(all_correlations$correlations %>% filter(var2 != "Carbohydrate" & var1 != "m<sup>2</sup>"),
+       aes(x = var1, y = var2, fill = rho)) +
+  geom_tile() +
+  geom_shadowtext(aes(label = round(rho,2)), size = 3.5) +
+  scale_fill_viridis(na.value="transparent") +
+  labs(fill = "Spearmans rho") +
+  guides(fill = guide_colorbar(barwidth = 7, barheight = 1,
+                               title.position = "top", title.hjust = 0.5)) +
+  theme(axis.text.x = element_markdown(angle = 45, hjust = 1),
+        axis.text.y = element_markdown(),
+        axis.title = element_blank(),
+        legend.position = "top") + facet_wrap(~group)
+
+ggsave("all_correlations_corrplot.png")
+
+#Plot all correlations together
+all_correlations$plots <- mapply(function(groups, title) {
+  
+  ggcorrplot::ggcorrplot(groups$rho,
+                         method = "square", type = "upper", lab = TRUE,
+                         p.mat = groups$p_value, insig = "blank",
+                         title = title) +
+    scale_fill_viridis() +
+    labs(fill = "Rho") +
+    theme(axis.text.y = element_markdown(),
+          axis.text.x = element_markdown())
+  
+}, group = all_correlations$correlations, title = names(all_correlations$correlations), SIMPLIFY = FALSE, USE.NAMES = TRUE)
+
+
+plot_grid(all_correlations$plots$Norway + theme(legend.justification = c(1, 0),
+                                                legend.position = c(0.6, 0.7),
+                                                legend.direction = "horizontal")+
+            ),
+          all_correlations$plots$UK + theme(legend.position = "none"),
+          all_correlations$plots$US + theme(legend.position = "none"),
+          all_correlations$plots$`Overall Corr` + theme(legend.position = "none"),
+          ncol = 2)
+
+
+#New upper plot with colored background
+myCorrelations_textsize2 <- function(data,mapping,...){
+  
+  #Get the data to use for correlation analysis
+  data2 = data
+  data2$x = as.numeric(data[,as_label(mapping$x)])
+  data2$y = as.numeric(data[,as_label(mapping$y)])
+  data2$group = data[,as_label(mapping$colour)]
+  
+  #Split into separate datasets based on group and run corr.test each + all groups combined
+  to_correlate <- data2 %>%
+    select(group, x, y) %>%
+    #Split into individual df's and remove group column as it's numeric
+    split(f = as.factor(.$group)) %>%
+    lapply(., select, ... = -group)
+  #Add the df with all groups to the list  
+  to_correlate$`Overall Corr` <- data2 %>%
+    select(x,y)
+  
+  #Run correlation analysis on each list element, and turn into a single df before plotting
+  correlations <- lapply(to_correlate, corr.test, method = 'spearman', adjust = 'BH') %>%
+    #Get the estimate, p.value and create a column with symbols that show stat.sig. og p value
+    lapply(., collectCorr) %>%
+    #Bind together
+    bind_rows(., .id = 'group') %>%
+    #Add y values for geom_rect
+    mutate(
+      from = case_when(
+        group == 'Overall Corr' ~ 0.25,
+        group == "US" ~ 1.5,
+        group == "UK" ~ 2.5,
+        group == "Norway" ~ 3.5),
+      to = case_when(
+        group == 'Overall Corr' ~ 1.5,
+        group == "US" ~  2.5,
+        group == "UK" ~ 3.5,
+        group == "Norway" ~ 4.75)
+    )
+  
+  #Create a color scale to use for the correlation values
+  color_scale <- viridisLite::viridis(100)
+  #Add fill value to correlations_df, and a character estimate value for better alignment of geom_text
+  correlations <- correlations %>%
+    mutate(
+      fill_color = color_scale[findInterval(estimate, seq(-1, 1, length=100))],
+      text_estimate = case_when(
+        estimate >= 0 ~ paste0("", as.character(estimate)),
+        TRUE ~ as.character(estimate)
+      )
+    )
+  
+  #Plot
+  ggplot(data = correlations, aes(x = factor(1), y = factor(group, levels = c('Overall Corr', 'US', 'UK', 'Norway')), color = group))+
+    geom_rect(data = correlations,
+              #X axis position of the rectangle
+              xmin = as.numeric(factor(1))+.2, xmax = 2,
+              #xmin = -Inf, xmax = Inf, 
+              #Y axis position based on group
+              ymin = correlations$from, ymax = correlations$to, 
+              #Colors
+              fill = correlations$fill_color, color = NA, inherit.aes = FALSE, alpha = 0.85) +
+    #Add text
+    geom_richtext(#data = correlations, aes(x = 0.5, y = factor(group, levels = c('Overall Corr', 'US', 'UK', 'Norway')),
+      #group = group,
+      aes(color = group,
+          label=paste0("<b>", group, ":</b> ")), size = 4, #color = "black",
+      fill = NA, label.color = NA, # remove background and outline
+      label.padding = grid::unit(rep(0, 4), "pt"), # remove padding and align to the left
+      #inherit.aes = FALSE, #Use new aes as geom_rect changes plot values,
+      #Adjust text position
+      hjust = 0, position = position_nudge(x = -0.55)
+    ) +
+    geom_shadowtext(#data = correlations, aes(x = 0.5, y = factor(group, levels = c('Overall Corr', 'US', 'UK', 'Norway')),
+      
+      aes(#color = group,
+        group = group,
+        label = paste0(text_estimate, pvalue_star)), size = 3.5, color = "white",
+      fill = NA, label.color = NA, # remove background and outline
+      label.padding = grid::unit(rep(0, 4), "pt"), # remove padding and align to the left
+      #inherit.aes = FALSE, #Use new aes as geom_rect changes plot values,
+      #Adjust text position
+      hjust = 0, position = position_nudge(x = 0.24)
+    )
+  
+  
+  
+}
+
+
 #Health indicators with sustainability indicators
 plots$correlations$healthVSsustainability <- ggpairs(temp %>% select(-sample_id),
         mapping = ggplot2::aes(color=group, alpha = 0.6),
@@ -605,7 +796,20 @@ plots$correlations$healthVSsustainability <- ggpairs(temp %>% select(-sample_id)
   #Save
   save_plot('./thesis/images/healthVSsustainability.png', plots$correlations$healthVSsustainability,
             ncol = 2.2, nrow = 2.2)
-
+  
+  #Edited for article
+  save_plot('./correlations_healthVSsustainability_article.png',
+            plots$correlations$healthVSsustainability <- ggpairs(temp %>% select(-sample_id),
+                                                                 mapping = ggplot2::aes(color=group, alpha = 0.6),
+                                                                 #title = "Spearman's correlations between recipe healthiness and environmental sustainability",
+                                                                 columns = 32:37,
+                                                                 upper = list(continuous = myCorrelations_textsize2),
+                                                                 lower = list(continuous = wrap("smooth", alpha = 0.7, size=0.3, se = FALSE))) +
+              scale_color_manual(values = various$country_colors$sample_group) +
+              scale_fill_manual(values = various$country_colors$sample_group),
+            ncol = 2.2, nrow = 2.2)
+  
+  
 #Sustainability vs energy contributing macros
 plots$correlations$energyVSsustainability <- ggpairs(temp %>% select(-sample_id) %>%
           #Rename some column names
@@ -683,20 +887,48 @@ plots$correlations$vitaminsVSsustainability2 <- ggpairs(temp %>% select(-sample_
             ncol = 2.2, nrow = 2.2)
   
   
+  
   #Correlations discussed in article----
   plots$correlations$selected_nutrients <- ggpairs(temp %>% select(-sample_id) %>% rename(Fibre = `Dietary fibre`),
                                                    mapping = ggplot2::aes(color=group, alpha = 0.6),
-                                                   title = "Spearman's correlation between recipe nutrient content and environmental sustainability",
+                                                   #title = "Spearman's correlation between recipe nutrient content and environmental sustainability",
                                                    columns = c(25, 30, 3, 13, 28, 29, 8, 24, 36,37),
-                                                   upper = list(continuous = myCorrelations_textsize),
-                                                   lower = list(continuous = wrap("smooth", alpha = 0.3, size=0.1, se = FALSE))) +
+                                                   upper = list(continuous = myCorrelations_textsize2),
+                                                   lower = list(continuous = wrap("smooth", alpha = 0.85, size=0.3, se = FALSE))) +
     scale_color_manual(values = various$country_colors$sample_group) +
     scale_fill_manual(values = various$country_colors$sample_group)
+  
+  plots$correlations$selected_nutrients
+  
+  #Create a legend for the colors
+  color_scale <- viridisLite::viridis(100) 
+  
+  fill_legend <- tibble(
+    rho = seq(from = -1, to = 1, by = 0.01)
+  ) %>%
+    mutate(
+      fill_color = color_scale[findInterval(rho, seq(-1, 1, length=100))])
+  
+  rho_legend <- get_legend(ggplot(fill_legend, aes(y = rho, x = 1, fill = rho)) +
+    geom_tile() + scale_fill_viridis() + theme(legend.position = "top",
+                                               legend.title = element_text(vjust = 1, margin = margin(t = 4.5)),
+                                               legend.spacing.y = grid::unit(3, "pt"),
+                                               legend.text.align = 0.5))
+  
+  library(patchwork)
+  plots$correlations$selected_nutrients + inset_element(rho_legend,
+                                                        left = 0.5,
+                                                        bottom = 0.8,
+                                                        top = 0.9,
+                                                        right = 0.7)
   
   #Save
   save_plot('./thesis/images/correlations_article.png', plots$correlations$selected_nutrients,
             ncol = 2.5, nrow = 2.5)
-
+  
+  save_plot('./correlations_article_reworked.png', plots$correlations$selected_nutrients,
+            ncol = 3, nrow = 3)
+  
 ## Violin boxplots----
 plots$violinbox <- list()
 
@@ -2035,38 +2267,51 @@ stat_table <- list(
                 names_from = group,
                 values_from = median_iqr),
   
-  #Get the p value and effect size for each feature
-  'kruskal_wallis' = stats$kruskal_wallis %>% filter(feature %in% temp$feature) %>%
-    #Add effect size
-    inner_join(., stats$kruskal_wallis_effectsize, by = 'feature') %>%
-    #Select columns to keep
-    select(feature, effsize, conf.low, conf.high, p.adj) %>%
-    #Use <0.05, <0.01 and <0.001 from p value
-    mutate(p.adj = case_when(
-      p.adj < 0.001 ~ '<0.001',
-      p.adj < 0.01 ~ '<0.01',
-      p.adj < 0.05 ~ '<0.05',
-      TRUE ~ paste0(as.character(round(p.adj, digits = 2)))),
-      `Effect size \n (95% ci)` = paste0(round(effsize, digits = 2), ' (', round(conf.low, 2), '-', round(conf.high, 2), ')')
-      ) %>%
-    rename(`Adj. p-value` = p.adj) %>%
-    select(-c(effsize, conf.low, conf.high)),
+  # #Get the p value and effect size for each feature
+  # 'kruskal_wallis' = stats$kruskal_wallis %>% filter(feature %in% temp$feature) %>%
+  #   #Add effect size
+  #   inner_join(., stats$kruskal_wallis_effectsize, by = 'feature') %>%
+  #   #Select columns to keep
+  #   select(feature, effsize, conf.low, conf.high, p.adj) %>%
+  #   #Use <0.05, <0.01 and <0.001 from p value
+  #   mutate(p.adj = case_when(
+  #     p.adj < 0.001 ~ '<0.001',
+  #     p.adj < 0.01 ~ '<0.01',
+  #     p.adj < 0.05 ~ '<0.05',
+  #     TRUE ~ paste0(as.character(round(p.adj, digits = 2)))),
+  #     `Effect size \n (95% ci)` = paste0(round(effsize, digits = 2), ' (', round(conf.low, 2), '-', round(conf.high, 2), ')')
+  #     ) %>%
+  #   rename(`Adj. p-value` = p.adj) %>%
+  #   select(-c(effsize, conf.low, conf.high)),
   
   #Get the pairwise comparison and adjusted p value for each feature
   'dunn' = stats$dunn_test %>% filter(p.adj <0.05) %>%
-    mutate(Pairwise = paste0(group1, ' - ', group2)) %>%
-    select(feature, Pairwise, p.adj) %>%
+    #Include all pairwise compairsons for the significant different features on kruskal wallis for revised table
+    select(feature) %>% unique() %>% left_join(., stats$dunn_test) %>%
+    mutate(Pairwise = paste0(group1, ' - ', group2),
+           
+           #For revised table, use * instead of the adjusted p values
+           Pairwise = case_when(
+             
+             p.adj < 0.001 ~ paste0("<strong>", Pairwise, "***</strong>"),
+             p.adj < 0.01 ~ paste0("<strong>", Pairwise, "**</strong>"),
+             p.adj < 0.05 ~ paste0("<strong>", Pairwise, "*</strong>"),
+             TRUE ~ Pairwise
+             
+           )) %>%
+    select(feature, Pairwise) %>% #, p.adj) %>%
     #Use <0.05, <0.01 and <0.001 from p value
-    mutate(p.adj = case_when(
-      p.adj < 0.001 ~ '<0.001',
-      p.adj < 0.01 ~ '<0.01',
-      p.adj < 0.05 ~ '<0.05'
-    )) %>%
-    rename(`Adj. p-value` = p.adj) %>%
+    # mutate(p.adj = case_when(
+    #   p.adj < 0.001 ~ '<0.001',
+    #   p.adj < 0.01 ~ '<0.01',
+    #   p.adj < 0.05 ~ '<0.05'
+    # )) %>%
+    # rename(`Adj. p-value` = p.adj) %>%
     #One row for each feature
     group_by(feature) %>%
-    summarise(Pairwise = paste0(Pairwise, collapse = '<br><br>'),
-              `Adj. p-value` = paste0(`Adj. p-value`, collapse = '<br><br>')) %>% ungroup()
+    summarise(Pairwise = paste0(Pairwise, collapse = '<br><br>')) %>%#,
+              #`Adj. p-value` = paste0(`Adj. p-value`, collapse = '<br><br>')) %>%
+    ungroup()
   
 ) %>%
   
@@ -2250,4 +2495,37 @@ save(stat_table, tidy_ingredients, guidelines_trafficlights, source_of_nutrients
      nutriscore_points, descriptive_stats_total, file = './Data/results_allrecipes.RData')
 
 load('./Data/results_allrecipes.RData')
-
+  
+#Revised latex table for article
+stat_table  %>%
+    #Escape % for LaTeX
+    mutate(Feature = Feature %>%
+             str_replace("%", "\\\\%") %>%
+             str_replace("CO2", "CO\\\\textsubscript{2}") %>%
+             str_replace("m2", "m\\\\textsuperscript{2}"),
+           Pairwise = Pairwise %>%
+             str_replace_all("<strong>", "\\\\textbf{") %>%
+             str_replace_all("</strong>", "}") %>%
+             str_replace_all('<br><br>', '\n')
+    ) %>%
+    mutate(Pairwise = linebreak(Pairwise)) %>%
+    #Format table
+    kbl(booktabs = TRUE, linesep = "", align = c("l", "c", "c", "c", "l"), valign = "b",
+        col.names = c(" ", "Norway", "UK", "US", "Pairwise"),
+        caption = "Dunn test results.", escape = FALSE, format = "latex") %>%
+    kable_styling(full_width = FALSE) %>%
+    kable_styling(latex_options = c("scale_down", "hold_position")) %>%
+    add_header_above(c(" " = 1, "Median (IQR)" = 3, "Dunn test, BH corrected" = 1)) %>%
+    #column_spec(7, width = "3cm", latex_valign = "p") %>%
+    column_spec(5, width = "2.5cm", latex_valign = "p") %>%
+    #Group rows together
+    pack_rows(., 'Environmental impact', 1, 2) %>%
+    pack_rows(., 'Healthiness indicators', 3, 5) %>%
+    pack_rows(., 'Macronutrients', 6, 8) %>%
+    pack_rows(., 'Vitamins', 9, 14) %>%
+    pack_rows(., 'Minerals', 15, 19) %>%
+    #Add footnote explaining abreviations
+    footnote(., general = "Abbreviations used: Inv = Inverted, NNR = Nordic Nutrition Recommendations, WHO = World Health Organization, E% = Percentage of energy, MJ = Megajoule, RDI = Recommended daily intake.", threeparttable = TRUE)   
+  
+  
+  
