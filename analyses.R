@@ -603,96 +603,6 @@ temp <- run_stats %>%
 #Save for source data
 write_csv(temp[,c(26, 31, 4, 14, 29, 30, 9, 25,  33:38)], './Supplementary/SourceFig2-3.csv')
 
-#Create plots with correlation scores for each country supplementary
-all_correlations <- list()
-
-all_correlations$data <- temp[,c(2, 26, 31, 4, 14, 29, 30, 9, 25,  33:38)] %>% 
-  split(.$group) %>%
-  lapply(., function(x) {x %>% select(-group)})
-all_correlations$data$`Overall Corr` <- temp[,c(26, 31, 4, 14, 29, 30, 9, 25,  33:38)]
-
-all_correlations$correlations <- lapply(all_correlations$data, function(x) {
-  
-  corr_test <- corr.test(x, method = "spearman", adjust = "BH")
-  
-  #Only keep the upper triangle, where the adjusted p.values are
-  liste <- list(
-    
-    rho = corr_test$r,
-    p_values = corr_test$p
-    
-  )
-  
-  liste$rho[!upper.tri(liste$rho)] <- NA
-  liste$p_values[!upper.tri(liste$p_values)] <- NA
-  
-  liste$rho <- as_tibble(liste$rho, rownames = "var1") %>%
-    pivot_longer(
-      cols = -var1,
-      names_to = "var2",
-      values_to = "rho"
-    )
-  liste$p_values<- as_tibble(liste$p_values, rownames = "var1") %>%
-    pivot_longer(
-      cols = -var1,
-      names_to = "var2",
-      values_to = "p_value"
-    )
-  
-  full_join(liste$rho, liste$p_value) %>%
-    #Remove rho where p value is not significant for plotting
-    mutate(rho = case_when(
-      p_value < 0.05 ~ rho
-    )) %>%
-    mutate(across(var1:var2, ~str_replace(., "Carbo", "Carbohydrate")),
-           across(var1:var2, ~str_replace(., "SatFa", "Saturated fat")),
-           across(var1:var2, ~str_replace(., "CO<sub>2</sub>", "CO<sub>2</sub> eq.")),
-           var1 = factor(var1, levels = unique(var1)),
-           var2 = factor(var2, levels = unique(var2)))
-  
-}) %>% bind_rows(., .id = "group") %>%
-  mutate(group = factor(group, levels = c("Norway", "UK", "US", "Overall Corr")))
-
-
-ggplot(all_correlations$correlations %>% filter(var2 != "Carbohydrate" & var1 != "m<sup>2</sup>"),
-       aes(x = var1, y = var2, fill = rho)) +
-  geom_tile() +
-  geom_shadowtext(aes(label = round(rho,2)), size = 3.5) +
-  scale_fill_viridis(na.value="transparent") +
-  labs(fill = "Spearmans rho") +
-  guides(fill = guide_colorbar(barwidth = 7, barheight = 1,
-                               title.position = "top", title.hjust = 0.5)) +
-  theme(axis.text.x = element_markdown(angle = 45, hjust = 1),
-        axis.text.y = element_markdown(),
-        axis.title = element_blank(),
-        legend.position = "top") + facet_wrap(~group)
-
-ggsave("all_correlations_corrplot.png")
-
-#Plot all correlations together
-all_correlations$plots <- mapply(function(groups, title) {
-  
-  ggcorrplot::ggcorrplot(groups$rho,
-                         method = "square", type = "upper", lab = TRUE,
-                         p.mat = groups$p_value, insig = "blank",
-                         title = title) +
-    scale_fill_viridis() +
-    labs(fill = "Rho") +
-    theme(axis.text.y = element_markdown(),
-          axis.text.x = element_markdown())
-  
-}, group = all_correlations$correlations, title = names(all_correlations$correlations), SIMPLIFY = FALSE, USE.NAMES = TRUE)
-
-
-plot_grid(all_correlations$plots$Norway + theme(legend.justification = c(1, 0),
-                                                legend.position = c(0.6, 0.7),
-                                                legend.direction = "horizontal")+
-            ),
-          all_correlations$plots$UK + theme(legend.position = "none"),
-          all_correlations$plots$US + theme(legend.position = "none"),
-          all_correlations$plots$`Overall Corr` + theme(legend.position = "none"),
-          ncol = 2)
-
 
 #New upper plot with colored background
 myCorrelations_textsize2 <- function(data,mapping,...){
@@ -733,8 +643,11 @@ myCorrelations_textsize2 <- function(data,mapping,...){
         group == "Norway" ~ 4.75)
     )
   
-  #Create a color scale to use for the correlation values
-  color_scale <- viridisLite::viridis(100)
+  #Create a color scale to use for the correlation values using viridis
+    #color_scale <- viridisLite::viridis(100)
+    #From red to blue
+    color_scale <- grDevices::colorRampPalette(c("blue","white","red"))(100)
+  
   #Add fill value to correlations_df, and a character estimate value for better alignment of geom_text
   correlations <- correlations %>%
     mutate(
@@ -754,7 +667,7 @@ myCorrelations_textsize2 <- function(data,mapping,...){
               #Y axis position based on group
               ymin = correlations$from, ymax = correlations$to, 
               #Colors
-              fill = correlations$fill_color, color = NA, inherit.aes = FALSE, alpha = 0.85) +
+              fill = correlations$fill_color, color = NA, inherit.aes = FALSE, alpha = 0.95) +
     #Add text
     geom_richtext(#data = correlations, aes(x = 0.5, y = factor(group, levels = c('Overall Corr', 'US', 'UK', 'Norway')),
       #group = group,
@@ -777,9 +690,6 @@ myCorrelations_textsize2 <- function(data,mapping,...){
       #Adjust text position
       hjust = 0, position = position_nudge(x = 0.24)
     )
-  
-  
-  
 }
 
 
@@ -797,17 +707,25 @@ plots$correlations$healthVSsustainability <- ggpairs(temp %>% select(-sample_id)
   save_plot('./thesis/images/healthVSsustainability.png', plots$correlations$healthVSsustainability,
             ncol = 2.2, nrow = 2.2)
   
+  #For article
+  plots$correlations$healthVSsustainability <- ggpairs(temp %>% select(-sample_id) %>% rename(GHGE = `CO<sub>2</sub>`),
+                                                       mapping = ggplot2::aes(color=group, alpha = 0.6),
+                                                       #title = "Spearman's correlations between recipe healthiness and environmental sustainability",
+                                                       columns = 32:37,
+                                                       upper = list(continuous = myCorrelations_textsize2),
+                                                       lower = list(continuous = wrap("smooth", alpha = 0.7, size=0.3, se = FALSE))) +
+    scale_color_manual(values = various$country_colors$sample_group) +
+    scale_fill_manual(values = various$country_colors$sample_group)
+  
+  #change axis breaks for density in upper left corner and reduce spacing between grids
+  plots$correlations$healthVSsustainability$plots[[1]] <-  plots$correlations$healthVSsustainability$plots[[1]] +
+    scale_y_continuous(breaks = c(0, 0.05, 0.1), labels = c("0", ".05", ".10")) 
+  
   #Edited for article
   save_plot('./correlations_healthVSsustainability_article.png',
-            plots$correlations$healthVSsustainability <- ggpairs(temp %>% select(-sample_id),
-                                                                 mapping = ggplot2::aes(color=group, alpha = 0.6),
-                                                                 #title = "Spearman's correlations between recipe healthiness and environmental sustainability",
-                                                                 columns = 32:37,
-                                                                 upper = list(continuous = myCorrelations_textsize2),
-                                                                 lower = list(continuous = wrap("smooth", alpha = 0.7, size=0.3, se = FALSE))) +
-              scale_color_manual(values = various$country_colors$sample_group) +
-              scale_fill_manual(values = various$country_colors$sample_group),
+            plots$correlations$healthVSsustainability,
             ncol = 2.2, nrow = 2.2)
+  
   
   
 #Sustainability vs energy contributing macros
@@ -889,7 +807,7 @@ plots$correlations$vitaminsVSsustainability2 <- ggpairs(temp %>% select(-sample_
   
   
   #Correlations discussed in article----
-  plots$correlations$selected_nutrients <- ggpairs(temp %>% select(-sample_id) %>% rename(Fibre = `Dietary fibre`),
+  plots$correlations$selected_nutrients <- ggpairs(temp %>% select(-sample_id) %>% rename(Fibre = `Dietary fibre`, GHGE = `CO<sub>2</sub>`),
                                                    mapping = ggplot2::aes(color=group, alpha = 0.6),
                                                    #title = "Spearman's correlation between recipe nutrient content and environmental sustainability",
                                                    columns = c(25, 30, 3, 13, 28, 29, 8, 24, 36,37),
@@ -898,10 +816,16 @@ plots$correlations$vitaminsVSsustainability2 <- ggpairs(temp %>% select(-sample_
     scale_color_manual(values = various$country_colors$sample_group) +
     scale_fill_manual(values = various$country_colors$sample_group)
   
-  plots$correlations$selected_nutrients
+  #change axis breaks for density in upper left corner and reduce spacing between grids
+  plots$correlations$selected_nutrients$plots[[1]] <- plots$correlations$selected_nutrients$plots[[1]] +
+    scale_y_continuous(breaks = c(0, 0.01, 0.02), labels = c("0", ".01", ".02")) 
+  
   
   #Create a legend for the colors
-  color_scale <- viridisLite::viridis(100) 
+  #Viridis
+  #color_scale <- viridisLite::viridis(100) 
+  #Blue and red
+  color_scale <- grDevices::colorRampPalette(c("blue","white","red"))(100)
   
   fill_legend <- tibble(
     rho = seq(from = -1, to = 1, by = 0.01)
@@ -909,11 +833,20 @@ plots$correlations$vitaminsVSsustainability2 <- ggpairs(temp %>% select(-sample_
     mutate(
       fill_color = color_scale[findInterval(rho, seq(-1, 1, length=100))])
   
-  rho_legend <- get_legend(ggplot(fill_legend, aes(y = rho, x = 1, fill = rho)) +
-    geom_tile() + scale_fill_viridis() + theme(legend.position = "top",
-                                               legend.title = element_text(vjust = 1, margin = margin(t = 4.5)),
-                                               legend.spacing.y = grid::unit(3, "pt"),
-                                               legend.text.align = 0.5))
+  rho_legend <- ggplot(fill_legend, aes(y = rho, x = 1, fill = rho)) + geom_tile() +
+    scale_fill_gradient2(
+    low = "blue",
+    mid = "white",
+    high = "red",
+    midpoint = 0,
+    space = "Lab",
+    na.value = "grey50",
+    guide = "colourbar",
+    aesthetics = "fill"
+  ) + labs(fill = "Rho") + theme(legend.key.width= unit(0.2, 'cm'))
+  rho_legend
+  
+  
   
   library(patchwork)
   plots$correlations$selected_nutrients + inset_element(rho_legend,
@@ -926,8 +859,10 @@ plots$correlations$vitaminsVSsustainability2 <- ggpairs(temp %>% select(-sample_
   save_plot('./thesis/images/correlations_article.png', plots$correlations$selected_nutrients,
             ncol = 2.5, nrow = 2.5)
   
-  save_plot('./correlations_article_reworked.png', plots$correlations$selected_nutrients,
-            ncol = 3, nrow = 3)
+  save_plot('./correlations_article_reworked2.png', plots$correlations$selected_nutrients +
+              #Change the spacing between grids
+              theme(panel.spacing=grid::unit(0.15,"lines")),
+            ncol = 2.8, nrow = 2.8)
   
 ## Violin boxplots----
 plots$violinbox <- list()
@@ -1788,7 +1723,9 @@ save_plot('./thesis/images/protein_source_bar.png', plots$barplots$protein_sourc
     geom_quasirandom(data = temp, aes(x = type, y = value, color = group, alpha = alpha_level),
                      dodge.width = 0.75, size = 1, varwidth = FALSE) +
     scale_alpha_discrete(range = c(0, 0.5)) + #Set fake data "invisible" to have zero alpha
-    facet_wrap(~feature, scales = 'free', nrow = 2) +
+    facet_wrap(~feature, scales = 'free', nrow = 2, labeller = as_labeller(c(
+      `Kilo CO<sub>2</sub> equivalents/100g` = "Greenhouse gas emissions in kilo CO<sub>2</sub> equivalents/100g",
+      `m<sup>2</sup>/100g` = "Land use in m<sup>2</sup>/100g"))) +
     labs(y = ' ',
          x = 'Protein source',
          title = "Environmental impact of recipes by their source of protein",
@@ -1796,6 +1733,8 @@ save_plot('./thesis/images/protein_source_bar.png', plots$barplots$protein_sourc
     theme(legend.position = 'bottom') +
     #Remove alpha legend
     guides(alpha = "none")
+  
+  plots$violinbox$recipe_protein_sources 
   
   save_plot('./thesis/images/protein_source_violinbox.png', plots$violinbox$recipe_protein_sources, nrow = 2.2, ncol = 1.7)
 
@@ -1816,7 +1755,7 @@ save_plot('./thesis/images/protein_source_bar.png', plots$barplots$protein_sourc
   
   plots$article$protein_sources
   
-  save_plot('./thesis/images/article_proteinsources.png', plots$article$protein_sources, ncol = 2, nrow = 3)
+  save_plot('./article_proteinsources2.png', plots$article$protein_sources, ncol = 2, nrow = 3)
   
 ## Adjacency matrix nutrient sources----
   
