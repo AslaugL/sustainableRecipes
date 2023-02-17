@@ -1734,7 +1734,7 @@ save_plot('./thesis/images/protein_source_bar.png', plots$barplots$protein_sourc
     #Remove alpha legend
     guides(alpha = "none")
   
-  plots$violinbox$recipe_protein_sources 
+  plots$violinbox$recipe_protein_sources
   
   save_plot('./thesis/images/protein_source_violinbox.png', plots$violinbox$recipe_protein_sources, nrow = 2.2, ncol = 1.7)
 
@@ -1747,7 +1747,10 @@ save_plot('./thesis/images/protein_source_bar.png', plots$barplots$protein_sourc
   plots$article$protein_sources <- plot_grid(plots$barplots$protein_source + theme(legend.position = c(0.075, 0.8)) +
                                                annotation_custom(ggplotGrob(temp),
                                                                  xmin = 7, xmax = 10, ymin = 22, ymax = 50),
-                                             plots$violinbox$recipe_protein_sources + theme(legend.position = 'none'),
+                                             plots$violinbox$recipe_protein_sources + theme(legend.position = 'none',
+                                                                                            strip.text.x = element_markdown(size = 12,
+                                                                                                                            margin = margin(0.1, 0, 0.1, 0, "cm")
+                                                                                                                            )),
                                              nrow = 2,
                                              labels = c('A', 'C'),
                                              rel_heights = c(1.5,2)
