@@ -25,3 +25,5 @@ more_US_recipes.csv
 /Data/output/
 *.Rds
 *.RData
+/Data/recipes/Data_UK_100*
+/Data/recipes/Data_US_per_serving*
