@@ -78,7 +78,7 @@ various <- list(
   'health' = c('inverted_nutriscore', 'nutriscore_letter', 'inverted_traffic_score', 'who_score', 'nnr_score', 'keyhole_certified')
 )
 #Select colors for the different countries for plots where color is not pre-coded
-various$country_colors <- groupColors(tidy_recipes)
+various$country_colors <- groupColors(tidy_recipes %>% mutate(group = str_replace(group, "US", "USA")))
 
 ## Data completeness----
 temp <- readRDS('./Data/output/missing_data2.Rds') #Read data from cleanup script
@@ -329,7 +329,7 @@ run_stats <- bind_rows(various$with_RDI, various$with_energy_pct_densityMJ) %>%
 #Plot differences in sources
 temp <- run_stats %>%
   mutate(Source = factor(Source, levels = c("Aperitif", "Tine", "Kolonialen", "Klikk", "Ministry of Food (Jamie)", "Kitchen (Nigella)", "River Cottage Everyday (Hugh)", "30m Meals (Jamie)", "Baking Made Easy (Lorraine)", "allrecipes")))
-#Mienrals
+#Minerals
 ggplot(temp %>% filter(feature %in% various$minerals), aes(x = Source, y = value)) + geom_violin() +
   facet_wrap(~feature, scale = "free")
 
@@ -375,13 +375,14 @@ temp <- data_completeness$no_env_info %>%
 
 #Count the number of recipes in each healthiness category
 temp <- health_indicators %>%
+  select(-Source) %>%
   filter(feature != 'inverted_nutriscore') %>%
   mutate(value = as.character(value)) %>%
   pivot_wider(.,
               names_from = feature,
               values_from = value) %>%
   pivot_longer(.,
-               cols = -c(sample_id, group, Source),
+               cols = -c(sample_id, group),
                names_to = 'feature',
                values_to = 'value') %>%
   group_by(feature, value, group) %>%
@@ -391,13 +392,14 @@ temp <- health_indicators %>%
   inner_join(., data_recipes %>% select(sample_id, group) %>% group_by(group) %>% summarise(sum = n()) %>% ungroup()) %>%
   #Add totals for all countries for each indicator
   bind_rows(., health_indicators %>%
+               select(-Source) %>%
                filter(feature != 'inverted_nutriscore') %>%
                mutate(value = as.character(value)) %>%
                pivot_wider(.,
                            names_from = feature,
                            values_from = value) %>%
                pivot_longer(.,
-                            cols = -c(sample_id, group, Source),
+                            cols = -c(sample_id, group),
                             names_to = 'feature',
                             values_to = 'value') %>%
                group_by(feature, value) %>%
@@ -457,6 +459,9 @@ pct_recipes_healthiness_scores <- bind_cols(temp) %>%
   ) %>%
   select(ends_with('Inverted Multiple\nTraffic Light Model'), ends_with('Nutriscore'), ends_with('Nordic Nutrition\nRecommendations'), ends_with('World Health Organization\nRecommendations'))
 
+# Save table for source files
+write_csv(pct_recipes_healthiness_scores[,1:10], "./Supplementary/Source_ED_Table1.csv")
+write_csv(pct_recipes_healthiness_scores[,11:20], "./Supplementary/Source_ED_Table2.csv")
 
 #Count the number of recipes that are a source of nutrients (>15% of RDI for micronutrients, >12% of energy for protein) and a good source (>30% of RDI for micronutrients, >20 % energy from protein)
 source_of_nutrients_table <- various$with_RDI %>%
@@ -597,6 +602,8 @@ temp <- run_stats %>%
            str_replace('CO2', 'CO<sub>2</sub>') %>%
            str_replace('Landuse', 'm<sup>2</sup>')
   ) %>%
+  select(-contains("keyhole")) %>%
+  filter(!str_detect(feature, "Keyhole")) %>%
   inner_join(., metadata) %>%
   pivot_wider(., names_from = 'feature', values_from = 'value')
 
@@ -629,16 +636,17 @@ myCorrelations_textsize2 <- function(data,mapping,...){
     lapply(., collectCorr) %>%
     #Bind together
     bind_rows(., .id = 'group') %>%
+    mutate(group = str_replace(group, "\bUS\b", "USA")) %>%
     #Add y values for geom_rect
     mutate(
       from = case_when(
         group == 'Overall Corr' ~ 0.25,
-        group == "US" ~ 1.5,
+        group == "USA" ~ 1.5,
         group == "UK" ~ 2.5,
         group == "Norway" ~ 3.5),
       to = case_when(
         group == 'Overall Corr' ~ 1.5,
-        group == "US" ~  2.5,
+        group == "USA" ~  2.5,
         group == "UK" ~ 3.5,
         group == "Norway" ~ 4.75)
     )
@@ -659,7 +667,7 @@ myCorrelations_textsize2 <- function(data,mapping,...){
     )
   
   #Plot
-  ggplot(data = correlations, aes(x = factor(1), y = factor(group, levels = c('Overall Corr', 'US', 'UK', 'Norway')), color = group))+
+  ggplot(data = correlations, aes(x = factor(1), y = factor(group, levels = c('Overall Corr', 'USA', 'UK', 'Norway')), color = group))+
     geom_rect(data = correlations,
               #X axis position of the rectangle
               xmin = as.numeric(factor(1))+.2, xmax = 2,
@@ -672,7 +680,7 @@ myCorrelations_textsize2 <- function(data,mapping,...){
     geom_richtext(#data = correlations, aes(x = 0.5, y = factor(group, levels = c('Overall Corr', 'US', 'UK', 'Norway')),
       #group = group,
       aes(color = group,
-          label=paste0("<b>", group, ":</b> ")), size = 4, #color = "black",
+          label=paste0("<b>", group, ":</b> ")), size = 2.5, #color = "black",
       fill = NA, label.color = NA, # remove background and outline
       label.padding = grid::unit(rep(0, 4), "pt"), # remove padding and align to the left
       #inherit.aes = FALSE, #Use new aes as geom_rect changes plot values,
@@ -683,7 +691,7 @@ myCorrelations_textsize2 <- function(data,mapping,...){
       
       aes(#color = group,
         group = group,
-        label = paste0(text_estimate, pvalue_star)), size = 3.5, color = "white",
+        label = paste0(text_estimate, pvalue_star)), size = 2, color = "white",
       fill = NA, label.color = NA, # remove background and outline
       label.padding = grid::unit(rep(0, 4), "pt"), # remove padding and align to the left
       #inherit.aes = FALSE, #Use new aes as geom_rect changes plot values,
@@ -708,24 +716,26 @@ plots$correlations$healthVSsustainability <- ggpairs(temp %>% select(-sample_id)
             ncol = 2.2, nrow = 2.2)
   
   #For article
-  plots$correlations$healthVSsustainability <- ggpairs(temp %>% select(-sample_id) %>% rename(GHGE = `CO<sub>2</sub>`),
+  plots$correlations$healthVSsustainability <- ggpairs(temp %>% select(-sample_id) %>% rename(GHGE = `CO<sub>2</sub>`) %>% mutate(group = str_replace(group, "US", "USA")),
                                                        mapping = ggplot2::aes(color=group, alpha = 0.6),
                                                        #title = "Spearman's correlations between recipe healthiness and environmental sustainability",
                                                        columns = 32:37,
                                                        upper = list(continuous = myCorrelations_textsize2),
-                                                       lower = list(continuous = wrap("smooth", alpha = 0.7, size=0.3, se = FALSE))) +
+                                                       lower = list(continuous = wrap("smooth", alpha = 0.7, size=0.3, se = FALSE))
+                                                       ) +
     scale_color_manual(values = various$country_colors$sample_group) +
     scale_fill_manual(values = various$country_colors$sample_group)
   
-  #change axis breaks for density in upper left corner and reduce spacing between grids
-  plots$correlations$healthVSsustainability$plots[[1]] <-  plots$correlations$healthVSsustainability$plots[[1]] +
-    scale_y_continuous(breaks = c(0, 0.05, 0.1), labels = c("0", ".05", ".10")) 
+  #change axis breaks for density in upper left corner and reduce spacing between grids and text size on y axis strip text
+  plots$correlations$healthVSsustainability$plots[[1]] <- plots$correlations$healthVSsustainability$plots[[1]] +
+    scale_y_continuous(breaks = c(0, 0.05, 0.1), labels = c("0", ".05", ".10"))
   
   #Edited for article
-  save_plot('./correlations_healthVSsustainability_article.png',
+  save_plot('./correlations_healthVSsustainability_article.pdf',
             plots$correlations$healthVSsustainability,
-            ncol = 2.2, nrow = 2.2)
-  
+            #ncol = 2.2, nrow = 2.2
+            base_height = 160, base_width = 270, units = "mm"
+            )
   
   
 #Sustainability vs energy contributing macros
@@ -807,7 +817,8 @@ plots$correlations$vitaminsVSsustainability2 <- ggpairs(temp %>% select(-sample_
   
   
   #Correlations discussed in article----
-  plots$correlations$selected_nutrients <- ggpairs(temp %>% select(-sample_id) %>% rename(Fibre = `Dietary fibre`, GHGE = `CO<sub>2</sub>`),
+  plots$correlations$selected_nutrients <- ggpairs(temp %>% select(-sample_id) %>% rename(Fibre = `Dietary fibre`, GHGE = `CO<sub>2</sub>`) %>%
+                                                     mutate(group = str_replace(group, "US", "USA")),
                                                    mapping = ggplot2::aes(color=group, alpha = 0.6),
                                                    #title = "Spearman's correlation between recipe nutrient content and environmental sustainability",
                                                    columns = c(25, 30, 3, 13, 28, 29, 8, 24, 36,37),
@@ -846,8 +857,6 @@ plots$correlations$vitaminsVSsustainability2 <- ggpairs(temp %>% select(-sample_
   ) + labs(fill = "Rho") + theme(legend.key.width= unit(0.2, 'cm'))
   rho_legend
   
-  
-  
   library(patchwork)
   plots$correlations$selected_nutrients + inset_element(rho_legend,
                                                         left = 0.5,
@@ -859,10 +868,12 @@ plots$correlations$vitaminsVSsustainability2 <- ggpairs(temp %>% select(-sample_
   save_plot('./thesis/images/correlations_article.png', plots$correlations$selected_nutrients,
             ncol = 2.5, nrow = 2.5)
   
-  save_plot('./correlations_article_reworked2.png', plots$correlations$selected_nutrients +
+  save_plot('./correlations_article_reworked2.pdf', plots$correlations$selected_nutrients +
               #Change the spacing between grids
               theme(panel.spacing=grid::unit(0.15,"lines")),
-            ncol = 2.8, nrow = 2.8)
+            #ncol = 2.8, nrow = 2.8
+            base_height = 160, base_width = 270, units = "mm"
+            )
   
 ## Violin boxplots----
 plots$violinbox <- list()
@@ -1295,6 +1306,9 @@ plots$raw_scores <- list()
   temp <- temp$raw_scores %>%
     #Add metadata for the recipes
     inner_join(., metadata) %>%
+    mutate(group = as.character(group) %>% str_replace("US", "USA"),
+           group = factor(group, levels = c("Norway", "UK", "USA")) 
+           ) %>%
     #Clean up names and set order of values on the x axis of the plot
     mutate(feature = feature %>%
              str_replace('nutriscore_amounts_pct', '% of fruit, vegetables,\noils, legumes and nuts') %>%
@@ -1308,8 +1322,11 @@ plots$raw_scores <- list()
     )) %>%
     #Factor and releven
     mutate(feature = factor(feature, levels = c('Kilojoules', 'Sugar', 'Saturated\nFat', 'Sodium', '% of fruit, vegetables,\noils, legumes and nuts', 'Dietary\nfibre', 'Protein')),
-           group = factor(group, levels = c('Norway', 'UK', 'US'))) %>%
+           group = factor(group, levels = c('Norway', 'UK', 'USA'))) %>%
     arrange(group)
+  
+  #Save datafile as source data for the plot
+  write_csv(temp, "./Supplementary/Source_ED_Fig2.csv")
    
   #Diqualyfing 
   plots$raw_scores$nutriscore_disq <- ggplot(temp %>% filter(quali == 'Disqualifying'), aes(x = feature, y = nutriscore_raw, color = group)) +
@@ -1355,18 +1372,21 @@ plots$raw_scores <- list()
   
   #Whole plot
   plots$final$raw_nutriscore <- plot_grid(
-    plots$titles$nutriscore,
+    #plots$titles$nutriscore, #Add title or not
     plot_grid(plots$raw_scores$nutriscore_disq + theme(legend.position = 'none'),
             temp,
             nrow = 1,
             rel_widths = c(1.66,1)),
-    nrow = 2,
-    rel_heights = c(0.1,0.9))
+    nrow = 1,
+    rel_heights = 1)#c(0.1,0.9)) #Change depending on including title or not
   
   plots$final$raw_nutriscore
   
     #Save
     save_plot('./thesis/images/raw_nutriscores.png', plots$final$raw_nutriscore,
+              ncol = 1.7)
+    #Save for article extended data section
+    save_plot('./Supplementary/Angelsen_ED_Fig2.jpg', plots$final$raw_nutriscore,
               ncol = 1.7)
     
   #Multiple traffic light
@@ -1374,7 +1394,13 @@ plots$raw_scores <- list()
   temp <- temp$raw_scores %>% inner_join(., metadata) %>% #Add metadata
     #Rename and fix order of features
     mutate(feature = str_replace(feature, 'SatFa', 'Saturated\nFat')) %>%
-    mutate(feature = factor(feature, levels = c('Fat', 'Saturated\nFat', 'Sugar', 'Salt')))
+    mutate(feature = factor(feature, levels = c('Fat', 'Saturated\nFat', 'Sugar', 'Salt'))) %>%
+    mutate(group = as.character(group) %>% str_replace("US", "USA"),
+           group = factor(group, levels = c("Norway", "UK", "USA")) 
+    )
+  
+  #Save datafile as source data for the plot
+  write_csv(temp %>% select(-Source), "./Supplementary/Source_ED_Fig3.csv")
     
   plots$raw_scores$mtl <- ggplot(temp, aes(x = feature, y = inverted_traffic_light_rating, color = group)) +
     geom_boxplot(position = position_dodge(1)) +
@@ -1393,6 +1419,7 @@ plots$raw_scores <- list()
     scale_y_continuous(breaks = seq(0, 3, by = 1))
   
   save_plot('./thesis/images/raw_scores_mtl.png', plots$raw_scores$mtl, ncol = 1.7)
+  save_plot('./Supplementary/Angelsen_ED_Fig3.jpg', plots$raw_scores$mtl, ncol = 1.7)
   
   #Guidelines
   #WHO
@@ -1412,7 +1439,13 @@ plots$raw_scores <- list()
              str_replace('Carbo', 'Carbohydrates') %>%
              str_replace('SatFa', 'Saturated\nFat') %>%
              str_replace('Dietary fibre', 'Dietary\nFibre')) %>%
-    mutate(feature = factor(feature, levels = c('Carbohydrates', 'Sugar', 'Dietary\nFibre', 'Fat', 'Saturated\nFat', 'Protein')))
+    mutate(feature = factor(feature, levels = c('Carbohydrates', 'Sugar', 'Dietary\nFibre', 'Fat', 'Saturated\nFat', 'Protein'))) %>%
+    mutate(group = as.character(group) %>% str_replace("US", "USA"),
+           group = factor(group, levels = c("Norway", "UK", "USA")) 
+    )
+  
+  #Save datafile as source data for the plot
+  write_csv(temp, "./Supplementary/Source_ED_Fig1.csv")
   
   #Barplot
   plots$raw_scores$who <- ggplot(temp, aes(x = feature, y = pct, fill = group)) +
@@ -1444,7 +1477,10 @@ plots$raw_scores <- list()
              str_replace('Carbo', 'Carbohydrates') %>%
              str_replace('SatFa', 'Saturated\nFat') %>%
              str_replace('Dietary fibre', 'Dietary\nFibre')) %>%
-    mutate(feature = factor(feature, levels = c('Carbohydrates', 'Sugar', 'Dietary\nFibre', 'Fat', 'Saturated\nFat', 'Protein')))
+    mutate(feature = factor(feature, levels = c('Carbohydrates', 'Sugar', 'Dietary\nFibre', 'Fat', 'Saturated\nFat', 'Protein'))) %>%
+    mutate(group = as.character(group) %>% str_replace("US", "USA"),
+           group = factor(group, levels = c("Norway", "UK", "USA")) 
+    )
   
   #Barplot
   plots$raw_scores$nnr <- ggplot(temp, aes(x = feature, y = pct, fill = group)) +
@@ -1468,6 +1504,7 @@ plots$raw_scores <- list()
     draw_label("Percentage of recipes that fulfill criteria", x =  0, y =0.5, vjust= 1.5, angle=90)
 
   save_plot('./thesis/images/raw_scores_guidelines.png', plots$final$raw_guidelines, nrow = 1.7, ncol = 1.7)
+  save_plot('./Supplementary/Angelsen_ED_Fig1.jpg', plots$final$raw_guidelines, nrow = 1.7, ncol = 1.7)
   
 # How the different foodgroups contribute to recipe weight----
 plots$violinbox$foodgroups <- list()
@@ -2423,13 +2460,19 @@ t <- all_stats_table %>%
 #Guidelines, nutriscore and trafficlights
 #Guidelines and traffic lights
 guidelines_trafficlights <- read_csv2('./Data/health_indicators/guidelines_trafficlights.csv') %>%
-  rename(Feature = X1) %>%
+  #rename(Feature = X1) %>%
   replace(is.na(.), ' ')
+  
+  #Save as source data
+  write_csv(guidelines_trafficlights, "./Supplementary/Supplementary_Table9.csv")
 
 #Nutriscore
 nutriscore_points <- read_csv2('./Data/health_indicators/nutriscore_points.csv') %>%
-  select(-Points_1) %>%
+  #select(-Points_1) %>%
   replace(is.na(.), ' ')
+
+  #Save as source data
+  write_csv(nutriscore_points, "./Supplementary/Supplementary_Table10.csv")
 
 
 ## Save objects to be used in RMarkdown----
