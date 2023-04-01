@@ -4,6 +4,13 @@ library(viridis)
 library(viridisLite)
 library(shadowtext)
 
+# Thesis----
+devtools::load_all(path = '.')
+
+library(viridis)
+library(viridisLite)
+library(shadowtext)
+
 ## Setup ----
 #Empty list to fill with plots and plot legends
 plots <- list()
@@ -78,7 +85,7 @@ various <- list(
   'health' = c('inverted_nutriscore', 'nutriscore_letter', 'inverted_traffic_score', 'who_score', 'nnr_score', 'keyhole_certified')
 )
 #Select colors for the different countries for plots where color is not pre-coded
-various$country_colors <- groupColors(tidy_recipes %>% mutate(group = str_replace(group, "US", "USA")))
+various$country_colors <- groupColors(tidy_recipes)
 
 ## Data completeness----
 temp <- readRDS('./Data/output/missing_data2.Rds') #Read data from cleanup script
