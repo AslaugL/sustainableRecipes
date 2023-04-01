@@ -19,25 +19,33 @@ theme_set(theme_bw()) +theme_replace(strip.text = ggtext::element_markdown(), st
 data_recipes <- readRDS('./Data/output/recipes_for_analysis.Rds') %>% #Nutrient content/sustainability indicators pr 100g recipe
   #Remove non-dinner recipes
   filter(!sample_id %in% c('Baklava (Turkey)', 'Sausage Lunch', 'Half-fermented trout', 'Straight trout', 'Fruit Package')) %>%
-  arrange(group) #Set order of countries for plot legends
+  arrange(group) %>% #Set order of countries for plot legends
+  #Change US to USA in line with updated article text
+  mutate(group = str_replace(group, "US", "USA")) %>%
+  #remove Source from df
+  select(-Source)
 
 data_ingredients <- readRDS('./Data/output/ingredients_for_analysis.Rds') %>% #Nutrient content/sustainability indicators for every ingredient pr 100g recipe
   rename(Foodgroup = L1) %>%
   select(-FoodEx2) %>%
   #Remove non-dinner recipes
   filter(!sample_id %in% c('Baklava (Turkey)', 'Sausage Lunch', 'Half-fermented trout', 'Straight trout', 'Fruit Package')) %>%
-  arrange(group) #Set order of countries for plot legends
+  arrange(group) %>% #Set order of countries for plot legends
+  #Change US to USA in line with updated article text
+  mutate(group = str_replace(group, "US", "USA")) %>%
+  #remove Source from df
+  select(-Source)
 
 #Turn tidy
 tidy_recipes <- data_recipes %>%
   pivot_longer(.,
-               cols = -c(sample_id, group, Source),
+               cols = -c(sample_id, group),
                names_to = 'feature',
                values_to = 'value')
 
 tidy_ingredients <- data_ingredients %>%
   pivot_longer(.,
-               cols = -c(Ingredients, sample_id, group, Source, Foodgroup, Amounts),
+               cols = -c(Ingredients, sample_id, group, Foodgroup, Amounts),
                names_to = 'feature',
                values_to = 'value') %>%
   #Rename some foodgroups
@@ -61,9 +69,9 @@ tidy_ingredients <- data_ingredients %>%
   ) %>% replace_na(list(Foodgroup = 'Unknown'))
 
 #Recipe metadata
-metadata <- readRDS('./Data/output/recipe_metadata.Rds') %>% arrange(group)
-#remove Source from df
-data_recipes <- data_recipes %>% select(-Source)
+metadata <- readRDS('./Data/output/recipe_metadata.Rds') %>% arrange(group) %>%
+  #Change US to USA in line with updated article text
+  mutate(group = str_replace(group, "US", "USA"))
 
 #Various to keep environment clean
 various <- list(
@@ -79,7 +87,7 @@ various <- list(
   'health' = c('inverted_nutriscore', 'nutriscore_letter', 'inverted_traffic_score', 'who_score', 'nnr_score', 'keyhole_certified')
 )
 #Select colors for the different countries for plots where color is not pre-coded
-various$country_colors <- groupColors(tidy_recipes %>% mutate(group = str_replace(group, "US", "USA")))
+various$country_colors <- groupColors(tidy_recipes)
 
 # Date exploration----
 ## Data completeness----
@@ -416,7 +424,10 @@ temp <- health_indicators %>%
            str_replace('nutriscore_letter', 'Nutriscore')) %>%
   select(feature, group, value, pct) %>%
   #Arrange for table
-  mutate(group = factor(group, c('Norway', 'UK', 'US', 'All countries'))) %>%
+  #Without UK recipes
+  mutate(group = factor(group, c('Norway', 'USA', 'All countries'))) %>%
+  # With UK Recipes
+  #mutate(group = factor(group, c('Norway', 'UK', 'USA', 'All countries'))) %>%
   #Split on feature to format each indicator separately
   group_by(feature) %>% group_split() %>%
   #Pivot wider
@@ -424,15 +435,20 @@ temp <- health_indicators %>%
   #Set order of countries
   lapply(., function(x) {x %>% select(value, starts_with('Norway'), starts_with('UK'), starts_with('US'), starts_with('All'))})
 
+#Add 0 % to other indicators where no recipes has that score, and order from best to lowest score
+temp <- lapply(temp, function(x) {x %>% replace(is.na(.), '0.0 %')})
+
 #Add empty rows to nutriscore before col_bind
 temp[[3]] <- temp[[3]] %>%
+  # replace(is.na(.), '0.0 %') %>%
+  # #Replace NA with empty space, add % for UK's E scores
+  # mutate(across(everything(), case_when(
+  #   is.na(.) ~ '0.0 %',
+  #   TRUE ~ .
+  # ))) %>%
+  #Add two empty rows to have the same number of rows as the other tables
   add_row() %>%
   add_row() %>%
-  #Replace NA with empty space, add % for UK's E scores
-  mutate(UK_Nutriscore = case_when(
-    value == 'E' ~ '0.0 %',
-    TRUE ~ UK_Nutriscore
-  )) %>%
   replace(is.na(.), ' ')
 
 #Order by descending score
@@ -444,22 +460,28 @@ temp[[1]] <- temp[[1]] %>%
   mutate(value = factor(value, levels = c(12, 11, 10, 9, 8 , 7, 6))) %>%
   arrange(value)
 
-#Add 0 % to other indicators where no recipes has that score, and order from best to lowest score
-temp <- lapply(temp, function(x) {x %>% replace(is.na(.), '0.0 %')})
-
 pct_recipes_healthiness_scores <- bind_cols(temp) %>%
   #Fix column names
-  rename(
-    `Score_Inverted Multiple\nTraffic Light Model` = value...1,
-    `Score_Nordic Nutrition\nRecommendations` = value...6,
-    `Score_Nutriscore` = value...11,
-    `Score_World Health Organization\nRecommendations` = value...16
-  ) %>%
+  #With UK data
+  # rename(
+  #   `Score_Inverted Multiple\nTraffic Light Model` = value...1,
+  #   `Score_Nordic Nutrition\nRecommendations` = value...6,
+  #   `Score_Nutriscore` = value...11,
+  #   `Score_World Health Organization\nRecommendations` = value...16
+  # ) %>%
+  #Without UK Data
+    rename(
+      `Score_Inverted Multiple\nTraffic Light Model` = value...1,
+      `Score_Nordic Nutrition\nRecommendations` = value...5,
+      `Score_Nutriscore` = value...9,
+      `Score_World Health Organization\nRecommendations` = value...13
+    ) %>%
   select(ends_with('Inverted Multiple\nTraffic Light Model'), ends_with('Nutriscore'), ends_with('Nordic Nutrition\nRecommendations'), ends_with('World Health Organization\nRecommendations'))
 
 # Save table for source files
-write_csv(pct_recipes_healthiness_scores[,1:10], "./Supplementary/Source_ED_Table1.csv")
-write_csv(pct_recipes_healthiness_scores[,11:20], "./Supplementary/Source_ED_Table2.csv")
+#With UK data
+# write_csv(pct_recipes_healthiness_scores[,1:10], "./Supplementary/Source_ED_Table1.csv")
+# write_csv(pct_recipes_healthiness_scores[,11:20], "./Supplementary/Source_ED_Table2.csv")
 
 #Save tables as jpg
 #Front of pack labels
@@ -470,19 +492,36 @@ pct_recipes_healthiness_scores %>%
   kbl(booktabs = TRUE, linesep = "", escape = FALSE,
       
       #Set column names and align
-      col.names = rep(c("Score", "Norway", "UK", "US", "All countries"), 2),
+      #With UK data
+      # col.names = rep(c("Score", "Norway", "UK", "US", "All countries"), 2),
+      #Without UK data
+      col.names = rep(c("Score", "Norway", "US", "All countries"), 2),
       #caption = "The percentage of recipes that received a specific score on each front-of-pack-label indicator.",
-      align = rep(c("l", "c", "c", "c", "c"), 2)) %>%
+      #With UK data
+      # align = rep(c("l", "c", "c", "c", "c"), 2)) %>%
+      #Without UK data
+      align = rep(c("l", "c", "c", "c"), 2)) %>%
   
+  #With UK data
+  # #Add header for each indicator
+  # add_header_above(c("Inverted Multiple Traffic Light Model" = 5, "Nutriscore" = 5)) %>%
+  # #Add header to distinguish FOPL and guidelines
+  # add_header_above(c("Front of Pack Labels" = 10)) %>%
+  #Without UK data
   #Add header for each indicator
-  add_header_above(c("Inverted Multiple Traffic Light Model" = 5, "Nutriscore" = 5)) %>%
+  add_header_above(c("Inverted Multiple Traffic Light Model" = 4, "Nutriscore" = 4)) %>%
   #Add header to distinguish FOPL and guidelines
-  add_header_above(c("Front of Pack Labels" = 10)) %>%
+  add_header_above(c("Front of Pack Labels" = 8)) %>%
   
   #Make score columns bold
-  column_spec(., c(1, 6), bold = TRUE) %>%
-  column_spec(., c(2:5, 7:10)) %>%
+  #With UK data
+  # column_spec(., c(1, 6), bold = TRUE) %>%
+  # column_spec(., c(2:5, 7:10)) %>%
+  #Without UK data
+  column_spec(., c(1, 5), bold = TRUE) %>%
+  column_spec(., c(2:4, 6:8)) %>%
   kable_styling(latex_options = c("scale_down", "hold_position"), full_width = FALSE) %>% save_kable(., "./Supplementary/Angelsen_ED_Table1.jpg")
+
 #Dietary guidelines
 pct_recipes_healthiness_scores %>%
   select(ends_with('Recommendations')) %>%
@@ -491,18 +530,33 @@ pct_recipes_healthiness_scores %>%
   kbl(booktabs = TRUE, linesep = "", escape = FALSE,
       
       #Set column names and align
-      col.names = rep(c("Score", "Norway", "UK", "US", "All countries"), 2),
+      #With UK data
+      #col.names = rep(c("Score", "Norway", "UK", "US", "All countries"), 2),
+      #Without UK data
+      col.names = rep(c("Score", "Norway", "US", "All countries"), 2),
       #caption = "The percentage of recipes that received a specific score on the dietary guideline indicators.",
-      align = rep(c("l", "c", "c", "c", "c"), 2)) %>%
+      #With UK data
+      #align = rep(c("l", "c", "c", "c", "c"), 2)) %>%
+      #Without UK data
+      align = rep(c("l", "c", "c", "c"), 2)) %>%
   
+  #With UK data
   #Add header for each indicator
-  add_header_above(c("Nordic Nutritional Recommendations" = 5, "World Health Organization Recommendations" = 5)) %>%
+  # add_header_above(c("Nordic Nutritional Recommendations" = 5, "World Health Organization Recommendations" = 5)) %>%
+  # #Add header to distinguish FOPL and guidelines
+  # add_header_above(c("Dietary guidelines" = 10)) %>%
+  # Without UK data
+  add_header_above(c("Nordic Nutritional Recommendations" = 4, "World Health Organization Recommendations" = 4)) %>%
   #Add header to distinguish FOPL and guidelines
-  add_header_above(c("Dietary guidelines" = 10)) %>%
+  add_header_above(c("Dietary guidelines" = 8)) %>%
   
   #Make score columns bold
-  column_spec(., c(1, 6), bold = TRUE) %>%
-  column_spec(., c(2:5, 7:10)) %>%
+  #With UK data
+  # column_spec(., c(1, 6), bold = TRUE) %>%
+  # column_spec(., c(2:5, 7:10)) %>%
+  #Without UK data
+  column_spec(., c(1, 5), bold = TRUE) %>%
+  column_spec(., c(2:4, 6:8)) %>%
   kable_styling(latex_options = c("scale_down", "hold_position"), full_width = FALSE) %>% save_kable(., "./Supplementary/Angelsen_ED_Table2.jpg")
 
 ## Kruskal Wallis and dunn----
@@ -557,15 +611,11 @@ temp <- run_stats %>%
            str_replace('inverted_traffic_score', 'Inv. Traffic Light') %>%
            str_replace('who_score', 'WHO Score') %>%
            str_replace('nnr_score', 'NNR Score') %>%
-           str_replace('keyhole_certified', 'Keyhole') %>%
            str_replace('CO2', 'CO<sub>2</sub>') %>%
            str_replace('Landuse', 'm<sup>2</sup>')
   ) %>%
-  select(-contains("keyhole")) %>%
-  filter(!str_detect(feature, "Keyhole")) %>%
   inner_join(., metadata) %>%
-  pivot_wider(., names_from = 'feature', values_from = 'value') %>%
-  mutate(group = str_replace(group, "US", "USA"))
+  pivot_wider(., names_from = 'feature', values_from = 'value')
 
 #Save for source data
 write_csv(temp[,c(26, 31, 4, 14, 29, 30, 9, 25,  33:38)], './Supplementary/SourceFig2-3.csv')
@@ -666,7 +716,6 @@ myCorrelations_textsize2 <- function(data,mapping,...){
       position = position_nudge(x = 0.14) #Position for helath vs sustainability plot
     )
 }
-
 
 ### Health indicators with sustainability indicators----
 plots$correlations$healthVSsustainability <- ggpairs(temp %>% select(-sample_id) %>% rename(GHGE = `CO<sub>2</sub>`) %>% mutate(group = str_replace(group, "\bUS\b", "USA")),
@@ -783,9 +832,6 @@ temp <- tidy_ingredients %>% calculateNutritionScore_nutriscore(., raw_score = T
 temp <- temp$raw_scores %>%
   #Add metadata for the recipes
   inner_join(., metadata) %>%
-  mutate(group = as.character(group) %>% str_replace("US", "USA"),
-         group = factor(group, levels = c("Norway", "UK", "USA")) 
-  ) %>%
   #Clean up names and set order of values on the x axis of the plot
   mutate(feature = feature %>%
            str_replace('nutriscore_amounts_pct', '% of fruit, vegetables,\noils, legumes and nuts') %>%
@@ -824,7 +870,7 @@ plots$raw_scores$nutriscore_disq <- ggplot(temp %>% filter(quali == 'Disqualifyi
 plots$raw_scores$nutriscore_qual <- ggplot(temp %>% filter(quali == 'Qualifying'), aes(x = feature, y = nutriscore_raw, color = group)) +
   geom_boxplot(position = position_dodge(1)) +
   #geom_half_boxplot(side = 'r') + geom_half_violin() +
-  scale_color_manual(values = various$country_colors$sample_group, breaks = c('Norway', 'UK', 'US'), labels = c('Norway', 'UK', 'US')) +
+  scale_color_manual(values = various$country_colors$sample_group, breaks = c('Norway', 'UK', 'USA'), labels = c('Norway', 'UK', 'USA')) +
   
   #Fix labs and axis
   labs(
@@ -872,8 +918,7 @@ temp <- temp$raw_scores %>% inner_join(., metadata) %>% #Add metadata
   #Rename and fix order of features
   mutate(feature = str_replace(feature, 'SatFa', 'Saturated\nFat')) %>%
   mutate(feature = factor(feature, levels = c('Fat', 'Saturated\nFat', 'Sugar', 'Salt'))) %>%
-  mutate(group = as.character(group) %>% str_replace("US", "USA"),
-         group = factor(group, levels = c("Norway", "UK", "USA")) 
+  mutate(group = factor(group, levels = c("Norway", "UK", "USA")) 
   )
 
 #Save datafile as source data for the plot
@@ -917,8 +962,7 @@ temp <- temp$raw %>% inner_join(., metadata) %>%
            str_replace('SatFa', 'Saturated\nFat') %>%
            str_replace('Dietary fibre', 'Dietary\nFibre')) %>%
   mutate(feature = factor(feature, levels = c('Carbohydrates', 'Sugar', 'Dietary\nFibre', 'Fat', 'Saturated\nFat', 'Protein'))) %>%
-  mutate(group = as.character(group) %>% str_replace("US", "USA"),
-         group = factor(group, levels = c("Norway", "UK", "USA")) 
+  mutate(group = factor(group, levels = c("Norway", "UK", "USA")) 
   )
 
 #Save datafile as source data for the plot
@@ -955,8 +999,7 @@ temp <- temp$raw %>% inner_join(., metadata) %>%
            str_replace('SatFa', 'Saturated\nFat') %>%
            str_replace('Dietary fibre', 'Dietary\nFibre')) %>%
   mutate(feature = factor(feature, levels = c('Carbohydrates', 'Sugar', 'Dietary\nFibre', 'Fat', 'Saturated\nFat', 'Protein'))) %>%
-  mutate(group = as.character(group) %>% str_replace("US", "USA"),
-         group = factor(group, levels = c("Norway", "UK", "USA")) 
+  mutate(group = factor(group, levels = c("Norway", "UK", "USA")) 
   )
 
 #Barplot
@@ -1053,8 +1096,7 @@ temp <- various$recipe_protein_source %>%
   #Add empty 'game' row for US to use in ggplot
   add_row(group = 'USA', type = 'Game', pct = 0) %>%
   #Set order for plot
-  mutate(type = factor(type, levels = c('Beef', 'Lamb', 'Game', 'Pork', 'Poultry', 'Lean fish', 'Oily fish', 'Shellfish', 'Vegan', 'Vegetarian'))) %>%
-  mutate(group = str_replace(group, "US", "USA"))
+  mutate(type = factor(type, levels = c('Beef', 'Lamb', 'Game', 'Pork', 'Poultry', 'Lean fish', 'Oily fish', 'Shellfish', 'Vegan', 'Vegetarian')))
 
 #Plot
 plots$barplots <- list()
@@ -1081,7 +1123,6 @@ plots$violinbox$foodgroups <- list()
 #Calculate
 temp <- tidy_ingredients %>%
   filter(Foodgroup == 'Meat and\nmeat products') %>%
-  mutate(group = str_replace(group, "US", "USA")) %>%
   #pivot wider to get Amounts column
   pivot_wider(names_from = feature,
               values_from = value) %>%
@@ -1114,8 +1155,8 @@ plots$violinbox$foodgroups$meat_products
 temp <- various$recipe_protein_source %>%
   inner_join(tidy_recipes %>% filter(feature %in% c('CO2', 'Landuse'))) %>%
   #Add a fake US recipe with game to get the right width of the quasirandom points
-  add_row(group = 'US', sample_id = 'fake', type = 'Game', Source = 'fake', feature = 'CO2', value = 3) %>%
-  add_row(group = 'US', sample_id = 'fake', type = 'Game', Source = 'fake', feature = 'Landuse', value = 5) %>%
+  add_row(group = 'US', sample_id = 'fake', type = 'Game', feature = 'CO2', value = 3) %>%
+  add_row(group = 'US', sample_id = 'fake', type = 'Game', feature = 'Landuse', value = 5) %>%
   #Set type order for plot and use nicer feature names
   mutate(type = factor(type, levels = c('Beef', 'Lamb', 'Game', 'Pork', 'Poultry', 'Lean fish', 'Oily fish', 'Shellfish', 'Vegan', 'Vegetarian')),
          feature = feature %>%
@@ -1125,8 +1166,7 @@ temp <- various$recipe_protein_source %>%
          alpha_level = case_when(
            sample_id == 'fake' ~ 'Invisible',
            TRUE ~ 'Visible')
-  ) %>% arrange(group) %>%
-  mutate(group = str_replace(group, "US", "USA"))
+  ) %>% arrange(group)
 
 #Save for source data
 write_csv(temp, './Supplementary/SourceFig1C.csv')
@@ -1413,7 +1453,7 @@ t <- all_stats_table %>%
          Pairwise = linebreak(Pairwise)) %>%
   #Format table
   kbl(booktabs = TRUE, linesep = "", align = c("l", "c", "c", "c", "c", "c", "l", "l"), valign = "b",
-      col.names = c(" ", "Norway", "UK", "US", "Adj. \\textit{p}-value", "Effect size (95\\% ci)", "Pairwise", "Adj. \\textit{p}-value"),
+      col.names = c(" ", "Norway", "UK", "USA", "Adj. \\textit{p}-value", "Effect size (95\\% ci)", "Pairwise", "Adj. \\textit{p}-value"),
       caption = "Kruskal Wallis and 
       Dunn test results.", escape = FALSE, format = "latex") %>%
   kable_styling(full_width = FALSE) %>%
@@ -1466,7 +1506,7 @@ stat_table  %>%
   mutate(Pairwise = linebreak(Pairwise)) %>%
   #Format table
   kbl(booktabs = TRUE, linesep = "", align = c("l", "c", "c", "c", "l"), valign = "b",
-      col.names = c(" ", "Norway", "UK", "US", "Pairwise"),
+      col.names = c(" ", "Norway", "UK", "USA", "Pairwise"),
       caption = "Dunn test results.", escape = FALSE, format = "latex") %>%
   kable_styling(full_width = FALSE) %>%
   kable_styling(latex_options = c("scale_down", "hold_position")) %>%

@@ -25,9 +25,9 @@ raw <- list(
     #Columns to work with
     select(`Selected Meals`, Ingredients, Source, Country),
   
-  'uk' = read_xlsx('./Data/recipes/Data_UK_100.xlsx') %>%
-    select(`Selected Meals`, Ingredients, Source, Country) %>% drop_na(Ingredients),
-  
+  # 'uk' = read_xlsx('./Data/recipes/Data_UK_100.xlsx') %>%
+  #   select(`Selected Meals`, Ingredients, Source, Country) %>% drop_na(Ingredients),
+  # 
   'us' = readRDS('./Data/recipes/US_clean.Rds') %>%
     #Format like the others
     #Remove columns
