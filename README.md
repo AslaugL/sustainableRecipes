@@ -28,3 +28,6 @@ Then run composite_ingredients.R and go back to clean_databases.R and unblock th
 
 ### Calculate nutrient content and environmental impact of the recipes
 After preparing the databases, run all_recipes.R to map the recipe ingredients to the databases and calculate the nutrient content and environmental impact per 100 grams of each recipe.
+
+# Later work
+After completing the master thesis more work was put into the script able to simplify nutrient and environmental impact calculation of recipes, that can be found in the [sustainableNutRients](https://github.com/AslaugL/sustainableNutRients)
