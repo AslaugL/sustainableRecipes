@@ -894,7 +894,7 @@ temp <- checkRef(various$ingredients_weight, references$nutrients) %>%
 various$with_nutrients <- temp %>%
   select(Ingredients, ID, Name, Amounts_kg) %>%
   #Get nutrient values for the ingredients
-  inner_join(., databases$nutrients, by = 'ID') %>% select(-ID) %>%
+  inner_join(., databases$nutrients %>% select(-from), by = 'ID') %>% select(-ID) %>%
   #Turn long to do the calculations
   pivot_longer(.,
                cols = -c(Name, Ingredients, Amounts_kg),

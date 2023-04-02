@@ -11,7 +11,7 @@ various <- list()
 #Load raw data helsedir
 raw_data <- read_xlsx('./Data/databases/vekt_porsjonsstørrelser_helsedir.xlsx')
 
-#Reformat
+## Reformat----
 all_weights <- raw_data %>% rename(
   portion = contains('porsjon'),
   tbsp = contains('ss,'),
@@ -143,7 +143,8 @@ all_weights <- all_weights %>%
   filter(!str_detect(tolower(Ingredients), 'crisp bread')) %>%
   full_join(temp)
 
-#Ingredients from recipes not present in the Norwegian food weight and measurement database
+## Ingredient weights from other sources----
+#These ingredients were not found in the Norwegian database
 temp <- list(
   
   #Meat
@@ -396,7 +397,7 @@ temp <- list(
   
 )
 
-#Add new ingredients to all_weights
+#Add these new ingredients to all_weights
 createIngredientRow <- function(vector){
   
   row <- tibble(
@@ -530,6 +531,7 @@ all_weights <- all_weights %>%
   ungroup() %>%
   unique() 
 
+## Clean up----
 #Ingredients not needed in the final database 
 various$not_needed <- all_weights %>%
   
@@ -633,7 +635,7 @@ saveRDS(all_weights, './Data/output/all_weights.Rds')
 
 #Use store bought breads and rolls as default
 
-#Create query
+## Create search query----
 ref <- all_weights %>% select(-c(g, unit_enhet, reference)) %>% unique() %>% #Only keep names, not units
   mutate(Ingredients = str_replace_all(Ingredients, ',', '')) %>%
   
@@ -725,14 +727,15 @@ ref <- all_weights %>% select(-c(g, unit_enhet, reference)) %>% unique() %>% #On
 
 saveRDS(ref, './Data/output/food_weight_ref.Rds')
 
-#Nutrient content database----
+# Nutrient content database----
 #List to fill with various items to keep environment clean
 various <- list()
 
 #Load raw data helsedir
 raw_data <- read_xlsx('./Data/databases/matvaretabellen2020.xlsx')
 
-#Clean it up and use means for items with more than one addition (such as vegetables with both Norwegian and Imported values)----
+## Clean up ----
+# Use means for items with more than one addition (such as vegetables with both Norwegian and Imported values)
 clean_nutrients <- raw_data %>%
   
   #Remove empty rows
@@ -744,7 +747,8 @@ clean_nutrients <- raw_data %>%
   rename(food_item = `Food Item`) %>%
   select(FoodID, Foodgroup, food_item) %>%
   
-  #Remove unnecessary food items, first turn to lowercase----
+### Remove unnecessary food items----
+# First turn to lowercase
 mutate(food_item = str_to_lower(food_item),
        Foodgroup = str_to_lower(Foodgroup)) %>%
   #Keep some ingredients
@@ -752,10 +756,10 @@ mutate(food_item = str_to_lower(food_item),
            !str_detect(Foodgroup,
                       'dessert|other meat products, prepared|other meats, minced, offal, prepared|egg, prepared|cookies|cod liver oil|homemade|chocolate|instant|cake|breakfast cereals|porridge|pizza')) %>%
   
-#Rename some ingredients----
+### Rename some ingredients----
 mutate(Ingredients = case_when(
   
-  #Beef----
+  #### Beef----
   str_detect(food_item, 'beef') & str_detect(food_item, 'bottom round') ~ 'beef_bottom round',
   str_detect(food_item, 'beef') & str_detect(food_item, 'chuck roll') ~ 'beef_chuck roll',
   str_detect(food_item, 'beef') & str_detect(food_item, 'shoulder') & str_detect(food_item, 'roast') ~ 'beef_shoulder',
@@ -771,7 +775,7 @@ mutate(Ingredients = case_when(
   food_item == 'beef, roast of nuckle, raw' ~ 'beef_roast of knuckle',
   food_item == 'veal, chops, raw' ~ 'beef_veal chops',
   
-  #lamb----
+  #### Lamb----
   food_item == 'lamb, for stewing, raw' ~ 'lamb_stew meat',
   food_item == 'lamb, breast and skirt, with bone, raw' ~ 'lamb_breast skirt',
   food_item == 'lamb, shoulder, for roast, raw' ~ 'lamb_shoulder',
@@ -782,7 +786,7 @@ mutate(Ingredients = case_when(
   food_item == 'lamb, rib, cured, dried, smoked, raw' ~ 'lamb_cured rib',
   food_item == 'lamb, chops, cutlet, hind saddle, lean, fat trimmed, raw' ~ 'lamb_hind saddle',
   
-  #Pork----
+  #### Pork----
   food_item == 'pork, belly, with rind, raw' ~ 'pork_belly',
   food_item == 'pork, chops, loin with bones, raw' ~ 'pork_chop',
   food_item == 'pork, ham, boneless, with fat, for roast, without rind, raw' ~ 'pork_ham roast',
@@ -805,7 +809,7 @@ mutate(Ingredients = case_when(
   food_item == 'sausage, swedish, falukorv' ~ 'sausage_vossa', #Similar in nutrients
   food_item == 'sausage, meat, gilde' ~ 'sausage', #Standard
   
-  #Poultry----
+  #### Poultry----
   food_item == 'chicken, leg (thigh and drumstick), with skin, raw' ~ 'chicken_thigh',
   food_item == 'chicken, with skin, raw' ~ 'chicken_whole',
   food_item == 'chicken, fillet, without skin, raw' ~ 'chicken_breast',
@@ -821,12 +825,12 @@ mutate(Ingredients = case_when(
   food_item == 'turkey, meat and skin, raw' ~ 'turkey_meat',
   food_item == 'grouse, breast, without skin, raw' ~ 'grouse_breast',
   
-  #Game meat----
+  #### Game meat----
   food_item == 'moose, roasting, raw' ~ 'elk moose',
   food_item == 'reindeer, roasting, raw' ~ 'reindeer',
   food_item == 'roe deer, meat, raw' ~ 'roe deer',
   
-  #Seafood----
+  #### Seafood----
   food_item == 'anchovies, canned' ~ 'anchovy_canned',
   food_item == 'anchovy fillets, canned' ~ 'anchovy_fillet',
   food_item == 'angler fish, raw' ~ 'anglerfish',
@@ -858,7 +862,7 @@ mutate(Ingredients = case_when(
   food_item == 'mackerel fillet, in tomato sauce, 60 % mackerel, canned' ~ 'mackerel_tomato canned',
   food_item == 'salmon, smoked' ~ 'salmon_smoked',
   
-  #Herbs and spices----
+  #### Herbs and spices----
   food_item == 'anise seeds' ~ 'anise',
   food_item == 'bay leaf, dried' ~ 'bay_leaf',
   food_item == 'pepper, cayenne, red' ~ 'pepper_cayenne',
@@ -880,7 +884,7 @@ mutate(Ingredients = case_when(
   food_item == 'chili powder' ~ 'chili_powder',
   food_item == 'curry powder' ~ 'curry_powder',
   
-  #Fruit and vegetables----
+  #### Fruit and vegetables----
   FoodID == '06.114' ~ 'sprout_alfalfa',
   food_item == 'apricots, dried' ~ 'apricot_dried',
   food_item == 'beans, green, french, raw' ~ 'bean_green',
@@ -947,7 +951,7 @@ mutate(Ingredients = case_when(
   food_item == 'grapes, unspecified, raw' ~ 'grape',
   food_item == 'peaches, canned, in syrup' ~ 'peach_canned',
   
-  #Grains----
+  #### Grains----
   food_item == 'almonds' ~ 'almond',
   food_item == 'pearled barley' ~ 'pearl barley',
   food_item == 'broad beans, uncooked' ~ 'bean_broad',
@@ -1006,7 +1010,7 @@ mutate(Ingredients = case_when(
   food_item == 'rolls, white, industrially made' ~ 'roll_white',
   food_item == 'tortilla, wheat flour' ~ 'tortilla',
   
-  #oils----
+  #### Oils----
   food_item == 'oil, peanut' ~ 'peanut_oil',
   food_item == 'mayonnaise, full fat, 80 % fat' ~ 'mayonnaise',
   food_item == 'oil, olive, extra virgin' ~ 'olive_oil',
@@ -1017,7 +1021,7 @@ mutate(Ingredients = case_when(
   food_item == 'oil, rapeseed, cold pressed, odelia' ~ 'vegetable_oil', #Standard
   food_item == 'oil, walnut' ~ 'walnut_oil',
   
-  #Dairy and substitutes----
+  #### Dairy and substitutes----
   food_item == 'butter' ~ 'butter',
   food_item == 'butter, unsalted' ~ 'butter_unsalted',
   food_item == 'cheese, blue mold, norzola' ~ 'norzola_blue cheese',
@@ -1065,7 +1069,7 @@ mutate(Ingredients = case_when(
   food_item == 'oat beverage, with calcium and vitamins' ~ 'dairy imitate_oatmilk',
   food_item == 'ice cream, dairy' ~ 'ice cream',
   
-  #Mushrooms----
+  #### Mushrooms----
   food_item == 'mushroom, chantherelle, raw' ~ 'mushroom_chanterelle',
   food_item == 'mushroom, common, norwegian, raw' ~ 'mushroom',
   food_item == 'mushroom, oyster, raw' ~ 'mushroom_oyster',
@@ -1073,7 +1077,7 @@ mutate(Ingredients = case_when(
   food_item == 'mushroom, shiitake, raw' ~ 'mushroom_shiitake',
   food_item == 'mushroom, common, canned, drained' ~ 'mushroom_canned',
   
-  #Div----
+  #### Div----
   food_item == 'beer, dark, 4,5 - 4,7 vol-% alcohol, bayer and christmas beers' ~ 'beer_dark',
   food_item == 'capers, canned' ~ 'caper',
   food_item == 'spirits, 40 vol-% alcohol' ~ 'spirits 40 vol-% alcohol',
@@ -1107,7 +1111,7 @@ mutate(Ingredients = case_when(
   #Keep the unspecified ingredients
   str_detect(food_item, ', unspecified, raw') ~ str_replace(food_item, ', unspecified, raw', ''),
   
-  #Remove 'raw' from certain ingredients----
+  #### Remove 'raw' from certain ingredients----
   food_item %in% c('pineapple, raw', 'asparagus, raw', 'avocado, raw', 'banana, raw',
                    'blueberries, raw', 'catfish, raw', 'char, raw',
                    'cherries, raw', 'chives, raw', 'clementine, raw',
@@ -1152,8 +1156,8 @@ mutate(Ingredients = case_when(
   rename(ID = FoodID) %>%
   mutate(ID = as.numeric(ID))
 
-#Add missing food items from FoodData Central----
-#Nutrients
+## Add food items from FoodData Central----
+# Foods that were not found in Matvaretabellen
 fromFoodDataCentral_nutrients <- read_csv('./Data/databases/food_nutrient.csv')
 fromFoodDataCentral_nutrient_names <- read_csv('./Data/databases/nutrient_incoming_name.csv')
 #Food items
@@ -1337,21 +1341,21 @@ fromFoodDataCentral_foods <- read_csv('./Data/databases/food.csv') %>%
 #Add to clean_nutrients df, add where the foods are from
 clean_nutrients <- bind_rows(clean_nutrients %>% mutate(from = 'Matvaretabellen_FoodID'), fromFoodDataCentral_foods %>% select(ID, Ingredients) %>% mutate(from = 'FoodData Central_fdc_id'))
 
-#Add composite ingredients----
-various$component_ingredients_nutrients <- readRDS('./Data/output/composite_ingredients_nutrient_content.Rds') %>%
-  #Create an ID column
-  group_by(Ingredients) %>%
-  mutate(ID = cur_group_id()) %>%
-  ungroup() %>%
-  mutate(ID = ID + 200) %>% mutate(from = 'Composite ingredient not in database')
-
-clean_nutrients <- bind_rows(clean_nutrients, various$component_ingredients_nutrients %>% select(ID, Ingredients, from)) %>%
-  #Add a shellfish row
-  add_row(ID = 10000, Ingredients = 'shellfish', from = 'Shellfish in Matvaretabellen')
+# ## Add composite ingredients----
+# various$component_ingredients_nutrients <- readRDS('./Data/output/composite_ingredients_nutrient_content.Rds') %>%
+#   #Create an ID column
+#   group_by(Ingredients) %>%
+#   mutate(ID = cur_group_id()) %>%
+#   ungroup() %>%
+#   mutate(ID = ID + 200) %>% mutate(from = 'Composite ingredient not in database')
+# 
+# clean_nutrients <- bind_rows(clean_nutrients, various$component_ingredients_nutrients %>% select(ID, Ingredients, from)) %>%
+#   #Add a shellfish row
+#   add_row(ID = 10000, Ingredients = 'shellfish', from = 'Shellfish in Matvaretabellen')
 
 #Create the nutrient content of the shellfish ingredient by taking the mean of the shellfish in the db
 various$shellfish <- raw_data %>%
-  
+
   #Remove columns and nutrients not needed
   select(!contains(c('ref', 'Edible', 'Water', ':0', ' sum', '2n', '3n', '4n', 'Foodgroup'))) %>%
   #Filter out shellfish
@@ -1375,7 +1379,7 @@ various$shellfish <- raw_data %>%
               values_from = value) %>%
   #Add clams
   bind_rows(., fromFoodDataCentral_foods %>% filter(Ingredients == 'clam')) %>%
-  
+
   #Get the mean values o each nutrient
   pivot_longer(.,
                cols = -c(ID, Ingredients),
@@ -1391,7 +1395,7 @@ various$shellfish <- raw_data %>%
               names_from = 'feature',
               values_from = 'value')
 
-#Create a full nutrient database----
+## Create the full nutrient database----
 #Nutrients of interest
 nutrients_to_use <- raw_data %>%
   
@@ -1436,7 +1440,7 @@ nutrients_to_use <- nutrients_to_use %>%
 
 saveRDS(nutrients_to_use, './Data/output/nutrients_df.Rds')
 
-#Create a search reference----
+## Create the search query----
 reference <- clean_nutrients %>%
   select(ID, Ingredients) %>%
   #Individual ID for crème fraîche and veal_liver, so that they don't share ID's with sour cream and
@@ -1471,17 +1475,19 @@ reference <- clean_nutrients %>%
 
 saveRDS(reference, './Data/output/nutrient_reference.Rds')
 
-#Sustainability indicators from SHARP----
+# Sustainability indicators from SHARP----
 various <- list()
-#Read sustainability data and change to fit recipes----
+## Read sustainability data and change to fit recipes----
 SHARP <- read_csv('./Data/databases/SHARPversion2018.csv') %>%
-  
+
+## Cleanup ----  
   #Rename to fit with the other datasets
   rename(Ingredients = `Food item`) %>%
   #Remove graphical characters
   mutate(Ingredients = stri_trans_tolower(Ingredients)) %>%
   mutate(Ingredients = str_replace_all(Ingredients, '\\(|\\)', ''))
 
+### Remove unnecessary food items----
 #Ingredients to remove, either because they're duplicates or just not needed
 various$sharp_to_remove <- SHARP %>%
   
@@ -1581,7 +1587,8 @@ SHARP <- SHARP %>%
                              'peanuts fresh seeds',
                              #Rakefish might fit within this category?
                              'marinated / pickled fish')) %>%
-  
+
+### Reformat----  
   #Fix some names and remove duplicate items
   mutate(Ingredients = Ingredients %>%
            
@@ -1769,11 +1776,13 @@ various$shellfish <- SHARP %>%
   mutate(Ingredients = 'shellfish',
          L1 = 'Fish, seafood, amphibians, reptiles and invertebrates')
 SHARP <- full_join(SHARP, various$shellfish)
-#Add composite ingredients
-various$composite_ingredients_sharp <- readRDS('./Data/output/composite_ingredients_sustainability_markers.Rds')
 
-#Add to SHARP
-SHARP <- full_join(SHARP, various$composite_ingredients_sharp)
+# ## Add composite ingredients----
+# various$composite_ingredients_sharp <- readRDS('./Data/output/composite_ingredients_sustainability_markers.Rds')
+# 
+# #Add to SHARP
+# SHARP <- full_join(SHARP, various$composite_ingredients_sharp)
+
 #Create a half-and-half row, half milk and half cream
 SHARP <- SHARP %>% 
   add_row(Ingredients = 'half-and-half',
@@ -1789,11 +1798,12 @@ SHARP <- SHARP %>%
   mutate(ID = seq_along(Ingredients)) %>%
   #Add a FoodEx2 code for the composite ingredients not in SHARP
   replace_na(list(FoodEx2 = 'Composite ingredient not in SHARP'))
+
 #Save
 saveRDS(SHARP %>%
           select(-Ingredients), './Data/output/sharp_db.Rds')
 
-#Create a df with reference names to query ingredient lists----
+## Search query----
 sharp_ref <- SHARP %>%
   select(ID, Ingredients) %>%
   
